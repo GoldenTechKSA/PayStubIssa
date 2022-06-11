@@ -1,0 +1,13 @@
+{
+    "payType": [
+        { "count": "0", "name": "Pay period type..." },
+        { "count": "52", "name": "Weekly" },
+        { "count": "26", "name": "Biweekly" },
+        { "count": "24", "name": "Semimonthly" },
+        { "count": "12", "name": "Monthly" },
+        { "count": "4", "name": "Quarterly" },
+        { "count": "2", "name": "Semiannually" },
+        { "count": "1", "name": "Annually" },
+        { "count": "260", "name": "Daily or Miscellaneous" }
+    ]
+}

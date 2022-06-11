@@ -1,0 +1,11 @@
+{
+    "status": [
+        
+        { "id": "0", "name": "Choose Filing Status (Marital Status)" },
+        { "id": "SNG", "name": "Single" },
+        { "id": "MFS", "name": "Married filing separately" },
+        { "id": "MFJ", "name": "Married filing jointly" },
+        { "id": "HOH", "name": "Head of household" },
+        { "id": "QWI", "name": "Qualifying widow(er)" }
+    ]
+}

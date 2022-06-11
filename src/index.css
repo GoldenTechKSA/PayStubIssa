@@ -1,0 +1,135 @@
+body {
+  font-family: "Comfortaa", cursive;
+  padding: 0px;
+  margin: 0px;
+}
+
+.navLinkClass {
+  text-decoration: none;
+  color: gainsboro;
+  padding: 0 10px;
+}
+
+.tab-bg-img {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #eff1ef 0px,
+    #eff1ef 4px,
+    white 4px,
+    white 8px
+  ) !important;
+}
+.tab-custom-height {
+  height: 70vh;
+}
+
+.tab-container-relative {
+  position: relative;
+}
+
+.row-relative {
+  position: absolute;
+  bottom: 30px;
+}
+
+.carousel-item {
+  background-color: rgba(201, 193, 193, 0.4);
+  height: 50vh;
+}
+
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 1rem;
+  height: 70px;
+  width: 70px;
+}
+
+.carousel-control-prev-icon {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 1rem;
+  height: 70px;
+  width: 70px;
+}
+
+/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
+.nav-tabs .nav-link.active {
+  background-color: rgb(19, 172, 39);
+  color: white;
+}
+
+/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
+.nav-tabs .nav-link.disabled {
+  background-color: rgba(0, 0, 0, 0.281);
+  color: rgba(49, 47, 47, 0.342);
+}
+
+.footer {
+  background-color: rgb(10, 7, 14);
+  min-width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  color: whitesmoke;
+}
+
+.AnimateDiv {
+  padding: 2rem;
+  border-radius: 5rem;
+  box-sizing: border-box;
+  color: #fff;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  position: relative;
+  animation: change 5s ease-in-out infinite;
+}
+
+.OuterDiv {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  color: #fff;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  position: relative;
+  animation: change 5s ease-in-out infinite;
+}
+
+.h1Class {
+  font-size: 5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: 3px solid #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 5rem 10rem;
+}
+
+/* this will prevent these sections from appearing on the printed page */
+@media print {
+  .no-print {
+    display: none;
+  }
+}
+
+@keyframes change {
+  0% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+.form-control {
+  -webkit-appearance: menulist-button;
+  /*webkit browsers */
+  -moz-appearance: none;
+}

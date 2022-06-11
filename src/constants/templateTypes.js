@@ -1,0 +1,13 @@
+export const PAYSTUB_TEMPLATE_0 = 0;
+export const PAYSTUB_TEMPLATE_1 = 1;
+export const PAYSTUB_TEMPLATE_2 = 2;
+export const PAYSTUB_TEMPLATE_3 = 3;
+export const PAYSTUB_TEMPLATE_4 = 4;
+export const PAYSTUB_TEMPLATE_5 = 5;
+export const PAYSTUB_TEMPLATE_6 = 6;
+export const PAYSTUB_TEMPLATE_7 = 7;
+export const PAYSTUB_TEMPLATE_8 = 8;
+export const PAYSTUB_TEMPLATE_9 = 9;
+export const PAYSTUB_TEMPLATE_10 = 10;
+export const PAYSTUB_TEMPLATE_11 = 11;
+export const PAYSTUB_TEMPLATE_12 = 12;
