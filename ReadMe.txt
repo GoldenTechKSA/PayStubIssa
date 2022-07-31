@@ -17,6 +17,7 @@ Complete data entry pre screen and save to data base.
 Can save and load user and company details from the DB
 display back to form
 
+user for this repo should be GoldenTechKSA@hotmail.com
 
 Please be advised that now you can connect via FTP to your web hosting space for paystubissa.com. The credentials are:
 Hostname: 66.113.226.191
