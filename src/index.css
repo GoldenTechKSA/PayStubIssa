@@ -133,3 +133,45 @@ body {
   /*webkit browsers */
   -moz-appearance: none;
 }
+
+
+/* progress bar styling */
+
+.circle {
+  width: 35px;
+  height: 35px;
+  line-height: 35;
+  background-color: green;
+  color: white;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.stepWrapper {
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.stepBlock .circleWrapper {
+  padding: 0px 100px;
+  position: relative;
+}
+
+.selected .circle {
+  color: black;
+  background-color: white;
+  border-color: green;
+}
+
+.stepBlock:not(:last-child) .circleWrapper::after {
+  content: '';
+  width: 100%;
+  height: 4px;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  background-color: gray;
+  margin: auto;
+  z-index: -1;
+}

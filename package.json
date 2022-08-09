@@ -12,8 +12,10 @@
     "serve:build": "http-server ./build"
   },
   "dependencies": {
+    "@fluentui/react": "^8.86.3",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
+    "@types/react-dom": "^18.0.6",
     "bootstrap": "^5.0.2",
     "file-loader": "^6.2.0",
     "immer": "2.1.3",

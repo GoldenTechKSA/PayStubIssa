@@ -34,6 +34,7 @@ const TemplateSelection = () => {
             </Row>
             <Row className="">
                 <Carousel id="TemplateSelectionCarousel" activeIndex={index} onSelect={handleSelect} indicators={false} wrap={false} interval={null} prevIcon={<span aria-hidden="true" className="carousel-control-prev-icon"/>} nextIcon={<span aria-hidden="true" className="carousel-control-next-icon"/>}>
+                    {/** in the future change this static control list to array map templatePics.map(x, i) => */}
                     <Carousel.Item className="carousel-item">
                         <Image className="w-100 h-100 img-fluid" src={Picture0} />
                         <Carousel.Caption className="" style={{color: "red"}}>Add caption if needed here!</Carousel.Caption>

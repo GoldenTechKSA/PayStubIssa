@@ -6,7 +6,7 @@ import GeneralInfo from "../general/GeneralInfo";
 import CompanyInfo from "../company/CompanyInfo";
 import EmployeeInfo from "../employee/EmployeeInfo";
 import IncomeInfo from "../income/IncomeInfo";
-import TemplateSelection from "../template/TemplateSelection";
+import TemplateSelection from "../templateSelection/TemplateSelection";
 
 const InputTabs = () => {
 //    const [currentTabKey, setCurrentTabKey] = useState("template");
