@@ -2,21 +2,22 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import PrintTemplate0 from "./printTemplate0";
-import PrintTemplate1 from "./printTemplate1";
-import PrintTemplate2 from "./printTemplate2";
-import PrintTemplate3 from "./printTemplate3";
-import PrintTemplate4 from "./printTemplate4";
-import PrintTemplate5 from "./printTemplate5";
-import PrintTemplate6 from "./printTemplate6";
-import PrintTemplate7 from "./printTemplate7";
-import PrintTemplate8 from "./printTemplate8";
-import PrintTemplate9 from "./printTemplate9";
-import PrintTemplate10 from "./printTemplate10";
-import PrintTemplate11 from "./printTemplate11";
-import PrintTemplate12 from "./printTemplate12";
+import PrintTemplate0 from "../printpaystub/printTemplate0";
+import PrintTemplate1 from "../printpaystub/printTemplate1";
+import PrintTemplate2 from "../printpaystub/printTemplate2";
+import PrintTemplate3 from "../printpaystub/printTemplate3";
+import PrintTemplate4 from "../printpaystub/printTemplate4";
+import PrintTemplate5 from "../printpaystub/printTemplate5";
+import PrintTemplate6 from "../printpaystub/printTemplate6";
+import PrintTemplate7 from "../printpaystub/printTemplate7";
+import PrintTemplate8 from "../printpaystub/printTemplate8";
+import PrintTemplate9 from "../printpaystub/printTemplate9";
+import PrintTemplate10 from "../printpaystub/printTemplate10";
+import PrintTemplate11 from "../printpaystub/printTemplate11";
+import PrintTemplate12 from "../printpaystub/printTemplate12";
 import PayPal from "../common/payPalPayment";
 import * as templateTypes from "../../constants/templateTypes";
+import templateNames from "../../assets/data/templateNames.json";
 
 const PreviewTemplate = ({store}) => {
     const { templateType, canPrint } = useSelector( state => state.appSettings )

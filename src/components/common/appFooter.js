@@ -10,7 +10,7 @@ const AppFooter = () => {
         <footer className="no-print footer">
             <Row className="d-inline-flex flex-row">
                 <Col className="ml-3 col-4 align-self-center">
-                    <span>©Copyright PayStubIssa(2020–2021). All rights reserved</span>
+                    <span>©Copyright PayStubIssa(2020–2022). All rights reserved</span>
                 </Col>
                 <Col className="col-1 align-self-center">
                     <span>Accessibility</span>
