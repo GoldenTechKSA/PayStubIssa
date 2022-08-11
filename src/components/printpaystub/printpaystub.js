@@ -1,5 +1,5 @@
-const _onPrint = async () => {
-    const printWindow = window.open('')
+const onPrint = async () => {
+  const printWindow = window.open('')
     if (printWindow) {
       printWindow.document.write('<html><head><title></title><style type="text/css">')
       printWindow.document.write(
@@ -11,7 +11,6 @@ const _onPrint = async () => {
       printWindow.document.write('</style></head><body>')
       printWindow.document.write(`<h2>${fmtMsg(strings.GridAriaLabel)}</h2>`)
   
-      if (dnsRecordsList.length > 0) {
         printWindow.document.write('<table>')
         printWindow.document.write('<tr>')
         printWindow.document.write(`<th>${fmtMsg(recordAddStrings.service)}</th>`)
@@ -31,4 +30,3 @@ const _onPrint = async () => {
       printWindow.print()
       printWindow.close()
     }
-  
