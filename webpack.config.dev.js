@@ -8,7 +8,7 @@ module.exports = {
   mode: "development",
   target: "web",
   devtool: "cheap-module-source-map",
-  entry: "./src/index",
+  entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "build"),
     publicPath: "/",
@@ -31,9 +31,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: ["babel-loader", "eslint-loader"]
+        test: /\.(j|t)sx?$/,
+        use: { loader: "awesome-typescript-loader" }
+      },
+      {
+        enforce: "pre",
+        test: /\.js$/,
+        loader: "source-map-loader"
       },
       {
         test: /(\.css)$/,
@@ -44,5 +48,8 @@ module.exports = {
         loader: "file-loader",
       }
     ]
-  }
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx'],
+}
 };

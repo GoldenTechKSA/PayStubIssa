@@ -4,7 +4,7 @@ import companyInfoReducer from "./companyInfoReducer";
 import employeeInfoReducer from "./employeeInfoReducer";
 import incomeDetailsReducer from "./incomeDetailsReducer";
 import generalInfoReducer from "./generalInfoReducer";
-import initialState from "../../src/assets/data/initialState";
+import initialState from "../assets/data/initialstate";
 
 const rootReducer = combineReducers({ 
     appSettings: appSettingsReducer,

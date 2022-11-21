@@ -1,15 +1,15 @@
 import React from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-import AppHeader from "./common/appHeader";
-import AppFooter from "./common/appFooter";
-import AppBody from "./common/appBody";
-import SpecialOfferPage from "./common/specialOfferPage";
-import PaystubPreview from "./preview/paystubPreview";
-import DailySpecialPage from "./common/dailySpecialPage";
-import AboutUsPage from "./common/aboutUsPage";
-import FAQPage from "./common/FAQPage";
-import ContactUsPage from "./common/contactUsPage";
-import PreviewTemplate from "./preview/previewTemplate";
+import AppHeader from "./common/appheader";
+import AppFooter from "./common/appfooter";
+import AppBody from "./common/appbody";
+import SpecialOfferPage from "./common/specialofferpage";
+import PaystubPreview from "./preview/paystubpreview";
+import DailySpecialPage from "./common/dailyspecialpage";
+import AboutUsPage from "./common/aboutuspage";
+import FAQPage from "./common/faqpage";
+import ContactUsPage from "./common/contactuspage";
+import PreviewTemplate from "./preview/previewtemplate";
 import store from "../redux/store";
 
 function App() {
