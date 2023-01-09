@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { NavigateNext, NavigateBefore } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Form, Row, Col } from "react-bootstrap";
 import { updateAppSettings, saveGeneralInfo } from "../../redux/actions";
-import { StyledButton } from "../../constants/buttonStyles";
+import { StyledButton } from "../../constants/button-styles";
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const GeneralInfo = () => {
     const [ employmentType, setEmploymentType ] = useState(0);
@@ -15,9 +15,9 @@ const GeneralInfo = () => {
     const [ paymentFrequency, setPaymentFrequency ] = useState("Weekly");
     const [ checkNumber, setCheckNumber ] = useState("Weekly");
 
-    const { templateType } = useSelector(state => state.appSettings)
+    const { templateType } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings)
     const dispatch = useDispatch();
-    const history = useHistory();
+    const navigate = useNavigate();
  
     const handleSubmitPreviewPaystub = (event) => {
         event.preventDefault();
@@ -27,7 +27,7 @@ const GeneralInfo = () => {
         }
         dispatch(saveGeneralInfo({ employmentType, paymentType, paymentFrequency, payStubCount, checkNumber }));
 // TODO: see if we need to introduce a preview input details before we print selected Template        
-        history.push('/paystubPreview');
+        navigate('/paystubPreview');
 //        history.push(`/printTemplate/${templateType}`);
     };
 
@@ -47,25 +47,25 @@ const GeneralInfo = () => {
                     <h2>General Information</h2>
                 </Row>
                 <Row className="mb-4 mx-4">
-                <Form>
-                    <Form.Row>
-                        <Form.Group as={Col} controlId="empolymentTypeId">
-                            <Form.Control type="text" placeholder="Employment type" onChange={e => setEmploymentType(e.target.value)} />
+                    <Form>
+                        <Row>
+                            <Form.Group as={Col} controlId="empolymentTypeId">
+                                <Form.Control type="text" placeholder="Employment type" onChange={e => setEmploymentType(parseInt(e.target.value))} />
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="paymentTypeId">
+                                <Form.Control type="text" placeholder="Payment type" onChange={e => setPaymentType(e.target.value)} />
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="paymentFrequencyId">
+                                <Form.Control type="text" placeholder="How often you get paid?" onChange={e => setPaymentFrequency(e.target.value)} />
+                            </Form.Group>
+                        </Row>
+                        <Form.Group controlId="payStubCountId">
+                            <Form.Control placeholder="Enter number of requested paystubs" onChange={e => setPayStubCount(e.target.value)} />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="paymentTypeId">
-                            <Form.Control type="text" placeholder="Payment type" onChange={e => setPaymentType(e.target.value)} />
+                        <Form.Group controlId="checkNumberId">
+                            <Form.Control placeholder="Enter a check number" onChange={e => setCheckNumber(e.target.value)} />
                         </Form.Group>
-                        <Form.Group as={Col} controlId="paymentFrequencyId">
-                            <Form.Control type="text" placeholder="How often you get paid?" onChange={e => setPaymentFrequency(e.target.value)} />
-                        </Form.Group>
-                    </Form.Row>
-                    <Form.Group controlId="payStubCountId">
-                        <Form.Control placeholder="Enter number of requested paystubs" onChange={e => setPayStubCount(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group controlId="checkNumberId">
-                        <Form.Control placeholder="Enter a check number" onChange={e => setCheckNumber(e.target.value)} />
-                    </Form.Group>
-                </Form>
+                    </Form>
                 </Row>
                 <Row className="w-100 justify-content-end row-relative">
                     <Col>

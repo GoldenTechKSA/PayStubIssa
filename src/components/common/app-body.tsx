@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "react-bootstrap";
-import InputTabs from "../template/inputTabs";
-import StatusBar from "./statusBar";
+import InputTabs from "../template/input-tabs";
+import StatusBar from "./status-bar";
 
 const AppBody = () => {
     return (

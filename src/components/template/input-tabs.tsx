@@ -1,20 +1,17 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Tab, Tabs } from "react-bootstrap";
-import GeneralInfo from "../general/GeneralInfo";
-import CompanyInfo from "../company/CompanyInfo";
-import EmployeeInfo from "../employee/EmployeeInfo";
-import IncomeInfo from "../income/IncomeInfo";
-import TemplateSelection from "../templateSelection/TemplateSelection";
+import GeneralInfo from "../general/general-info";
+import CompanyInfo from "../company/company-info";
+import EmployeeInfo from "../employee/employee-info";
+import IncomeInfo from "../income/income-info";
+import TemplateSelection from "../templateselection/template-selection";
+import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const InputTabs = () => {
 //    const [currentTabKey, setCurrentTabKey] = useState("template");
-    const { nextTabStep } = useSelector( state => state.appSettings);
-
-    useEffect(() => {
-        console.log("nextTabKey coming from userSelector=", nextTabStep);
-    });
+    const { nextTabStep } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    useEffect(() => {console.log("nextTabKey coming from userSelector=", nextTabStep);});
 
     return (
         <Container className="no-print tab-container-relative">

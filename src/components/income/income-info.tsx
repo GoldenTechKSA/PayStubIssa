@@ -1,10 +1,9 @@
 import React, {useState} from "react";
 import { useDispatch } from "react-redux";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Row, Col, Container } from "react-bootstrap";
 import { updateAppSettings, saveIncomeDetails } from "../../redux/actions";
 import { NavigateNext, NavigateBefore } from "@material-ui/icons";
-import { StyledButton } from "../../constants/buttonStyles";
+import { StyledButton } from "../../constants/button-styles";
 import { PAYPERIODTYPE } from "../../constants/globals";
 
 const IncomeInfo = () => {
@@ -42,9 +41,9 @@ const IncomeInfo = () => {
             </Row>
             <Row className="mb-4 mx-4">
                 <Form>
-                    <Form.Row>
+                    <Row>
                         <Form.Group as={Col} controlId="AnnualIncomeId">
-                            <Form.Control type="text" placeholder="Annual income amount($)" onChange={e => setAnnualSalary(e.target.value)}/>
+                            <Form.Control type="number" placeholder="Annual income amount($)" onChange={e => setAnnualSalary(parseInt(e.target.value))}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="startDateId">
                             <Form.Control type="date" placeholder="Pay period start date" onChange={e => setPeriodStartDate(e.target.value)}/>
@@ -52,14 +51,14 @@ const IncomeInfo = () => {
                         <Form.Group as={Col} controlId="endDateId">
                             <Form.Control type="date" placeholder="Pay period end date" onChange={e => setPeriodEndDate(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
+                    </Row>
+                    <Row>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
-                            <Form.Control as="select" defaultValue="Pay period type..." onSelect={e => setPeriodType(e.target.value)}>
+                            <Form.Control as="select" defaultValue="Pay period type..." onSelect={e => setPeriodType((e.target as HTMLSelectElement).value)}>
                                 { PAYPERIODTYPE.map((p) => <option key={p.count} value={p.count}>{p.name}</option> )}
                             </Form.Control>
                         </Form.Group>
-                    </Form.Row>
+                    </Row>
                 </Form>
             </Row>
             <Row className="w-100 justify-content-end row-relative">

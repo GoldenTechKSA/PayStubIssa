@@ -1,8 +1,6 @@
 import React from "react";
-import { footer } from "bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Col, Image, Row} from "react-bootstrap";
-import PayPalImg from "../../assets/images/paypal.png"
+import PayPalImg from "../../assets/images/paypal.png";
 
 //<Image rounded className="img-fluid" src="https://www.paypalobjects.com/webstatic/mktg/logo/AM_SbyPP_mc_vs_dc_ae.jpg" alt="PayPal Acceptance Mark" />
 const AppFooter = () => {

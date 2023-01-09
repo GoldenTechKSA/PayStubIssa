@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Form, Row, Col, Container } from "react-bootstrap";
 import { updateAppSettings, saveCompanyInfo } from "../../redux/actions";
 import { NavigateNext, NavigateBefore } from "@material-ui/icons";
-import { StyledButton } from "../../constants/buttonStyles";
+import { StyledButton } from "../../constants/button-styles";
 import { STATESLIST } from "../../constants/globals";
 
 const CompanyInfo = () => {
@@ -48,21 +48,21 @@ const CompanyInfo = () => {
             </Row>
             <Row className="mb-4 mx-4">
                 <Form>
-                    <Form.Row>
+                    <Row>
                         <Form.Group as={Col} controlId="companyNameId">
                             <Form.Control placeholder="Enter Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEinId">
                             <Form.Control placeholder="Company EIN" value={companyEIN} onChange={e => setCompanyEIN(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
+                    </Row>
                     <Form.Group controlId="companyAddress1Id">
                         <Form.Control placeholder="Enter Company Address (i.e 1234 Main St)" value={companyAddress1} onChange={e => setCompanyAddress1(e.target.value)}/>
                     </Form.Group>
                     <Form.Group controlId="companyAddress2Id">
                         <Form.Control placeholder="suite, unit, or floor" value={companyAddress2} onChange={e => setCompanyAddress2(e.target.value)}/>
                     </Form.Group>
-                    <Form.Row>
+                    <Row>
                         <Form.Group as={Col} controlId="companyCityId">
                             <Form.Control placeholder="City" value={companyCity} required onChange={e => setCompanyCity(e.target.value)}/>
                         </Form.Group>
@@ -74,8 +74,8 @@ const CompanyInfo = () => {
                         <Form.Group as={Col} controlId="companyZipCodeId">
                             <Form.Control placeholder="Zip Code" value={companyZipCode} onChange={e => setCompanyZipCode(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
+                    </Row>
+                    <Row>
                         <Form.Group as={Col} controlId="companyLogo">
                             <Form.Control placeholder="Enter Company Logo" value={companyLogo} onChange={e => setCompanyLogo(e.target.value)}/>
                         </Form.Group>
@@ -85,7 +85,7 @@ const CompanyInfo = () => {
                         <Form.Group as={Col} controlId="companyEmailId">
                             <Form.Control type="email" placeholder="Enter Company Email" value={companyEmail} onChange={e => setCompanyEmail(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
+                    </Row>
                 </Form>
             </Row>
             <Row className="w-100 justify-content-end row-relative">

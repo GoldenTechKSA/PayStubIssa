@@ -1,10 +1,9 @@
 import React, {useState} from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch } from "react-redux";
 import { NavigateNext, NavigateBefore } from '@material-ui/icons';
 import { Form, Row, Col, Container } from "react-bootstrap";
 import { updateAppSettings, saveEmployeeInfo } from "../../redux/actions";
-import { StyledButton } from "../../constants/buttonStyles";
+import { StyledButton } from "../../constants/button-styles";
 import { FILINGSTATUS, STATESLIST } from "../../constants/globals";
 
 const EmployeeInfo = () => {
@@ -54,7 +53,7 @@ const EmployeeInfo = () => {
             </Row>
             <Row className="mb-4 mx-4">
                 <Form>
-                    <Form.Row>
+                    <Row>
                         <Form.Group as={Col} controlId="employeeFirstNameId">
                             <Form.Control type="text" placeholder="Enter First Name" value={employeeFirstName} onChange={e => setEmployeeFirstName(e.target.value)}/>
                         </Form.Group>
@@ -64,14 +63,14 @@ const EmployeeInfo = () => {
                         <Form.Group as={Col} controlId="employeeLastNameId">
                             <Form.Control type="text" placeholder="Enter Last Name" value={employeeLastName} onChange={e => setEmployeeLastName(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
+                    </Row>
                     <Form.Group controlId="employeeAddress1Id">
                         <Form.Control placeholder="Enter Employee Address (i.e 1234 Main St)" value={employeeAddress1} onChange={e => setEmployeeAddress1(e.target.value)}/>
                     </Form.Group>
                     <Form.Group controlId="employeeAddress2Id">
                         <Form.Control placeholder="Apartment, studio, or floor" value={employeeAddress2} onChange={e => setEmployeeAddress2(e.target.value)}/>
                     </Form.Group>
-                    <Form.Row>
+                    <Row>
                         <Form.Group as={Col} controlId="employeeCityId">
                             <Form.Control placeholder="City" value={employeeCity} onChange={e => setEmployeeCity(e.target.value)}/>
                         </Form.Group>
@@ -83,24 +82,24 @@ const EmployeeInfo = () => {
                         <Form.Group as={Col} controlId="employeeZipCodeId">
                             <Form.Control placeholder="Zip Code" value={employeeZipCode} onChange={e => setEmployeeZipCode(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
+                    </Row>
+                    <Row>
                         <Form.Group as={Col} controlId="employeeSsnId">
                             <Form.Control type="text" placeholder="Enter SSN" value={employeeSSN} onChange={e => setEmployeeSSN(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeePhoneId">
                             <Form.Control type="text" placeholder="Enter Phone number" value={employeePhone} onChange={e => setEmployeePhone(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
+                    </Row>
+                    <Row>
                         <Form.Group as={Col} controlId="employeeEmailId">
                             <Form.Control type="text" placeholder="Enter eMail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeId">
                             <Form.Control type="text" placeholder="Enter Employee ID" value={employeeID} onChange={e => setEmployeeID(e.target.value)}/>
                         </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
+                    </Row>
+                    <Row>
                         <Form.Group as={Col} controlId="hireDateId">
                             <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate} onChange={e => setEmployeeHireDate(e.target.value)}/>
                         </Form.Group>
@@ -109,7 +108,7 @@ const EmployeeInfo = () => {
                                 { FILINGSTATUS.map((f) => <option key={f.id} value={f.id}>{f.name}</option> )}
                             </Form.Control>
                         </Form.Group>
-                    </Form.Row>
+                    </Row>
                 </Form>
             </Row>
             <Row className="w-100 justify-content-end row-relative">

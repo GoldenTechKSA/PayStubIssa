@@ -1,26 +1,26 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import PrintTemplate0 from "../printpaystub/printTemplate0";
-import PrintTemplate1 from "../printpaystub/printTemplate1";
-import PrintTemplate2 from "../printpaystub/printTemplate2";
-import PrintTemplate3 from "../printpaystub/printTemplate3";
-import PrintTemplate4 from "../printpaystub/printTemplate4";
-import PrintTemplate5 from "../printpaystub/printTemplate5";
-import PrintTemplate6 from "../printpaystub/printTemplate6";
-import PrintTemplate7 from "../printpaystub/printTemplate7";
-import PrintTemplate8 from "../printpaystub/printTemplate8";
-import PrintTemplate9 from "../printpaystub/printTemplate9";
-import PrintTemplate10 from "../printpaystub/printTemplate10";
-import PrintTemplate11 from "../printpaystub/printTemplate11";
-import PrintTemplate12 from "../printpaystub/printTemplate12";
-import PayPal from "../common/payPalPayment";
-import * as templateTypes from "../../constants/templateTypes";
-import templateNames from "../../assets/data/templateNames.json";
+import PrintTemplate0 from "../printpaystub/printtemplate0";
+import PrintTemplate1 from "../printpaystub/printtemplate1";
+import PrintTemplate2 from "../printpaystub/printtemplate2";
+import PrintTemplate3 from "../printpaystub/printtemplate3";
+import PrintTemplate4 from "../printpaystub/printtemplate4";
+import PrintTemplate5 from "../printpaystub/printtemplate5";
+import PrintTemplate6 from "../printpaystub/printtemplate6";
+import PrintTemplate7 from "../printpaystub/printtemplate7";
+import PrintTemplate8 from "../printpaystub/printtemplate8";
+import PrintTemplate9 from "../printpaystub/printtemplate9";
+import PrintTemplate10 from "../printpaystub/printtemplate10";
+import PrintTemplate11 from "../printpaystub/printtemplate11";
+import PrintTemplate12 from "../printpaystub/printtemplate12";
+import PayPal from "../common/paypal-payment";
+import * as templateTypes from "../../constants/template-types";
+import templateNames from "../../assets/data/template-names.json";
+import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const PreviewTemplate = ({store}) => {
-    const { templateType, canPrint } = useSelector( state => state.appSettings )
+    const { templateType, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     return (
         <>
             <Row className={ canPrint ? "mt-5" : "no-print mt-5"}>

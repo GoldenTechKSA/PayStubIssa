@@ -1,13 +1,13 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import BlurOnIcon from '@material-ui/icons/BlurOn';
 import { green } from '@material-ui/core/colors';
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { AppSettings, PayStubDetails } from "../../assets/data/pay-stub-details";
 
 const AppHeader = () => {
-    const { templateType } = useSelector( state => state.appSettings);
+    const { templateType } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
     return (
         <Navbar className="no-print" bg="dark" variant="dark">
             <Container fluid>

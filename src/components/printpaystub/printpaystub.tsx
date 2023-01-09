@@ -9,19 +9,18 @@ const onPrint = async () => {
       printWindow.document.write('th, td { max-width: 500px; overflow-wrap: break-word; padding: 2px 5px 2px 5px;}')
       printWindow.document.write('li { list-style-type: none; }')
       printWindow.document.write('</style></head><body>')
-      printWindow.document.write(`<h2>${fmtMsg(strings.GridAriaLabel)}</h2>`)
+      // printWindow.document.write(`<h2>${fmtMsg(strings.GridAriaLabel)}</h2>`)
   
         printWindow.document.write('<table>')
         printWindow.document.write('<tr>')
-        printWindow.document.write(`<th>${fmtMsg(recordAddStrings.service)}</th>`)
-        printWindow.document.write(`<th>${fmtMsg(recordAddStrings.type)}</th>`)
-        printWindow.document.write(`<th>${fmtMsg(recordAddStrings.hostName)}</th>`)
-        printWindow.document.write(`<th>${fmtMsg(recordAddStrings.pointToAddressValue)}</th>`)
-        printWindow.document.write(`<th>${fmtMsg(recordAddStrings.priority)}</th>`)
-        printWindow.document.write(`<th>${fmtMsg(recordAddStrings.ttl)}</th>`)
+        // printWindow.document.write(`<th>${fmtMsg(recordAddStrings.service)}</th>`)
+        // printWindow.document.write(`<th>${fmtMsg(recordAddStrings.type)}</th>`)
+        // printWindow.document.write(`<th>${fmtMsg(recordAddStrings.hostName)}</th>`)
+        // printWindow.document.write(`<th>${fmtMsg(recordAddStrings.pointToAddressValue)}</th>`)
+        // printWindow.document.write(`<th>${fmtMsg(recordAddStrings.priority)}</th>`)
+        // printWindow.document.write(`<th>${fmtMsg(recordAddStrings.ttl)}</th>`)
         printWindow.document.write('</tr>')
         printWindow.document.write('</table>')
-      }
       printWindow.document.write('<br/>')
       printWindow.document.write('</body></html>')
       // if you want to change this implementation, make sure you verified on Chrome, Firefox, IE and Edge
@@ -30,3 +29,4 @@ const onPrint = async () => {
       printWindow.print()
       printWindow.close()
     }
+  }

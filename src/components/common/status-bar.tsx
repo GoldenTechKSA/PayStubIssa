@@ -1,11 +1,11 @@
-import React, {Icon} from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React from "react";
 import "../../index.css";
 import { useSelector } from "react-redux";
 import { Container } from "react-bootstrap";
+import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const StatusBar = () => {
-    const { templateType } = useSelector( state => state.appSettings);
+    const { templateType } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
     const progressBarItems = [1, 2 ,3, 4, 5];
     const currentProgressStepIndex = templateType;
     return (
