@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from "react";
 // Personal SandBox Account used to test CC transations: sb-93etm6755470@personal.example.com H$%j4Cu)
 
 const PayPal = () => {
-    const paypal = useRef();
+    const paypal = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         window.paypal.Buttons({
@@ -23,7 +23,9 @@ const PayPal = () => {
                 })
             },
             onApprove: async (data, actions) => {
-                const order = await actions.order.capture();
+                const order = await actions.order.capture().then(function(details){
+                    alert("Transaction completed by" + details.payer.name.given_name);
+                });
                 console.log("Successful Order",order);
             },
             onError: (err) => {

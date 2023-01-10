@@ -1,4 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 

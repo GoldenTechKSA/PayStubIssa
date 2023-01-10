@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch } from "react-redux";
 import { Container, Image, Carousel, Form, Row, Col } from "react-bootstrap";
 import { NavigateNext } from '@material-ui/icons';
@@ -10,7 +9,7 @@ import Picture2 from "../../assets/images/picture2.jpg";
 import Picture3 from "../../assets/images/picture3.jpg";
 import Picture4 from "../../assets/images/picture4.jpg";
 import Picture5 from "../../assets/images/picture5.png";
-import { StyledButton } from "../../constants/buttonStyles";
+import { StyledButton } from "../../constants/button-styles";
 
 const TemplateSelection = () => {
     const [index, setIndex] = useState(0);

@@ -1,4 +1,4 @@
-import * as actionTypes from "../constants/actionTypes";
+import * as actionTypes from "../constants/action-types";
 
 export function updateAppSettings(data) {
     return { type: actionTypes.UPDATE_APP_SETTINGS, payload: data };

@@ -1,10 +1,10 @@
 import { createStore, combineReducers } from "redux";
-import appSettingsReducer from "./appSettingsReducer";
-import companyInfoReducer from "./companyInfoReducer";
-import employeeInfoReducer from "./employeeInfoReducer";
-import incomeDetailsReducer from "./incomeDetailsReducer";
-import generalInfoReducer from "./generalInfoReducer";
-import initialState from "../assets/data/initialstate";
+import appSettingsReducer from "./app-settings-reducer";
+import companyInfoReducer from "./company-info-reducer";
+import employeeInfoReducer from "./employee-info-reducer";
+import incomeDetailsReducer from "./income-details-reducer";
+import generalInfoReducer from "./general-info-reducer";
+import { initialState } from "../assets/data/initial-state";
 
 const rootReducer = combineReducers({ 
     appSettings: appSettingsReducer,
