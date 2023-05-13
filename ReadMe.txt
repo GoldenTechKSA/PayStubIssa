@@ -6,15 +6,15 @@ This git project is for the PayStubIssa website:
 Build and Debug Project
 -----------------------
 1) To build the project open a new Terminal Window.
-2) then issue npm install to ensure that all the dependecies are fresh
+2) then issue npm install to ensure that all the dependencies are fresh
 3) then npm start to build the project.
 4) in "Run and Debug" mode run the "Launch Chrome against localhost" configuration
 5) setup break points in the code and debug.
 
 General steps to finish the site:
 ---------------------------------
-Complete data entry pre screen and save to data base.
-Can save and load user and company details from the DB
+Complete data entry pre screen and save to DB.
+make sure you can save and load user and company details from the DB
 display back to form
 
 user for this repo should be GoldenTechKSA@hotmail.com
