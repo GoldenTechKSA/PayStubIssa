@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Container, Image, Carousel, Form, Row, Col } from "react-bootstrap";
-import { NavigateNext } from '@material-ui/icons';
+import { Container, Image, Carousel, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings } from "../../redux/actions";
 import Picture0 from "../../assets/images/picture0.png";
 import Picture1 from "../../assets/images/picture1.jpg";
@@ -9,7 +8,6 @@ import Picture2 from "../../assets/images/picture2.jpg";
 import Picture3 from "../../assets/images/picture3.jpg";
 import Picture4 from "../../assets/images/picture4.jpg";
 import Picture5 from "../../assets/images/picture5.png";
-import { StyledButton } from "../../constants/button-styles";
 
 const TemplateSelection = () => {
     const [index, setIndex] = useState(0);
@@ -31,7 +29,7 @@ const TemplateSelection = () => {
             <Row  className="mt-4 mb-3">
                 <h2>Select PayStub template to use:</h2>
             </Row>
-            <Row className="">
+            <Row className="hero-block">
                 <Carousel id="TemplateSelectionCarousel" activeIndex={index} onSelect={handleSelect} indicators={false} wrap={false} interval={null} prevIcon={<span aria-hidden="true" className="carousel-control-prev-icon"/>} nextIcon={<span aria-hidden="true" className="carousel-control-next-icon"/>}>
                     {/** in the future change this static control list to array map templatePics.map(x, i) => */}
                     <Carousel.Item className="carousel-item">
@@ -61,10 +59,8 @@ const TemplateSelection = () => {
                 </Carousel>
             </Row>
             <Row className="w-100 justify-content-end row-relative">
-                <Col>
-                    <Form className="float-right" onSubmit={handleSubmit}>
-                        <StyledButton endIcon={<NavigateNext />} type="submit">Go Next</StyledButton>
-                    </Form>
+                <Col className="mx-4">
+                    <Button className="float-right" onClick={handleSubmit} type="submit">Go Next</Button>
                 </Col>
             </Row>
         </Container>
