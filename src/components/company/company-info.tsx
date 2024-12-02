@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Form, Row, Col, Container } from "react-bootstrap";
+import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveCompanyInfo } from "../../redux/actions";
-import { NavigateNext, NavigateBefore } from "@material-ui/icons";
-import { StyledButton } from "../../constants/button-styles";
 import { STATESLIST } from "../../constants/globals";
 
 const CompanyInfo = () => {
@@ -90,14 +88,10 @@ const CompanyInfo = () => {
             </Row>
             <Row className="w-100 justify-content-end row-relative">
                 <Col>
-                    <Form className="float-left" onSubmit={handleSubmitGoBack}>
-                        <StyledButton startIcon={<NavigateBefore />} type="submit">Go Back</StyledButton>
-                    </Form>
+                    <Button className="float-left" variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                 </Col>
-                <Col>
-                    <Form className="float-right" onSubmit={handleSubmitGoNext}>
-                        <StyledButton endIcon={<NavigateNext />} type="submit">Go Next</StyledButton>
-                    </Form>
+                <Col className="mr-4">
+                    <Button className="float-right" onClick={handleSubmitGoNext} type="submit">Go Next</Button>
                 </Col>
             </Row>
         </Container>

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { NavigateNext, NavigateBefore } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Form, Row, Col } from "react-bootstrap";
+import { Container, Form, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings, saveGeneralInfo } from "../../redux/actions";
-import { StyledButton } from "../../constants/button-styles";
 
 import { useNavigate } from 'react-router-dom';
 import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
@@ -69,14 +67,10 @@ const GeneralInfo = () => {
                 </Row>
                 <Row className="w-100 justify-content-end row-relative">
                     <Col>
-                        <Form className="float-left" onSubmit={handleSubmitGoBack}>
-                            <StyledButton startIcon={<NavigateBefore />} type="submit">Go Back</StyledButton>
-                        </Form>
+                        <Button className="float-left" variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
-                    <Col>
-                        <Form className="float-right" onSubmit={handleSubmitPreviewPaystub}>
-                            <StyledButton endIcon={<NavigateNext />} type="submit">Preview your Paystub</StyledButton>
-                        </Form>
+                    <Col className="mr-4">
+                        <Button className="float-right" onClick={handleSubmitPreviewPaystub} type="submit">Preview your Paystub</Button>
                     </Col>
                 </Row>
             </Container>

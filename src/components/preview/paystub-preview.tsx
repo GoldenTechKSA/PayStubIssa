@@ -1,7 +1,6 @@
 import React from "react";
-import { Form, Col, Row, Container } from "react-bootstrap";
+import { Form, Col, Row, Container, Button } from "react-bootstrap";
 import store from "../../redux/store";
-import { StyledButton } from "../../constants/button-styles";
 
 const PaystubPreview = () => {
     const state = store.getState();
@@ -142,9 +141,7 @@ const PaystubPreview = () => {
                 </Form.Group>
             </Form>
             {/* Print Pay Stub Button*/}
-            <Form className="float-right" onSubmit={printPaystub}>
-                            <StyledButton type="submit">Preview your Paystub</StyledButton>
-                        </Form>
+            <Button className="float-right" onClick={printPaystub} type="submit">Preview your Paystub</Button>
         </Container>
     );
 }
