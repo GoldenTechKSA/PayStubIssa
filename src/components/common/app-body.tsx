@@ -5,10 +5,12 @@ import StatusBar from "./status-bar";
 
 const AppBody = () => {
     return (
-        <Container className="no-print">
+        <div className="jumbotron">
+            {/* <Container className="no-print"> */}
             <StatusBar />
             <InputTabs />
-        </Container>
+            {/* </Container> */}
+        </div>
     );
 }
 

@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AppHeader from "./common/app-header";
 import AppFooter from "./common/app-footer";
-import AppBody from "./common/app-body";
 import SpecialOfferPage from "./common/special-offer-page";
 import PaystubPreview from "./preview/paystub-preview";
 import DailySpecialPage from "./common/daily-special-page";
@@ -12,12 +11,15 @@ import FAQPage from "./common/faq-page";
 import ContactUsPage from "./common/contact-us-page";
 import PreviewTemplate from "./preview/preview-template";
 import store from "../redux/store";
+import HeroPage from "./common/hero-page";
+import AppBody from "./common/app-body";
 
 function App() {
     return (
         <>
             <AppHeader />
             <Routes>
+                <Route path="/" element={<HeroPage />} />
                 <Route path="/" element={<AppBody />} />
                 <Route path="/specialOfferPage" element={<SpecialOfferPage />} />
                 <Route path="/paystubPreview" element={<PaystubPreview />} />
