@@ -30,3 +30,5 @@ const onPrint = async () => {
       printWindow.close()
     }
   }
+
+  export default onPrint;
