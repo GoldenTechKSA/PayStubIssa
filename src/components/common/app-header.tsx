@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Navbar, Nav } from "react-bootstrap";
-import BlurOnIcon from '@material-ui/icons/BlurOn';
-import { green } from '@material-ui/core/colors';
+import BlurOnIcon from '@mui/icons-material/BlurOn';
+import { green } from '@mui/material/colors';
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { AppSettings, PayStubDetails } from "../../assets/data/pay-stub-details";
