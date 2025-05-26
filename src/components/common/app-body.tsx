@@ -2,7 +2,6 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import InputTabs from "../template/input-tabs";
 import HorizontalGrid, { GridCell } from "./horizontal-grid";
-import HeroImage from "../../assets/images/heroimage.png";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAppSettings } from "../../redux/actions";
 
@@ -12,7 +11,7 @@ const AppBody = () => {
     // Sample data for 10 cells
     const gridCells: GridCell[] = Array.from({ length: 10 }, (_, i) => ({
         id: i + 1,
-        imageUrl: `../../assets/images/Image${i + 1}.png`,
+        imageUrl: `../../assets/images/picture${i + 1}.png`,
         description: `Item ${i + 1}`,
     }));
 
