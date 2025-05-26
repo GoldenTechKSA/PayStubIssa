@@ -114,7 +114,7 @@ const EmployeeInfo = () => {
                     <Button className="float-left" variant="secondary" onClick={handleSubmitGoBack}>Go Back</Button>
                 </Col>
                 <Col className="mr-4">
-                    <Button className="float-right" onClick={handleSubmitGoNext}>Go Next</Button>
+                    <Button className="float-right" onClick={handleSubmitGoNext}>Save & Continue</Button>
                 </Col>
             </Row>
         </Container>

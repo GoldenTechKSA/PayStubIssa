@@ -64,7 +64,7 @@ const IncomeInfo = () => {
                     <Button onClick={handleSubmitGoBack} variant="secondary" type="submit">Go Back</Button>
                 </Col>
                 <Col className="mr-4">
-                    <Button className="float-right" onClick={handleSubmitGoNext} type="submit">Go Next</Button>
+                    <Button className="float-right" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
                 </Col>
             </Row>
         </Container>

@@ -6,24 +6,17 @@ body {
 
 .overlay {
   position: absolute;
-  top: 400;
-  left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: -1;
 }
 
 .hero-container {
   background: url("assets/images/heroimage.png");
-  background-size:contain;
   background-position: center;
   background-repeat: no-repeat;
-  top: 400;
-  left: 0;
-  height: 60vh;
+  height: 40vh;
   width: 100%;
-  z-index: -1;
 }
 
 .img-hero {
@@ -101,12 +94,12 @@ body {
 }
 
 .AnimateDiv {
-  padding: 2rem;
-  border-radius: 5rem;
-  box-sizing: border-box;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-sizing: shrink-to-fit;
   color: #fff;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
+  background-size: 100% 700%;
   position: relative;
   animation: change 5s ease-in-out infinite;
 }
@@ -202,4 +195,156 @@ body {
   background-color: gray;
   margin: auto;
   z-index: -1;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 3rem;
+  background-color: #dbdfd7;
+  min-height: 80vh;
+}
+
+.heroContent {
+  max-width: 40%;
+}
+
+.heroTitle {
+  font-size: 4rem;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.heroDescription {
+  font-size: 2rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.heroSubDescription {
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.heroButton {
+  padding: 0.8rem 1.5rem;
+  background-color: #007bff;
+  color: rgb(213, 213, 224);
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.heroButton:hover {
+  background-color: #0056b3;
+}
+
+.heroImageContainer {
+  flex: 1;
+  max-width: 600px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .heroContent {
+    margin-bottom: 2rem;
+  }
+}
+
+.heroImageFeathered {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  mask-image: linear-gradient(180deg, transparent 0%, black 2%, black 99%, transparent 100%),
+  linear-gradient(90deg, transparent 0%, black 2%, black 99%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 2%, black 99%, transparent 100%),
+  linear-gradient(90deg, transparent 0%, black 2%, black 99%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-composite: destination-in;
+}
+
+/* Container for horizontal scroll with outer border */
+.horizontal-grid-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;     /* Rounded corners for outer border */
+}
+
+/* Grid layout - collapsed borders between cells */
+.horizontal-grid {
+  display: flex;
+  border-collapse: collapse; /* Ensures borders merge */
+}
+
+/* Remove right border from the last cell to avoid double outer border */
+.grid-cell:last-child {
+  border-right: none;
+}
+
+.grid-image {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.grid-description {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.horizontal-grid-outer {
+  padding: 30px;
+  background: #5a6269;
+}
+
+.horizontal-grid {
+  display: flex;
+  gap: 5px; /* Internal padding between cells */
+  overflow-x: auto;
+}
+
+.grid-cell {
+  background: #aecfc7;
+  padding: 1.5rem;
+  margin: auto;
+  border-radius: 10px;
+  box-shadow: 3px 3px 8px rgba(129, 58, 58, 0.12), 0 4px 8px rgba(0,0,0,0.08);
+  min-width: 150px;
+  transition: box-shadow 0.2s;
+}
+
+.grid-cell:hover {
+  box-shadow: 6px 6px 16px rgba(17, 27, 110, 0.5), 0 8px 16px rgba(18, 17, 122, 0.4);
+}
+
+/* Individual cell styling */
+.gridT-cell {
+  min-width: 150px;
+  text-align: center;
+  border-right: 1px solid #ccc; /* 1px border between cells */
+  padding: 0.5rem;
+  background: white;
+  box-shadow: none; /* Remove shadow to prioritize borders */
+  cursor: pointer; /* Show clickable state */
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.gridT-cell:hover {
+  transform: scale(1.02); /* Slight zoom on hover */
+  background-color: #f8f8f8;
+}
+
+.gridT-cell:active {
+  transform: scale(0.98); /* Pressed effect */
 }

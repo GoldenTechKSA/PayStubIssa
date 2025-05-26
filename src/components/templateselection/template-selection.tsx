@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Container, Image, Carousel, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings } from "../../redux/actions";
 import Picture0 from "../../assets/images/picture0.png";
@@ -8,9 +8,13 @@ import Picture2 from "../../assets/images/picture2.jpg";
 import Picture3 from "../../assets/images/picture3.jpg";
 import Picture4 from "../../assets/images/picture4.jpg";
 import Picture5 from "../../assets/images/picture5.png";
+import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const TemplateSelection = () => {
-    const [index, setIndex] = useState(0);
+    const { templateType } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    console.log("Template Index from the Grid = ", templateType);
+
+    const [index, setIndex] = useState(templateType || 0); // Initialize index with templateType or default to 0
     const dispatch = useDispatch();
   
     const handleSelect = (i) => {
@@ -60,7 +64,7 @@ const TemplateSelection = () => {
             </Row>
             <Row className="w-100 justify-content-end row-relative">
                 <Col className="mx-4">
-                    <Button className="float-right" onClick={handleSubmit} type="submit">Go Next</Button>
+                    <Button className="float-right" onClick={handleSubmit} type="submit">Save & Continue</Button>
                 </Col>
             </Row>
         </Container>

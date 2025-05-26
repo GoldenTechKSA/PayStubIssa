@@ -20,7 +20,7 @@ function App() {
             <AppHeader />
             <Routes>
                 <Route path="/" element={<HeroPage />} />
-                <Route path="/" element={<AppBody />} />
+                <Route path="/appBody" element={<AppBody />} />
                 <Route path="/specialOfferPage" element={<SpecialOfferPage />} />
                 <Route path="/paystubPreview" element={<PaystubPreview />} />
                 <Route path="/dailySpecialPage" element={<DailySpecialPage />} />
