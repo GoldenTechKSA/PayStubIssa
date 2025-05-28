@@ -4,7 +4,7 @@ import "../../index.css";
 
 const AboutUsPage: React.FC = () => {
     return (
-        <Container fluid>
+        <Container style={{ padding: 0, maxWidth: 900 }} fluid>
             <div className="highlight">
                 <h1>How Our Pay Stub Generator Works</h1>
                 <p>Creating accurate, professional pay stubs is simple with our tool—just follow these three easy steps:</p>
