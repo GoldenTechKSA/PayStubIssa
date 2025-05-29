@@ -17,20 +17,26 @@ import AppBody from "./common/app-body";
 function App() {
     return (
         <>
-            <AppHeader />
-            <Routes>
-                <Route path="/" element={<HeroPage />} />
-                <Route path="/appBody" element={<AppBody />} />
-                <Route path="/specialOfferPage" element={<SpecialOfferPage />} />
-                <Route path="/paystubPreview" element={<PaystubPreview />} />
-                <Route path="/dailySpecialPage" element={<DailySpecialPage />} />
-                <Route path="/aboutUsPage" element={<AboutUsPage />} />
-                <Route path="/FAQPage" element={<FAQPage />} />
-                <Route path="/contactUsPage" element={<ContactUsPage />} />
-                <Route path="/printTemplate/:templateType" element={<PreviewTemplate store={store.getState()} />} />
-                <Route element={<div><h1>Page Not Found!</h1></div>} />
-            </Routes>
-            <AppFooter />
+            <section>
+                <AppHeader />
+            </section>
+            <section>
+                <Routes>
+                    <Route path="/" element={<HeroPage />} />
+                    <Route path="/appBody" element={<AppBody />} />
+                    <Route path="/specialOfferPage" element={<SpecialOfferPage />} />
+                    <Route path="/paystubPreview" element={<PaystubPreview />} />
+                    <Route path="/dailySpecialPage" element={<DailySpecialPage />} />
+                    <Route path="/aboutUsPage" element={<AboutUsPage />} />
+                    <Route path="/FAQPage" element={<FAQPage />} />
+                    <Route path="/contactUsPage" element={<ContactUsPage />} />
+                    <Route path="/printTemplate/:templateType" element={<PreviewTemplate store={store.getState()} />} />
+                    <Route element={<div><h1>Page Not Found!</h1></div>} />
+                </Routes>
+            </section>
+            <section>
+                <AppFooter />
+            </section>
         </>
     );
 }

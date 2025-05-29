@@ -13,6 +13,12 @@ const GeneralInfo = () => {
     const [ paymentFrequency, setPaymentFrequency ] = useState("Weekly");
     const [ checkNumber, setCheckNumber ] = useState("Weekly");
 
+    const [isEmploymentTypeHovered, setIsEmploymentTypeHovered] = useState(false);
+    const [ isPaymentTypeHovered, setIsPaymentTypeHovered ] = useState(false);
+    const [ isPayStubCountHovered, setIsPayStubCountHovered ] = useState(false);
+    const [ isPaymentFrequencyHovered, setIsPaymentFrequencyHovered ] = useState(false);
+    const [ isCheckNumberHovered, setIsCheckNumberHovered ] = useState(false);
+
     const { templateType } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings)
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -47,21 +53,101 @@ const GeneralInfo = () => {
                 <Row className="mb-4 mx-4">
                     <Form>
                         <Row>
-                            <Form.Group as={Col} controlId="empolymentTypeId">
+                            <Form.Group as={Col} controlId="empolymentTypeId" onMouseEnter={() => setIsEmploymentTypeHovered(true)} onMouseLeave={() => setIsEmploymentTypeHovered(false)}>
                                 <Form.Control type="text" placeholder="Employment type" onChange={e => setEmploymentType(parseInt(e.target.value))} />
+                                {isEmploymentTypeHovered && (
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "-2.2rem",
+                                            right: 0,
+                                            background: "#2a7ae2",
+                                            color: "#fff",
+                                            padding: "0.5rem 1rem",
+                                            borderRadius: "6px",
+                                            fontSize: "0.95rem",
+                                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                                            zIndex: 10,
+                                        }}
+                                    >Employment type</div>
+                                )}
                             </Form.Group>
-                            <Form.Group as={Col} controlId="paymentTypeId">
+                            <Form.Group as={Col} controlId="paymentTypeId" onMouseEnter={() => setIsPaymentTypeHovered(true)} onMouseLeave={() => setIsPaymentTypeHovered(false)}>
                                 <Form.Control type="text" placeholder="Payment type" onChange={e => setPaymentType(e.target.value)} />
+                                {isPaymentTypeHovered && (
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "-2.2rem",
+                                            right: 0,
+                                            background: "#2a7ae2",
+                                            color: "#fff",
+                                            padding: "0.5rem 1rem",
+                                            borderRadius: "6px",
+                                            fontSize: "0.95rem",
+                                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                                            zIndex: 11,
+                                        }}
+                                    >Payment type</div>
+                                )}
                             </Form.Group>
-                            <Form.Group as={Col} controlId="paymentFrequencyId">
+                            <Form.Group as={Col} controlId="paymentFrequencyId" onMouseEnter={() => setIsPaymentFrequencyHovered(true)} onMouseLeave={() => setIsPaymentFrequencyHovered(false)}>
                                 <Form.Control type="text" placeholder="How often you get paid?" onChange={e => setPaymentFrequency(e.target.value)} />
+                                {isPaymentFrequencyHovered && (
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "-2.2rem",
+                                            right: 0,
+                                            background: "#2a7ae2",
+                                            color: "#fff",
+                                            padding: "0.5rem 1rem",
+                                            borderRadius: "6px",
+                                            fontSize: "0.95rem",
+                                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                                            zIndex: 12,
+                                        }}
+                                    >How often you get paid?</div>
+                                )}
                             </Form.Group>
                         </Row>
-                        <Form.Group controlId="payStubCountId">
+                        <Form.Group controlId="payStubCountId" onMouseEnter={() => setIsPayStubCountHovered(true)} onMouseLeave={() => setIsPayStubCountHovered(false)}>
                             <Form.Control placeholder="Enter number of requested paystubs" onChange={e => setPayStubCount(e.target.value)} />
+                                {isPayStubCountHovered && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "-2.2rem",
+                                        right: 0,
+                                        background: "#2a7ae2",
+                                        color: "#fff",
+                                        padding: "0.5rem 1rem",
+                                        borderRadius: "6px",
+                                        fontSize: "0.95rem",
+                                        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                                        zIndex: 10,
+                                    }}
+                                >Enter number of requested paystubs</div>
+                            )}
                         </Form.Group>
-                        <Form.Group controlId="checkNumberId">
+                        <Form.Group controlId="checkNumberId" onMouseEnter={() => setIsCheckNumberHovered(true)} onMouseLeave={() => setIsCheckNumberHovered(false)}>
                             <Form.Control placeholder="Enter a check number" onChange={e => setCheckNumber(e.target.value)} />
+                            {isCheckNumberHovered && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "-2.2rem",
+                                        right: 0,
+                                        background: "#2a7ae2",
+                                        color: "#fff",
+                                        padding: "0.5rem 1rem",
+                                        borderRadius: "6px",
+                                        fontSize: "0.95rem",
+                                        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                                        zIndex: 10,
+                                    }}
+                                >Enter a check number</div>
+                            )}
                         </Form.Group>
                     </Form>
                 </Row>
