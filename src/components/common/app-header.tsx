@@ -9,9 +9,9 @@ import { AppSettings, PayStubDetails } from "../../assets/data/pay-stub-details"
 const AppHeader = () => {
     const { templateType } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
     return (
-        <Navbar className="no-print" bg="dark" variant="dark">
+        <Navbar className="no-print">
             <Container fluid>
-                <Navbar.Brand href="/" style={{ fontSize: 36, color: green[500] }} ><BlurOnIcon style={{ fontSize: 72, color: green[500] }} />{' '}PayStubIssa</Navbar.Brand>
+                <Navbar.Brand href="/" style={{ fontSize: 36, color: green[500] }} ><BlurOnIcon style={{ fontSize: 48, color: green[500] }} />{' '}PayStubIssa</Navbar.Brand>
                 <Navbar.Brand href="/specialOfferPage" className="AnimateDiv">Special Price!</Navbar.Brand>
                 <Nav>
                     <Navbar.Brand href="/paystubPreview">Preview your Paystub</Navbar.Brand>

@@ -15,8 +15,28 @@ const CompanyInfo = () => {
     const [companyLogo, setCompanyLogo] = useState("");
     const [companyPhone, setCompanyPhone] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
+    const [validated, setValidated] = useState(false);
 
     const dispatch = useDispatch();
+    
+    // Validate EIN: 9 digits in the format XX-XXXXXXX
+    function isValidEIN(ein: string): boolean {
+        const regex = /^\d{2}-\d{7}$/;
+        return regex.test(ein);
+    }
+    
+    // Validate Zip Code: 5 digits
+    function isValidZipCode(zip: string): boolean {
+    const regex = /^\d{5}$/;
+    return regex.test(zip);
+    }
+    
+    // Validate Phone Number: 10 digits or formatted variants
+    function isValidUSPhone(phone: string): boolean {
+    // Matches: 4255551212, (425) 555-1212, 425-555-1212, 425.555.1212, 425 555 1212
+    const regex = /^(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/;
+    return regex.test(phone);
+    }
 
     const handleSubmitGoBack = (event) => {
         event.preventDefault();
@@ -35,6 +55,7 @@ const CompanyInfo = () => {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         }
+        setValidated(true);
         dispatch(saveCompanyInfo({ companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail }));
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
@@ -49,9 +70,15 @@ const CompanyInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="companyNameId">
                             <Form.Control placeholder="Enter Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid company name.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEinId">
-                            <Form.Control placeholder="Company EIN" value={companyEIN} onChange={e => setCompanyEIN(e.target.value)}/>
+                            <Form.Control placeholder="Company EIN" isInvalid={validated && !isValidEIN(companyEIN)} value={companyEIN} onChange={e => setCompanyEIN(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid EIN. It should be xx-xxxxxxx (9 digits).
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Form.Group controlId="companyAddress1Id">
@@ -59,10 +86,16 @@ const CompanyInfo = () => {
                     </Form.Group>
                     <Form.Group controlId="companyAddress2Id">
                         <Form.Control placeholder="suite, unit, or floor" value={companyAddress2} onChange={e => setCompanyAddress2(e.target.value)}/>
+                        <Form.Control.Feedback type="invalid">
+                            Please provide a valid address. It should be at least 5 characters long.
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Row>
                         <Form.Group as={Col} controlId="companyCityId">
                             <Form.Control placeholder="City" value={companyCity} required onChange={e => setCompanyCity(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid city. It should be at least 2 characters long.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyStateId">
                             <Form.Control as="select" defaultValue="Choose state..." onChange={(e) => setCompanyState(e.target.value)}>
@@ -70,18 +103,30 @@ const CompanyInfo = () => {
                             </Form.Control>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyZipCodeId">
-                            <Form.Control placeholder="Zip Code" value={companyZipCode} onChange={e => setCompanyZipCode(e.target.value)}/>
+                            <Form.Control placeholder="Zip Code" isInvalid={validated && !isValidZipCode(companyZipCode)} value={companyZipCode} onChange={e => setCompanyZipCode(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid zip code. It should be 5 digits.
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} controlId="companyLogo">
                             <Form.Control placeholder="Enter Company Logo" value={companyLogo} onChange={e => setCompanyLogo(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid logo URL.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyPhoneId">
-                            <Form.Control placeholder="Enter Company Phone Number" value={companyPhone} onChange={e => setCompanyPhone(e.target.value)}/>
+                            <Form.Control placeholder="Enter Company Phone Number" pattern="^\d{10}$" isInvalid={validated && !/^\d{10}$/.test(companyPhone)} value={companyPhone} onChange={e => setCompanyPhone(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid phone number. It should be at least 10 digits long.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEmailId">
-                            <Form.Control type="email" placeholder="Enter Company Email" value={companyEmail} onChange={e => setCompanyEmail(e.target.value)}/>
+                            <Form.Control type="email" placeholder="Enter Company Email" isInvalid={validated && !/^\S+@\S+\.\S+$/.test(companyEmail)} value={companyEmail} onChange={e => setCompanyEmail(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid email address.
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                 </Form>
