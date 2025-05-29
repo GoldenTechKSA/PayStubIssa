@@ -361,7 +361,7 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
 }
 .howitworks-grid {
   display: flex;
-  gap: 4rem;
+  gap: 3rem;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -370,8 +370,8 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(42, 122, 226, 0.08);
   padding: 1.5rem 1rem;
-  min-width: 220px;
-  max-width: 270px;
+  min-width: 250px;
+  max-width: 300px;
   cursor: pointer;
   transition: box-shadow 0.2s, background 0.2s;
   border: 2px solid #eaf6ff;
