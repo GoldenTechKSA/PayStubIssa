@@ -85,12 +85,47 @@ body {
 }
 
 .footer {
-  background-color: rgb(10, 7, 14);
+  background: #7e8797;
+  color: #f5f6fa;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 -2px 16px rgba(44, 62, 80, 0.27);
+  font-size: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
   min-width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  color: whitesmoke;
+}
+
+.footer span {
+  margin: 0 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.footer span:hover {
+  color: #2a7ae2;
+  text-decoration: underline;
+}
+
+.footer .img-fluid {
+  max-height: 38px;
+  filter: grayscale(0.2) brightness(0.95);
+  transition: filter 0.2s;
+}
+
+.footer .img-fluid:hover {
+  filter: none;
+}
+
+@media (max-width: 100%) {
+  .footer {
+    flex-direction: column !important;
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+  }
+  .footer span, .footer .img-fluid {
+    margin: 0.5rem 0;
+  }
 }
 
 .AnimateDiv {
