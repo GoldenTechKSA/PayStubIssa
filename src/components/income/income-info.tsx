@@ -37,7 +37,7 @@ const IncomeInfo = () => {
             <Row className="mt-3 mb-4">
                 <h2>Income Details</h2>
             </Row>
-            <Row className="mb-4 mx-4">
+            <Row className="mb-4 mx-4  border p-4">
                 <Form>
                     <Row>
                         <Form.Group as={Col} controlId="AnnualIncomeId">
@@ -58,14 +58,14 @@ const IncomeInfo = () => {
                         </Form.Group>
                     </Row>
                 </Form>
-            </Row>
-            <Row className="w-100 justify-content-end row-relative">
-                <Col>
-                    <Button onClick={handleSubmitGoBack} variant="secondary" type="submit">Go Back</Button>
-                </Col>
-                <Col className="mr-4">
-                    <Button className="float-right" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
-                </Col>
+                <Row className="w-100 justify-content-end mt-5 p-2">
+                    <Col>
+                        <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
+                    </Col>
+                    <Col>
+                        <Button className="float-left" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
+                    </Col>
+                </Row>
             </Row>
         </Container>
     );

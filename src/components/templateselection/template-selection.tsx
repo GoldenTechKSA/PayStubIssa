@@ -55,11 +55,11 @@ const TemplateSelection = () => {
                         </Carousel.Item>
                     ))}
                 </Carousel>
-            </Row>
-            <Row className="w-100 justify-content-end row-relative">
-                <Col className="mx-4">
-                    <Button className="float-right" onClick={handleSubmit} type="submit">Save & Continue</Button>
-                </Col>
+                <Row className="justify-content-center mt-4 ">
+                    <Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
+                        <Button onClick={handleSubmit} type="submit">Save & Continue</Button>
+                    </Col>
+                </Row>
             </Row>
         </Container>
     )

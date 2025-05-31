@@ -85,7 +85,7 @@ const CompanyInfo = () => {
             <Row className="mt-3 mb-4">
                 <h2>Company Information</h2>
             </Row>
-            <Row className="mb-4 mx-4">
+            <Row className="mb-4 mx-4 border p-4">
                 <Form>
                     <Row>
                         <Form.Group as={Col} controlId="companyNameId">
@@ -151,14 +151,14 @@ const CompanyInfo = () => {
                         </Form.Group>
                     </Row>
                 </Form>
-            </Row>
-            <Row className="w-100 justify-content-end row-relative">
-                <Col>
-                    <Button className="float-left" variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
-                </Col>
-                <Col className="mr-4">
-                    <Button className="float-right" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
-                </Col>
+                <Row className="w-100 justify-content-end mt-5 p-2">
+                    <Col>
+                        <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
+                    </Col>
+                    <Col>
+                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
+                    </Col>
+                </Row>
             </Row>
         </Container>
     );

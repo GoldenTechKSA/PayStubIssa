@@ -50,7 +50,7 @@ const GeneralInfo = () => {
                 <Row className="mt-3 bm-4">
                     <h2>General Information</h2>
                 </Row>
-                <Row className="mb-4 mx-4">
+                <Row className="mb-4 mx-4  border p-4">
                     <Form>
                         <Row>
                             <Form.Group as={Col} controlId="empolymentTypeId" onMouseEnter={() => setIsEmploymentTypeHovered(true)} onMouseLeave={() => setIsEmploymentTypeHovered(false)}>
@@ -150,14 +150,14 @@ const GeneralInfo = () => {
                             )}
                         </Form.Group>
                     </Form>
-                </Row>
-                <Row className="w-100 justify-content-end row-relative">
+                <Row className="w-100 justify-content-end mt-5 p-2">
                     <Col>
-                        <Button className="float-left" variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
+                        <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
-                    <Col className="mr-4">
-                        <Button className="float-right" onClick={handleSubmitPreviewPaystub} type="submit">Preview your Paystub</Button>
+                    <Col>
+                        <Button className="float-left" onClick={handleSubmitPreviewPaystub} type="submit">Preview your Paystub</Button>
                     </Col>
+                </Row>
                 </Row>
             </Container>
         );
