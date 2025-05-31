@@ -19,16 +19,16 @@ const InputTabs = () => {
                 <Tab className="tab-custom-height border border-2 border-dark " eventKey="template" title="Select Template" disabled={ nextTabStep !== "template" }>
                     <TemplateSelection />
                 </Tab>
-                <Tab className="tab-custom-height border border-2 border-dark" eventKey="company" title="Company Information" disabled={ nextTabStep !== "company" }>
+                <Tab className="tab-custom-height" eventKey="company" title="Company Information" disabled={ nextTabStep !== "company" }>
                     <CompanyInfo />
                 </Tab>
-                <Tab className="tab-custom-height border border-2 border-dark" eventKey="employee" title="Employee Information" disabled={ nextTabStep !== "employee" }>
+                <Tab className="tab-custom-height" eventKey="employee" title="Employee Information" disabled={ nextTabStep !== "employee" }>
                     <EmployeeInfo />
                 </Tab>
-                <Tab className="tab-custom-height border border-2 border-dark" eventKey="income" title="Income Details" disabled={ nextTabStep !== "income" }>
+                <Tab className="tab-custom-height" eventKey="income" title="Income Details" disabled={ nextTabStep !== "income" }>
                     <IncomeInfo />
                 </Tab>
-                <Tab className="tab-custom-height border border-2 border-dark" eventKey="general" title="General Information" disabled={ nextTabStep !== "general" }>
+                <Tab className="tab-custom-height" eventKey="general" title="General Information" disabled={ nextTabStep !== "general" }>
                     <GeneralInfo />
                 </Tab>
             </Tabs>
