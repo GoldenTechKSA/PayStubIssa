@@ -101,13 +101,13 @@ const CompanyInfo = () => {
                             </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
-                    <Form.Group controlId="companyAddress1Id">
+                    <Form.Group className="mb-2" controlId="companyAddress1Id">
                         <Form.Control required placeholder="Enter Company Address (i.e 1234 Main St)" onBlur={() => setCompanyAddress1Touched(true)} isInvalid={companyAddress1Touched && !isValidAddress(companyAddress1)} value={companyAddress1} onChange={e => setCompanyAddress1(e.target.value)}/>
                         <Form.Control.Feedback type="invalid">
                             Please provide a valid address. It should be at least 5 characters long.
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group controlId="companyAddress2Id">
+                    <Form.Group className="mb-2" controlId="companyAddress2Id">
                         <Form.Control placeholder="suite, unit, or floor" value={companyAddress2} onChange={e => setCompanyAddress2(e.target.value)}/>
                     </Form.Group>
                     <Row>

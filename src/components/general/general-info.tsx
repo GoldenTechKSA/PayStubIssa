@@ -111,7 +111,7 @@ const GeneralInfo = () => {
                                 )}
                             </Form.Group>
                         </Row>
-                        <Form.Group controlId="payStubCountId" onMouseEnter={() => setIsPayStubCountHovered(true)} onMouseLeave={() => setIsPayStubCountHovered(false)}>
+                        <Form.Group className="mb-4" controlId="payStubCountId" onMouseEnter={() => setIsPayStubCountHovered(true)} onMouseLeave={() => setIsPayStubCountHovered(false)}>
                             <Form.Control placeholder="Enter number of requested paystubs" onChange={e => setPayStubCount(e.target.value)} />
                                 {isPayStubCountHovered && (
                                 <div
