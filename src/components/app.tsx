@@ -13,6 +13,9 @@ import PreviewTemplate from "./preview/preview-template";
 import store from "../redux/store";
 import HeroPage from "./common/hero-page";
 import AppBody from "./common/app-body";
+import PrivacyPolicy from "./common/privacy-policy";
+import AccessibilityPolicy from "./common/accessibility-policy";
+import TermsOfUser from "./common/terms-of-use";
 
 function App() {
     return (
@@ -31,6 +34,9 @@ function App() {
                     <Route path="/FAQPage" element={<FAQPage />} />
                     <Route path="/contactUsPage" element={<ContactUsPage />} />
                     <Route path="/printTemplate/:templateType" element={<PreviewTemplate store={store.getState()} />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/accessibility" element={<AccessibilityPolicy />} />
+                    <Route path="/terms" element={<TermsOfUser />} />
                     <Route element={<div><h1>Page Not Found!</h1></div>} />
                 </Routes>
             </section>
