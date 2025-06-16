@@ -292,9 +292,12 @@ body {
 }
 
 .horizontal-grid-outer {
-  padding: 30px;
-  background: #5a6269;
-}
+    background: linear-gradient(135deg, #cbd9e5 60%, #eaf4fe 100%);
+    box-shadow: 0 6px 32px rgba(44, 62, 80, 0.10);
+    padding: 2.5rem 1.5rem;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;}
 
 .horizontal-grid {
   display: flex;
@@ -303,12 +306,20 @@ body {
 }
 
 .grid-cell {
-  background: #aecfc7;
-  margin: auto;
-  border-radius: 10px;
-  box-shadow: 3px 3px 8px rgba(129, 58, 58, 0.12), 0 4px 8px rgba(0,0,0,0.08);
-  min-width: 150px;
-  transition: box-shadow 0.2s;
+    width: 220px;         /* or your desired width */
+    height: 220px;        /* or your desired height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 0.75rem; /* optional: for rounded corners */
+    background: #f7fafc;    /* optional: for a soft background */
+}
+.grid-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* or 'contain' if you want the whole image visible */
+    display: block;
 }
 
 .grid-cell:hover {

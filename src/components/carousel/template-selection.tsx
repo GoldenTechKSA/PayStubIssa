@@ -36,7 +36,6 @@ const TemplateSelection = () => {
 
     // Returns the image source path for a given image file name
     function getImageSrc(imageUrl: string): string {
-        console.log("ImageUrl in HorizontalGrid = ", imageUrl);
         return `/images/${imageUrl}`;
     }
     

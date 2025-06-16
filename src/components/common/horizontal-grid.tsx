@@ -38,7 +38,7 @@ const HorizontalGrid: React.FC<HorizontalGridProps> = ({ cells }) => {
       <div className="horizontal-grid">
         {cells.map((cell) => (
           <div key={cell.id} className="grid-cell" onClick={(e) => onCellClick(cell.id)} role="button" tabIndex={0} >
-            <img src={getImageSrc(cell.imageUrl)} alt={`Item ${cell.id}`} className="grid-image" />
+            <img src={getImageSrc(cell.imageUrl)} alt={`Item ${cell.id}`} />
             <p className="grid-description">{cell.description}</p>
           </div>
         ))}
