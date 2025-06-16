@@ -10,8 +10,11 @@ import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const InputTabs = () => {
 //    const [currentTabKey, setCurrentTabKey] = useState("template");
-    const { nextTabStep } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    useEffect(() => {console.log("nextTabKey coming from userSelector=", nextTabStep);});
+    const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    useEffect(() => {
+        console.log("nextTabKey coming from userSelector=", nextTabStep);
+        console.log("templateId coming from userSelector=", templateId);
+    });
 
     return (
         <Container className="no-print tab-container-relative">

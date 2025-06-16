@@ -12,7 +12,6 @@ type GridCell = {
 
 const TemplateSelection = () => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    console.log("Template Index from the Grid = ", templateId);
 
     const payStubTemplates: GridCell[] = Array.from({ length: 6 }, (_, i) => ({
         id: i + 1,
@@ -24,12 +23,12 @@ const TemplateSelection = () => {
     const dispatch = useDispatch();
   
     const handleSelect = (i) => {
-      console.log("Carousel current Index", i);
+//      console.log("Carousel current Index", i);
       setIndex(i);
     };
   
     const handleSubmit = (event) => {
-        console.log("Moving to next step with index = ", index);
+//        console.log("Moving to next step with index = ", index);
         event.preventDefault();
         dispatch(updateAppSettings({ templateId: index, nextTabStep: "company" }));
     };

@@ -17,14 +17,12 @@ type HorizontalGridProps = {
 const HorizontalGrid: React.FC<HorizontalGridProps> = ({ cells }) => {
   const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
   console.log("TemplateType in HorizontalGrid = ", templateId);
-  const progressBarItems = [1, 2 ,3, 4, 5];
-  const currentProgressStepIndex = templateId;
   const dispatch = useDispatch();
 
-  const onCellClick = (id) => {
-      // event.preventDefault();
+  const onCellClick = (event, id) => {
+      event.preventDefault();
       dispatch(updateAppSettings({ templateId: id, nextTabStep: "template" }));
-      alert(`You clicked ${id}`);
+//      alert(`You clicked ${id}`);
   };
   
   // Returns the image source path for a given image file name
@@ -37,7 +35,7 @@ const HorizontalGrid: React.FC<HorizontalGridProps> = ({ cells }) => {
     <div className="horizontal-grid-container">
       <div className="horizontal-grid">
         {cells.map((cell) => (
-          <div key={cell.id} className="grid-cell" onClick={(e) => onCellClick(cell.id)} role="button" tabIndex={0} >
+          <div key={cell.id} className="grid-cell" onClick={e => onCellClick(e, cell.id)} role="button" tabIndex={0} >
             <img src={getImageSrc(cell.imageUrl)} alt={`Item ${cell.id}`} />
             <p className="grid-description">{cell.description}</p>
           </div>
