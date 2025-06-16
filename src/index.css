@@ -189,7 +189,9 @@ body {
   padding: 1rem;
   background-color: #dbdfd7;
   box-shadow: 0 5px 10px rgba(65, 64, 77, 0.1434);
-  max-height: 60vh;
+  height: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .heroContent {
