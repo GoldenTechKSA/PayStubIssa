@@ -1,34 +1,24 @@
 import React from "react";
 import { Form, Col, Row, Container, Button } from "react-bootstrap";
+import { useNavigate } from 'react-router-dom';
 import store from "../../redux/store";
 import "../../index.css";
 
 const PaystubPreview = () => {
     const state = store.getState();
+    const navigate = useNavigate();
+    const templateType = state.appSettings.templateType;
+
     const printPaystub = async () => {
-        const printWindow = window.open('');
-        if (printWindow) {
-            printWindow.document.write('<html><head><title></title><style type="text/css">');
-            printWindow.document.write('* { font-family: SegoeUI-Regular-final, "Segoe UI", Segoe, Tahoma, Helvetica, Arial, Sans-Serif; }');
-            printWindow.document.write('table, th, td { border: 1px solid black; border-collapse: collapse;}');
-            printWindow.document.write('th, td { max-width: 500px; overflow-wrap: break-word; padding: 2px 5px 2px 5px;}');
-            printWindow.document.write('li { list-style-type: none; }');
-            printWindow.document.write('</style></head><body>');
-            printWindow.document.write('<table>');
-            printWindow.document.write('<tr>');
-            printWindow.document.write('</tr>');
-            printWindow.document.write('</table>');
-            printWindow.document.write('<br/>');
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-        }
+        console.log("Printing paystub with template type:", templateType);
+        navigate(`/printTemplate/${templateType}`);
     };
 
     return (
         <Container>
+            <p className="text-info mb-4" style={{ fontSize: "1.5rem", marginTop: "2rem", fontWeight: 500, background: "#f8f9fa", borderRadius: "0.5rem", padding: "1rem 1.5rem", border: "1px solid #d1e7fd", boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
+                Please review all the information below. If everything is correct, click <strong>Continue to Preview & Payment</strong> to see your paystub before finalizing.
+            </p>
             {/* Company Info */}
             <Form className="m-3">
                 <h2>Company Information</h2>
@@ -227,9 +217,12 @@ const PaystubPreview = () => {
                     </Col>
                 </Row>
             </Form>
+            <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
+                <strong>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
+            </p>
             {/* Print Pay Stub Button*/}
             <Button className="float-right mb-4" onClick={printPaystub} type="button">
-                Preview your Paystub
+                Continue to Preview & Payment
             </Button>
         </Container>
     );

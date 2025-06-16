@@ -5,7 +5,7 @@ import GeneralInfo from "../general/general-info";
 import CompanyInfo from "../company/company-info";
 import EmployeeInfo from "../employee/employee-info";
 import IncomeInfo from "../income/income-info";
-import TemplateSelection from "../templateselection/template-selection";
+import TemplateSelection from "../carousel/template-selection";
 import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const InputTabs = () => {

@@ -1,7 +1,7 @@
 import React from "react";
 import "../../index.css";
 import { Container } from "react-bootstrap";
-import InputTabs from "../template/input-tabs";
+import InputTabs from "../input-tabs/input-tabs";
 import HorizontalGrid, { GridCell } from "./horizontal-grid";
 
 const AppBody = () => {
