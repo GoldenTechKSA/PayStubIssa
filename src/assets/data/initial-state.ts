@@ -1,7 +1,7 @@
 import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, PayStubDetails } from "./pay-stub-details";
 
 const appSettings: AppSettings = {
-    templateType: 5,
+    templateId: 0,
     nextTabStep: "template",
     canPrint: true
 };

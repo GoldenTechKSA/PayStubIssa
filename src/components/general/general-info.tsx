@@ -19,7 +19,7 @@ const GeneralInfo = () => {
     const [ isPaymentFrequencyHovered, setIsPaymentFrequencyHovered ] = useState(false);
     const [ isCheckNumberHovered, setIsCheckNumberHovered ] = useState(false);
 
-    const { templateType } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings)
+    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings)
     const dispatch = useDispatch();
     const navigate = useNavigate();
  
@@ -32,7 +32,7 @@ const GeneralInfo = () => {
         dispatch(saveGeneralInfo({ employmentType, paymentType, paymentFrequency, payStubCount, checkNumber }));
 // TODO: see if we need to introduce a preview input details before we print selected Template        
         navigate('/paystubPreview');
-//        history.push(`/printTemplate/${templateType}`);
+//        history.push(`/printTemplate/${templateId}`);
     };
 
     const handleSubmitGoBack = (event) => {

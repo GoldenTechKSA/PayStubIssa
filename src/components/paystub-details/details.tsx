@@ -7,11 +7,11 @@ import "../../index.css";
 const PaystubPreview = () => {
     const state = store.getState();
     const navigate = useNavigate();
-    const templateType = state.appSettings.templateType;
+    const templateId = state.appSettings.templateId;
 
     const printPaystub = async () => {
-        console.log("Printing paystub with template type:", templateType);
-        navigate(`/printTemplate/${templateType}`);
+        console.log("Printing paystub with template type:", templateId);
+        navigate(`/printTemplate/${templateId}`);
     };
 
     return (

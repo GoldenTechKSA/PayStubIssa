@@ -45,6 +45,58 @@ body {
   bottom: 30px;
 }
 
+.hero-block {
+    width: 100%;
+    box-sizing: border-box;
+    background: linear-gradient(120deg, #f7fafc 70%, #0d2e4f 100%);
+    border-radius: 1.5rem;
+    box-shadow: 0 6px 32px rgba(44, 62, 80, 0.09);
+    padding: 3rem 1.5rem 2.5rem 1.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-block .carousel,
+.hero-block .carousel-inner,
+.hero-block .carousel-item {
+    background: transparent;
+    border-radius: 1rem;
+}
+
+.hero-block .carousel-control-prev,
+.hero-block .carousel-control-next {
+    filter: drop-shadow(0 2px 8px rgba(44, 62, 80, 0.10));
+    background: rgba(234, 244, 254, 0.85);
+    border-radius: 50%;
+    width: 144px;
+    height: 144px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #2366b8;
+    transition: background 0.2s, color 0.2s;
+}
+
+.hero-block .carousel-control-prev:hover,
+.hero-block .carousel-control-next:hover {
+    background: #d1e7fd;
+    color: #195a9a;
+}
+
+.hero-block .carousel-indicators [data-bs-target] {
+    background-color: #3b82c4;
+    opacity: 0.5;
+}
+
+.hero-block .carousel-indicators .active {
+    opacity: 1;
+    background-color: #2366b8;
+}
+
 .carousel-item {
   background-color: rgba(201, 193, 193, 0.4);
   height: 50vh;

@@ -15,15 +15,15 @@ type HorizontalGridProps = {
 };
 
 const HorizontalGrid: React.FC<HorizontalGridProps> = ({ cells }) => {
-  const { templateType } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
-  console.log("TemplateType in HorizontalGrid = ", templateType);
+  const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
+  console.log("TemplateType in HorizontalGrid = ", templateId);
   const progressBarItems = [1, 2 ,3, 4, 5];
-  const currentProgressStepIndex = templateType;
+  const currentProgressStepIndex = templateId;
   const dispatch = useDispatch();
 
   const onCellClick = (id) => {
       // event.preventDefault();
-      dispatch(updateAppSettings({ templateType: id, nextTabStep: "template" }));
+      dispatch(updateAppSettings({ templateId: id, nextTabStep: "template" }));
       alert(`You clicked ${id}`);
   };
   

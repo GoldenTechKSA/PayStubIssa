@@ -11,8 +11,8 @@ type GridCell = {
 };
 
 const TemplateSelection = () => {
-    const { templateType } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    console.log("Template Index from the Grid = ", templateType);
+    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    console.log("Template Index from the Grid = ", templateId);
 
     const payStubTemplates: GridCell[] = Array.from({ length: 6 }, (_, i) => ({
         id: i + 1,
@@ -20,7 +20,7 @@ const TemplateSelection = () => {
         caption: `Item ${i + 1}`,
     }));
 
-    const [index, setIndex] = useState(templateType || 0); // Initialize index with templateType or default to 0
+    const [index, setIndex] = useState(templateId || 0); // Initialize index with templateId or default to 0
     const dispatch = useDispatch();
   
     const handleSelect = (i) => {
@@ -31,7 +31,7 @@ const TemplateSelection = () => {
     const handleSubmit = (event) => {
         console.log("Moving to next step with index = ", index);
         event.preventDefault();
-        dispatch(updateAppSettings({ templateType: index, nextTabStep: "company" }));
+        dispatch(updateAppSettings({ templateId: index, nextTabStep: "company" }));
     };
 
     // Returns the image source path for a given image file name
@@ -41,7 +41,7 @@ const TemplateSelection = () => {
     
     console.log("Carousel index = ", index);
     return (
-        <Container className="m-0 p-0 no-gutters">
+        <Container>
             <Row  className="mt-4 mb-3">
                 <h2>Select PayStub template to use:</h2>
             </Row>
