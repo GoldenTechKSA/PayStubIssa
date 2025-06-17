@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import BlurOnIcon from '@mui/icons-material/BlurOn';
 import { green } from '@mui/material/colors';
@@ -8,6 +8,10 @@ import { AppSettings, PayStubDetails } from "../../assets/data/pay-stub-details"
 
 const AppHeader = () => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
+    useEffect(() => {
+        console.log("paystubPreview templateId=", templateId);
+    }, []);
+
     return (
         <Navbar className="no-print">
             <Container fluid>

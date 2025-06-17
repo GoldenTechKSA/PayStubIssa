@@ -9,7 +9,7 @@ import DailySpecialPage from "./common/daily-special-page";
 import AboutUsPage from "./common/about-us-page";
 import FAQPage from "./common/faq-page";
 import ContactUsPage from "./common/contact-us-page";
-import PreviewTemplate from "./paystub-details/display-stub";
+import Preview from "./paystub-details/preview";
 import store from "../redux/store";
 import HeroPage from "./common/hero-page";
 import AppBody from "./common/app-body";
@@ -33,7 +33,7 @@ function App() {
                     <Route path="/aboutUsPage" element={<AboutUsPage />} />
                     <Route path="/FAQPage" element={<FAQPage />} />
                     <Route path="/contactUsPage" element={<ContactUsPage />} />
-                    <Route path="/printTemplate/:templateId" element={<PreviewTemplate store={store.getState()} />} />
+                    <Route path="/printTemplate/:templateId" element={<Preview store={store.getState()} />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/accessibility" element={<AccessibilityPolicy />} />
                     <Route path="/terms" element={<TermsOfUser />} />

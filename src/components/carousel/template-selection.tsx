@@ -13,8 +13,8 @@ type GridCell = {
 const TemplateSelection = () => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [index, setIndex] = useState(templateId || 0); // Initialize index with templateId or default to 0
-
     const dispatch = useDispatch();
+
     const payStubTemplates: GridCell[] = Array.from({ length: 6 }, (_, i) => ({
         id: i + 1,
         imageUrl: `picture${i + 1}.png`,
@@ -29,6 +29,7 @@ const TemplateSelection = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         dispatch(updateAppSettings({ templateId: index, nextTabStep: "company" }));
+        console.log("Selected index:", index);
     };
 
     // Returns the image source path for a given image file name
@@ -39,7 +40,7 @@ const TemplateSelection = () => {
         if (typeof templateId === "number" && templateId !== index) {
             setIndex(templateId - 1); // Ensure index is set to a valid number
         }
-    }, [templateId]);
+    }, [templateId, index]);
     
     return (
         <Container>
