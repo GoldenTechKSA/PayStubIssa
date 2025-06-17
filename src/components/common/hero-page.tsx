@@ -41,24 +41,27 @@ const HeroPage = () => {
         <section>
             <div className="howitworks-container">
               <h2 className="howitworks-title">How Does Our Paystub Generator Work?</h2>
-                  <div className="howitworks-grid">
-                    {steps.map((step, idx) => (
-                      <div
-                        className={`howitworks-cell${openIndex === idx ? " open" : ""}`}
-                        key={idx}
-                        onClick={() => handleToggle(idx)}
-                        tabIndex={0}
-                        role="button"
-                        aria-expanded={openIndex === idx}
-                      >
-                        <div className="howitworks-step-title">{step.title}</div>
-                        {openIndex === idx && (
-                          <div className="howitworks-step-details">{step.details}</div>
-                        )}
-                      </div>
-                    ))}
-                </div>
+              <div className="howitworks-grid">
+                {steps.map((step, idx) => (
+                  <div
+                    className={`howitworks-cell${openIndex === idx ? " open" : ""}`}
+                    key={idx}
+                    onClick={() => handleToggle(idx)}
+                    tabIndex={0}
+                    role="button"
+                    aria-expanded={openIndex === idx}
+                  >
+                    <div className="howitworks-step-title">{step.title}</div>
+                    {openIndex === idx && (
+                      <div className="howitworks-step-details">{step.details}</div>
+                    )}
+                  </div>
+                ))}
             </div>
+            <div className="howitworks-ready-title-wrapper">
+              <div className="howitworks-ready-title">Ready? Click on 'Get Started Today' Button</div>
+            </div>
+          </div>
         </section>
     </>
   );

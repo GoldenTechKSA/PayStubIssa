@@ -1,5 +1,5 @@
 export interface AppSettings {
-    templateType: number;
+    templateId: number;
     nextTabStep: string;
     canPrint: boolean;
 }

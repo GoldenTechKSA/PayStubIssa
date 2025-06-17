@@ -19,7 +19,7 @@ const GeneralInfo = () => {
     const [ isPaymentFrequencyHovered, setIsPaymentFrequencyHovered ] = useState(false);
     const [ isCheckNumberHovered, setIsCheckNumberHovered ] = useState(false);
 
-    const { templateType } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings)
+    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings)
     const dispatch = useDispatch();
     const navigate = useNavigate();
  
@@ -32,7 +32,7 @@ const GeneralInfo = () => {
         dispatch(saveGeneralInfo({ employmentType, paymentType, paymentFrequency, payStubCount, checkNumber }));
 // TODO: see if we need to introduce a preview input details before we print selected Template        
         navigate('/paystubPreview');
-//        history.push(`/printTemplate/${templateType}`);
+//        history.push(`/printTemplate/${templateId}`);
     };
 
     const handleSubmitGoBack = (event) => {
@@ -50,7 +50,7 @@ const GeneralInfo = () => {
                 <Row className="mt-3 bm-4">
                     <h2>General Information</h2>
                 </Row>
-                <Row className="mb-4 mx-4">
+                <Row className="mb-4 mx-4  border p-4">
                     <Form>
                         <Row>
                             <Form.Group as={Col} controlId="empolymentTypeId" onMouseEnter={() => setIsEmploymentTypeHovered(true)} onMouseLeave={() => setIsEmploymentTypeHovered(false)}>
@@ -111,7 +111,7 @@ const GeneralInfo = () => {
                                 )}
                             </Form.Group>
                         </Row>
-                        <Form.Group controlId="payStubCountId" onMouseEnter={() => setIsPayStubCountHovered(true)} onMouseLeave={() => setIsPayStubCountHovered(false)}>
+                        <Form.Group className="mb-4" controlId="payStubCountId" onMouseEnter={() => setIsPayStubCountHovered(true)} onMouseLeave={() => setIsPayStubCountHovered(false)}>
                             <Form.Control placeholder="Enter number of requested paystubs" onChange={e => setPayStubCount(e.target.value)} />
                                 {isPayStubCountHovered && (
                                 <div
@@ -150,14 +150,14 @@ const GeneralInfo = () => {
                             )}
                         </Form.Group>
                     </Form>
-                </Row>
-                <Row className="w-100 justify-content-end row-relative">
+                <Row className="w-100 justify-content-end mt-5 p-2">
                     <Col>
-                        <Button className="float-left" variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
+                        <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
-                    <Col className="mr-4">
-                        <Button className="float-right" onClick={handleSubmitPreviewPaystub} type="submit">Preview your Paystub</Button>
+                    <Col>
+                        <Button className="float-left" onClick={handleSubmitPreviewPaystub} type="submit">Preview your Paystub</Button>
                     </Col>
+                </Row>
                 </Row>
             </Container>
         );

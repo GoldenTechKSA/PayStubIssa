@@ -49,7 +49,7 @@ const EmployeeInfo = () => {
             <Row className="mt-3 mb-4">
                 <h2>Enter Personal Information</h2>
             </Row>
-            <Row className="mb-4 mx-4">
+            <Row className="mb-4 mx-4 border p-4">
                 <Form>
                     <Row>
                         <Form.Group as={Col} controlId="employeeFirstNameId">
@@ -62,10 +62,10 @@ const EmployeeInfo = () => {
                             <Form.Control type="text" placeholder="Enter Last Name" value={employeeLastName} onChange={e => setEmployeeLastName(e.target.value)}/>
                         </Form.Group>
                     </Row>
-                    <Form.Group controlId="employeeAddress1Id">
+                    <Form.Group className="mb-2"  controlId="employeeAddress1Id">
                         <Form.Control placeholder="Enter Employee Address (i.e 1234 Main St)" value={employeeAddress1} onChange={e => setEmployeeAddress1(e.target.value)}/>
                     </Form.Group>
-                    <Form.Group controlId="employeeAddress2Id">
+                    <Form.Group className="mb-2" controlId="employeeAddress2Id">
                         <Form.Control placeholder="Apartment, studio, or floor" value={employeeAddress2} onChange={e => setEmployeeAddress2(e.target.value)}/>
                     </Form.Group>
                     <Row>
@@ -108,14 +108,14 @@ const EmployeeInfo = () => {
                         </Form.Group>
                     </Row>
                 </Form>
-            </Row>
-            <Row className="w-100 justify-content-end row-relative">
-                <Col>
-                    <Button className="float-left" variant="secondary" onClick={handleSubmitGoBack}>Go Back</Button>
-                </Col>
-                <Col className="mr-4">
-                    <Button className="float-right" onClick={handleSubmitGoNext}>Save & Continue</Button>
-                </Col>
+                <Row className="w-100 justify-content-end mt-5 p-2">
+                    <Col>
+                        <Button className="float-right" variant="secondary" onClick={handleSubmitGoBack}>Go Back</Button>
+                    </Col>
+                    <Col>
+                        <Button className="float-left" onClick={handleSubmitGoNext}>Save & Continue</Button>
+                    </Col>
+                </Row>
             </Row>
         </Container>
     );

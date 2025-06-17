@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Image, Carousel, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings } from "../../redux/actions";
@@ -11,8 +11,9 @@ type GridCell = {
 };
 
 const TemplateSelection = () => {
-    const { templateType } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    console.log("Template Index from the Grid = ", templateType);
+    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    const [index, setIndex] = useState(templateId || 0); // Initialize index with templateId or default to 0
+    const dispatch = useDispatch();
 
     const payStubTemplates: GridCell[] = Array.from({ length: 6 }, (_, i) => ({
         id: i + 1,
@@ -20,29 +21,29 @@ const TemplateSelection = () => {
         caption: `Item ${i + 1}`,
     }));
 
-    const [index, setIndex] = useState(templateType || 0); // Initialize index with templateType or default to 0
-    const dispatch = useDispatch();
-  
     const handleSelect = (i) => {
       console.log("Carousel current Index", i);
       setIndex(i);
     };
   
     const handleSubmit = (event) => {
-        console.log("Moving to next step with index = ", index);
         event.preventDefault();
-        dispatch(updateAppSettings({ templateType: index, nextTabStep: "company" }));
+        dispatch(updateAppSettings({ templateId: index, nextTabStep: "company" }));
+        console.log("Selected index:", index);
     };
 
     // Returns the image source path for a given image file name
     function getImageSrc(imageUrl: string): string {
-        console.log("ImageUrl in HorizontalGrid = ", imageUrl);
         return `/images/${imageUrl}`;
     }
+    useEffect(() => {
+        if (typeof templateId === "number" && templateId !== index) {
+            setIndex(templateId - 1); // Ensure index is set to a valid number
+        }
+    }, [templateId, index]);
     
-    console.log("Carousel index = ", index);
     return (
-        <Container className="m-0 p-0 no-gutters">
+        <Container>
             <Row  className="mt-4 mb-3">
                 <h2>Select PayStub template to use:</h2>
             </Row>
@@ -55,11 +56,11 @@ const TemplateSelection = () => {
                         </Carousel.Item>
                     ))}
                 </Carousel>
-            </Row>
-            <Row className="w-100 justify-content-end row-relative">
-                <Col className="mx-4">
-                    <Button className="float-right" onClick={handleSubmit} type="submit">Save & Continue</Button>
-                </Col>
+                <Row className="justify-content-center mt-4 ">
+                    <Col xs={12} sm={6} md={4} lg={3} className="d-flex justify-content-center">
+                        <Button onClick={handleSubmit} type="submit">Save & Continue</Button>
+                    </Col>
+                </Row>
             </Row>
         </Container>
     )

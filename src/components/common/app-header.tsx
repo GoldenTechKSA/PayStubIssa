@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import BlurOnIcon from '@mui/icons-material/BlurOn';
 import { green } from '@mui/material/colors';
@@ -7,7 +7,11 @@ import { useSelector } from "react-redux";
 import { AppSettings, PayStubDetails } from "../../assets/data/pay-stub-details";
 
 const AppHeader = () => {
-    const { templateType } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
+    const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
+    useEffect(() => {
+        console.log("paystubPreview templateId=", templateId);
+    }, []);
+
     return (
         <Navbar className="no-print">
             <Container fluid>
@@ -21,7 +25,7 @@ const AppHeader = () => {
                     <NavLink className="navLinkClass" to="/aboutUsPage">About Us</NavLink>
                     <NavLink className="navLinkClass" to="/FAQPage">FAQ</NavLink>
                     <NavLink className="navLinkClass" to="/contactUsPage">Contact Us</NavLink>
-                    <NavLink className="navLinkClass" to={`/printTemplate/${templateType}`}>Print Template</NavLink>
+                    <NavLink className="navLinkClass" to={`/printTemplate/${templateId}`}>Print Template</NavLink>
                 </Nav>
             </Container>
         </Navbar>
