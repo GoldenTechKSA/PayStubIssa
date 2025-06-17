@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Image, Carousel, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings } from "../../redux/actions";
@@ -12,23 +12,21 @@ type GridCell = {
 
 const TemplateSelection = () => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    const [index, setIndex] = useState(templateId || 0); // Initialize index with templateId or default to 0
 
+    const dispatch = useDispatch();
     const payStubTemplates: GridCell[] = Array.from({ length: 6 }, (_, i) => ({
         id: i + 1,
         imageUrl: `picture${i + 1}.png`,
         caption: `Item ${i + 1}`,
     }));
 
-    const [index, setIndex] = useState(templateId || 0); // Initialize index with templateId or default to 0
-    const dispatch = useDispatch();
-  
     const handleSelect = (i) => {
-//      console.log("Carousel current Index", i);
+      console.log("Carousel current Index", i);
       setIndex(i);
     };
   
     const handleSubmit = (event) => {
-//        console.log("Moving to next step with index = ", index);
         event.preventDefault();
         dispatch(updateAppSettings({ templateId: index, nextTabStep: "company" }));
     };
@@ -37,8 +35,12 @@ const TemplateSelection = () => {
     function getImageSrc(imageUrl: string): string {
         return `/images/${imageUrl}`;
     }
+    useEffect(() => {
+        if (typeof templateId === "number" && templateId !== index) {
+            setIndex(templateId - 1); // Ensure index is set to a valid number
+        }
+    }, [templateId]);
     
-    console.log("Carousel index = ", index);
     return (
         <Container>
             <Row  className="mt-4 mb-3">

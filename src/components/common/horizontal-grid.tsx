@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "../../index.css";
 import { useSelector, useDispatch } from "react-redux";
 import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
@@ -16,18 +16,20 @@ type HorizontalGridProps = {
 
 const HorizontalGrid: React.FC<HorizontalGridProps> = ({ cells }) => {
   const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
-  console.log("TemplateType in HorizontalGrid = ", templateId);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("HorizontalGrid: templateId coming from userSelector=", templateId);
+  }, [templateId]);
 
   const onCellClick = (event, id) => {
       event.preventDefault();
       dispatch(updateAppSettings({ templateId: id, nextTabStep: "template" }));
-//      alert(`You clicked ${id}`);
   };
   
   // Returns the image source path for a given image file name
   function getImageSrc(imageUrl: string): string {
-    console.log("ImageUrl in HorizontalGrid = ", imageUrl);
+    // console.log("ImageUrl in HorizontalGrid = ", imageUrl);
     return `/images/${imageUrl}`;
   }
 
