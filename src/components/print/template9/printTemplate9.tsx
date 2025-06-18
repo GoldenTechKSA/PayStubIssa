@@ -176,7 +176,7 @@ const PrintTemplate9: React.FC<PrintTemplate9Props> = ({ store }) => {
         </div>
         <div className="paystub9-main">
           {/* Header */}
-          <div className="paystub9-header">PAY STUB</div>
+          <div className="paystub9-header">Print 9 - PAY STUB</div>
           {/* Employee & Pay Info */}
           <div className="paystub9-info-row">
             <div className="paystub9-info-col">

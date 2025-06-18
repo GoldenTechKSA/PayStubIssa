@@ -1,12 +1,15 @@
-import React from "react";
+import React, { use } from "react";
 import { Form, Col, Row, Container, Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import store from "../../redux/store";
 import "../../index.css";
+import { useDispatch } from "react-redux";
+import { updateAppSettings } from "../../redux/actions";
 
 const PaystubPreview = () => {
     const state = store.getState();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const templateId = state.appSettings.templateId;
 
     const printPaystub = async () => {
@@ -220,6 +223,114 @@ const PaystubPreview = () => {
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
                 <strong>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
             </p>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 0}));
+                    navigate("/printTemplate/0");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate0
+            </a>
+
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 1}));
+                    navigate("/printTemplate/1");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate1
+            </a>
+
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 2}));
+                    navigate("/printTemplate/2");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate2
+            </a>
+
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 3}));
+                    navigate("/printTemplate/3");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate3
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 4}));
+                    navigate("/printTemplate/4");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate4
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 5}));
+                    navigate("/printTemplate/5");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate5
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 6}));
+                    navigate("/printTemplate/6");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate6
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 7}));
+                    navigate("/printTemplate/7");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate7
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 8}));
+                    navigate("/printTemplate/8");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate8
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 9}));
+                    navigate("/printTemplate/9");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate9
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 10}));
+                    navigate("/printTemplate/10");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate10
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 11}));
+                    navigate("/printTemplate/11");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate11
+            </a>
+            <a 
+                href="#" onClick={e => {
+                    e.preventDefault();
+                    dispatch(updateAppSettings({ templateId: 12}));
+                    navigate("/printTemplate/12");
+                }} 
+                style={{ color: "#3498db", textDecoration: "underline", marginRight: "16px", fontSize: "14px", fontWeight: 500, cursor: "pointer" }}>PrintTemplate12
+            </a>
+
             {/* Print Pay Stub Button*/}
             <Button className="float-right mb-4" onClick={printPaystub} type="button">
                 Continue to Preview & Payment

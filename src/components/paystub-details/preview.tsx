@@ -12,7 +12,8 @@ import PrintTemplate7 from "../print/template7/printTemplate7";
 import PrintTemplate8 from "../print/template8/printTemplate8";
 import PrintTemplate9 from "../print/template9/printTemplate9";
 import PrintTemplate10 from "../print/template10/printTemplate10";
-
+import PrintTemplate11 from "../print/template11/printTemplate11";
+import PrintTemplate12 from "../print/template12/printTemplate12";
 
 import PayPal from "../common/paypal-payment";
 import * as templateIds from "../../constants/template-ids";
@@ -33,9 +34,11 @@ const Preview = ({store}) => {
                     { templateId === templateIds.PAYSTUB_TEMPLATE_5 && <PrintTemplate5 store={store}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_6 && <PrintTemplate6 store={store}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_7 && <PrintTemplate7 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_9 && <PrintTemplate8 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_10 && <PrintTemplate9 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_11 && <PrintTemplate10 store={store}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_8 && <PrintTemplate8 store={store}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_9 && <PrintTemplate9 store={store}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_10 && <PrintTemplate10 store={store}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_11 && <PrintTemplate11 store={store}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_12 && <PrintTemplate12 store={store}/> }
                 </Col>
                 <Col md={{span: 2, offset:1 }}>
                     <PayPal />

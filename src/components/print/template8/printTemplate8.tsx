@@ -166,7 +166,7 @@ const PrintTemplate8: React.FC<PrintTemplate8Props> = ({ store }) => {
             </div>
             <div style={{ fontSize: "0.95em", color: "#fca5a5" }}>{companyInfo.companyEIN && `EIN: ${companyInfo.companyEIN}`}</div>
           </div>
-          <div className="paystub8-banner-title">PAY STUB</div>
+          <div className="paystub8-banner-title">Print 8 - PAY STUB</div>
         </div>
         <div className="paystub8-main">
           {/* Employee & Pay Info */}

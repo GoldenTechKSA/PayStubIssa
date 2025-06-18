@@ -164,7 +164,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
             </div>
             <div className="paystub-header-company-ein">{companyEIN && `EIN: ${companyEIN}`}</div>
           </div>
-          <div className="paystub-header-title">PAY STUB</div>
+          <div className="paystub-header-title">Print 0 - PAY STUB</div>
         </div>
 
         {/* Employee & Pay Info */}
