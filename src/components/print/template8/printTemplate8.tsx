@@ -1,5 +1,6 @@
 import React from "react";
 import { PayStubDetails } from "../../../assets/data/pay-stub-details";
+import "./printTemplate8.css";
 
 const formatDate = (date: Date | string | undefined | null) => {
   if (!date) return "";
@@ -39,115 +40,6 @@ const PrintTemplate8: React.FC<PrintTemplate8Props> = ({ store }) => {
 
   return (
     <div className="paystub8-root">
-      <style>{`
-        @media print {
-          .no-print { display: none !important; }
-          .paystub8-paper { box-shadow: none !important; border: none !important; }
-        }
-        .paystub8-root {
-          background: #fef2f2;
-          min-height: 100vh;
-          padding: 2rem 0;
-        }
-        .paystub8-paper {
-          background: #fff;
-          max-width: 8.5in;
-          min-height: 11in;
-          margin: 0 auto;
-          border: 2px solid #ef4444;
-          border-radius: 1.5rem;
-          box-shadow: 0 8px 32px rgba(239,68,68,0.13);
-          padding: 0;
-          font-family: 'Segoe UI', Arial, sans-serif;
-          color: #222;
-        }
-        .paystub8-banner {
-          background: linear-gradient(90deg, #ef4444 70%, #fca5a5 100%);
-          border-radius: 1.5rem 1.5rem 0 0;
-          padding: 1.2rem 2rem 1rem 2rem;
-          color: #fff;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-        }
-        .paystub8-banner-company {
-          font-size: 1.3rem;
-          font-weight: 700;
-        }
-        .paystub8-banner-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          letter-spacing: 2px;
-        }
-        .paystub8-main {
-          padding: 2rem 2rem 2rem 2rem;
-        }
-        .paystub8-info-row {
-          display: flex;
-          gap: 2rem;
-          margin-bottom: 1.2rem;
-        }
-        .paystub8-info-col {
-          flex: 1 1 50%;
-        }
-        .paystub8-info-col table {
-          width: 100%;
-          font-size: 0.98em;
-        }
-        .paystub8-label {
-          font-weight: 600;
-          color: #ef4444;
-          padding-right: 0.5em;
-          white-space: nowrap;
-        }
-        .paystub8-main-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 1.2rem;
-          font-size: 1em;
-        }
-        .paystub8-main-table th, .paystub8-main-table td {
-          border: 1.5px solid #fca5a5;
-          padding: 0.35em 0.5em;
-          text-align: right;
-        }
-        .paystub8-main-table th {
-          background: #fca5a5;
-          color: #991b1b;
-          font-weight: 600;
-        }
-        .paystub8-main-table td:first-child, .paystub8-main-table th:first-child {
-          text-align: left;
-        }
-        .paystub8-total-row {
-          background: #fef2f2;
-          font-weight: 700;
-        }
-        .paystub8-netpay-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: #fca5a5;
-          border-radius: 0.5rem;
-          padding: 0.8em 1em;
-          margin-bottom: 1.2rem;
-          font-size: 1.1em;
-          font-weight: 600;
-          color: #991b1b;
-        }
-        .paystub8-netpay-amount {
-          margin-left: 0.5em;
-          color: #ef4444;
-          font-size: 1.15em;
-          font-weight: 700;
-        }
-        .paystub8-footer {
-          text-align: center;
-          font-size: 0.95em;
-          color: #888;
-          margin-top: 1.5rem;
-        }
-      `}</style>
       <div className="text-center mb-3 no-print">
         <button
           onClick={handlePrint}

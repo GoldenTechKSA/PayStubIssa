@@ -1,5 +1,6 @@
 import React from "react";
 import { PayStubDetails } from "../../../assets/data/pay-stub-details";
+import "./printTemplate11.css";
 
 interface PrintTemplate11Props {
   store: PayStubDetails;

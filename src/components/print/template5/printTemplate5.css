@@ -1,192 +1,107 @@
-.paystub-print-root {
-  background: #f7fafc;
+@media print {
+  .no-print { display: none !important; }
+  .paystub5-paper { box-shadow: none !important; border: none !important; }
+}
+.paystub5-root {
+  background: #fff7ed;
   min-height: 100vh;
   padding: 2rem 0;
 }
-.paystub-print-paper {
+.paystub5-paper {
   background: #fff;
   max-width: 8.5in;
   min-height: 11in;
   margin: 0 auto;
-  border: 1px solid #e3e8ee;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 24px rgba(44,62,80,0.08);
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  border: 2px solid #fdba74;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(251,146,60,0.10);
+  padding: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
   color: #222;
 }
-.paystub-header {
+.paystub5-banner {
+  background: linear-gradient(90deg, #fb923c 60%, #fed7aa 100%);
+  border-radius: 1rem 1rem 0 0;
+  padding: 1.2rem 2rem 1rem 2rem;
+  color: #fff;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  border-bottom: 2px solid #195a9a;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.2rem;
+  align-items: flex-end;
 }
-.paystub-header-company {
-  flex: 1 1 60%;
-}
-.paystub-header-company-name {
+.paystub5-banner-company {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #2366b8;
 }
-.paystub-header-title {
-  flex: 1 1 40%;
-  text-align: right;
+.paystub5-banner-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #195a9a;
   letter-spacing: 2px;
-  margin-top: 0.3rem;
 }
-.paystub-info-row {
+.paystub5-main {
+  padding: 2rem 2rem 2rem 2rem;
+}
+.paystub5-info-row {
   display: flex;
   gap: 2rem;
   margin-bottom: 1.2rem;
 }
-.paystub-info-col {
+.paystub5-info-col {
   flex: 1 1 50%;
 }
-.paystub-info-col table {
+.paystub5-info-col table {
   width: 100%;
-  font-size: 0.95em;
+  font-size: 0.98em;
 }
-.paystub-label {
+.paystub5-label {
   font-weight: 600;
-  color: #2366b8;
+  color: #fb923c;
   padding-right: 0.5em;
   white-space: nowrap;
 }
-.paystub-main-table {
+.paystub5-main-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1.2rem;
-  font-size: 0.98em;
+  font-size: 1em;
 }
-.paystub-main-table th, .paystub-main-table td {
-  border: 1px solid #d1e7fd;
+.paystub5-main-table th, .paystub5-main-table td {
+  border: 1.5px solid #fed7aa;
   padding: 0.35em 0.5em;
   text-align: right;
 }
-.paystub-main-table th {
-  background: #eaf4fe;
-  color: #195a9a;
+.paystub5-main-table th {
+  background: #fed7aa;
+  color: #b45309;
   font-weight: 600;
 }
-.paystub-main-table td:first-child, .paystub-main-table th:first-child {
+.paystub5-main-table td:first-child, .paystub5-main-table th:first-child {
   text-align: left;
 }
-.paystub-total-row {
-  background: #f0f7ff;
+.paystub5-total-row {
+  background: #fff7ed;
   font-weight: 700;
 }
-.paystub-netpay-row {
+.paystub5-netpay-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #eaf4fe;
+  background: #fed7aa;
   border-radius: 0.5rem;
   padding: 0.8em 1em;
   margin-bottom: 1.2rem;
   font-size: 1.1em;
   font-weight: 600;
-  color: #195a9a;
+  color: #b45309;
 }
-.paystub-netpay-amount {
+.paystub5-netpay-amount {
   margin-left: 0.5em;
-  color: #2366b8;
+  color: #fb923c;
   font-size: 1.15em;
   font-weight: 700;
 }
-.paystub-footer {
+.paystub5-footer {
   text-align: center;
   font-size: 0.95em;
   color: #888;
   margin-top: 1.5rem;
-}
-
-
-
-.background-image {
-    background-image: repeating-linear-gradient(to bottom, #EFF1EF 0px, #EFF1EF 4px, white 4px, white 8px) !important;
-}
-
-.paystub-modern-container {
-    background: #f7fafc;
-    border-radius: 18px;
-    box-shadow: 0 2px 16px rgba(44, 62, 80, 0.09);
-    padding: 2.5rem 1.5rem 2rem 1.5rem;
-    max-width: 1100px;
-    margin: 2rem auto;
-    font-family: 'Segoe UI', Arial, sans-serif;
-}
-
-.paystub-header {
-    border-bottom: 2px solid #e3e8ee;
-    padding-bottom: 1.2rem;
-    margin-bottom: 1.5rem;
-    background: #fff;
-    border-radius: 12px 12px 0 0;
-}
-
-.paystub-company-name {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #2a7ae2;
-    margin-bottom: 0.3rem;
-}
-
-.paystub-section-title {
-    font-weight: 600;
-    color: #2a7ae2;
-    margin-bottom: 0.2rem;
-}
-
-.paystub-statement {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #fff;
-    background: #2a7ae2;
-    border-radius: 8px;
-    padding: 0.7rem 0.5rem;
-    letter-spacing: 1px;
-}
-
-.paystub-table-header {
-    background: #eaf4fe;
-    border-radius: 8px 8px 0 0;
-    font-weight: 600;
-    color: #195a9a;
-    font-size: 1.05rem;
-    border-bottom: 1px solid #d1e7fd;
-}
-
-.paystub-th {
-    padding: 0.7rem 0.3rem;
-    text-align: center;
-    border-right: 1px solid #e3e8ee;
-}
-
-.paystub-th:last-child {
-    border-right: none;
-}
-
-.paystub-table-row {
-    background: #fff;
-    border-radius: 0 0 8px 8px;
-    font-size: 1.05rem;
-    color: #222;
-    border-bottom: 1px solid #e3e8ee;
-}
-
-.paystub-td {
-    padding: 0.7rem 0.3rem;
-    text-align: center;
-    border-right: 1px solid #f1f3f6;
-    vertical-align: middle;
-}
-
-.paystub-td:last-child {
-    border-right: none;
 }
