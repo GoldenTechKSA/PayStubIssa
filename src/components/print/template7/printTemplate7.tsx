@@ -161,7 +161,7 @@ const PrintTemplate7: React.FC<PrintTemplate7Props> = ({ store }) => {
             {companyInfo.companyPhone}{companyInfo.companyPhone && companyInfo.companyEmail ? " | " : ""}{companyInfo.companyEmail}
           </div>
           <div style={{ fontSize: "0.95em", color: "#fbcfe8" }}>{companyInfo.companyEIN && `EIN: ${companyInfo.companyEIN}`}</div>
-          <div className="paystub7-header-title">PAY STUB</div>
+          <div className="paystub7-header-title">Print 7 - PAY STUB</div>
         </div>
         {/* Employee & Pay Info */}
         <div className="paystub7-info-row">

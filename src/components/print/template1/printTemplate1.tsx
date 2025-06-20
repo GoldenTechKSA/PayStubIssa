@@ -165,7 +165,7 @@ const PrintTemplate1: React.FC<PrintTemplate1Props> = ({ store }) => {
             </div>
             <div style={{ fontSize: "0.95em", color: "#444" }}>{companyInfo.companyEIN && `EIN: ${companyInfo.companyEIN}`}</div>
           </div>
-          <div className="paystub1-header-title">PAY STUB</div>
+          <div className="paystub1-header-title">Print 1 - PAY STUB</div>
         </div>
 
         {/* Employee & Pay Info */}

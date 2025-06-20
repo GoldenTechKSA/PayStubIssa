@@ -176,7 +176,7 @@ const PrintTemplate4: React.FC<PrintTemplate4Props> = ({ store }) => {
         </div>
         <div className="paystub4-main">
           {/* Header */}
-          <div className="paystub4-header">PAY STUB</div>
+          <div className="paystub4-header">Print 4 - PAY STUB</div>
 
           {/* Employee & Pay Info */}
           <div className="paystub4-info-row">
