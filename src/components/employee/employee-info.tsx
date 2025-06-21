@@ -8,12 +8,18 @@ const EmployeeInfo = () => {
     const [ employeeFirstName, setEmployeeFirstName ] = useState("");
     const [ employeeMiddleInitial, setEmployeeMiddleInitial ] = useState("");
     const [ employeeLastName, setEmployeeLastName ] = useState("");
+    const [ employeeFirstNameTouched, setEmployeeFirstNameTouched ] = useState(false);
+    const [ employeeLastNameTouched, setEmployeeLastNameTouched ] = useState(false);
 
     const [employeeAddress1, setEmployeeAddress1] = useState("");
     const [employeeAddress2, setEmployeeAddress2] = useState("");
     const [employeeCity, setEmployeeCity] = useState("");
     const [employeeState, setEmployeeState] = useState("");
     const [employeeZipCode, setEmployeeZipCode] = useState("");
+    const [employeeAddress1Touched, setEmployeeAddress1Touched] = useState(false);
+    const [employeeCityTouched, setEmployeeCityTouched] = useState(false);
+    const [employeeStateTouched, setEmployeeStateTouched] = useState(false);
+    const [employeeZipCodeTouched, setEmployeeZipCodeTouched] = useState(false);
 
     const [employeeSSN, setEmployeeSSN] = useState("");
     const [employeePhone, setEmployeePhone] = useState("");
@@ -21,6 +27,12 @@ const EmployeeInfo = () => {
     const [employeeMarriedStatus, setEmployeeMarriedStatus] = useState("");
     const [employeeHireDate, setEmployeeHireDate] = useState("");
     const [employeeID, setEmployeeID] = useState("");
+    const [employeeSSNTouched, setEmployeeSSNTouched] = useState(false);
+    const [employeePhoneTouched, setEmployeePhoneTouched] = useState(false);
+    const [employeeEmailTouched, setEmployeeEmailTouched] = useState(false);
+    const [employeeMarriedStatusTouched, setEmployeeMarriedStatusTouched] = useState(false);
+    const [employeeHireDateTouched, setEmployeeHireDateTouched] = useState(false);
+    const [employeeIDTouched, setEmployeeIDTouched] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -44,6 +56,34 @@ const EmployeeInfo = () => {
         dispatch(updateAppSettings({ nextTabStep: "company" }));
         };
 
+    // Validation functions
+    function isValidName(name: string): boolean {
+        return name.trim().length > 0 && /^[a-zA-Z\s]+$/.test(name);
+    }
+    function isValidAddress(address: string): boolean {
+        return address.trim().length >= 5 && address.trim().length <= 255;
+    }
+    function isValidZipCode(zip: string): boolean {
+        const regex = /^\d{5}$/;
+        return regex.test(zip);
+    }
+    function isValidSSN(ssn: string): boolean {
+        const regex = /^\d{3}-\d{2}-\d{4}$/; // Format: XXX-XX-XXXX
+        return regex.test(ssn);
+    }
+    function isValidPhone(phone: string): boolean {
+        const regex = /^(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/;
+        return regex.test(phone);
+    }
+    function isValidID(id: string): boolean {
+        return id.trim().length > 0 && /^[a-zA-Z0-9]+$/.test(id);
+    }
+    function isValidHireDate(date: string): boolean {
+        const today = new Date();
+        const hireDate = new Date(date);
+        return hireDate <= today;
+    }
+
     return (
         <Container className="m-0 p-0 no-gutters">
             <Row className="mt-3 mb-4">
@@ -53,57 +93,93 @@ const EmployeeInfo = () => {
                 <Form>
                     <Row>
                         <Form.Group as={Col} controlId="employeeFirstNameId">
-                            <Form.Control type="text" placeholder="Enter First Name" value={employeeFirstName} onChange={e => setEmployeeFirstName(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Enter First Name" value={employeeFirstName} maxLength={100} onBlur={() => setEmployeeFirstNameTouched(true)} isInvalid={employeeFirstNameTouched && !isValidName(employeeFirstName)} onChange={e => setEmployeeFirstName(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid first name.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} sm="2" controlId="employeeMidInitialId">
                             <Form.Control type="text" placeholder="Enter Middle Initial" value={employeeMiddleInitial} onChange={e => setEmployeeMiddleInitial(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeLastNameId">
-                            <Form.Control type="text" placeholder="Enter Last Name" value={employeeLastName} onChange={e => setEmployeeLastName(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Enter Last Name" value={employeeLastName} maxLength={100} onBlur={() => setEmployeeLastNameTouched(true)} isInvalid={employeeLastNameTouched && !isValidName(employeeLastName)} onChange={e => setEmployeeLastName(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid last name.
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Form.Group className="mb-2"  controlId="employeeAddress1Id">
-                        <Form.Control placeholder="Enter Employee Address (i.e 1234 Main St)" value={employeeAddress1} onChange={e => setEmployeeAddress1(e.target.value)}/>
+                        <Form.Control placeholder="Enter Employee Address (i.e 1234 Main St)" value={employeeAddress1} onBlur={() => setEmployeeAddress1Touched(true)} isInvalid={employeeAddress1Touched && !isValidAddress(employeeAddress1)} onChange={e => setEmployeeAddress1(e.target.value)}/>
+                        <Form.Control.Feedback type="invalid">
+                            Please provide a valid address (at least 5 characters).
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-2" controlId="employeeAddress2Id">
                         <Form.Control placeholder="Apartment, studio, or floor" value={employeeAddress2} onChange={e => setEmployeeAddress2(e.target.value)}/>
                     </Form.Group>
                     <Row>
                         <Form.Group as={Col} controlId="employeeCityId">
-                            <Form.Control placeholder="City" value={employeeCity} onChange={e => setEmployeeCity(e.target.value)}/>
+                            <Form.Control placeholder="City" value={employeeCity} onBlur={() => setEmployeeCityTouched(true)} isInvalid={employeeCityTouched && !employeeCity} onChange={e => setEmployeeCity(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid city (at least 2 characters).
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeStateId">
-                            <Form.Control as="select" defaultValue="State" onChange={e => setEmployeeState(e.target.value)} >
+                            <Form.Control as="select" defaultValue="State" onBlur={() => setEmployeeStateTouched(true)} isInvalid={employeeStateTouched && !employeeState} onChange={e => setEmployeeState(e.target.value)} >
                                 { STATESLIST.map((s) => <option key={s.code} value={s.code}>{s.name}</option> )}
                             </Form.Control>
+                            <Form.Control.Feedback type="invalid">
+                                Please select a state.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeZipCodeId">
-                            <Form.Control placeholder="Zip Code" value={employeeZipCode} onChange={e => setEmployeeZipCode(e.target.value)}/>
+                            <Form.Control placeholder="Zip Code" value={employeeZipCode} onBlur={() => setEmployeeZipCodeTouched(true)} isInvalid={employeeZipCodeTouched && !isValidZipCode(employeeZipCode)} onChange={e => setEmployeeZipCode(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid zip code (5 digits).
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} controlId="employeeSsnId">
-                            <Form.Control type="text" placeholder="Enter SSN" value={employeeSSN} onChange={e => setEmployeeSSN(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Enter SSN" value={employeeSSN} onBlur={() => setEmployeeSSNTouched(true)} isInvalid={employeeSSNTouched && !isValidSSN(employeeSSN)} onChange={e => setEmployeeSSN(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid SSN (format: XXX-XX-XXXX).
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeePhoneId">
-                            <Form.Control type="text" placeholder="Enter Phone number" value={employeePhone} onChange={e => setEmployeePhone(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Enter Phone number" value={employeePhone} onBlur={() => setEmployeePhoneTouched(true)} isInvalid={employeePhoneTouched && !isValidPhone(employeePhone)} onChange={e => setEmployeePhone(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid phone number (10 digits).
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} controlId="employeeEmailId">
-                            <Form.Control type="text" placeholder="Enter eMail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Enter Email" value={employeeEmail} onBlur={() => setEmployeeEmailTouched(true)} isInvalid={employeeEmailTouched && !/^\S+@\S+\.\S+$/.test(employeeEmail)} onChange={e => setEmployeeEmail(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid email address.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeId">
-                            <Form.Control type="text" placeholder="Enter Employee ID" value={employeeID} onChange={e => setEmployeeID(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Enter Employee ID" value={employeeID} onBlur={() => setEmployeeIDTouched(true)} isInvalid={employeeIDTouched && !isValidID(employeeID)} onChange={e => setEmployeeID(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid employee ID.
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} controlId="hireDateId">
-                            <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate} onChange={e => setEmployeeHireDate(e.target.value)}/>
+                            <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate} onBlur={() => setEmployeeHireDateTouched} isInvalid={employeeHireDateTouched && !isValidHireDate(employeeHireDate)} onChange={e => setEmployeeHireDate(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid hire date.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeMarriedStatusId">
-                            <Form.Control as="select" defaultValue="Filing Status (Marital Status)" onChange={e => setEmployeeMarriedStatus(e.target.value)}>
+                            <Form.Control as="select" defaultValue="Filing Status (Marital Status)" onBlur={() => setEmployeeMarriedStatusTouched(true)} isInvalid={employeeMarriedStatusTouched && !employeeMarriedStatus} onChange={e => setEmployeeMarriedStatus(e.target.value)}>
                                 { FILINGSTATUS.map((f) => <option key={f.id} value={f.id}>{f.name}</option> )}
+                            <Form.Control.Feedback type="invalid">
+                                Please select a marital status.
+                            </Form.Control.Feedback>
                             </Form.Control>
                         </Form.Group>
                     </Row>
