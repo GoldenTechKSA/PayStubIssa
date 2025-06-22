@@ -330,9 +330,16 @@ body {
   border-right: none;
 }
 
+.horizontal-grid .grid-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  background-color: #7793dbc3;
+}
+
 .grid-image {
-  width: 100%;
-  height: 300px;
+  height: 250px;
   object-fit: cover;
   border-radius: 4px;
 }
@@ -344,8 +351,8 @@ body {
 }
 
 .horizontal-grid-outer {
-    background: linear-gradient(135deg, #cbd9e5 60%, #eaf4fe 100%);
-    box-shadow: 0 6px 32px rgba(44, 62, 80, 0.10);
+    background: linear-gradient(1800deg, #cbd9e5 60%, #eaf4fe 100%);
+    box-shadow: 6px 6px 6px rgba(44, 62, 80, 0.10);
     padding: 2.5rem 1.5rem;
     width: 100%;
     margin-left: auto;
@@ -353,18 +360,18 @@ body {
 
 .horizontal-grid {
   display: flex;
-  gap: 5px; /* Internal padding between cells */
+  gap: 10px; /* Internal padding between cells */
   overflow-x: auto;
 }
 
 .grid-cell {
-    width: 220px;         /* or your desired width */
-    height: 220px;        /* or your desired height */
+    width: 120px;         /* or your desired width */
+    height: 120px;        /* or your desired height */
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border-radius: 0.75rem; /* optional: for rounded corners */
+    border-radius: 0.4rem; /* optional: for rounded corners */
     background: #f7fafc;    /* optional: for a soft background */
 }
 .grid-cell img {
@@ -375,28 +382,14 @@ body {
 }
 
 .grid-cell:hover {
-  box-shadow: 6px 6px 16px rgba(17, 27, 110, 0.5), 0 8px 16px rgba(18, 17, 122, 0.4);
+  border-radius: 0.4rem; /* optional: for rounded corners */
+  transform: scale(1.13); /* Slight zoom on hover */
+  background-color: #0453399f;
 }
 
-/* Individual cell styling */
-.gridT-cell {
-  min-width: 150px;
-  text-align: center;
-  border-right: 1px solid #ccc; /* 1px border between cells */
-  padding: 0.5rem;
-  background: white;
-  box-shadow: none; /* Remove shadow to prioritize borders */
-  cursor: pointer; /* Show clickable state */
-  transition: transform 0.2s, background-color 0.2s;
-}
-
-.gridT-cell:hover {
-  transform: scale(1.02); /* Slight zoom on hover */
-  background-color: #f8f8f8;
-}
-
-.gridT-cell:active {
-  transform: scale(0.98); /* Pressed effect */
+.grid-cell:active {
+  transform: scale(0.96); /* Pressed effect */
+  border: 2px solid #000000; /* 2px border between cells */
 }
 
 h1, h2 { color: #2a7ae2; }
