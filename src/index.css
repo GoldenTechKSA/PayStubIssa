@@ -33,7 +33,7 @@ body {
   ) !important;
 }
 .tab-custom-height {
-  height: 70vh;
+  height: auto;
 }
 
 .tab-container-relative {
@@ -48,12 +48,9 @@ body {
 .hero-block {
     width: 100%;
     box-sizing: border-box;
-    background: linear-gradient(120deg, #f7fafc 70%, #0d2e4f 100%);
+    background: linear-gradient(180deg, #f7fafc 50%, #8ea38f 100%);
     border-radius: 1.5rem;
-    box-shadow: 0 6px 32px rgba(44, 62, 80, 0.09);
     padding: 3rem 1.5rem 2.5rem 1.5rem;
-    margin-bottom: 2.5rem;
-    position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -73,8 +70,8 @@ body {
     filter: drop-shadow(0 2px 8px rgba(44, 62, 80, 0.10));
     background: rgba(234, 244, 254, 0.85);
     border-radius: 50%;
-    width: 144px;
-    height: 144px;
+    width: 124px;
+    height: 124px;
     top: 50%;
     transform: translateY(-50%);
     color: #2366b8;
@@ -89,7 +86,7 @@ body {
 
 .hero-block .carousel-indicators [data-bs-target] {
     background-color: #3b82c4;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 .hero-block .carousel-indicators .active {
@@ -131,8 +128,6 @@ body {
 .footer {
   background: #7e8797;
   color: #f5f6fa;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 -2px 16px rgba(44, 62, 80, 0.27);
   font-size: 1rem;
   align-items: center;
   justify-content: space-between;
@@ -310,6 +305,12 @@ body {
   linear-gradient(90deg, transparent 0%, black 2%, black 99%, transparent 100%);
   mask-composite: intersect;
   -webkit-mask-composite: destination-in;
+}
+
+.carousel-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #e9b816;
 }
 
 /* Container for horizontal scroll with outer border */

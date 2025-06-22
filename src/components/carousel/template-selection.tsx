@@ -62,7 +62,7 @@ const TemplateSelection = () => {
                     { payStubTemplates.map((template, i) => (
                         <Carousel.Item className="carousel-item" key={i}>
                             <Image className="w-100 h-100 img-fluid" src={getImageSrc(template.imageUrl)} />
-                            <Carousel.Caption className="" style={{ color: "red" }}>{template.caption}</Carousel.Caption>
+                            <Carousel.Caption className="carousel-title">{template.caption}</Carousel.Caption>
                         </Carousel.Item>
                     ))}
                 </Carousel>
