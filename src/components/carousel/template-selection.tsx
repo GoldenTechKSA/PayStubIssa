@@ -13,13 +13,23 @@ type GridCell = {
 const TemplateSelection = () => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [index, setIndex] = useState(templateId || 0); // Initialize index with templateId or default to 0
+    const [payStubTemplates, setPayStubTemplates] = useState<GridCell[]>([]);
     const dispatch = useDispatch();
 
-    const payStubTemplates: GridCell[] = Array.from({ length: 6 }, (_, i) => ({
-        id: i + 1,
-        imageUrl: `picture${i + 1}.png`,
-        caption: `Item ${i + 1}`,
-    }));
+    useEffect(() => {
+        // Fetch image names from the images folder
+        fetch("/images/image-names.json")
+            .then(res => res.json())
+            .then((files: string[]) => {
+                setPayStubTemplates(
+                    files.map((file, i) => ({
+                        id: i + 1,
+                        imageUrl: file,
+                        caption: `Item ${i + 1}`,
+                    }))
+                );
+            });
+    }, []);    
 
     const handleSelect = (i) => {
       console.log("Carousel current Index", i);

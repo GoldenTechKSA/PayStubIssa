@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 import "../../index.css";
@@ -8,14 +8,24 @@ import HorizontalGrid, { GridCell } from "./horizontal-grid";
 
 const AppBody = () => {
     const { nextTabStep } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    useEffect(() => {console.log("nextTabKey coming from userSelector=", nextTabStep);});
+    const [gridCells, setGridCells] = useState<GridCell[]>([]);
 
-    const gridCells: GridCell[] = Array.from({ length: 6 }, (_, i) => ({
-        id: i + 1,
-        imageUrl: `picture${i + 1}.png`,
-        description: `Item ${i + 1}`,
-    }));
-   
+    useEffect(() => {
+        // Fetch image names from the images folder
+        fetch("/images/image-names.json")
+            .then(res => res.json())
+            .then((files: string[]) => {
+                setGridCells(
+                    files.map((file, i) => ({
+                        id: i + 1,
+                        imageUrl: file,
+                        description: `Item ${i + 1}`,
+                    }))
+                );
+            });
+    }, []);    
+    
+    
     return (
         <>
             {nextTabStep === "template" && <div className="horizontal-grid-outer">
