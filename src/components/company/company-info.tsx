@@ -104,7 +104,7 @@ const CompanyInfo = () => {
                     <Form.Group className="mb-2" controlId="companyAddress1Id">
                         <Form.Control required placeholder="Enter Company Address (i.e 1234 Main St)" onBlur={() => setCompanyAddress1Touched(true)} isInvalid={companyAddress1Touched && !isValidAddress(companyAddress1)} value={companyAddress1} onChange={e => setCompanyAddress1(e.target.value)}/>
                         <Form.Control.Feedback type="invalid">
-                            Please provide a valid address. It should be at least 5 characters long.
+                            Please provide a valid address (at least 5 characters).
                         </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-2" controlId="companyAddress2Id">
@@ -114,7 +114,7 @@ const CompanyInfo = () => {
                         <Form.Group as={Col} controlId="companyCityId">
                             <Form.Control placeholder="City" onBlur={() => setCompanyCityTouched(true)} isInvalid={companyCityTouched && !companyCity} value={companyCity} required onChange={e => setCompanyCity(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">
-                                Please provide a valid city. It should be at least 2 characters long.
+                                Please provide a valid city (at least 2 characters).
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyStateId">
@@ -126,7 +126,7 @@ const CompanyInfo = () => {
                         <Form.Group as={Col} controlId="companyZipCodeId">
                             <Form.Control placeholder="Zip Code" onBlur={() => setCompanyZipCodeTouched(true)} isInvalid={companyZipCodeTouched && !isValidZipCode(companyZipCode)} value={companyZipCode} onChange={e => setCompanyZipCode(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">
-                                Please provide a valid zip code. It should be 5 digits.
+                                Please provide a valid zip code (5 digits).
                             </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
@@ -140,7 +140,7 @@ const CompanyInfo = () => {
                         <Form.Group as={Col} controlId="companyPhoneId">
                             <Form.Control placeholder="Enter Company Phone Number" onBlur={() => setCompanyPhoneTouched(true)} isInvalid={companyPhoneTouched && !isValidUSPhone(companyPhone)} value={companyPhone} onChange={e => setCompanyPhone(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">
-                                Please provide a valid phone number. It should be at least 10 digits long.
+                                Please provide a valid phone number (10 digits).
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEmailId">
