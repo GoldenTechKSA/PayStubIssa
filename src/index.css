@@ -4,45 +4,14 @@ body {
   margin: 0px;
 }
 
-.overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.img-hero {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .navLinkClass {
   text-decoration: none;
   color: gainsboro;
   padding: 0 10px;
 }
 
-.tab-bg-img {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    #eff1ef 0px,
-    #eff1ef 4px,
-    white 4px,
-    white 8px
-  ) !important;
-}
 .tab-custom-height {
   height: auto;
-}
-
-.tab-container-relative {
-  position: relative;
-}
-
-.row-relative {
-  position: absolute;
-  bottom: 30px;
 }
 
 .btn:disabled,
@@ -121,18 +90,6 @@ body {
   width: 70px;
 }
 
-/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
-.nav-tabs .nav-link.active {
-  background-color: rgb(19, 172, 39);
-  color: white;
-}
-
-/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
-.nav-tabs .nav-link.disabled {
-  background-color: rgba(0, 0, 0, 0.281);
-  color: rgba(49, 47, 47, 0.342);
-}
-
 .footer {
   background: #7e8797;
   color: #f5f6fa;
@@ -164,7 +121,7 @@ body {
   filter: none;
 }
 
-@media (max-width: 100%) {
+@media (max-width: 680px) {
   .footer {
     flex-direction: column !important;
     text-align: center;
@@ -244,9 +201,7 @@ body {
   padding: 1rem;
   background-color: #dbdfd7;
   box-shadow: 0 5px 10px rgba(65, 64, 77, 0.1434);
-  height: auto;
-  max-height: none;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .heroContent {
@@ -415,10 +370,7 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
 .howitworks-container {
   background: #f5f8fa;
   padding: 2rem 4rem;
-  border-radius: 16px;
   max-width: 100%;
-  margin: 2rem auto;
-  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.17);
 }
 .howitworks-title {
   text-align: center;
@@ -551,40 +503,6 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
   border-radius: 18px;
   box-shadow: 0 2px 16px rgba(44, 62, 80, 0.07);
   padding: 2rem 1.5rem 1.5rem 1.5rem;
-}
-
-.nav-tabs {
-  border-bottom: 1.5px solid #2b5081 !important;
-  background: transparent;
-  border-radius: 12px 12px 0 0;
-  margin-bottom: 0.25rem;
-}
-
-.nav-tabs .nav-link {
-  border: none !important;
-  border-radius: 10px 10px 0 0 !important;
-  background: #eaf6ff;
-  color: #2a7ae2;
-  margin-right: 0.3rem;
-  font-weight: 600;
-  font-size: 1.08rem;
-  transition: background 0.18s, color 0.18s;
-  padding: 0.7rem 1.5rem;
-  white-space: nowrap;
-}
-
-.nav-tabs .nav-link.active,
-.nav-tabs .nav-link:focus {
-  background: #2a7ae2 !important;
-  color: #fff !important;
-  box-shadow: 0 2px 8px rgba(42, 122, 226, 0.10);
-}
-
-.nav-tabs .nav-link.disabled {
-  background: #f0f4f8 !important;
-  color: #b0b8c1 !important;
-  cursor: not-allowed;
-  opacity: 0.7;
 }
 
 .tab-custom-height {
