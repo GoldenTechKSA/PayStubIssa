@@ -98,6 +98,7 @@ body {
   justify-content: space-between;
   min-height: 70px;
   min-width: 100%;
+  overflow-x: hidden;
 }
 
 .footer span {
@@ -578,4 +579,32 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
 
 .preview-print-btn:hover {
   background: #195a9a;
+}
+
+.footer-link-privacy {
+  position: relative;
+  transition: color 0.2s, border-bottom 0.2s;
+}
+
+.footer-link-privacy:hover,
+.footer-link-privacy:focus {
+  color: #dadee5 !important;
+  text-decoration: none;
+}
+
+.footer-link-privacy::after {
+  content: "";
+  display: block;
+  width: 0;
+  height: 2px;
+  background: #e0e2e4;
+  transition: width 0.2s;
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+}
+
+.footer-link-privacy:hover::after,
+.footer-link-privacy:focus::after {
+  width: 100%;
 }
