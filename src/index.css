@@ -45,6 +45,14 @@ body {
   bottom: 30px;
 }
 
+.btn:disabled,
+.btn[disabled] {
+  background-color: #bdbdbd !important; /* light gray */
+  border-color: #bdbdbd !important;
+  color: #fff !important;
+  opacity: 1 !important; /* optional: remove Bootstrap's default faded look */
+}
+
 .hero-block {
     width: 100%;
     box-sizing: border-box;
