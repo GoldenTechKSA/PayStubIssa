@@ -4,56 +4,30 @@ body {
   margin: 0px;
 }
 
-.overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.img-hero {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .navLinkClass {
   text-decoration: none;
   color: gainsboro;
   padding: 0 10px;
 }
 
-.tab-bg-img {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    #eff1ef 0px,
-    #eff1ef 4px,
-    white 4px,
-    white 8px
-  ) !important;
-}
 .tab-custom-height {
-  height: 70vh;
+  height: auto;
 }
 
-.tab-container-relative {
-  position: relative;
-}
-
-.row-relative {
-  position: absolute;
-  bottom: 30px;
+.btn:disabled,
+.btn[disabled] {
+  background-color: #bdbdbd !important; /* light gray */
+  border-color: #bdbdbd !important;
+  color: #fff !important;
+  opacity: 1 !important; /* optional: remove Bootstrap's default faded look */
 }
 
 .hero-block {
     width: 100%;
     box-sizing: border-box;
-    background: linear-gradient(120deg, #f7fafc 70%, #0d2e4f 100%);
+    background: linear-gradient(180deg, #f7fafc 50%, #8ea38f 100%);
     border-radius: 1.5rem;
-    box-shadow: 0 6px 32px rgba(44, 62, 80, 0.09);
     padding: 3rem 1.5rem 2.5rem 1.5rem;
-    margin-bottom: 2.5rem;
-    position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -73,8 +47,8 @@ body {
     filter: drop-shadow(0 2px 8px rgba(44, 62, 80, 0.10));
     background: rgba(234, 244, 254, 0.85);
     border-radius: 50%;
-    width: 144px;
-    height: 144px;
+    width: 124px;
+    height: 124px;
     top: 50%;
     transform: translateY(-50%);
     color: #2366b8;
@@ -89,7 +63,7 @@ body {
 
 .hero-block .carousel-indicators [data-bs-target] {
     background-color: #3b82c4;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 .hero-block .carousel-indicators .active {
@@ -116,28 +90,15 @@ body {
   width: 70px;
 }
 
-/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
-.nav-tabs .nav-link.active {
-  background-color: rgb(19, 172, 39);
-  color: white;
-}
-
-/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
-.nav-tabs .nav-link.disabled {
-  background-color: rgba(0, 0, 0, 0.281);
-  color: rgba(49, 47, 47, 0.342);
-}
-
 .footer {
   background: #7e8797;
   color: #f5f6fa;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 -2px 16px rgba(44, 62, 80, 0.27);
   font-size: 1rem;
   align-items: center;
   justify-content: space-between;
   min-height: 70px;
   min-width: 100%;
+  overflow-x: hidden;
 }
 
 .footer span {
@@ -161,7 +122,7 @@ body {
   filter: none;
 }
 
-@media (max-width: 100%) {
+@media (max-width: 680px) {
   .footer {
     flex-direction: column !important;
     text-align: center;
@@ -241,9 +202,7 @@ body {
   padding: 1rem;
   background-color: #dbdfd7;
   box-shadow: 0 5px 10px rgba(65, 64, 77, 0.1434);
-  height: auto;
-  max-height: none;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .heroContent {
@@ -312,6 +271,12 @@ body {
   -webkit-mask-composite: destination-in;
 }
 
+.carousel-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #e9b816;
+}
+
 /* Container for horizontal scroll with outer border */
 .horizontal-grid-container {
   width: 100%;
@@ -330,9 +295,16 @@ body {
   border-right: none;
 }
 
+.horizontal-grid .grid-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  background-color: #7793dbc3;
+}
+
 .grid-image {
-  width: 100%;
-  height: 300px;
+  height: 250px;
   object-fit: cover;
   border-radius: 4px;
 }
@@ -344,8 +316,8 @@ body {
 }
 
 .horizontal-grid-outer {
-    background: linear-gradient(135deg, #cbd9e5 60%, #eaf4fe 100%);
-    box-shadow: 0 6px 32px rgba(44, 62, 80, 0.10);
+    background: linear-gradient(1800deg, #cbd9e5 60%, #eaf4fe 100%);
+    box-shadow: 6px 6px 6px rgba(44, 62, 80, 0.10);
     padding: 2.5rem 1.5rem;
     width: 100%;
     margin-left: auto;
@@ -353,18 +325,18 @@ body {
 
 .horizontal-grid {
   display: flex;
-  gap: 5px; /* Internal padding between cells */
+  gap: 10px; /* Internal padding between cells */
   overflow-x: auto;
 }
 
 .grid-cell {
-    width: 220px;         /* or your desired width */
-    height: 220px;        /* or your desired height */
+    width: 120px;         /* or your desired width */
+    height: 120px;        /* or your desired height */
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border-radius: 0.75rem; /* optional: for rounded corners */
+    border-radius: 0.4rem; /* optional: for rounded corners */
     background: #f7fafc;    /* optional: for a soft background */
 }
 .grid-cell img {
@@ -375,28 +347,14 @@ body {
 }
 
 .grid-cell:hover {
-  box-shadow: 6px 6px 16px rgba(17, 27, 110, 0.5), 0 8px 16px rgba(18, 17, 122, 0.4);
+  border-radius: 0.4rem; /* optional: for rounded corners */
+  transform: scale(1.13); /* Slight zoom on hover */
+  background-color: #0453399f;
 }
 
-/* Individual cell styling */
-.gridT-cell {
-  min-width: 150px;
-  text-align: center;
-  border-right: 1px solid #ccc; /* 1px border between cells */
-  padding: 0.5rem;
-  background: white;
-  box-shadow: none; /* Remove shadow to prioritize borders */
-  cursor: pointer; /* Show clickable state */
-  transition: transform 0.2s, background-color 0.2s;
-}
-
-.gridT-cell:hover {
-  transform: scale(1.02); /* Slight zoom on hover */
-  background-color: #f8f8f8;
-}
-
-.gridT-cell:active {
-  transform: scale(0.98); /* Pressed effect */
+.grid-cell:active {
+  transform: scale(0.96); /* Pressed effect */
+  border: 2px solid #000000; /* 2px border between cells */
 }
 
 h1, h2 { color: #2a7ae2; }
@@ -413,10 +371,7 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
 .howitworks-container {
   background: #f5f8fa;
   padding: 2rem 4rem;
-  border-radius: 16px;
   max-width: 100%;
-  margin: 2rem auto;
-  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.17);
 }
 .howitworks-title {
   text-align: center;
@@ -551,40 +506,6 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
   padding: 2rem 1.5rem 1.5rem 1.5rem;
 }
 
-.nav-tabs {
-  border-bottom: 1.5px solid #2b5081 !important;
-  background: transparent;
-  border-radius: 12px 12px 0 0;
-  margin-bottom: 0.25rem;
-}
-
-.nav-tabs .nav-link {
-  border: none !important;
-  border-radius: 10px 10px 0 0 !important;
-  background: #eaf6ff;
-  color: #2a7ae2;
-  margin-right: 0.3rem;
-  font-weight: 600;
-  font-size: 1.08rem;
-  transition: background 0.18s, color 0.18s;
-  padding: 0.7rem 1.5rem;
-  white-space: nowrap;
-}
-
-.nav-tabs .nav-link.active,
-.nav-tabs .nav-link:focus {
-  background: #2a7ae2 !important;
-  color: #fff !important;
-  box-shadow: 0 2px 8px rgba(42, 122, 226, 0.10);
-}
-
-.nav-tabs .nav-link.disabled {
-  background: #f0f4f8 !important;
-  color: #b0b8c1 !important;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
 .tab-custom-height {
   background: #ffffff;
   border-radius: 0 0 12px 12px;
@@ -659,3 +580,113 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
 .preview-print-btn:hover {
   background: #195a9a;
 }
+
+.footer-link-privacy {
+  position: relative;
+  transition: color 0.2s, border-bottom 0.2s;
+}
+
+.footer-link-privacy:hover,
+.footer-link-privacy:focus {
+  color: #dadee5 !important;
+  text-decoration: none;
+}
+
+.footer-link-privacy::after {
+  content: "";
+  display: block;
+  width: 0;
+  height: 2px;
+  background: #e0e2e4;
+  transition: width 0.2s;
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+}
+
+.footer-link-privacy:hover::after,
+.footer-link-privacy:focus::after {
+  width: 100%;
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.img-hero {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tab-bg-img {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #eff1ef 0px,
+    #eff1ef 4px,
+    white 4px,
+    white 8px
+  ) !important;
+}
+
+
+.tab-container-relative {
+  position: relative;
+}
+
+.row-relative {
+  position: absolute;
+  bottom: 30px;
+}
+
+
+/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
+.nav-tabs .nav-link.active {
+  background-color: rgb(19, 172, 39);
+  color: white;
+}
+
+/* this style apply to the Tabs/Tab Controls, it will make the disabled tabs gray and active tab green */
+.nav-tabs .nav-link.disabled {
+  background-color: rgba(0, 0, 0, 0.281);
+  color: rgba(49, 47, 47, 0.342);
+}
+
+
+.nav-tabs {
+  border-bottom: 1.5px solid #2b5081 !important;
+  background: transparent;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 0.25rem;
+}
+
+.nav-tabs .nav-link {
+  border: none !important;
+  border-radius: 10px 10px 0 0 !important;
+  background: #eaf6ff;
+  color: #2a7ae2;
+  margin-right: 0.3rem;
+  font-weight: 600;
+  font-size: 1.08rem;
+  transition: background 0.18s, color 0.18s;
+  padding: 0.7rem 1.5rem;
+  white-space: nowrap;
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-link:focus {
+  background: #2a7ae2 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(42, 122, 226, 0.10);
+}
+
+.nav-tabs .nav-link.disabled {
+  background: #f0f4f8 !important;
+  color: #b0b8c1 !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+

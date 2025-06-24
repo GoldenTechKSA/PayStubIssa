@@ -18,7 +18,6 @@ import PrintTemplate13 from "../print/template13/printTemplate13";
 
 import PayPal from "../common/paypal-payment";
 import * as templateIds from "../../constants/template-ids";
-import templateNames from "../../assets/data/template-names.json";
 import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const Preview = ({store}) => {
