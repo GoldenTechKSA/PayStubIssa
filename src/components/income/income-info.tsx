@@ -9,8 +9,39 @@ const IncomeInfo = () => {
     const [ periodStartDate, setPeriodStartDate ] = useState("");
     const [ periodEndDate, setPeriodEndDate ] = useState("");
     const [periodType, setPeriodType] = useState("Hourly");
+    const [ annualSalaryTouched, setAnnualSalaryTouched ] = useState(false);
+    const [ periodStartDateTouched, setPeriodStartDateTouched ] = useState(false);
+    const [ periodEndDateTouched, setPeriodEndDateTouched ] = useState(false);
+    const [ periodTypeTouched, setPeriodTypeTouched ] = useState(false);
 
     const dispatch = useDispatch();
+
+    const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && annualSalary > 0 && periodType !== "";
+
+    function isValidDate(dateStr: string): boolean {
+        // Expected format: MM/DD/YYYY
+        const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+        if (!regex.test(dateStr)) return false;
+
+        const [monthStr, dayStr, yearStr] = dateStr.split('/');
+        const month = Number(monthStr);
+        const day = Number(dayStr);
+        const year = Number(yearStr);
+
+        // Construct the date and check for validity
+        const date = new Date(year, month - 1, day); // JS months are 0-indexed
+        if (
+            date.getFullYear() !== year ||
+            date.getMonth() + 1 !== month ||
+            date.getDate() !== day
+        ) {
+            return false; // Invalid calendar date
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize today's date to midnight
+        return date <= today; // Reject future dates
+    }
 
     const handleSubmitGoNext = (event) => {
         event.preventDefault();
@@ -41,19 +72,31 @@ const IncomeInfo = () => {
                 <Form>
                     <Row>
                         <Form.Group as={Col} controlId="AnnualIncomeId">
-                            <Form.Control type="number" placeholder="Annual income amount($)" onChange={e => setAnnualSalary(parseInt(e.target.value))}/>
+                            <Form.Control type="number" placeholder="Annual income amount($)" value={annualSalary} onBlur={() => setAnnualSalaryTouched(true)} isInvalid={annualSalaryTouched && !annualSalary} onChange={e => setAnnualSalary(parseInt(e.target.value))}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid income amount.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="startDateId">
-                            <Form.Control type="date" placeholder="Pay period start date" onChange={e => setPeriodStartDate(e.target.value)}/>
+                            <Form.Control type="date" placeholder="Pay period start date" value={periodStartDate} onBlur={() => setPeriodStartDateTouched(true)} isInvalid={periodStartDateTouched && !isValidDate(periodStartDate)} onChange={e => setPeriodStartDate(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid start date.
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="endDateId">
-                            <Form.Control type="date" placeholder="Pay period end date" onChange={e => setPeriodEndDate(e.target.value)}/>
+                            <Form.Control type="date" placeholder="Pay period end date" value={periodEndDate} onBlur={() => setPeriodEndDateTouched(true)} isInvalid={periodEndDateTouched && !isValidDate(periodEndDate)} onChange={e => setPeriodEndDate(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">
+                                Please provide a valid end date.
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
-                            <Form.Control as="select" defaultValue="Pay period type..." onSelect={e => setPeriodType((e.target as HTMLSelectElement).value)}>
+                            <Form.Control as="select" defaultValue="Pay period type..." onBlur={() => setPeriodTypeTouched(true)} isInvalid={periodTypeTouched && !periodType} onSelect={e => setPeriodType((e.target as HTMLSelectElement).value)}>
                                 { PAYPERIODTYPE.map((p) => <option key={p.count} value={p.count}>{p.name}</option> )}
+                            <Form.Control.Feedback type="invalid">
+                                Please select a pay period type.
+                            </Form.Control.Feedback>
                             </Form.Control>
                         </Form.Group>
                     </Row>
@@ -63,7 +106,7 @@ const IncomeInfo = () => {
                         <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
                     <Col>
-                        <Button className="float-left" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
+                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
                     </Col>
                 </Row>
             </Row>

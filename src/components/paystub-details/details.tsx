@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import { Form, Col, Row, Container, Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import store from "../../redux/store";
@@ -16,6 +16,7 @@ const PaystubPreview = () => {
         console.log("Printing paystub with template type:", templateId);
         navigate(`/printTemplate/${templateId}`);
     };
+
 
     return (
         <Container>

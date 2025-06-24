@@ -55,6 +55,9 @@ const EmployeeInfo = () => {
 //        dispatch(saveEmployeeInfo({ employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipcode, employeeSSN, employeePhone, employeeEmail, employeeMarriedStatus}));
         dispatch(updateAppSettings({ nextTabStep: "company" }));
         };
+    const isFormValid = isValidName(employeeFirstName) && isValidName(employeeLastName) &&  isValidAddress(employeeAddress1) && isValidZipCode(employeeZipCode) &&
+        isValidSSN(employeeSSN) && isValidPhone(employeePhone) && isValidID(employeeID) && isValidHireDate(employeeHireDate) &&
+        employeeCity.trim().length >= 2 && employeeState && employeeEmail.trim().length > 0 && employeeMarriedStatus;
 
     // Validation functions
     function isValidName(name: string): boolean {
@@ -78,10 +81,29 @@ const EmployeeInfo = () => {
     function isValidID(id: string): boolean {
         return id.trim().length > 0 && /^[a-zA-Z0-9]+$/.test(id);
     }
-    function isValidHireDate(date: string): boolean {
+    function isValidHireDate(dateStr: string): boolean {
+        // Expected format: MM/DD/YYYY
+        const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+        if (!regex.test(dateStr)) return false;
+
+        const [monthStr, dayStr, yearStr] = dateStr.split('/');
+        const month = Number(monthStr);
+        const day = Number(dayStr);
+        const year = Number(yearStr);
+
+        // Construct the date and check for validity
+        const date = new Date(year, month - 1, day); // JS months are 0-indexed
+        if (
+            date.getFullYear() !== year ||
+            date.getMonth() + 1 !== month ||
+            date.getDate() !== day
+        ) {
+            return false; // Invalid calendar date
+        }
+
         const today = new Date();
-        const hireDate = new Date(date);
-        return hireDate <= today;
+        today.setHours(0, 0, 0, 0); // Normalize today's date to midnight
+        return date <= today; // Reject future dates
     }
 
     return (
@@ -189,7 +211,7 @@ const EmployeeInfo = () => {
                         <Button className="float-right" variant="secondary" onClick={handleSubmitGoBack}>Go Back</Button>
                     </Col>
                     <Col>
-                        <Button className="float-left" onClick={handleSubmitGoNext}>Save & Continue</Button>
+                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext}>Save & Continue</Button>
                     </Col>
                 </Row>
             </Row>
