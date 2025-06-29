@@ -189,7 +189,7 @@ const GeneralInfo = () => {
                         <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
                     <Col>
-                        <Button className="float-left" disabled = {!isFormValid} onClick={handleSubmitPreviewPaystub} type="submit">Preview your Paystub</Button>
+                        <Button className="float-left" disabled = {!!isFormValid} onClick={handleSubmitPreviewPaystub} type="submit">Preview your Paystub</Button>
                     </Col>
                 </Row>
                 </Row>

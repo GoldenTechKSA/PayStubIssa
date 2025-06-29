@@ -211,7 +211,7 @@ const EmployeeInfo = () => {
                         <Button className="float-right" variant="secondary" onClick={handleSubmitGoBack}>Go Back</Button>
                     </Col>
                     <Col>
-                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext}>Save & Continue</Button>
+                        <Button className="float-left" disabled={!!isFormValid} onClick={handleSubmitGoNext}>Save & Continue</Button>
                     </Col>
                 </Row>
             </Row>
