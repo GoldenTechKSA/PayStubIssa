@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 
 interface TickerBannerProps {
   message?: string;
@@ -7,6 +8,9 @@ interface TickerBannerProps {
   textColor?: string;
   fontSize?: string;
   height?: string;
+  buttonText?: string;
+  buttonColor?: string;
+  onButtonClick?: () => void;
 }
 
 const TickerBanner: React.FC<TickerBannerProps> = ({
@@ -15,7 +19,10 @@ const TickerBanner: React.FC<TickerBannerProps> = ({
   backgroundColor = "#f8fafc",
   textColor = "#1e293b",
   fontSize = "16px",
-  height = "60px"
+  height = "60px",
+  buttonText = "Get Offer",
+  buttonColor = "#2563eb",
+  onButtonClick,
 }) => {
   const tickerStyle: React.CSSProperties = {
     width: '100%',
@@ -33,10 +40,26 @@ const TickerBanner: React.FC<TickerBannerProps> = ({
     display: 'inline-block',
     whiteSpace: 'nowrap',
     fontSize: fontSize,
-    fontWeight: '500',
+    fontWeight: 500,
     color: textColor,
     animation: `scroll ${speed}s linear infinite`,
-    paddingLeft: '100%'
+    paddingLeft: '100%',
+    paddingRight: '2rem'
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    display: 'inline-block',
+    marginLeft: '2rem',
+    padding: '0.5em 1.5em',
+    fontSize: '1rem',
+    fontWeight: 600,
+    background: buttonColor,
+    color: '#fff',
+    border: 'none',
+    borderRadius: '2em',
+    cursor: 'pointer',
+    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+    transition: 'background 0.2s'
   };
 
   const keyframes = `
@@ -56,14 +79,16 @@ const TickerBanner: React.FC<TickerBannerProps> = ({
       <div style={tickerStyle}>
         <div style={scrollingTextStyle}>
           {message}
+          <button style={buttonStyle} onClick={onButtonClick} tabIndex={0}>{buttonText}</button>
         </div>
       </div>
     </>
   );
 };
 
-// Demo component showing different ticker variations
 const SpecialPriceBanner: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
       <div>
@@ -75,6 +100,9 @@ const SpecialPriceBanner: React.FC = () => {
           textColor="#92400e"
           height="70px"
           fontSize="20px"
+          buttonText="Get Started & Save"
+          buttonColor="#16a34a"
+          onButtonClick={() => navigate("/appBody")}
         />
       </div>
     </div>
