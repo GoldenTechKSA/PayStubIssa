@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import "../../index.css";
 import { useNavigate } from "react-router-dom";
 import HeroImage from "../../assets/images/heroimage.png";
+import SpecialPriceBanner from "./special-price-banner"; // <-- Import the banner
 
 const HeroPage = () => {
   const steps = [
@@ -27,6 +28,10 @@ const HeroPage = () => {
 
   return (
     <>
+        <section className="banner">
+          {/* SpecialPriceBanner inserted here */}
+          <SpecialPriceBanner />
+        </section>
         <section className="hero">
           <div className="heroContent">
             <h1 className="heroTitle">Effortlessly Generate Accurate Paystubs</h1>
