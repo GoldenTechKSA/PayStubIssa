@@ -10,7 +10,7 @@ const AppHeader = () => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
     useEffect(() => {
         console.log("paystubPreview templateId=", templateId);
-    }, []);
+    }, [templateId]);
 
     return (
         <Navbar className="no-print">

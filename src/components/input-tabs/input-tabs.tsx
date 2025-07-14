@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { Container, Tab, Tabs } from "react-bootstrap";
 import GeneralInfo from "../general/general-info";

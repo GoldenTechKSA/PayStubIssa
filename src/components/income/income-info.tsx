@@ -72,7 +72,7 @@ const IncomeInfo = () => {
                 <Form>
                     <Row>
                         <Form.Group as={Col} controlId="AnnualIncomeId">
-                            <Form.Control type="number" placeholder="Annual income amount($)" value={annualSalary} onBlur={() => setAnnualSalaryTouched(true)} isInvalid={annualSalaryTouched && !annualSalary} onChange={e => setAnnualSalary(parseInt(e.target.value))}/>
+                            <Form.Control type="text" placeholder="Annual income amount($)" value={annualSalary} onBlur={() => setAnnualSalaryTouched(true)} isInvalid={annualSalaryTouched && !annualSalary} onChange={e => setAnnualSalary(parseInt(e.target.value))}/>
                             <Form.Control.Feedback type="invalid">
                                 Please provide a valid income amount.
                             </Form.Control.Feedback>

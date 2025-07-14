@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Container, Form, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings, saveGeneralInfo } from "../../redux/actions";
 
 import { useNavigate } from 'react-router-dom';
-import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
+// import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const GeneralInfo = () => {
     const [ employmentType, setEmploymentType ] = useState(0);
@@ -24,7 +25,7 @@ const GeneralInfo = () => {
     const [ isPaymentFrequencyHovered, setIsPaymentFrequencyHovered ] = useState(false);
     const [ isCheckNumberHovered, setIsCheckNumberHovered ] = useState(false);
 
-    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings)
+//    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const dispatch = useDispatch();
     const navigate = useNavigate();
  

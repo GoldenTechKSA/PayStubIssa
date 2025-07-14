@@ -5,7 +5,6 @@
   "description": "PayStubs Easy, Cheap",
   "homepage": "http://www.paystubissa.com",
   "dependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -25,7 +24,7 @@
     "react-redux": "^9.2.0",
     "react-router": "^7.6.0",
     "react-router-dom": "^7.6.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "redux-thunk": "^3.1.0",
     "typescript": "^5.8.3"
   },
@@ -52,5 +51,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0"
   }
 }
