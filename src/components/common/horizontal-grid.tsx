@@ -11,16 +11,18 @@ type GridCell = {
 };
 
 type HorizontalGridProps = {
+  // The current index is used to highlight the selected cell
+  currentIndex: number;
   cells: GridCell[];
 };
 
-const HorizontalGrid: React.FC<HorizontalGridProps> = ({ cells }) => {
+const HorizontalGrid: React.FC<HorizontalGridProps> = ({ currentIndex, cells }) => {
   const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("HorizontalGrid: templateId coming from userSelector=", templateId);
-  }, [templateId]);
+    console.log("HorizontalGrid: templateId coming from userSelector=", currentIndex);
+  }, [currentIndex,templateId]);
 
   const onCellClick = (event, id) => {
       event.preventDefault();

@@ -17,19 +17,18 @@ const AppBody = () => {
             .then((files: string[]) => {
                 setGridCells(
                     files.map((file, i) => ({
-                        id: i + 1,
+                        id: i,
                         imageUrl: file,
-                        description: `Item ${i + 1}`,
+                        description: `Description of Item ${i}`,
                     }))
                 );
             });
-    }, []);    
-    
+    }, []);
     
     return (
         <>
             {nextTabStep === "template" && <div className="horizontal-grid-outer">
-                <HorizontalGrid cells={gridCells}/>
+                <HorizontalGrid currentIndex={0} cells={gridCells}/>
             </div> }
             <div className="jumbotron">
                 <Container className="no-print">

@@ -10,12 +10,13 @@ import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const InputTabs = () => {
     const { nextTabStep } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
 
     return (
         <Container className="no-print tab-container-relative">
             <Tabs className="mt-4" activeKey={nextTabStep} id="TemplateSelectionTabs" justify>
                 <Tab className="tab-custom-height border border-2 border-dark " eventKey="template" title="Select Template" disabled={ nextTabStep !== "template" }>
-                    <TemplateSelection />
+                    <TemplateSelection currentIndex={templateId} />
                 </Tab>
                 <Tab className="tab-custom-height" eventKey="company" title="Company Information" disabled={ nextTabStep !== "company" }>
                     <CompanyInfo />
