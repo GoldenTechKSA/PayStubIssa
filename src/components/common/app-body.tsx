@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 import "../../index.css";
 import { Container } from "react-bootstrap";
-import InputTabs from "../input-tabs/input-tabs";
+import InputTabs, {InputTabsProps} from "../input-tabs/input-tabs";
 import HorizontalGrid, { GridCell } from "./horizontal-grid";
 
 const AppBody = () => {
-    const { nextTabStep } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    console.log(`1 AppBody:templateId= ${templateId}`);
     const [gridCells, setGridCells] = useState<GridCell[]>([]);
 
     useEffect(() => {
@@ -24,15 +25,21 @@ const AppBody = () => {
                 );
             });
     }, []);
+
+    useEffect(() => {
+        console.log("2 AppBody: templateId =", templateId);
+    }, [templateId]);
     
     return (
         <>
-            {nextTabStep === "template" && <div className="horizontal-grid-outer">
-                <HorizontalGrid currentIndex={0} cells={gridCells}/>
-            </div> }
+            {
+                nextTabStep === "template" && <div className="horizontal-grid-outer">
+                    <HorizontalGrid currentIndex={templateId} cells={gridCells}/>
+                </div>
+            }
             <div className="jumbotron">
                 <Container className="no-print">
-                    <InputTabs />
+                    <InputTabs id={templateId}/>
                 </Container>
             </div>
         </>

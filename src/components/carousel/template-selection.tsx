@@ -10,9 +10,9 @@ type GridCell = {
   caption: string;
 };
 
-const TemplateSelection = ({currentIndex}) => {
+const TemplateSelection = ({index}) => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    const [index, setIndex] = useState(currentIndex); // Initialize index with templateId
+    const [currentIndex, setCurrentIndex] = useState(index); // Initialize index with templateId
     const [payStubTemplates, setPayStubTemplates] = useState<GridCell[]>([]);
     const dispatch = useDispatch();
 
@@ -33,7 +33,7 @@ const TemplateSelection = ({currentIndex}) => {
 
     const handleSelect = (i) => {
       console.log("TemplateSelection:handleSelect:index", i);
-      setIndex(i);
+      setCurrentIndex(i);
     };
   
     const handleSubmit = (event) => {
@@ -46,11 +46,12 @@ const TemplateSelection = ({currentIndex}) => {
     function getImageSrc(imageUrl: string): string {
         return `/images/${imageUrl}`;
     }
+
     useEffect(() => {
-        if (typeof templateId === "number" && templateId !== index) {
-            setIndex(index); // Ensure index is set to a valid number
+        if (typeof currentIndex === "number" && templateId !== currentIndex) {
+            setCurrentIndex(index); // Ensure index is set to a valid number
         }
-    }, [currentIndex, templateId, index]);
+    }, [currentIndex, templateId]);
     
     return (
         <Container>
