@@ -17,7 +17,30 @@ const PaystubPreview = () => {
         navigate(`/printTemplate/${templateId}`);
     };
 
+    const onCompanyInfoClick = (e) => {
+        e.preventDefault();
+        dispatch(updateAppSettings({ nextTabStep: "company" }));
+        navigate("/appBody");
+    };
 
+    const onEmployeeInfoClick = (e) => {
+        e.preventDefault();
+        dispatch(updateAppSettings({ nextTabStep: "employee" }));
+        navigate("/appBody");
+    };
+
+    const onIncomeDetailsClick = (e) => {
+        e.preventDefault();
+        dispatch(updateAppSettings({ nextTabStep: "income" }));
+        navigate("/appBody");
+    };
+
+    const onGeneralInfoClick = (e) => {
+        e.preventDefault();
+        dispatch(updateAppSettings({ nextTabStep: "general" }));
+        navigate("/appBody");
+    };
+    
     return (
         <Container>
             <p className="text-info mb-4" style={{ fontSize: "1.5rem", marginTop: "2rem", fontWeight: 500, background: "#f8f9fa", borderRadius: "0.5rem", padding: "1rem 1.5rem", border: "1px solid #d1e7fd", boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
@@ -25,7 +48,11 @@ const PaystubPreview = () => {
             </p>
             {/* Company Info */}
             <Form className="m-3">
-                <h2>Company Information</h2>
+                <Row className="mt-3 mb-4">
+                    <a className="company-info-link" tabIndex={0} onClick={e=> onCompanyInfoClick(e)} href="/appBody">
+                        Company Information
+                    </a>
+                </Row>
                 <Row xs={1} md={2} className="g-2">
                     <Col>
                         <Form.Group>
@@ -79,7 +106,9 @@ const PaystubPreview = () => {
             </Form>
             {/* Employee Info */}
             <Form className="m-3">
-                <h2>Employee Information</h2>
+                <a className="company-info-link" tabIndex={0} onClick={e=> onEmployeeInfoClick(e)} href="/employee-info">
+                    Employee Information
+                </a>
                 <Row xs={1} md={2} className="g-2">
                     <Col>
                         <Form.Group>
@@ -157,7 +186,9 @@ const PaystubPreview = () => {
             </Form>
             {/* Income Info */}
             <Form className="m-3">
-                <h2>Income Details</h2>
+                <a className="company-info-link" tabIndex={0} onClick={e=> onIncomeDetailsClick(e)} href="/income-details">
+                    Income Details
+                </a>
                 <Row xs={1} md={2} className="g-2">
                     <Col>
                         <Form.Group>
@@ -187,7 +218,9 @@ const PaystubPreview = () => {
             </Form>
             {/* General Info */}
             <Form className="m-3">
-                <h2>General Information</h2>
+                <a className="company-info-link" tabIndex={0} onClick={e=> onGeneralInfoClick(e)} href="/general-info">
+                    General Information
+                </a>
                 <Row xs={1} md={2} className="g-2">
                     <Col>
                         <Form.Group>
@@ -197,8 +230,8 @@ const PaystubPreview = () => {
                     </Col>
                     <Col>
                         <Form.Group>
-                            <Form.Label>Payment Type</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.paymentType} />
+                            <Form.Label>Payment Method</Form.Label>
+                            <Form.Control readOnly defaultValue={state.generalInfo.paymentMethod} />
                         </Form.Group>
                     </Col>
                     <Col>

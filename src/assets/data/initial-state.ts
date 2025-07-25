@@ -37,17 +37,22 @@ const employeeInfo: EmployeeInfo = {
 
 const incomeDetails: IncomeDetails = {
     annualSalary: 125500,
+    wageType: "Hourly", 
+    hourlyRate: 35.00, // Example hourly rate
+    hoursWorked: 40, // Example hours worked per week
     periodStartDate: new Date(),
     periodEndDate: new Date(),
     periodPayDate: new Date(),
-    periodType: "Hourly"
+    periodType: "Weekly"
 };
 
 const generalInfo: GeneralInfo = {
     employmentType: "Contractor",
-    paymentType: "Direct Deposit",
+    paymentMethod: "Direct Deposit",
     paymentFrequency: "Bi-Weekly",
     payStubCount: 3,
+    payStubNumber: 1,
+    extraNotes: "This is an example note for the pay stub.",
     checkNumber: 5001
 };
 

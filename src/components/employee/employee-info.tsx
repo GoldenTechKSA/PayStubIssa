@@ -42,7 +42,8 @@ const EmployeeInfo = () => {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         }
-        dispatch(saveEmployeeInfo({ employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeMarriedStatus}));
+        dispatch(saveEmployeeInfo({ employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus}));
+        // console.log("Employee Info Saved:", { employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus });
         dispatch(updateAppSettings({ nextTabStep: "income" }));
         };
 
@@ -109,7 +110,7 @@ const EmployeeInfo = () => {
     return (
         <Container className="m-0 p-0 no-gutters">
             <Row className="mt-3 mb-4">
-                <h2>Enter Personal Information</h2>
+                <h2>Personal Information</h2>
             </Row>
             <Row className="mb-4 mx-4 border p-4">
                 <Form>
@@ -190,7 +191,8 @@ const EmployeeInfo = () => {
                         </Form.Group>
                     </Row>
                     <Row>
-                        <Form.Group as={Col} controlId="hireDateId">
+                        <Form.Group as={Col} controlId="hireDateId" className="d-flex align-items-center">
+                            <Form.Label className="mb-0 me-2" style={{ whiteSpace: "nowrap", fontWeight: 500 }}>Hiring Date</Form.Label>
                             <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate} onBlur={() => setEmployeeHireDateTouched} isInvalid={employeeHireDateTouched && !isValidHireDate(employeeHireDate)} onChange={e => setEmployeeHireDate(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">
                                 Please provide a valid hire date.

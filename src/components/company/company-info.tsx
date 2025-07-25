@@ -15,7 +15,6 @@ const CompanyInfo = () => {
     const [companyLogo, setCompanyLogo] = useState("");
     const [companyPhone, setCompanyPhone] = useState("");
     const [companyEmail, setCompanyEmail] = useState("");
-    const [validated, setValidated] = useState(false);
     const [companyNameTouched, setCompanyNameTouched] = useState(false);
     const [companyEINTouched, setCompanyEINTouched] = useState(false);
     const [companyAddress1Touched, setCompanyAddress1Touched] = useState(false);
@@ -56,15 +55,8 @@ const CompanyInfo = () => {
     }
 
     const handleSubmitGoBack = (event) => {
-        // const form = event.currentTarget;
-        // if (form.checkValidity() === false) {
-        //     event.stopPropagation();
-        //     event.preventDefault();
-        // }
-        // I don't think I need to dispatch anything here.
-        //        dispatch(saveCompanyInfo({ companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyLogo, companyPhone, companyEmail }));
         dispatch(updateAppSettings({ nextTabStep: "template" }));
-        };
+    };
 
     const handleSubmitGoNext = (event) => {
         const form = event.currentTarget;
@@ -72,7 +64,6 @@ const CompanyInfo = () => {
             event.preventDefault();
             event.stopPropagation();
         }
-        setValidated(true);
         dispatch(saveCompanyInfo({ companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail }));
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
@@ -156,7 +147,8 @@ const CompanyInfo = () => {
                         <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
                     <Col>
-                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
+                    {/* enable this when we are ready for full validation <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button> */}
+                        <Button className="float-left" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
                     </Col>
                 </Row>
             </Row>

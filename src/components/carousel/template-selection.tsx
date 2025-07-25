@@ -10,51 +10,52 @@ type GridCell = {
   caption: string;
 };
 
-const TemplateSelection = () => {
+const TemplateSelection = ({index}) => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    const [index, setIndex] = useState(templateId || 0); // Initialize index with templateId or default to 0
+    const [currentIndex, setCurrentIndex] = useState(index); // Initialize index with templateId
     const [payStubTemplates, setPayStubTemplates] = useState<GridCell[]>([]);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // Fetch image names from the images folder
+        // Fetch images name from the images folder
         fetch("/images/image-names.json")
             .then(res => res.json())
             .then((files: string[]) => {
                 setPayStubTemplates(
                     files.map((file, i) => ({
-                        id: i + 1,
+                        id: i,
                         imageUrl: file,
-                        caption: `Item ${i + 1}`,
+                        caption: `Issam Describe Item ${i}`,
                     }))
                 );
             });
     }, []);    
 
     const handleSelect = (i) => {
-      console.log("Carousel current Index", i);
-      setIndex(i);
+      console.log("TemplateSelection:handleSelect:index", i);
+      setCurrentIndex(i);
     };
   
     const handleSubmit = (event) => {
         event.preventDefault();
         dispatch(updateAppSettings({ templateId: index, nextTabStep: "company" }));
-        console.log("Selected index:", index);
+        console.log("TemplateSelection:handleSubmit:templateId:", index);
     };
 
     // Returns the image source path for a given image file name
     function getImageSrc(imageUrl: string): string {
         return `/images/${imageUrl}`;
     }
+
     useEffect(() => {
-        if (typeof templateId === "number" && templateId !== index) {
-            setIndex(templateId - 1); // Ensure index is set to a valid number
+        if (typeof currentIndex === "number" && templateId !== currentIndex) {
+            setCurrentIndex(index); // Ensure index is set to a valid number
         }
-    }, [templateId, index]);
+    }, [currentIndex, templateId]);
     
     return (
         <Container>
-            <Row  className="mt-4 mb-3">
+            <Row  className="mt-1 mb-2">
                 <h2>Select PayStub template to use:</h2>
             </Row>
             <Row className="hero-block">
