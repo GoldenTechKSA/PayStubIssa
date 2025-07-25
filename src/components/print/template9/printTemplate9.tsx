@@ -110,8 +110,8 @@ const PrintTemplate9: React.FC<PrintTemplate9Props> = ({ store }) => {
                     <td>{payPeriod}</td>
                   </tr>
                   <tr>
-                    <td className="paystub9-label">Pay Type:</td>
-                    <td>{generalInfo.paymentType}</td>
+                    <td className="paystub9-label">Pay Method:</td>
+                    <td>{generalInfo.paymentMethod}</td>
                   </tr>
                   <tr>
                     <td className="paystub9-label">Employment Type:</td>

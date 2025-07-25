@@ -1,0 +1,11 @@
+{
+    "paymentMethod": [
+        { "count": "52", "name": "Direct Deposit" },
+        { "count": "26", "name": "Physical Check" },
+        { "count": "24", "name": "Wire Transfer" },
+        { "count": "12", "name": "Cash Payment" },
+        { "count": "4", "name": "Pay Card/ Payroll Card" },
+        { "count": "2", "name": "Mobile Payment (e.g., Venmo, Zelle)" },
+        { "count": "1", "name": "Others" }
+    ]
+}

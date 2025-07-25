@@ -230,8 +230,8 @@ const PaystubPreview = () => {
                     </Col>
                     <Col>
                         <Form.Group>
-                            <Form.Label>Payment Type</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.paymentType} />
+                            <Form.Label>Payment Method</Form.Label>
+                            <Form.Control readOnly defaultValue={state.generalInfo.paymentMethod} />
                         </Form.Group>
                     </Col>
                     <Col>

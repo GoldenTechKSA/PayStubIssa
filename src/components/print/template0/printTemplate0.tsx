@@ -69,7 +69,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
   // General Info
   const {
     employmentType,
-    paymentType,
+    paymentMethod,
     paymentFrequency,
     payStubCount,
     checkNumber,
@@ -219,8 +219,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
                   <td>{payPeriod}</td>
                 </tr>
                 <tr>
-                  <td className="paystub-label">Pay Type:</td>
-                  <td>{paymentType}</td>
+                  <td className="paystub-label">Pay Method:</td>
+                  <td>{paymentMethod}</td>
                 </tr>
                 <tr>
                   <td className="paystub-label">Employment Type:</td>

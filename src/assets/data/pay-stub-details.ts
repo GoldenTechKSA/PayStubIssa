@@ -32,6 +32,9 @@ export interface EmployeeInfo {
 }
 export interface IncomeDetails {
     annualSalary: number;
+    wageType: string; // "Hourly" or "Salary", 
+    hourlyRate: number; // Example hourly rate
+    hoursWorked: number; // Example hours worked per week
     periodStartDate: Date;
     periodEndDate: Date;
     periodPayDate: Date;
@@ -39,10 +42,12 @@ export interface IncomeDetails {
 }
 export interface GeneralInfo {
     employmentType: string;
-    paymentType: string;
+    paymentMethod: string;
     paymentFrequency: string;
     payStubCount: number;
+    payStubNumber: number;
     checkNumber: number;
+    extraNotes: string;
 }
 export interface PayStubDetails {
     appSettings: AppSettings;

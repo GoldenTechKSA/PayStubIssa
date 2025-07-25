@@ -95,8 +95,8 @@ const PrintTemplate13: React.FC<PrintTemplate13Props> = ({ store }) => {
           <div className="paystub13-info-value">${incomeDetails.annualSalary.toLocaleString()}</div>
           <div className="paystub13-info-label">Employment Type</div>
           <div className="paystub13-info-value">{generalInfo.employmentType}</div>
-          <div className="paystub13-info-label">Payment Type</div>
-          <div className="paystub13-info-value">{generalInfo.paymentType}</div>
+          <div className="paystub13-info-label">Payment Method</div>
+          <div className="paystub13-info-value">{generalInfo.paymentMethod}</div>
           <div className="paystub13-info-label">Payment Frequency</div>
           <div className="paystub13-info-value">{generalInfo.paymentFrequency}</div>
           <div className="paystub13-info-label">Check Number</div>

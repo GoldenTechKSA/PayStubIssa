@@ -54,8 +54,9 @@ const IncomeInfo = () => {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         }
-        dispatch(saveIncomeDetails({ annualSalary, periodStartDate, periodEndDate, periodType }));
-        console.log("Income details saved:", { annualSalary, periodStartDate, periodEndDate, periodType });
+        dispatch(saveIncomeDetails({ annualSalary, wageType, hourlyRate, hoursWorked, periodStartDate, periodEndDate, periodType }));
+        const total = hourlyRate * hoursWorked;   // IssamR clean later
+        console.log("Income details saved:", { total, annualSalary, wageType, hourlyRate, hoursWorked, periodStartDate, periodEndDate, periodType });
         dispatch(updateAppSettings({ nextTabStep: "general" }));
         };
 
@@ -78,26 +79,15 @@ const IncomeInfo = () => {
                 <Form>
                     <Row className="mb-3">
                         <Col>
-                            <Form.Label className="mr-4">How are you paid?</Form.Label>
-                            <Button
-                                variant={wageType === "Hourly" ? "primary" : "outline-primary"}
-                                onClick={() => setWageType("Hourly")}
-                                className="me-2"
-                            >
-                                Hourly Wage
-                            </Button>
-                            <Button
-                                variant={wageType === "Salary" ? "primary" : "outline-primary"}
-                                onClick={() => setWageType("Salary")}
-                            >
-                                Yearly Salary
-                            </Button>
+                            <Form.Label className="mr-4">Do you earn wages hourly or receive a fixed salary?</Form.Label>
+                            <Button variant={wageType === "Hourly" ? "primary" : "outline-primary"} onClick={() => setWageType("Hourly")} className="me-2">Hourly Wage</Button>
+                            <Button variant={wageType === "Salary" ? "primary" : "outline-primary"} onClick={() => setWageType("Salary")}>Yearly Salary</Button>
                         </Col>
                     </Row>
                     {wageType === "Hourly" && (
                         <Row>
                             <Form.Group as={Col} controlId="hourlyRateId">
-                                <Form.Label>Hourly Rate</Form.Label>
+                                <Form.Label>Hourly Rate ($)</Form.Label>
                                 <Form.Control
                                     type="number"
                                     min={0}
@@ -108,9 +98,7 @@ const IncomeInfo = () => {
                                     isInvalid={hourlyRateTouched && hourlyRate <= 0}
                                     onChange={e => setHourlyRate(parseFloat(e.target.value))}
                                 />
-                                <Form.Control.Feedback type="invalid">
-                                    Please provide a valid hourly rate.
-                                </Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">Please provide a valid hourly rate.</Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group as={Col} controlId="hoursWorkedId">
                                 <Form.Label>Hours Worked</Form.Label>
@@ -124,28 +112,24 @@ const IncomeInfo = () => {
                                     isInvalid={hoursWorkedTouched && hoursWorked <= 0}
                                     onChange={e => setHoursWorked(parseFloat(e.target.value))}
                                 />
-                                <Form.Control.Feedback type="invalid">
-                                    Please provide a valid number of hours worked.
-                                </Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">Please provide a valid number of hours worked.</Form.Control.Feedback>
                             </Form.Group>
                         </Row>
                     )}
                     {wageType === "Salary" && (
                         <Row>
                             <Form.Group as={Col} controlId="AnnualIncomeId">
-                                <Form.Label>Annual income amount($)</Form.Label>
+                                <Form.Label>Salary Amount($)</Form.Label>
                                 <Form.Control
                                     type="text"
                                     pattern="^\$?\d{1,3}(,\d{3})*$"
-                                    placeholder="Annual income amount($)"
+                                    placeholder="Base Salary (Pre-Tax)"
                                     value={annualSalary === 0 ? "" : annualSalary}
                                     onBlur={() => setAnnualSalaryTouched(true)}
                                     isInvalid={annualSalaryTouched && !annualSalary}
                                     onChange={e => setAnnualSalary(parseInt(e.target.value))}
                                 />
-                                <Form.Control.Feedback type="invalid">
-                                    Please provide a valid income amount.
-                                </Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">Please provide a valid income amount.</Form.Control.Feedback>
                             </Form.Group>
                         </Row>
                     )}
