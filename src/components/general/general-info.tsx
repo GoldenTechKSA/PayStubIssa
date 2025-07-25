@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Container, Form, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings, saveGeneralInfo } from "../../redux/actions";
-
 import { useNavigate } from 'react-router-dom';
 // import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
@@ -18,12 +17,6 @@ const GeneralInfo = () => {
     const [ payStubCountTouched, setPayStubCountTouched ] = useState(false);
     const [ paymentFrequencyTouched, setPaymentFrequencyTouched ] = useState(false);
     const [ checkNumberTouched, setCheckNumberTouched ] = useState(false);
-
-    const [isEmploymentTypeHovered, setIsEmploymentTypeHovered] = useState(false);
-    const [ isPaymentTypeHovered, setIsPaymentTypeHovered ] = useState(false);
-    const [ isPayStubCountHovered, setIsPayStubCountHovered ] = useState(false);
-    const [ isPaymentFrequencyHovered, setIsPaymentFrequencyHovered ] = useState(false);
-    const [ isCheckNumberHovered, setIsCheckNumberHovered ] = useState(false);
 
 //    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const dispatch = useDispatch();
@@ -73,117 +66,39 @@ const GeneralInfo = () => {
                 <Row className="mb-4 mx-4  border p-4">
                     <Form>
                         <Row>
-                            <Form.Group as={Col} controlId="empolymentTypeId" onMouseEnter={() => setIsEmploymentTypeHovered(true)} onMouseLeave={() => setIsEmploymentTypeHovered(false)}>
+                            <Form.Group as={Col} controlId="empolymentTypeId">
+                                <Form.Label>Payment amount($)</Form.Label>
                                 <Form.Control type="text" placeholder="Employment type" value={employmentType} onBlur={() => setEmploymentTypeTouched(true)} isInvalid={employmentTypeTouched && !employmentType} onChange={e => setEmploymentType(parseInt(e.target.value))} />
-                                <Form.Control.Feedback type="invalid">
-                                    Please provide a valid employment type.
-                                </Form.Control.Feedback>
-                                {isEmploymentTypeHovered && (
-                                    <div
-                                        style={{
-                                            position: "absolute",
-                                            top: "-2.2rem",
-                                            right: 0,
-                                            background: "#2a7ae2",
-                                            color: "#fff",
-                                            padding: "0.5rem 1rem",
-                                            borderRadius: "6px",
-                                            fontSize: "0.95rem",
-                                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                                            zIndex: 10,
-                                        }}
-                                    >Employment type</div>
-                                )}
+                                <Form.Control.Feedback type="invalid">Enter a valid payment amount.</Form.Control.Feedback>
                             </Form.Group>
-                            <Form.Group as={Col} controlId="paymentTypeId" onMouseEnter={() => setIsPaymentTypeHovered(true)} onMouseLeave={() => setIsPaymentTypeHovered(false)}>
+                            <Form.Group as={Col} controlId="paymentTypeId">
+                                <Form.Label>Payment type (hourly, salary)</Form.Label>
                                 <Form.Control type="text" placeholder="Payment type" value={paymentType} onBlur={() => setPaymentTypeTouched(true)} isInvalid={paymentTypeTouched && !paymentType} onChange={e => setPaymentType(e.target.value)} />
-                                <Form.Control.Feedback type="invalid">
-                                    Please provide a valid payment type.
-                                </Form.Control.Feedback>
-                                {isPaymentTypeHovered && (
-                                    <div
-                                        style={{
-                                            position: "absolute",
-                                            top: "-2.2rem",
-                                            right: 0,
-                                            background: "#2a7ae2",
-                                            color: "#fff",
-                                            padding: "0.5rem 1rem",
-                                            borderRadius: "6px",
-                                            fontSize: "0.95rem",
-                                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                                            zIndex: 11,
-                                        }}
-                                    >Payment type</div>
-                                )}
+                                <Form.Control.Feedback type="invalid">Please provide a valid payment type.</Form.Control.Feedback>
                             </Form.Group>
-                            <Form.Group as={Col} controlId="paymentFrequencyId" onMouseEnter={() => setIsPaymentFrequencyHovered(true)} onMouseLeave={() => setIsPaymentFrequencyHovered(false)}>
+                            <Form.Group as={Col} controlId="paymentFrequencyId">
+                                <Form.Label>Enter number of requested paystubs</Form.Label>
                                 <Form.Control type="text" placeholder="How often you get paid?" value={paymentFrequency} onBlur={() => setPaymentFrequencyTouched(true)} isInvalid={paymentFrequencyTouched && !paymentFrequency} onChange={e => setPaymentFrequency(e.target.value)} />
-                                <Form.Control.Feedback type="invalid">
-                                    Please provide a valid payment frequency.
-                                </Form.Control.Feedback>
-                                {isPaymentFrequencyHovered && (
-                                    <div
-                                        style={{
-                                            position: "absolute",
-                                            top: "-2.2rem",
-                                            right: 0,
-                                            background: "#2a7ae2",
-                                            color: "#fff",
-                                            padding: "0.5rem 1rem",
-                                            borderRadius: "6px",
-                                            fontSize: "0.95rem",
-                                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                                            zIndex: 12,
-                                        }}
-                                    >How often you get paid?</div>
-                                )}
+                                <Form.Control.Feedback type="invalid">Please provide a valid payment frequency.</Form.Control.Feedback>
                             </Form.Group>
                         </Row>
-                        <Form.Group className="mb-4" controlId="payStubCountId" onMouseEnter={() => setIsPayStubCountHovered(true)} onMouseLeave={() => setIsPayStubCountHovered(false)}>
-                            <Form.Control placeholder="Enter number of requested paystubs" value={payStubCount} onBlur={() => setPayStubCountTouched(true)} isInvalid={payStubCountTouched && !isValidStubCount(payStubCount)} onChange={e => setPayStubCount(e.target.value)} />
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid number of paystubs.
-                            </Form.Control.Feedback>
-                                {isPayStubCountHovered && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: "-2.2rem",
-                                        right: 0,
-                                        background: "#2a7ae2",
-                                        color: "#fff",
-                                        padding: "0.5rem 1rem",
-                                        borderRadius: "6px",
-                                        fontSize: "0.95rem",
-                                        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                                        zIndex: 10,
-                                    }}
-                                >Enter number of requested paystubs</div>
-                            )}
-                        </Form.Group>
-                        <Form.Group controlId="checkNumberId" onMouseEnter={() => setIsCheckNumberHovered(true)} onMouseLeave={() => setIsCheckNumberHovered(false)}>
-                            <Form.Control placeholder="Enter a check number" value={checkNumber} onBlur={() => setCheckNumberTouched(true)} isInvalid={checkNumberTouched && !isValidCheckNum(checkNumber)} onChange={e => setCheckNumber(e.target.value)} />
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid check number (at least 3 digits).
-                            </Form.Control.Feedback>
-                            {isCheckNumberHovered && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: "-2.2rem",
-                                        right: 0,
-                                        background: "#2a7ae2",
-                                        color: "#fff",
-                                        padding: "0.5rem 1rem",
-                                        borderRadius: "6px",
-                                        fontSize: "0.95rem",
-                                        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                                        zIndex: 10,
-                                    }}
-                                >Enter a check number</div>
-                            )}
-                        </Form.Group>
+                        <Row>
+                            <Form.Group as={Col} className="mb-4" controlId="payStubCountId">
+                                <Form.Label>Enter number of requested paystubs</Form.Label>
+                                <Form.Control placeholder="example 1, 2 or 3" value={payStubCount} onBlur={() => setPayStubCountTouched(true)} isInvalid={payStubCountTouched && !isValidStubCount(payStubCount)} onChange={e => setPayStubCount(e.target.value)} />
+                                <Form.Control.Feedback type="invalid">Please provide a valid number of paystubs.</Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="checkNumberId">
+                                <Form.Label>Enter a check number</Form.Label>
+                                <Form.Control placeholder="Enter a check number" value={checkNumber} onBlur={() => setCheckNumberTouched(true)} isInvalid={checkNumberTouched && !isValidCheckNum(checkNumber)} onChange={e => setCheckNumber(e.target.value)} />
+                                <Form.Control.Feedback type="invalid">Please provide a valid check number (at least 3 digits).</Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="StubNumberId">
+                                <Form.Label>Enter paystub number</Form.Label>
+                                <Form.Control placeholder="Enter paystub number" value={checkNumber} onBlur={() => setCheckNumberTouched(true)} isInvalid={checkNumberTouched && !isValidCheckNum(checkNumber)} onChange={e => setCheckNumber(e.target.value)} />
+                                <Form.Control.Feedback type="invalid">Please provide a valid paystub number (at least 2 digits).</Form.Control.Feedback>
+                            </Form.Group>
+                        </Row>
                     </Form>
                 <Row className="w-100 justify-content-end mt-5 p-2">
                     <Col>

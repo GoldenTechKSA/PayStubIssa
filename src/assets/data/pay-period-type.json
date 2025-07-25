@@ -1,13 +1,11 @@
 {
     "payType": [
-        { "count": "0", "name": "Pay period type..." },
-        { "count": "52", "name": "Weekly" },
-        { "count": "26", "name": "Biweekly" },
-        { "count": "24", "name": "Semimonthly" },
-        { "count": "12", "name": "Monthly" },
+        { "count": "52", "name": "Weekly (ex. Every Saturday)" },
+        { "count": "26", "name": "Bi-Weekly (ex. Every other Friday)" },
+        { "count": "24", "name": "Semi-Monthly (ex. On the 1st and 15th of every month)" },
+        { "count": "12", "name": "Monthly (ex. Once a month)" },
         { "count": "4", "name": "Quarterly" },
         { "count": "2", "name": "Semiannually" },
-        { "count": "1", "name": "Annually" },
-        { "count": "260", "name": "Daily or Miscellaneous" }
+        { "count": "1", "name": "Annually" }
     ]
 }
