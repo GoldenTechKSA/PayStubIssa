@@ -16,9 +16,16 @@ const IncomeInfo = () => {
     const [ periodPayDateTouched, setPeriodPayDateTouched ] = useState(false);
     const [ periodTypeTouched, setPeriodTypeTouched ] = useState(false);
 
+    // New state for wage type and hourly controls
+    const [wageType, setWageType] = useState<"Hourly" | "Salary">("Hourly");
+    const [hourlyRate, setHourlyRate] = useState<number>(0);
+    const [hoursWorked, setHoursWorked] = useState<number>(0);
+    const [hourlyRateTouched, setHourlyRateTouched] = useState(false);
+    const [hoursWorkedTouched, setHoursWorkedTouched] = useState(false);
+
     const dispatch = useDispatch();
 
-    const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && annualSalary > 0 && periodType !== "";
+    const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && annualSalary > 0 && ((wageType === "Hourly" && hourlyRate > 0 && hoursWorked > 0) || (wageType === "Salary" && annualSalary > 0)) && periodType !== "";
 
     function isValidDate(dateStr: string): boolean {
         // Expected format: MM/DD/YYYY
@@ -69,14 +76,80 @@ const IncomeInfo = () => {
             </Row>
             <Row className="mb-4 mx-4  border p-4">
                 <Form>
+                    <Row className="mb-3">
+                        <Col>
+                            <Form.Label className="mr-4">How are you paid?</Form.Label>
+                            <Button
+                                variant={wageType === "Hourly" ? "primary" : "outline-primary"}
+                                onClick={() => setWageType("Hourly")}
+                                className="me-2"
+                            >
+                                Hourly Wage
+                            </Button>
+                            <Button
+                                variant={wageType === "Salary" ? "primary" : "outline-primary"}
+                                onClick={() => setWageType("Salary")}
+                            >
+                                Yearly Salary
+                            </Button>
+                        </Col>
+                    </Row>
+                    {wageType === "Hourly" && (
+                        <Row>
+                            <Form.Group as={Col} controlId="hourlyRateId">
+                                <Form.Label>Hourly Rate</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    min={0}
+                                    step="0.01"
+                                    placeholder="Hourly Rate"
+                                    value={hourlyRate === 0 ? "" : hourlyRate}
+                                    onBlur={() => setHourlyRateTouched(true)}
+                                    isInvalid={hourlyRateTouched && hourlyRate <= 0}
+                                    onChange={e => setHourlyRate(parseFloat(e.target.value))}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    Please provide a valid hourly rate.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="hoursWorkedId">
+                                <Form.Label>Hours Worked</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    min={0}
+                                    step="0.01"
+                                    placeholder="Hours Worked"
+                                    value={hoursWorked === 0 ? "" : hoursWorked}
+                                    onBlur={() => setHoursWorkedTouched(true)}
+                                    isInvalid={hoursWorkedTouched && hoursWorked <= 0}
+                                    onChange={e => setHoursWorked(parseFloat(e.target.value))}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    Please provide a valid number of hours worked.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Row>
+                    )}
+                    {wageType === "Salary" && (
+                        <Row>
+                            <Form.Group as={Col} controlId="AnnualIncomeId">
+                                <Form.Label>Annual income amount($)</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    pattern="^\$?\d{1,3}(,\d{3})*$"
+                                    placeholder="Annual income amount($)"
+                                    value={annualSalary === 0 ? "" : annualSalary}
+                                    onBlur={() => setAnnualSalaryTouched(true)}
+                                    isInvalid={annualSalaryTouched && !annualSalary}
+                                    onChange={e => setAnnualSalary(parseInt(e.target.value))}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    Please provide a valid income amount.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Row>
+                    )}
                     <Row>
-                        <Form.Group as={Col} controlId="AnnualIncomeId">
-                            <Form.Label>Annual income amount($)</Form.Label>
-                            <Form.Control type="text" placeholder="Annual income amount($)" pattern="^\$?\d{1,3}(,\d{3})*$" value={annualSalary} onBlur={() => setAnnualSalaryTouched(true)} isInvalid={annualSalaryTouched && !annualSalary} onChange={e => setAnnualSalary(parseInt(e.target.value))}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid income amount.
-                            </Form.Control.Feedback>
-                        </Form.Group>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
                             <Form.Label>How often are you paid?</Form.Label>
                             <Form.Control as="select" onBlur={() => setPeriodTypeTouched(true)} isInvalid={periodTypeTouched && !periodType} onSelect={e => setPeriodType((e.target as HTMLSelectElement).value)}>
