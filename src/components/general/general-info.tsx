@@ -25,6 +25,8 @@ const GeneralInfo = () => {
             event.stopPropagation();
         }
         dispatch(saveGeneralInfo({ payStubCount, payStubNumber, checkNumber, extraNotes }));
+        console.log("General Info Saved:", { payStubCount, payStubNumber, checkNumber, extraNotes });
+        console.log("moving to the next screen to preview the paystub details (paystubPreview)");
         navigate('/paystubPreview');
     };
 
@@ -65,7 +67,7 @@ const GeneralInfo = () => {
                         </Form.Group>
                         <Form.Group as={Col} controlId="paymentMethodId">
                             <Form.Label>Select the payment method for this pay period:</Form.Label>
-                            <Form.Control as="select" onBlur={() => setPaymentMethodTouched(true)} isInvalid={paymentMethodTouched && !paymentMethod} onSelect={e => setPaymentMethod((e.target as HTMLSelectElement).value)}>
+                            <Form.Control as="select" value={paymentMethod} onBlur={() => setPaymentMethodTouched(true)} isInvalid={paymentMethodTouched && !paymentMethod} onSelect={e => setPaymentMethod((e.target as HTMLSelectElement).value)}>
                                 { PAYMENTMETHOD.map((p) => <option key={p.count} value={p.count}>{p.name}</option> )}
                             <Form.Control.Feedback type="invalid">Please Select how you received payment for this pay period. (e.g. via direct deposit, physical check, wire transfer, or other means.</Form.Control.Feedback>
                             </Form.Control>

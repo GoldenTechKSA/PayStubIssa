@@ -1,32 +1,34 @@
 import React, {useState} from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveEmployeeInfo } from "../../redux/actions";
 import { FILINGSTATUS, STATESLIST } from "../../constants/globals";
+import { EmployeeInfo as EmployeeDetails, PayStubDetails } from "assets/data/pay-stub-details";
 
 const EmployeeInfo = () => {
-    const [ employeeFirstName, setEmployeeFirstName ] = useState("");
-    const [ employeeMiddleInitial, setEmployeeMiddleInitial ] = useState("");
-    const [ employeeLastName, setEmployeeLastName ] = useState("");
+    const employee = useSelector<PayStubDetails, EmployeeDetails>(state => state.employeeInfo);
+
+    const [employeeFirstName, setEmployeeFirstName ] = useState(employee.employeeFirstName || "");
+    const [employeeMiddleInitial, setEmployeeMiddleInitial ] = useState(employee.employeeMiddleInitial || "");
+    const [employeeLastName, setEmployeeLastName ] = useState(employee.employeeLastName || "");
+    const [employeeAddress1, setEmployeeAddress1] = useState(employee.employeeAddress1 || "");
+    const [employeeAddress2, setEmployeeAddress2] = useState(employee.employeeAddress2 || "");
+    const [employeeCity, setEmployeeCity] = useState(employee.employeeCity || "");
+    const [employeeState, setEmployeeState] = useState(employee.employeeState || "");
+    const [employeeZipCode, setEmployeeZipCode] = useState(employee.employeeZipCode || "");
+    const [employeeSSN, setEmployeeSSN] = useState(employee.employeeSSN || "");
+    const [employeePhone, setEmployeePhone] = useState(employee.employeePhone || "");
+    const [employeeEmail, setEmployeeEmail] = useState(employee.employeeEmail || "");
+    const [employeeMarriedStatus, setEmployeeMarriedStatus] = useState(employee.employeeMarriedStatus || "");
+    const [employeeHireDate, setEmployeeHireDate] = useState(employee.employeeHireDate || new Date()); // Default to today
+    const [employeeID, setEmployeeID] = useState(employee.employeeID || "");
+
     const [ employeeFirstNameTouched, setEmployeeFirstNameTouched ] = useState(false);
     const [ employeeLastNameTouched, setEmployeeLastNameTouched ] = useState(false);
-
-    const [employeeAddress1, setEmployeeAddress1] = useState("");
-    const [employeeAddress2, setEmployeeAddress2] = useState("");
-    const [employeeCity, setEmployeeCity] = useState("");
-    const [employeeState, setEmployeeState] = useState("");
-    const [employeeZipCode, setEmployeeZipCode] = useState("");
     const [employeeAddress1Touched, setEmployeeAddress1Touched] = useState(false);
     const [employeeCityTouched, setEmployeeCityTouched] = useState(false);
     const [employeeStateTouched, setEmployeeStateTouched] = useState(false);
     const [employeeZipCodeTouched, setEmployeeZipCodeTouched] = useState(false);
-
-    const [employeeSSN, setEmployeeSSN] = useState("");
-    const [employeePhone, setEmployeePhone] = useState("");
-    const [employeeEmail, setEmployeeEmail] = useState("");
-    const [employeeMarriedStatus, setEmployeeMarriedStatus] = useState("");
-    const [employeeHireDate, setEmployeeHireDate] = useState("");
-    const [employeeID, setEmployeeID] = useState("");
     const [employeeSSNTouched, setEmployeeSSNTouched] = useState(false);
     const [employeePhoneTouched, setEmployeePhoneTouched] = useState(false);
     const [employeeEmailTouched, setEmployeeEmailTouched] = useState(false);
@@ -43,7 +45,8 @@ const EmployeeInfo = () => {
             event.stopPropagation();
         }
         dispatch(saveEmployeeInfo({ employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus}));
-        // console.log("Employee Info Saved:", { employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus });
+        console.log("Employee Info Saved:", { employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus });
+        console.log("moving to the next screen <Income Details>: (income)");
         dispatch(updateAppSettings({ nextTabStep: "income" }));
         };
 
@@ -57,7 +60,7 @@ const EmployeeInfo = () => {
         dispatch(updateAppSettings({ nextTabStep: "company" }));
         };
     const isFormValid = isValidName(employeeFirstName) && isValidName(employeeLastName) &&  isValidAddress(employeeAddress1) && isValidZipCode(employeeZipCode) &&
-        isValidSSN(employeeSSN) && isValidPhone(employeePhone) && isValidID(employeeID) && isValidHireDate(employeeHireDate) &&
+        isValidSSN(employeeSSN) && isValidPhone(employeePhone) && isValidID(employeeID) && isValidHireDate(employeeHireDate.toISOString().split("T")[0]) &&
         employeeCity.trim().length >= 2 && employeeState && employeeEmail.trim().length > 0 && employeeMarriedStatus;
 
     // Validation functions
@@ -148,8 +151,8 @@ const EmployeeInfo = () => {
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeStateId">
-                            <Form.Control as="select" defaultValue="State" onBlur={() => setEmployeeStateTouched(true)} isInvalid={employeeStateTouched && !employeeState} onChange={e => setEmployeeState(e.target.value)} >
-                                { STATESLIST.map((s) => <option key={s.code} value={s.code}>{s.name}</option> )}
+                            <Form.Control as="select" value={employeeState} onBlur={() => setEmployeeStateTouched(true)} isInvalid={employeeStateTouched && !employeeState} onChange={e => setEmployeeState(e.target.value)} >
+                                { STATESLIST.map((s) => <option key={s.code} value={s.name}>{s.name}</option> )}
                             </Form.Control>
                             <Form.Control.Feedback type="invalid">
                                 Please select a state.
@@ -191,15 +194,17 @@ const EmployeeInfo = () => {
                         </Form.Group>
                     </Row>
                     <Row>
-                        <Form.Group as={Col} controlId="hireDateId" className="d-flex align-items-center">
+                        <Form.Group as={Col} controlId="hireDateId" >
                             <Form.Label className="mb-0 me-2" style={{ whiteSpace: "nowrap", fontWeight: 500 }}>Hiring Date</Form.Label>
-                            <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate} onBlur={() => setEmployeeHireDateTouched} isInvalid={employeeHireDateTouched && !isValidHireDate(employeeHireDate)} onChange={e => setEmployeeHireDate(e.target.value)}/>
+                            <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate.toISOString().split("T")[0]} onBlur={() => setEmployeeHireDateTouched} isInvalid={employeeHireDateTouched && !isValidHireDate(employeeHireDate.toISOString().split("T")[0])} 
+                            onChange={e => setEmployeeHireDate(new Date(e.target.value))}/>
                             <Form.Control.Feedback type="invalid">
                                 Please provide a valid hire date.
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeMarriedStatusId">
-                            <Form.Control as="select" defaultValue="Filing Status (Marital Status)" onBlur={() => setEmployeeMarriedStatusTouched(true)} isInvalid={employeeMarriedStatusTouched && !employeeMarriedStatus} onChange={e => setEmployeeMarriedStatus(e.target.value)}>
+                            <Form.Label className="mb-0 me-2" style={{ whiteSpace: "nowrap", fontWeight: 500 }}>Choose Filing Status (Marital Status)</Form.Label>
+                            <Form.Control as="select" value={employeeMarriedStatus} onBlur={() => setEmployeeMarriedStatusTouched(true)} isInvalid={employeeMarriedStatusTouched && !employeeMarriedStatus} onChange={e => setEmployeeMarriedStatus(e.target.value)}>
                                 { FILINGSTATUS.map((f) => <option key={f.id} value={f.id}>{f.name}</option> )}
                             <Form.Control.Feedback type="invalid">
                                 Please select a marital status.

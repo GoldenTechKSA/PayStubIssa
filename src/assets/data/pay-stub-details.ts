@@ -29,6 +29,7 @@ export interface EmployeeInfo {
     employeePhone: string;
     employeeEmail: string;
     employeeMarriedStatus: string;
+    employeeHireDate: Date;
 }
 export interface IncomeDetails {
     annualSalary: number;

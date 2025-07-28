@@ -32,14 +32,15 @@ const TemplateSelection = ({index}) => {
     }, []);    
 
     const handleSelect = (i) => {
-      console.log("TemplateSelection:handleSelect:index", i);
+      // console.log("TemplateSelection:handleSelect:index", i);
       setCurrentIndex(i);
     };
   
     const handleSubmit = (event) => {
         event.preventDefault();
         dispatch(updateAppSettings({ templateId: index, nextTabStep: "company" }));
-        console.log("TemplateSelection:handleSubmit:templateId:", index);
+        console.log("TemplateSelection:Submited template ID is:", index);
+        console.log("moving to the next screen <Company Information>: (company)");
     };
 
     // Returns the image source path for a given image file name
@@ -58,7 +59,7 @@ const TemplateSelection = ({index}) => {
             <Row  className="mt-1 mb-2">
                 <h2>Select PayStub template to use:</h2>
             </Row>
-            <Row className="hero-block">
+            <Row className="remove-later-hero-block">
                 <Carousel id="TemplateSelectionCarousel" activeIndex={index} onSelect={handleSelect} indicators={false} wrap={false} interval={null} prevIcon={<span aria-hidden="true" className="carousel-control-prev-icon"/>} nextIcon={<span aria-hidden="true" className="carousel-control-next-icon"/>}>
                     { payStubTemplates.map((template, i) => (
                         <Carousel.Item className="carousel-item" key={i}>

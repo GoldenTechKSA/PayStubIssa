@@ -1,25 +1,26 @@
 import React, {useState} from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveIncomeDetails } from "../../redux/actions";
 import { PAYPERIODTYPE } from "../../constants/globals";
+import { IncomeDetails, PayStubDetails } from "assets/data/pay-stub-details";
 
 const IncomeInfo = () => {
-    const [ annualSalary, setAnnualSalary ] = useState(0);
+    const income = useSelector<PayStubDetails, IncomeDetails>(state => state.incomeDetails);
+    const [ annualSalary, setAnnualSalary ] = useState(income.annualSalary);
     const [ periodStartDate, setPeriodStartDate ] = useState("");
     const [ periodEndDate, setPeriodEndDate ] = useState("");
     const [ periodPayDate, setPeriodPayDate ] = useState("");
-    const [periodType, setPeriodType] = useState("Hourly");
+    const [periodType, setPeriodType] = useState(income.periodType || "Hourly");
+    const [wageType, setWageType] = useState(income.wageType || "Hourly");
+    const [hourlyRate, setHourlyRate] = useState<number>(income.hourlyRate || 0);
+    const [hoursWorked, setHoursWorked] = useState<number>(income.hoursWorked || 0);
+
     const [ annualSalaryTouched, setAnnualSalaryTouched ] = useState(false);
     const [ periodStartDateTouched, setPeriodStartDateTouched ] = useState(false);
     const [ periodEndDateTouched, setPeriodEndDateTouched ] = useState(false);
     const [ periodPayDateTouched, setPeriodPayDateTouched ] = useState(false);
     const [ periodTypeTouched, setPeriodTypeTouched ] = useState(false);
-
-    // New state for wage type and hourly controls
-    const [wageType, setWageType] = useState<"Hourly" | "Salary">("Hourly");
-    const [hourlyRate, setHourlyRate] = useState<number>(0);
-    const [hoursWorked, setHoursWorked] = useState<number>(0);
     const [hourlyRateTouched, setHourlyRateTouched] = useState(false);
     const [hoursWorkedTouched, setHoursWorkedTouched] = useState(false);
 
@@ -57,6 +58,7 @@ const IncomeInfo = () => {
         dispatch(saveIncomeDetails({ annualSalary, wageType, hourlyRate, hoursWorked, periodStartDate, periodEndDate, periodType }));
         const total = hourlyRate * hoursWorked;   // IssamR clean later
         console.log("Income details saved:", { total, annualSalary, wageType, hourlyRate, hoursWorked, periodStartDate, periodEndDate, periodType });
+        console.log("moving to the next screen <General Details>: (general)");
         dispatch(updateAppSettings({ nextTabStep: "general" }));
         };
 
@@ -136,7 +138,7 @@ const IncomeInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
                             <Form.Label>How often are you paid?</Form.Label>
-                            <Form.Control as="select" onBlur={() => setPeriodTypeTouched(true)} isInvalid={periodTypeTouched && !periodType} onSelect={e => setPeriodType((e.target as HTMLSelectElement).value)}>
+                            <Form.Control as="select" value={periodType} onBlur={() => setPeriodTypeTouched(true)} isInvalid={periodTypeTouched && !periodType} onSelect={e => setPeriodType((e.target as HTMLSelectElement).value)}>
                                 { PAYPERIODTYPE.map((p) => <option key={p.count} value={p.count}>{p.name}</option> )}
                             <Form.Control.Feedback type="invalid">
                                 Please select a pay period type (weekly, monthly, etc.).

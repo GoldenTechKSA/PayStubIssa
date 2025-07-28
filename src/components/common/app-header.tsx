@@ -8,9 +8,9 @@ import { AppSettings, PayStubDetails } from "../../assets/data/pay-stub-details"
 
 const AppHeader = () => {
     const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
-    useEffect(() => {
-        console.log("Template id in the header component templateId=", templateId);
-    }, [templateId]);
+    // useEffect(() => {
+    //     console.log("Template id in the header component templateId=", templateId);
+    // }, [templateId]);
 
     return (
         <Navbar className="no-print">

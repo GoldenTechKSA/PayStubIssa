@@ -1,20 +1,23 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveCompanyInfo } from "../../redux/actions";
 import { STATESLIST } from "../../constants/globals";
+import { CompanyInfo as CompanyDetails, PayStubDetails } from "assets/data/pay-stub-details";
 
 const CompanyInfo = () => {
-    const [companyName, setCompanyName] = useState("");
-    const [companyEIN, setCompanyEIN] = useState("");
-    const [companyAddress1, setCompanyAddress1] = useState("");
-    const [companyAddress2, setCompanyAddress2] = useState("");
-    const [companyCity, setCompanyCity] = useState("");
-    const [companyState, setCompanyState] = useState("");
-    const [companyZipCode, setCompanyZipCode] = useState("");
-    const [companyLogo, setCompanyLogo] = useState("");
-    const [companyPhone, setCompanyPhone] = useState("");
-    const [companyEmail, setCompanyEmail] = useState("");
+    const companyInfo = useSelector<PayStubDetails, CompanyDetails>(state => state.companyInfo);
+    const [companyName, setCompanyName] = useState(companyInfo.companyName || "");
+    const [companyEIN, setCompanyEIN] = useState(companyInfo.companyEIN || "");
+    const [companyAddress1, setCompanyAddress1] = useState(companyInfo.companyAddress1 || "");
+    const [companyAddress2, setCompanyAddress2] = useState(companyInfo.companyAddress2 || "");
+    const [companyCity, setCompanyCity] = useState(companyInfo.companyCity || "");
+    const [companyState, setCompanyState] = useState(companyInfo.companyState || "");
+    const [companyZipCode, setCompanyZipCode] = useState(companyInfo.companyZipCode || "");
+    const [companyLogo, setCompanyLogo] = useState(companyInfo.companyLogo ||  "");
+    const [companyPhone, setCompanyPhone] = useState(companyInfo.companyPhone || "");
+    const [companyEmail, setCompanyEmail] = useState(companyInfo.companyEmail || "");
+
     const [companyNameTouched, setCompanyNameTouched] = useState(false);
     const [companyEINTouched, setCompanyEINTouched] = useState(false);
     const [companyAddress1Touched, setCompanyAddress1Touched] = useState(false);
@@ -23,7 +26,6 @@ const CompanyInfo = () => {
     const [companyZipCodeTouched, setCompanyZipCodeTouched] = useState(false);
     const [companyPhoneTouched, setCompanyPhoneTouched] = useState(false);
     const [companyEmailTouched, setCompanyEmailTouched] = useState(false);
-
 
     const dispatch = useDispatch();
     
@@ -65,6 +67,8 @@ const CompanyInfo = () => {
             event.stopPropagation();
         }
         dispatch(saveCompanyInfo({ companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail }));
+        console.log("Company details saved:", { companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail });
+        console.log("moving to the next screen <Employee Information>: (employee)");
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
 
@@ -109,8 +113,8 @@ const CompanyInfo = () => {
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyStateId">
-                            <Form.Control required as="select" defaultValue="Choose state..." onBlur={() => setCompanyStateTouched(true)} isInvalid={companyStateTouched && !companyState} onChange={(e) => setCompanyState(e.target.value)}>
-                                { STATESLIST.map((s) => <option key={s.code} value={s.code}>{s.name}</option> )}
+                            <Form.Control required as="select" value={companyState} onBlur={() => setCompanyStateTouched(true)} isInvalid={companyStateTouched && !companyState} onChange={(e) => setCompanyState(e.target.value)}>
+                                { STATESLIST.map((s) => <option key={s.code} value={s.name }>{s.name}</option> )}
                             </Form.Control>
                             <Form.Control.Feedback type="invalid">Please select a state.</Form.Control.Feedback>
                         </Form.Group>

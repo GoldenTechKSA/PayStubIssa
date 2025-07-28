@@ -1,4 +1,6 @@
 import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, PayStubDetails } from "./pay-stub-details";
+import { STATESLIST } from "../../constants/globals";
+
 
 const appSettings: AppSettings = {
     templateId: 0,
@@ -8,7 +10,7 @@ const appSettings: AppSettings = {
 
 const companyInfo: CompanyInfo = {
     companyName: "Issa Company Limited",
-    companyEIN: "83-112220000",
+    companyEIN: "83-1122334",
     companyAddress1: "1234 Main St.",
     companyAddress2: "Suite 500",
     companyCity: "Seattle",
@@ -32,7 +34,8 @@ const employeeInfo: EmployeeInfo = {
     employeeID: "122-802021",
     employeePhone: "(888) 555-1212",
     employeeEmail: "employee@company.com",
-    employeeMarriedStatus: "Single"
+    employeeMarriedStatus: "Single",
+    employeeHireDate: new Date("1980-01-01")
 };
 
 const incomeDetails: IncomeDetails = {
