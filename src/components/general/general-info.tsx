@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Container, Form, Row, Col, Button } from "react-bootstrap";
 import { updateAppSettings, saveGeneralInfo } from "../../redux/actions";
 import { useNavigate } from 'react-router-dom';
 import { PAYMENTMETHOD } from "../../constants/globals";
+import { GeneralInfo as GeneralDetails, PayStubDetails } from "assets/data/pay-stub-details";
 
 const GeneralInfo = () => {
-    const [ employmentType, setEmploymentType ] = useState("");
-    const [ payStubCount, setPayStubCount ] = useState(1);
-    const [ payStubNumber, setPaystubNumber ] = useState(1);
-    const [ checkNumber, setCheckNumber ] = useState(5000);
-    const [ paymentMethod, setPaymentMethod] = useState("Physical Check");
+    const general = useSelector<PayStubDetails, GeneralDetails>(state => state.generalInfo);
+    const [ employmentType, setEmploymentType ] = useState(general.employmentType || "Contractor");
+    const [ payStubCount, setPayStubCount ] = useState(general.payStubCount || 1);
+    const [ payStubNumber, setPaystubNumber ] = useState(general.payStubNumber || 1);
+    const [ checkNumber, setCheckNumber ] = useState(general.checkNumber || 5000);
+    const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "Direct Deposit");
     const [ extraNotes, setExtraNotes ] = useState("");
     const [ payStubCountTouched, setPayStubCountTouched ] = useState(false);
     const [ paymentMethodTouched, setPaymentMethodTouched ] = useState(false);
@@ -24,7 +26,7 @@ const GeneralInfo = () => {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         }
-        dispatch(saveGeneralInfo({ payStubCount, payStubNumber, checkNumber, extraNotes }));
+        dispatch(saveGeneralInfo({ payStubCount, paymentMethod, payStubNumber, checkNumber, extraNotes }));
         console.log("General Info Saved:", { payStubCount, payStubNumber, checkNumber, extraNotes });
         console.log("moving to the next screen to preview the paystub details (paystubPreview)");
         navigate('/paystubPreview');
@@ -67,8 +69,8 @@ const GeneralInfo = () => {
                         </Form.Group>
                         <Form.Group as={Col} controlId="paymentMethodId">
                             <Form.Label>Select the payment method for this pay period:</Form.Label>
-                            <Form.Control as="select" value={paymentMethod} onBlur={() => setPaymentMethodTouched(true)} isInvalid={paymentMethodTouched && !paymentMethod} onSelect={e => setPaymentMethod((e.target as HTMLSelectElement).value)}>
-                                { PAYMENTMETHOD.map((p) => <option key={p.count} value={p.count}>{p.name}</option> )}
+                            <Form.Control as="select" value={paymentMethod} onBlur={() => setPaymentMethodTouched(true)} isInvalid={paymentMethodTouched && !paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
+                                { PAYMENTMETHOD.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}
                             <Form.Control.Feedback type="invalid">Please Select how you received payment for this pay period. (e.g. via direct deposit, physical check, wire transfer, or other means.</Form.Control.Feedback>
                             </Form.Control>
                         </Form.Group>

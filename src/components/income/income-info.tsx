@@ -11,7 +11,7 @@ const IncomeInfo = () => {
     const [ periodStartDate, setPeriodStartDate ] = useState("");
     const [ periodEndDate, setPeriodEndDate ] = useState("");
     const [ periodPayDate, setPeriodPayDate ] = useState("");
-    const [periodType, setPeriodType] = useState(income.periodType || "Hourly");
+    const [periodType, setPeriodType] = useState(income.periodType || "Weekly");
     const [wageType, setWageType] = useState(income.wageType || "Hourly");
     const [hourlyRate, setHourlyRate] = useState<number>(income.hourlyRate || 0);
     const [hoursWorked, setHoursWorked] = useState<number>(income.hoursWorked || 0);
@@ -23,6 +23,8 @@ const IncomeInfo = () => {
     const [ periodTypeTouched, setPeriodTypeTouched ] = useState(false);
     const [hourlyRateTouched, setHourlyRateTouched] = useState(false);
     const [hoursWorkedTouched, setHoursWorkedTouched] = useState(false);
+
+    console.log("IncomeInfo component rendered with initial values:", income);
 
     const dispatch = useDispatch();
 
@@ -138,8 +140,8 @@ const IncomeInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
                             <Form.Label>How often are you paid?</Form.Label>
-                            <Form.Control as="select" value={periodType} onBlur={() => setPeriodTypeTouched(true)} isInvalid={periodTypeTouched && !periodType} onSelect={e => setPeriodType((e.target as HTMLSelectElement).value)}>
-                                { PAYPERIODTYPE.map((p) => <option key={p.count} value={p.count}>{p.name}</option> )}
+                            <Form.Control as="select" required value={periodType} onBlur={() => setPeriodTypeTouched(true)} isInvalid={periodTypeTouched && !periodType} onChange={e => setPeriodType(e.target.value)}>
+                                { PAYPERIODTYPE.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}
                             <Form.Control.Feedback type="invalid">
                                 Please select a pay period type (weekly, monthly, etc.).
                             </Form.Control.Feedback>

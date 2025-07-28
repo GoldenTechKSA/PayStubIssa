@@ -114,7 +114,7 @@ const CompanyInfo = () => {
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyStateId">
                             <Form.Control required as="select" value={companyState} onBlur={() => setCompanyStateTouched(true)} isInvalid={companyStateTouched && !companyState} onChange={(e) => setCompanyState(e.target.value)}>
-                                { STATESLIST.map((s) => <option key={s.code} value={s.name }>{s.name}</option> )}
+                                { STATESLIST.map((s) => <option key={s.code} value={s.name}>{s.name}</option> )}
                             </Form.Control>
                             <Form.Control.Feedback type="invalid">Please select a state.</Form.Control.Feedback>
                         </Form.Group>
