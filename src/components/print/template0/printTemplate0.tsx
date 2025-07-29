@@ -28,63 +28,21 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
   const generalInfo: GeneralInfo = store.generalInfo;
 
   // Company Info
-  const {
-    companyName,
-    companyAddress1,
-    companyAddress2,
-    companyCity,
-    companyState,
-    companyZipCode,
-    companyPhone,
-    companyEmail,
-    companyEIN,
-  } = companyInfo;
+  const {companyName, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyPhone, companyEmail, companyEIN,} = companyInfo;
 
   // Employee Info
-  const {
-    employeeFirstName,
-    employeeMiddleInitial,
-    employeeLastName,
-    employeeAddress1,
-    employeeAddress2,
-    employeeCity,
-    employeeState,
-    employeeZipCode,
-    employeePhone,
-    employeeEmail,
-    employeeSSN,
-    employeeID,
-    employeeMarriedStatus,
-  } = employeeInfo;
+  const {employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeePhone, employeeEmail, employeeSSN, employeeID, employeeMarriedStatus, } = employeeInfo;
 
   // Income Details
-  const {
-    annualSalary,
-    periodStartDate,
-    periodEndDate,
-    periodPayDate,
-    periodType,
-  } = incomeDetails;
+  const {annualSalary, periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
 
   // General Info
-  const {
-    employmentType,
-    paymentMethod,
-    paymentFrequency,
-    payStubCount,
-    checkNumber,
-  } = generalInfo;
+  const {employmentType, paymentMethod, paymentFrequency, payStubCount, checkNumber,} = generalInfo;
 
   // Compose values for the template
-  const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName]
-    .filter(Boolean)
-    .join(" ");
-  const employeeFullAddress = [employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode]
-    .filter(Boolean)
-    .join(", ");
-  const companyFullAddress = [companyAddress1, companyAddress2, companyCity, companyState, companyZipCode]
-    .filter(Boolean)
-    .join(", ");
+  const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName].filter(Boolean).join(" ");
+  const employeeFullAddress = [employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode].filter(Boolean).join(", ");
+  const companyFullAddress = [companyAddress1, companyAddress2, companyCity, companyState, companyZipCode] .filter(Boolean).join(", ");
   const payPeriod = `${formatDate(periodStartDate)} - ${formatDate(periodEndDate)}`;
 
   // Example earnings, deductions, and taxes (replace with real calculations as needed)
@@ -164,7 +122,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
             </div>
             <div className="paystub-header-company-ein">{companyEIN && `EIN: ${companyEIN}`}</div>
           </div>
-          <div className="paystub-header-title">Print 0 - PAY STUB</div>
+          <div className="paystub-header-title">PAY STUB</div>
         </div>
 
         {/* Employee & Pay Info */}
