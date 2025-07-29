@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  CompanyInfo,
-  EmployeeInfo,
-  IncomeDetails,
-  GeneralInfo,
-  PayStubDetails,
-} from "../../../assets/data/pay-stub-details";
+import { CompanyInfo, EmployeeInfo, IncomeDetails, GeneralInfo, PayStubDetails, } from "../../../assets/data/pay-stub-details";
 import "./printTemplate0.css";
 
 // Helper to format date fields safely
@@ -42,7 +36,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
   // Compose values for the template
   const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName].filter(Boolean).join(" ");
   const employeeFullAddress = [employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode].filter(Boolean).join(", ");
-  const companyFullAddress = [companyAddress1, companyAddress2, companyCity, companyState, companyZipCode] .filter(Boolean).join(", ");
+  const companyFullAddress = [companyAddress1, companyAddress2, companyCity, companyState, companyZipCode].filter(Boolean).join(", ");
   const payPeriod = `${formatDate(periodStartDate)} - ${formatDate(periodEndDate)}`;
 
   // Example earnings, deductions, and taxes (replace with real calculations as needed)
@@ -87,11 +81,10 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
         {`
         @media print {
           body, html, #root, .paystub-print-root0 {
-            background: #fff !important;
+            background: #456799 !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100vw !important;
-            min-height: 100vh !important;
           }
           .no-print {
             display: none !important;
@@ -103,14 +96,6 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
         }
         `}
       </style>
-      <div className="text-center mb-3 no-print">
-        <button
-          onClick={handlePrint}
-          className="px-3 py-2 bg-blue-600 text-white border-none rounded cursor-pointer text-[11px] hover:bg-blue-700"
-        >
-          Print or Save as PDF
-        </button>
-      </div>
       <div className="paystub-print-paper0">
         {/* Header */}
         <div className="paystub-header0">
@@ -264,6 +249,14 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
           <p>This is not a check. For questions about your pay stub, please contact HR.</p>
           <p>{companyName || "Company Name"} - Confidential</p>
         </div>
+      </div>
+      <div className="text-center mb-3 no-print">
+        <button
+          onClick={handlePrint}
+          className="px-3 py-2 bg-blue-600 border-none rounded cursor-pointer text-[11px] hover:bg-blue-700"
+        >
+          Print or Save as PDF
+        </button>
       </div>
     </div>
   );
