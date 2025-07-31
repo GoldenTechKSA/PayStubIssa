@@ -99,6 +99,10 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
       <div className="paystub-print-paper0">
         {/* Header */}
         <div className="paystub-header0">
+          <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
+            <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
+            <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="22" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">CO</text>
+          </svg>
           <div className="paystub-header-company0">
             <div className="paystub-header-company-name0">{companyName || "Company Name"}</div>
             <div className="paystub-header-company-address0">{companyFullAddress}</div>

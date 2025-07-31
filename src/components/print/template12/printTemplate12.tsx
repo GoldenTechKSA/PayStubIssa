@@ -17,21 +17,11 @@ const PrintTemplate12: React.FC<PrintTemplate12Props> = ({ store }) => {
 
   // Company Info
   const company = store.companyInfo;
-  const companyFullAddress = [
-    company.companyAddress1,
-    company.companyAddress2,
-    company.companyCity,
-    company.companyState,
-    company.companyZipCode,
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const companyFullAddress = [company.companyAddress1, company.companyAddress2, company.companyCity, company.companyState, company.companyZipCode,].filter(Boolean).join(", ");
 
   // Employee Info
   const emp = store.employeeInfo;
-  const employeeFullName = [emp.employeeFirstName, emp.employeeMiddleInitial, emp.employeeLastName]
-    .filter(Boolean)
-    .join(" ");
+  const employeeFullName = [emp.employeeFirstName, emp.employeeMiddleInitial, emp.employeeLastName].filter(Boolean).join(" ");
 
   // Pay Period Info
   const income = store.incomeDetails;
