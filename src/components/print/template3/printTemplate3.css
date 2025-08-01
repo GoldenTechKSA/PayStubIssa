@@ -4,18 +4,12 @@
 }
 .paystub3-root {
 background: linear-gradient(135deg, #f3e8ff 60%, #ede9fe 100%);
-min-height: 100vh;
-padding: 2rem 0;
+padding: 0 0;
 }
 .paystub3-paper {
 background: #fff;
-max-width: 8.5in;
-min-height: 11in;
 margin: 0 auto;
 border: 2px solid #a78bfa;
-border-radius: 1.5rem;
-box-shadow: 0 8px 32px rgba(139,92,246,0.10);
-padding: 2.5rem 2rem 2rem 2rem;
 font-family: 'Segoe UI', Arial, sans-serif;
 color: #222;
 }

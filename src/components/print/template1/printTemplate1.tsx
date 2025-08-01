@@ -19,6 +19,7 @@ const PrintTemplate1: React.FC<PrintTemplate1Props> = ({ store }) => {
   const employeeFullName = [employeeInfo.employeeFirstName, employeeInfo.employeeMiddleInitial, employeeInfo.employeeLastName].filter(Boolean).join(" ");
   const employeeFullAddress = [employeeInfo.employeeAddress1, employeeInfo.employeeAddress2, employeeInfo.employeeCity, employeeInfo.employeeState, employeeInfo.employeeZipCode].filter(Boolean).join(", ");
   const payPeriod = `${formatDate(incomeDetails.periodStartDate)} - ${formatDate(incomeDetails.periodEndDate)}`;
+  const payStubNumber = generalInfo.payStubNumber;
 
   // Example data (replace with real calculations)
   const earnings = [
@@ -40,17 +41,14 @@ const PrintTemplate1: React.FC<PrintTemplate1Props> = ({ store }) => {
 
   return (
     <div className="paystub1-root">
-      <div className="text-center mb-3 no-print">
-        <button
-          onClick={handlePrint}
-          className="px-3 py-2 bg-blue-600 text-white border-none rounded cursor-pointer text-[11px] hover:bg-blue-700"
-        >
-          Print or Save as PDF
-        </button>
-      </div>
       <div className="paystub1-paper">
         {/* Header */}
         <div className="paystub1-header">
+          {/* Company Logo */}
+          <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
+            <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
+            <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="16" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">LOGO</text>
+          </svg>
           <div>
             <div className="paystub1-header-company">{companyInfo.companyName || "Company Name"}</div>
             <div style={{ fontSize: "0.95em", color: "#444" }}>{companyFullAddress}</div>
@@ -59,7 +57,10 @@ const PrintTemplate1: React.FC<PrintTemplate1Props> = ({ store }) => {
             </div>
             <div style={{ fontSize: "0.95em", color: "#444" }}>{companyInfo.companyEIN && `EIN: ${companyInfo.companyEIN}`}</div>
           </div>
-          <div className="paystub1-header-title">Print 1 - PAY STUB</div>
+          <div>
+            <div className="paystub-header-title0">EARNINGS STATEMENT</div>
+            <div className="paystub-header-company-ein0">{payStubNumber && `Paystub Number: ${payStubNumber}`}</div>
+          </div>
         </div>
 
         {/* Employee & Pay Info */}
@@ -133,63 +134,14 @@ const PrintTemplate1: React.FC<PrintTemplate1Props> = ({ store }) => {
             </table>
           </div>
         </div>
-
-        {/* Main Table */}
-        <table className="paystub1-main-table">
-          <thead>
-            <tr>
-              <th>Description</th>
-              <th>Earnings</th>
-              <th>Earnings YTD</th>
-              <th>Deductions</th>
-              <th>Deductions YTD</th>
-              <th>Taxes</th>
-              <th>Taxes YTD</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: Math.max(earnings.length, deductions.length, taxes.length) }).map((_, i) => (
-              <tr key={i}>
-                <td>
-                  {earnings[i]?.desc || deductions[i]?.desc || taxes[i]?.desc || ""}
-                </td>
-                <td>{earnings[i]?.current || ""}</td>
-                <td>{earnings[i]?.ytd || ""}</td>
-                <td>{deductions[i]?.current || ""}</td>
-                <td>{deductions[i]?.ytd || ""}</td>
-                <td>{taxes[i]?.current || ""}</td>
-                <td>{taxes[i]?.ytd || ""}</td>
-              </tr>
-            ))}
-            <tr className="paystub1-total-row">
-              <td>Total</td>
-              <td>{earnings.reduce((a, b) => a + parseFloat(b.current.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-              <td>{earnings.reduce((a, b) => a + parseFloat(b.ytd.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-              <td>{deductions.reduce((a, b) => a + parseFloat(b.current.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-              <td>{deductions.reduce((a, b) => a + parseFloat(b.ytd.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-              <td>{taxes.reduce((a, b) => a + parseFloat(b.current.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-              <td>{taxes.reduce((a, b) => a + parseFloat(b.ytd.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        {/* Net Pay Summary */}
-        <div className="paystub1-netpay-row">
-          <div>
-            <span className="paystub1-label">Net Pay (This Period):</span>
-            <span className="paystub1-netpay-amount">{netPay}</span>
-          </div>
-          <div>
-            <span className="paystub1-label">Net Pay (YTD):</span>
-            <span className="paystub1-netpay-amount">{netPayYTD}</span>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="paystub1-footer">
-          <p>This is not a check. For questions about your pay stub, please contact HR.</p>
-          <p>{companyInfo.companyName || "Company Name"} - Confidential</p>
-        </div>
+      </div>
+      <div className="text-center mb-3 no-print">
+        <button
+          onClick={handlePrint}
+          className="px-3 py-2 bg-blue-600 text-white border-none rounded cursor-pointer text-[11px] hover:bg-blue-700"
+        >
+          Print or Save as PDF
+        </button>
       </div>
     </div>
   );

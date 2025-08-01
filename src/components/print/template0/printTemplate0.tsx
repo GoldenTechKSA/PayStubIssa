@@ -31,7 +31,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
   const {annualSalary, periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
 
   // General Info
-  const {employmentType, paymentMethod, paymentFrequency, payStubCount, checkNumber,} = generalInfo;
+  const {employmentType, paymentMethod, paymentFrequency, payStubNumber, payStubCount, checkNumber,} = generalInfo;
 
   // Compose values for the template
   const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName].filter(Boolean).join(" ");
@@ -99,6 +99,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
       <div className="paystub-print-paper0">
         {/* Header */}
         <div className="paystub-header0">
+          {/* Company Logo */}
           <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
             <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
             <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="16" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">LOGO</text>
@@ -111,7 +112,10 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
             </div>
             <div className="paystub-header-company-ein0">{companyEIN && `EIN: ${companyEIN}`}</div>
           </div>
-          <div className="paystub-header-title0">PAY STUB</div>
+          <div className="">
+            <div className="paystub-header-title0">PAY STUB</div>
+            <div className="paystub-header-company-ein0">{payStubNumber && `Paystub ID: ${payStubNumber}`}</div>
+          </div>
         </div>
 
         {/* Employee & Pay Info */}
@@ -188,70 +192,14 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
 
         {/* Earnings, Deductions, Taxes Table */}
         <table className="paystub-main-table0">
-          <thead>
-            <tr>
-              <th rowSpan={2}>Description</th>
-              <th colSpan={2}>Earnings</th>
-              <th colSpan={2}>Deductions</th>
-              <th colSpan={2}>Taxes</th>
-            </tr>
-            <tr>
-              <th>Current</th>
-              <th>YTD</th>
-              <th>Current</th>
-              <th>YTD</th>
-              <th>Current</th>
-              <th>YTD</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Maximum rows among all sections */}
-            {Array.from({ length: Math.max(earnings.length, deductions.length, taxes.length) }).map((_, i) => (
-              <tr key={i}>
-                <td>
-                  {earnings[i]?.description || deductions[i]?.description || taxes[i]?.description || ""}
-                </td>
-                <td>{earnings[i]?.current || ""}</td>
-                <td>{earnings[i]?.ytd || ""}</td>
-                <td>{deductions[i]?.current || ""}</td>
-                <td>{deductions[i]?.ytd || ""}</td>
-                <td>{taxes[i]?.current || ""}</td>
-                <td>{taxes[i]?.ytd || ""}</td>
-              </tr>
-            ))}
-            {/* Totals */}
-            <tr className="paystub-total-row0">
-              <td>Total</td>
-              <td>{totalEarnings}</td>
-              <td>{totalEarningsYTD}</td>
-              <td>{totalDeductions}</td>
-              <td>{totalDeductionsYTD}</td>
-              <td>{totalTaxes}</td>
-              <td>{totalTaxesYTD}</td>
-            </tr>
-          </tbody>
         </table>
 
         {/* Net Pay Summary */}
         <div className="paystub-netpay-row0">
-          <div>
-            <span className="paystub-label0">Net Pay (This Period):</span>
-            <span className="paystub-netpay-amount0">{netPay}</span>
-          </div>
-          <div>
-            <span className="paystub-label0">Net Pay (YTD):</span>
-            <span className="paystub-netpay-amount0">{netPayYTD}</span>
-          </div>
-          <div>
-            <span className="paystub-label0">Direct Deposit:</span>
-            <span>{directDeposit}</span>
-          </div>
         </div>
 
         {/* Footer */}
         <div className="paystub-footer0">
-          <p>This is not a check. For questions about your pay stub, please contact HR.</p>
-          <p>{companyName || "Company Name"} - Confidential</p>
         </div>
       </div>
       <div className="text-center mb-3 no-print">

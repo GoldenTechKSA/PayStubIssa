@@ -4,18 +4,12 @@
 }
 .paystub6-root {
   background: #f1f5f9;
-  min-height: 100vh;
-  padding: 2rem 0;
+  padding: 0 0;
 }
 .paystub6-paper {
   background: #fff;
-  max-width: 8.5in;
-  min-height: 11in;
   margin: 0 auto;
   border: 2px solid #64748b;
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 24px rgba(30,41,59,0.10);
-  padding: 2rem 2rem 2rem 2rem;
   font-family: 'Segoe UI', Arial, sans-serif;
   color: #222;
 }
