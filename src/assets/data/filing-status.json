@@ -1,9 +1,8 @@
 {
     "status": [
-        { "id": "SNG", "name": "Single" },
-        { "id": "MFS", "name": "Married filing separately" },
-        { "id": "MFJ", "name": "Married filing jointly" },
-        { "id": "HOH", "name": "Head of household" },
-        { "id": "QWI", "name": "Qualifying widow(er)" }
+        { "id": "single", "name": "Single" },
+        { "id": "marriedFilingJointly", "name": "Married filing jointly" },
+        { "id": "marriedFilingSeparately", "name": "Married filing separately" },
+        { "id": "headOfHousehold", "name": "Head of household" }
     ]
 }

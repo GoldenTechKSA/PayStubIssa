@@ -50,6 +50,7 @@ const PrintTemplate13: React.FC<PrintTemplate13Props> = ({ store }) => {
         </div>
         <div className="paystub13-title">PAY STUB</div>
       </div>
+
       {/* Three-Column Info */}
       <div className="paystub13-info-row-3col">
         {/* Employee */}
@@ -103,6 +104,7 @@ const PrintTemplate13: React.FC<PrintTemplate13Props> = ({ store }) => {
           <div className="paystub13-info-value">{generalInfo.checkNumber}</div>
         </div>
       </div>
+
       {/* Main Table */}
       <div className="paystub13-table-section">
         <table className="paystub13-table">
@@ -170,10 +172,12 @@ const PrintTemplate13: React.FC<PrintTemplate13Props> = ({ store }) => {
           </tbody>
         </table>
       </div>
+
       {/* Net Pay Summary */}
       <div className="paystub13-netpay-summary">
         Net Pay: <span style={{ marginLeft: "1.2rem" }}>${netPay.toFixed(2)}</span>
       </div>
+
       {/* Footer */}
       <div className="paystub13-footer">
         <div className="paystub13-footer-links">

@@ -34,15 +34,18 @@ const employeeInfo: EmployeeInfo = {
     employeeID: "122-802021",
     employeePhone: "(888) 555-1212",
     employeeEmail: "employee@company.com",
-    employeeMarriedStatus: "Single",
+    employeeMarriedStatus: "single",
     employeeHireDate: new Date("1980-01-01")
 };
 
 const incomeDetails: IncomeDetails = {
-    annualSalary: 125500,
+    annualSalary: 100000,
     wageType: "Hourly", 
-    hourlyRate: 35.00, // Example hourly rate
+    hourlyRate: 20.00, // Example hourly rate
     hoursWorked: 40, // Example hours worked per week
+    overtimeRate: 30.00, // Example overtime hourly rate
+    overtimeHours: 10, // Example overtime hours worked per week
+    bonusAmount: 200.00, // Example extrea bonus amount
     periodStartDate: new Date(),
     periodEndDate: new Date(),
     periodPayDate: new Date(),

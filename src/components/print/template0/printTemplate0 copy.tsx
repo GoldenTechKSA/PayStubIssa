@@ -97,95 +97,6 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
         `}
       </style>
       <div className="paystub-print-paper0">
-        {/* Header */}
-        <div className="paystub-header0">
-          <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
-            <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
-            <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="16" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">LOGO</text>
-          </svg>
-          <div className="paystub-header-company0">
-            <div className="paystub-header-company-name0">{companyName || "Company Name"}</div>
-            <div className="paystub-header-company-address0">{companyFullAddress}</div>
-            <div className="paystub-header-company-contact0">
-              {companyPhone}{companyPhone && companyEmail ? " | " : ""}{companyEmail}
-            </div>
-            <div className="paystub-header-company-ein0">{companyEIN && `EIN: ${companyEIN}`}</div>
-          </div>
-          <div className="paystub-header-title0">PAY STUB</div>
-        </div>
-
-        {/* Employee & Pay Info */}
-        <div className="paystub-info-row0">
-          <div className="paystub-info-col0">
-            <table>
-              <tbody>
-                <tr>
-                  <td className="paystub-label0">Employee Name:</td>
-                  <td>{employeeFullName}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Employee ID:</td>
-                  <td>{employeeID}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">SSN:</td>
-                  <td>{employeeSSN}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Address:</td>
-                  <td>{employeeFullAddress}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Phone:</td>
-                  <td>{employeePhone}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Email:</td>
-                  <td>{employeeEmail}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Filing Status:</td>
-                  <td>{employeeMarriedStatus}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="paystub-info-col0">
-            <table>
-              <tbody>
-                <tr>
-                  <td className="paystub-label0">Pay Date:</td>
-                  <td>{formatDate(periodPayDate)}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Check #:</td>
-                  <td>{checkNumber}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Pay Period:</td>
-                  <td>{payPeriod}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Pay Method:</td>
-                  <td>{paymentMethod}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Employment Type:</td>
-                  <td>{employmentType}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Pay Frequency:</td>
-                  <td>{paymentFrequency}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Annual Salary:</td>
-                  <td>{annualSalary}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         {/* Earnings, Deductions, Taxes Table */}
         <table className="paystub-main-table0">
           <thead>
@@ -231,36 +142,6 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
             </tr>
           </tbody>
         </table>
-
-        {/* Net Pay Summary */}
-        <div className="paystub-netpay-row0">
-          <div>
-            <span className="paystub-label0">Net Pay (This Period):</span>
-            <span className="paystub-netpay-amount0">{netPay}</span>
-          </div>
-          <div>
-            <span className="paystub-label0">Net Pay (YTD):</span>
-            <span className="paystub-netpay-amount0">{netPayYTD}</span>
-          </div>
-          <div>
-            <span className="paystub-label0">Direct Deposit:</span>
-            <span>{directDeposit}</span>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="paystub-footer0">
-          <p>This is not a check. For questions about your pay stub, please contact HR.</p>
-          <p>{companyName || "Company Name"} - Confidential</p>
-        </div>
-      </div>
-      <div className="text-center mb-3 no-print">
-        <button
-          onClick={handlePrint}
-          className="px-3 py-2 bg-blue-600 border-none rounded cursor-pointer text-[11px] hover:bg-blue-700"
-        >
-          Print or Save as PDF
-        </button>
       </div>
     </div>
   );

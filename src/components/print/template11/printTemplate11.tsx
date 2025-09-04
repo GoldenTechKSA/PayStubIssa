@@ -17,21 +17,11 @@ const PrintTemplate11: React.FC<PrintTemplate11Props> = ({ store }) => {
 
   // Company Info
   const company = store.companyInfo;
-  const companyFullAddress = [
-    company.companyAddress1,
-    company.companyAddress2,
-    company.companyCity,
-    company.companyState,
-    company.companyZipCode,
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const companyFullAddress = [company.companyAddress1, company.companyAddress2, company.companyCity, company.companyState, company.companyZipCode].filter(Boolean).join(", ");
 
   // Employee Info
   const emp = store.employeeInfo;
-  const employeeFullName = [emp.employeeFirstName, emp.employeeMiddleInitial, emp.employeeLastName]
-    .filter(Boolean)
-    .join(" ");
+  const employeeFullName = [emp.employeeFirstName, emp.employeeMiddleInitial, emp.employeeLastName].filter(Boolean).join(" ");
 
   // Pay Period Info
   const income = store.incomeDetails;
@@ -70,7 +60,6 @@ const PrintTemplate11: React.FC<PrintTemplate11Props> = ({ store }) => {
 
   return (
     <div className="paystub-html-template">
-      <style>{/* ...same CSS as before... */}</style>
       {/* Header Section */}
       <div className="header">
         <div className="company-info">
@@ -221,20 +210,17 @@ const PrintTemplate11: React.FC<PrintTemplate11Props> = ({ store }) => {
           </table>
         </div>
       </div>
+
       {/* Net Pay Summary */}
       <div className="net-pay">
         <div className="net-pay-label">NET PAY</div>
         <div className="net-pay-amount">{netPay}</div>
       </div>
+
       {/* Footer */}
-      <div className="footer">
+      <div className="paystub11-footer">
         <div>
           This pay stub is provided for your records. Please review carefully and report any discrepancies to HR within 10 days.
-        </div>
-        <div className="footer-links">
-          <a href="#">HR Portal</a> | 
-          <a href="#">Payroll FAQ</a> | 
-          <a href="#">Contact HR</a>
         </div>
         <div>{company.companyName} - Confidential and Proprietary</div>
       </div>
