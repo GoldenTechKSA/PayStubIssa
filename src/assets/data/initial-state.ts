@@ -5,7 +5,7 @@ import { STATESLIST } from "../../constants/globals";
 const appSettings: AppSettings = {
     templateId: 0,
     nextTabStep: "template",
-    canPrint: true
+    canPrint: false
 };
 
 const companyInfo: CompanyInfo = {
@@ -41,11 +41,16 @@ const employeeInfo: EmployeeInfo = {
 const incomeDetails: IncomeDetails = {
     annualSalary: 100000,
     wageType: "Hourly", 
-    hourlyRate: 20.00, // Example hourly rate
-    hoursWorked: 40, // Example hours worked per week
-    overtimeRate: 30.00, // Example overtime hourly rate
-    overtimeHours: 10, // Example overtime hours worked per week
-    bonusAmount: 200.00, // Example extrea bonus amount
+    hourlyRate: 20.50, // Example hourly rate
+    hoursWorked: 4.25, // Example hours worked per week
+    overtimeRate: 30.25, // Example overtime hourly rate
+    overtimeHours: 10.5, // Example overtime hours worked per week
+    bonusAmount: 200.50, // Example extrea bonus amount
+    deduction401k: 100.45, // Optional 401K amount
+    medicalDeduction: 130.25, // Optional medical deduction amount
+    dentalDeduction: 15.90, // Optional dental deduction amount
+    visionDeduction: 10.75, // Optional vision deduction amount
+    otherDeduction: 5.25, // Optional other deduction amount
     periodStartDate: new Date(),
     periodEndDate: new Date(),
     periodPayDate: new Date(),

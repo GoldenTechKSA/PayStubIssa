@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import PrintTemplate0 from "../print/template0/printTemplate0";
@@ -22,11 +22,13 @@ import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 
 const Preview = ({store}) => {
     const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    const [canPrintStub, setCanPrintStub] = useState(false);
+
     return (
         <>
             <Row className={ canPrint ? "mt-5" : "no-print mt-5"}>
                 <Col md={7} className="">
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <PrintTemplate0 store={store}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <PrintTemplate0 store={store} canPrintStub={canPrint}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_1 && <PrintTemplate1 store={store}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_2 && <PrintTemplate2 store={store}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_3 && <PrintTemplate3 store={store}/> }
@@ -42,7 +44,7 @@ const Preview = ({store}) => {
                     { templateId === templateIds.PAYSTUB_TEMPLATE_13 && <PrintTemplate13 store={store}/> }
                 </Col>
                 <Col md={{span: 2, offset:1 }}>
-                    <PayPal />
+                    <PayPal onPaymentSuccess={() => setCanPrintStub(true)}/>
                 </Col>
             </Row>
         </>

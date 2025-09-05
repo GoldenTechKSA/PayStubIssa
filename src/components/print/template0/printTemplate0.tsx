@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { CompanyInfo, EmployeeInfo, IncomeDetails, GeneralInfo, PayStubDetails, } from "../../../assets/data/pay-stub-details";
 import {formatCurrency, getWeeksToDateThisYear, formatDate, calculateFederalIncomeTax2025 } from "../../../utils/util";
 import "./printTemplate0.css";
@@ -9,10 +9,11 @@ type Taxes = { description: string; current: string | number; ytd: string | numb
 
 interface PrintTemplate0Props {
   store: PayStubDetails;
+  canPrintStub: Boolean;
 }
 
 
-const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
+const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } ) => {
   // Destructure store properties using types
   const companyInfo: CompanyInfo = store.companyInfo;   // Company Info
   const employeeInfo: EmployeeInfo = store.employeeInfo;   // Employee Info
@@ -21,7 +22,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
 
   const {companyName, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyPhone, companyEmail, companyEIN,} = companyInfo;
   const {employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeePhone, employeeEmail, employeeSSN, employeeID, employeeMarriedStatus, } = employeeInfo;
-  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
+  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
   const {employmentType, paymentMethod, paymentFrequency, payStubNumber, payStubCount, checkNumber,} = generalInfo;
 
   // Compose values for the template
@@ -32,7 +33,11 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
   const grossPayT = hourlyRate * hoursWorked;
 
   const grossPay = hourlyRate ? `${grossPayT.toFixed(2)}` : "N/A";
-  
+  const deduction401kStr = deduction401k ? `${deduction401k.toFixed(2)}` : "N/A";
+  const medicalDeductionStr = medicalDeduction ? `${medicalDeduction.toFixed(2)}` : "N/A";
+  const dentalDeductionStr = dentalDeduction ? `${dentalDeduction.toFixed(2)}` : "N/A";
+  const visionDeductionStr = visionDeduction ? `${visionDeduction.toFixed(2)}` : "N/A";
+  const otherDeductionStr = otherDeduction ? `${otherDeduction.toFixed(2)}` : "N/A";
   
   const annualSalaryDisplay = annualSalary ? `$${annualSalary.toFixed(2)}` : "N/A";
   const hourlyRateDisplay = hourlyRate ? `$${hourlyRate.toFixed(2)}` : "N/A";
@@ -52,8 +57,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
   console.log(`After-Tax Income: ${formatCurrency(result.afterTaxIncome)}`);
 
   const FedIncomeTaxYTD = "NotReady";
-  const totalEarnings = "NotReady";
-  const totalEarningsYTD = "NotReady";
+  const totalEarnings = `$${(grossPayT + (overtimeRate ? (overtimeRate * overtimeHours) : 0) + (bonusAmount || 0)).toFixed(2)}`;
+  const totalEarningsYTD = `$${((parseFloat(grossPayYTD) || 0) + (overtimeYTDTotal ? parseFloat(overtimeYTDTotal) : 0) + (bonusAmount ? bonusAmount * payStubCount : 0)).toFixed(2)}`;
   const directDeposit = "****1234(NotReady)";
   const emptyCell = "-";
   const totalDeductionsText = "Total Deductions";
@@ -65,9 +70,11 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
     { description: "Bonus", rate: " ", hours: " ", current: `$${bonusAmount}`, ytd: `$${bonusAmount}` }
   ];
   const deductions: Deductions[] = [
-    { description: "Medical", current: " ", ytd: " " },
-    { description: "Dental", current: " ", ytd: " " },
-    { description: "401(k)", current: " ", ytd: " " }
+    { description: "Medical", current:`$${medicalDeductionStr}`, ytd: " " },
+    { description: "Dental", current: `$${dentalDeductionStr}`, ytd: " " },
+    { description: "401(k)", current: `$${deduction401kStr}`, ytd: " " },
+    { description: "Vision", current: `$${visionDeductionStr}`, ytd: " " },
+    { description: "Other", current: `$${otherDeductionStr}`, ytd: " " }
   ];
   const taxes: Taxes[] = [
     { description: "Federal Income Tax", current: `${currentFedIncomeTax}`, ytd: `${FedIncomeTaxYTD}` },
@@ -76,6 +83,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
     { description: "State Income Tax", current: " ", ytd: " " }
   ];
 
+  // Example: Replace this with your actual payment check logic
+  const [hasPaid, setHasPaid] = useState(canPrintStub); // false = watermark shown
   const handlePrint = () => {
     window.print();
   };
@@ -98,10 +107,40 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
             box-shadow: none !important;
             border: none !important;
           }
+          .paystub-watermark0 {
+            display: block !important;
+          }
+        }
+        .paystub-watermark0 {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1000;
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0.18;
+          font-size: 2.5rem;
+          color: #d32f2f;
+          font-weight: bold;
+          text-align: center;
+          transform: rotate(-20deg);
+          background: none;
+          user-select: none;
         }
         `}
       </style>
-      <div className="paystub-print-paper0">
+      <div className="paystub-print-paper0" style={{ position: "relative" }}>
+        {/* Watermark Overlay */}
+        {!hasPaid && (
+          <div className="paystub-watermark0">
+            Printing is disabled. Please complete your payment to unlock and print your paystub.
+            Once payment is received, printing will be enabled for your records.
+          </div>
+        )}
+
         {/* Header */}
         <div className="paystub-header0">
           {/* Company Logo */}
@@ -241,8 +280,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store }) => {
               <td>GROSS PAY</td>
               <td>{emptyCell}</td>
               <td>{emptyCell}</td>
-              <td>"totalEarnings"</td>
-              <td>"totalEarningsYTD"</td>
+              <td>{totalEarnings}</td>
+              <td>{totalEarningsYTD}</td>
 
               <td>{totalDeductionsText}</td>
               <td>{totalDeductions}</td>
