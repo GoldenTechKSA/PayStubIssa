@@ -6,9 +6,7 @@
     "sourceMap": true,
     "target": "es2015",
     "jsx": "preserve",
-    "types": [
-      "react"
-    ],
+    "types": ["react", "node"],
     "module": "esNext",
     "moduleResolution": "node",
     "experimentalDecorators": true,

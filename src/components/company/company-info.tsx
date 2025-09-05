@@ -1,20 +1,26 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveCompanyInfo } from "../../redux/actions";
 import { STATESLIST } from "../../constants/globals";
+import { CompanyInfo as CompanyDetails, PayStubDetails } from "assets/data/pay-stub-details";
 
 const CompanyInfo = () => {
-    const [companyName, setCompanyName] = useState("");
-    const [companyEIN, setCompanyEIN] = useState("");
-    const [companyAddress1, setCompanyAddress1] = useState("");
-    const [companyAddress2, setCompanyAddress2] = useState("");
-    const [companyCity, setCompanyCity] = useState("");
-    const [companyState, setCompanyState] = useState("");
-    const [companyZipCode, setCompanyZipCode] = useState("");
-    const [companyLogo, setCompanyLogo] = useState("");
-    const [companyPhone, setCompanyPhone] = useState("");
-    const [companyEmail, setCompanyEmail] = useState("");
+    const companyInfo = useSelector<PayStubDetails, CompanyDetails>(state => state.companyInfo);
+    const [companyName, setCompanyName] = useState(companyInfo.companyName || "");
+    const [companyEIN, setCompanyEIN] = useState(companyInfo.companyEIN || "");
+    const [companyAddress1, setCompanyAddress1] = useState(companyInfo.companyAddress1 || "");
+    const [companyAddress2, setCompanyAddress2] = useState(companyInfo.companyAddress2 || "");
+    const [companyCity, setCompanyCity] = useState(companyInfo.companyCity || "");
+    const [companyState, setCompanyState] = useState(companyInfo.companyState || "");
+    const [companyZipCode, setCompanyZipCode] = useState(companyInfo.companyZipCode || "");
+    const [companyLogo, setCompanyLogo] = useState(companyInfo.companyLogo ||  "");
+    const [companyPhone, setCompanyPhone] = useState(companyInfo.companyPhone || "");
+    const [companyEmail, setCompanyEmail] = useState(companyInfo.companyEmail || "");
+    const [companyLogoPreview, setCompanyLogoPreview] = useState("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+
     const [companyNameTouched, setCompanyNameTouched] = useState(false);
     const [companyEINTouched, setCompanyEINTouched] = useState(false);
     const [companyAddress1Touched, setCompanyAddress1Touched] = useState(false);
@@ -23,7 +29,6 @@ const CompanyInfo = () => {
     const [companyZipCodeTouched, setCompanyZipCodeTouched] = useState(false);
     const [companyPhoneTouched, setCompanyPhoneTouched] = useState(false);
     const [companyEmailTouched, setCompanyEmailTouched] = useState(false);
-
 
     const dispatch = useDispatch();
     
@@ -65,11 +70,27 @@ const CompanyInfo = () => {
             event.stopPropagation();
         }
         dispatch(saveCompanyInfo({ companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail }));
+        console.log("Company details saved:", { companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail });
+        console.log("moving to the next screen <Employee Information>: (employee)");
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
 
     const isFormValid = isValidCompanyName(companyName) && isValidEIN(companyEIN) &&  isValidAddress(companyAddress1) && companyCity.trim().length >= 2 && companyState && 
         isValidZipCode(companyZipCode) && isValidUSPhone(companyPhone) && /^\S+@\S+\.\S+$/.test(companyEmail);
+
+    // Handler for file upload
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setCompanyLogo(reader.result as string);
+                setCompanyLogoPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
 
     return (
         <Container className="">
@@ -109,8 +130,8 @@ const CompanyInfo = () => {
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyStateId">
-                            <Form.Control required as="select" defaultValue="Choose state..." onBlur={() => setCompanyStateTouched(true)} isInvalid={companyStateTouched && !companyState} onChange={(e) => setCompanyState(e.target.value)}>
-                                { STATESLIST.map((s) => <option key={s.code} value={s.code}>{s.name}</option> )}
+                            <Form.Control required as="select" value={companyState} onBlur={() => setCompanyStateTouched(true)} isInvalid={companyStateTouched && !companyState} onChange={(e) => setCompanyState(e.target.value)}>
+                                { STATESLIST.map((s) => <option key={s.code} value={s.name}>{s.name}</option> )}
                             </Form.Control>
                             <Form.Control.Feedback type="invalid">Please select a state.</Form.Control.Feedback>
                         </Form.Group>
@@ -122,12 +143,6 @@ const CompanyInfo = () => {
                         </Form.Group>
                     </Row>
                     <Row>
-                        <Form.Group as={Col} controlId="companyLogo">
-                            <Form.Control placeholder="Enter Company Logo" value={companyLogo} onChange={e => setCompanyLogo(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid logo URL.
-                            </Form.Control.Feedback>
-                        </Form.Group>
                         <Form.Group as={Col} controlId="companyPhoneId">
                             <Form.Control placeholder="Enter Company Phone Number" onBlur={() => setCompanyPhoneTouched(true)} isInvalid={companyPhoneTouched && !isValidUSPhone(companyPhone)} value={companyPhone} onChange={e => setCompanyPhone(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">
@@ -139,6 +154,15 @@ const CompanyInfo = () => {
                             <Form.Control.Feedback type="invalid">
                                 Please provide a valid email address.
                             </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} controlId="companyLogo">
+                            <Button variant="outline-primary" type="button" onClick={() => fileInputRef.current?.click()} className="mb-2">Upload Company Logo</Button>
+                            <input type="file" accept="image/*" ref={fileInputRef} style={{ display: "none" }} onChange={handleLogoUpload}/>
+                            {companyLogoPreview && (
+                                <div className="mt-2">
+                                    <img src={companyLogoPreview} alt="Company Logo Preview" style={{ maxWidth: "120px", maxHeight: "60px", borderRadius: "6px", border: "1px solid #eee" }}/>
+                                </div>
+                            )}
                         </Form.Group>
                     </Row>
                 </Form>

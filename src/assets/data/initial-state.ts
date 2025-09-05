@@ -1,14 +1,16 @@
 import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, PayStubDetails } from "./pay-stub-details";
+import { STATESLIST } from "../../constants/globals";
+
 
 const appSettings: AppSettings = {
     templateId: 0,
     nextTabStep: "template",
-    canPrint: true
+    canPrint: false
 };
 
 const companyInfo: CompanyInfo = {
     companyName: "Issa Company Limited",
-    companyEIN: "83-112220000",
+    companyEIN: "83-1122334",
     companyAddress1: "1234 Main St.",
     companyAddress2: "Suite 500",
     companyCity: "Seattle",
@@ -32,14 +34,23 @@ const employeeInfo: EmployeeInfo = {
     employeeID: "122-802021",
     employeePhone: "(888) 555-1212",
     employeeEmail: "employee@company.com",
-    employeeMarriedStatus: "Single"
+    employeeMarriedStatus: "single",
+    employeeHireDate: new Date("1980-01-01")
 };
 
 const incomeDetails: IncomeDetails = {
-    annualSalary: 125500,
+    annualSalary: 100000,
     wageType: "Hourly", 
-    hourlyRate: 35.00, // Example hourly rate
-    hoursWorked: 40, // Example hours worked per week
+    hourlyRate: 20.50, // Example hourly rate
+    hoursWorked: 4.25, // Example hours worked per week
+    overtimeRate: 30.25, // Example overtime hourly rate
+    overtimeHours: 10.5, // Example overtime hours worked per week
+    bonusAmount: 200.50, // Example extrea bonus amount
+    deduction401k: 100.45, // Optional 401K amount
+    medicalDeduction: 130.25, // Optional medical deduction amount
+    dentalDeduction: 15.90, // Optional dental deduction amount
+    visionDeduction: 10.75, // Optional vision deduction amount
+    otherDeduction: 5.25, // Optional other deduction amount
     periodStartDate: new Date(),
     periodEndDate: new Date(),
     periodPayDate: new Date(),

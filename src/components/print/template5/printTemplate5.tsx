@@ -1,5 +1,6 @@
 import React from "react";
 import { PayStubDetails } from "../../../assets/data/pay-stub-details";
+import "./printTemplate5.css";
 
 const formatDate = (date: Date | string | undefined | null) => {
   if (!date) return "";
@@ -39,14 +40,6 @@ const PrintTemplate5: React.FC<PrintTemplate5Props> = ({ store }) => {
 
   return (
     <div className="paystub5-root">
-      <div className="text-center mb-3 no-print">
-        <button
-          onClick={handlePrint}
-          className="px-3 py-2 bg-orange-600 text-white border-none rounded cursor-pointer text-[11px] hover:bg-orange-700"
-        >
-          Print or Save as PDF
-        </button>
-      </div>
       <div className="paystub5-paper">
         <div className="paystub5-banner">
           <div>
@@ -62,40 +55,6 @@ const PrintTemplate5: React.FC<PrintTemplate5Props> = ({ store }) => {
         <div className="paystub5-main">
           {/* Employee & Pay Info */}
           <div className="paystub5-info-row">
-            <div className="paystub5-info-col">
-              <table>
-                <tbody>
-                  <tr>
-                    <td className="paystub5-label">Employee Name:</td>
-                    <td>{employeeFullName}</td>
-                  </tr>
-                  <tr>
-                    <td className="paystub5-label">Employee ID:</td>
-                    <td>{employeeInfo.employeeID}</td>
-                  </tr>
-                  <tr>
-                    <td className="paystub5-label">SSN:</td>
-                    <td>{employeeInfo.employeeSSN}</td>
-                  </tr>
-                  <tr>
-                    <td className="paystub5-label">Address:</td>
-                    <td>{employeeFullAddress}</td>
-                  </tr>
-                  <tr>
-                    <td className="paystub5-label">Phone:</td>
-                    <td>{employeeInfo.employeePhone}</td>
-                  </tr>
-                  <tr>
-                    <td className="paystub5-label">Email:</td>
-                    <td>{employeeInfo.employeeEmail}</td>
-                  </tr>
-                  <tr>
-                    <td className="paystub5-label">Filing Status:</td>
-                    <td>{employeeInfo.employeeMarriedStatus}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
             <div className="paystub5-info-col">
               <table>
                 <tbody>
@@ -130,63 +89,40 @@ const PrintTemplate5: React.FC<PrintTemplate5Props> = ({ store }) => {
                 </tbody>
               </table>
             </div>
-          </div>
-
-          {/* Main Table */}
-          <table className="paystub5-main-table">
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th>Earnings</th>
-                <th>Earnings YTD</th>
-                <th>Deductions</th>
-                <th>Deductions YTD</th>
-                <th>Taxes</th>
-                <th>Taxes YTD</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: Math.max(earnings.length, deductions.length, taxes.length) }).map((_, i) => (
-                <tr key={i}>
-                  <td>
-                    {earnings[i]?.desc || deductions[i]?.desc || taxes[i]?.desc || ""}
-                  </td>
-                  <td>{earnings[i]?.current || ""}</td>
-                  <td>{earnings[i]?.ytd || ""}</td>
-                  <td>{deductions[i]?.current || ""}</td>
-                  <td>{deductions[i]?.ytd || ""}</td>
-                  <td>{taxes[i]?.current || ""}</td>
-                  <td>{taxes[i]?.ytd || ""}</td>
-                </tr>
-              ))}
-              <tr className="paystub5-total-row">
-                <td>Total</td>
-                <td>{earnings.reduce((a, b) => a + parseFloat(b.current.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-                <td>{earnings.reduce((a, b) => a + parseFloat(b.ytd.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-                <td>{deductions.reduce((a, b) => a + parseFloat(b.current.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-                <td>{deductions.reduce((a, b) => a + parseFloat(b.ytd.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-                <td>{taxes.reduce((a, b) => a + parseFloat(b.current.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-                <td>{taxes.reduce((a, b) => a + parseFloat(b.ytd.replace(/[^0-9.-]+/g,"")), 0).toLocaleString("en-US", {style:"currency",currency:"USD"})}</td>
-              </tr>
-            </tbody>
-          </table>
-
-          {/* Net Pay Summary */}
-          <div className="paystub5-netpay-row">
-            <div>
-              <span className="paystub5-label">Net Pay (This Period):</span>
-              <span className="paystub5-netpay-amount">{netPay}</span>
+            <div className="paystub5-info-col">
+              <table>
+                <tbody>
+                  <tr>
+                    <td className="paystub5-label">Employee Name:</td>
+                    <td>{employeeFullName}</td>
+                  </tr>
+                  <tr>
+                    <td className="paystub5-label">Employee ID:</td>
+                    <td>{employeeInfo.employeeID}</td>
+                  </tr>
+                  <tr>
+                    <td className="paystub5-label">SSN:</td>
+                    <td>{employeeInfo.employeeSSN}</td>
+                  </tr>
+                  <tr>
+                    <td className="paystub5-label">Address:</td>
+                    <td>{employeeFullAddress}</td>
+                  </tr>
+                  <tr>
+                    <td className="paystub5-label">Phone:</td>
+                    <td>{employeeInfo.employeePhone}</td>
+                  </tr>
+                  <tr>
+                    <td className="paystub5-label">Email:</td>
+                    <td>{employeeInfo.employeeEmail}</td>
+                  </tr>
+                  <tr>
+                    <td className="paystub5-label">Filing Status:</td>
+                    <td>{employeeInfo.employeeMarriedStatus}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <div>
-              <span className="paystub5-label">Net Pay (YTD):</span>
-              <span className="paystub5-netpay-amount">{netPayYTD}</span>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="paystub5-footer">
-            <p>This is not a check. For questions about your pay stub, please contact HR.</p>
-            <p>{companyInfo.companyName || "Company Name"} - Confidential</p>
           </div>
         </div>
       </div>

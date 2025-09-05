@@ -8,7 +8,7 @@ import HorizontalGrid, { GridCell } from "./horizontal-grid";
 
 const AppBody = () => {
     const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    console.log(`1 AppBody:templateId= ${templateId}`);
+//    console.log(`1 AppBody:templateId= ${templateId}`);
     const [gridCells, setGridCells] = useState<GridCell[]>([]);
 
     useEffect(() => {
@@ -26,9 +26,9 @@ const AppBody = () => {
             });
     }, []);
 
-    useEffect(() => {
-        console.log("2 AppBody: templateId =", templateId);
-    }, [templateId]);
+    // useEffect(() => {
+    //     console.log("2 AppBody: templateId =", templateId);
+    // }, [templateId]);
     
     return (
         <>

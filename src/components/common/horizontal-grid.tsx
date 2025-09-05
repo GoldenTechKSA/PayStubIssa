@@ -19,7 +19,7 @@ type HorizontalGridProps = {
 const HorizontalGrid: React.FC<HorizontalGridProps> = ({ currentIndex, cells }) => {
   const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
   const dispatch = useDispatch();
-  console.log(`3 HorizontalGrid:templateId= ${templateId}, coming from userSelector call = ${currentIndex}`);
+//  console.log(`3 HorizontalGrid:templateId= ${templateId}, coming from userSelector call = ${currentIndex}`);
 
   const onCellClick = (event, id) => {
       event.preventDefault();

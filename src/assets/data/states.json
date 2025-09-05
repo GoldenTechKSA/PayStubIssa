@@ -1,6 +1,5 @@
 {
     "states": [
-        { "code": "00", "name": "State", "fstateTaxes": false, "flocalTaxes": false },
         { "code": "al", "name": "Alabama", "fstateTaxes": false, "flocalTaxes": false },
         { "code": "ak", "name": "Alaska", "fstateTaxes": false, "flocalTaxes": false },
         { "code": "az", "name": "Arizona", "fstateTaxes": false, "flocalTaxes": false },
