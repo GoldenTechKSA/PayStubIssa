@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import { CompanyInfo, EmployeeInfo, IncomeDetails, GeneralInfo, PayStubDetails, } from "../../../assets/data/pay-stub-details";
 import { formatCurrency, getWeeksToDateThisYear, formatDate, calculateFederalIncomeTax2025 } from "../../../utils/util";
-import { totalEarningsAsStringYTD, totalEarningsAsStringCurrent, grossPayAsString, grossPayAsStringYTD } from "../../../utils/earnings-calculator";
+import { netPayAsStringCurrent, totalEarningsAsStringYTD, totalEarningsAsStringCurrent, grossPayAsString, grossPayAsStringYTD, netPayAsStringYTD } from "../../../utils/earnings-calculator";
 import { overtimeAsStringCurrent, overtimeAsStringYTD } from "../../../utils/overtime-calculator";
-import { totalTaxesTitle, } from "../../../utils/taxes-calculator";
+import { totalTaxesTitle, currentTaxesAsString, taxesAsStringYTD} from "../../../utils/taxes-calculator";
 import { medicalDeductionAsStringYTD, dentalDeductionAsStringYTD, deduction401kAsStringYTD, visionDeductionAsStringYTD, otherDeductionAsStringYTD, 
   totalDeductionsTitle, medicalDeductionAsString, dentalDeductionAsString, deduction401kAsString, visionDeductionAsString, otherDeductionAsString, currentDeductionsAsString, deductionsAsStringYTD } from "../../../utils/deductions-calculator";
 import "./printTemplate0.css";
@@ -26,7 +26,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
 
   const {companyName, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyPhone, companyEmail, companyEIN,} = companyInfo;
   const {employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeePhone, employeeEmail, employeeSSN, employeeID, employeeMarriedStatus, } = employeeInfo;
-  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
+  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, 
+    periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
   const {employmentType, paymentMethod, paymentFrequency, payStubNumber, payStubCount, checkNumber, extraNotes} = generalInfo;
   const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName].filter(Boolean).join(" ");
   const employeeFullAddress = [employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode].filter(Boolean).join(", ");
@@ -37,11 +38,14 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
   const directDeposit = !!paymentMethod;
   const emptyCell = "-";
 
+  const federalTax = 1;
+  const stateTax = 1;
+  const socialSecurityTax = 1;
+  const medicareTax = 1;
+  
   const FedIncomeTaxYTD = "NotReady";
   const totalDeductionsCurrent = "CurrentNotReady";
   const totalDeductionsYTD = "YTDNotReady";
-  const totalTaxesCurrent = "CurrentNotReady";
-  const totalTaxesYTD = "YTDNotReady";
 
   const earnings: Earnings[] = [
     { description: "Regular Pay", rate: `$${hourlyRate}`, hours: `${hoursWorked}`, current: `${grossPayAsString(hourlyRate, hoursWorked)}`, ytd:`${grossPayAsStringYTD(hourlyRate, hoursWorked)}` },
@@ -292,8 +296,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
               <td>{deductionsAsStringYTD(deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction)}</td>
 
               <td>{totalTaxesTitle}</td>
-              <td>{totalTaxesCurrent}</td>
-              <td>{totalTaxesYTD}</td>
+              <td>{currentTaxesAsString(federalTax, stateTax, socialSecurityTax, medicareTax)}</td>
+              <td>{taxesAsStringYTD(federalTax, stateTax, socialSecurityTax, medicareTax)}</td>
             </tr>
           </tbody>
          </table>
@@ -302,11 +306,11 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
         <div className="paystub-netpay-row0">
           <div>
             <span className="paystub-label0">Net Pay (This Period):</span>
-            <span className="paystub-netpay-amount0">{`$${totalTaxesYTD}`}</span>
+            <span className="paystub-netpay-amount0">{`${netPayAsStringCurrent()}`}</span>
           </div>
           <div>
             <span className="paystub-label0">Net Pay (YTD):</span>
-            <span className="paystub-netpay-amount0">{`$${totalTaxesYTD}`}</span>
+            <span className="paystub-netpay-amount0">{`$${netPayAsStringYTD()}`}</span>
           </div>
           {directDeposit && (<div>
             <span className="paystub-label0">Direct Deposit:</span>
