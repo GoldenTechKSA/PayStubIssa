@@ -51,7 +51,7 @@ export interface IncomeDetails {
 }
 export interface GeneralInfo {
     employmentType: string;
-    paymentMethod: string;
+    paymentMethod: string; // "Direct Deposit" or "Check"
     paymentFrequency: string;
     payStubCount: number;
     payStubNumber: number;

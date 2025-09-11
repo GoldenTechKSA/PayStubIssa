@@ -12,7 +12,7 @@ const GeneralInfo = () => {
     const [ payStubCount, setPayStubCount ] = useState(general.payStubCount || 1);
     const [ payStubNumber, setPaystubNumber ] = useState(general.payStubNumber || 1);
     const [ checkNumber, setCheckNumber ] = useState(general.checkNumber || 5000);
-    const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "Direct Deposit");
+    const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "None");
     const [ extraNotes, setExtraNotes ] = useState("");
     const [ payStubCountTouched, setPayStubCountTouched ] = useState(false);
     const [ paymentMethodTouched, setPaymentMethodTouched ] = useState(false);
@@ -27,8 +27,6 @@ const GeneralInfo = () => {
             event.stopPropagation();
         }
         dispatch(saveGeneralInfo({ payStubCount, paymentMethod, payStubNumber, checkNumber, extraNotes }));
-        console.log("General Info Saved:", { payStubCount, payStubNumber, checkNumber, extraNotes });
-        console.log("moving to the next screen to preview the paystub details (paystubPreview)");
         navigate('/paystubPreview');
     };
 

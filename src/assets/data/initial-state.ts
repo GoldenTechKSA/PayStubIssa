@@ -41,16 +41,16 @@ const employeeInfo: EmployeeInfo = {
 const incomeDetails: IncomeDetails = {
     annualSalary: 100000,
     wageType: "Hourly", 
-    hourlyRate: 20.50, // Example hourly rate
-    hoursWorked: 4.25, // Example hours worked per week
-    overtimeRate: 30.25, // Example overtime hourly rate
-    overtimeHours: 10.5, // Example overtime hours worked per week
-    bonusAmount: 200.50, // Example extrea bonus amount
-    deduction401k: 100.45, // Optional 401K amount
-    medicalDeduction: 130.25, // Optional medical deduction amount
-    dentalDeduction: 15.90, // Optional dental deduction amount
-    visionDeduction: 10.75, // Optional vision deduction amount
-    otherDeduction: 5.25, // Optional other deduction amount
+    hourlyRate: 1.0, // Example hourly rate
+    hoursWorked: 1.0, // Example hours worked per week
+    overtimeRate: 1.0, // Example overtime hourly rate
+    overtimeHours: 1.0, // Example overtime hours worked per week
+    bonusAmount: 3.0, // Example extrea bonus amount
+    deduction401k: 1, // Optional 401K amount
+    medicalDeduction: 1, // Optional medical deduction amount
+    dentalDeduction: 1, // Optional dental deduction amount
+    visionDeduction: 1, // Optional vision deduction amount
+    otherDeduction: 1, // Optional other deduction amount
     periodStartDate: new Date(),
     periodEndDate: new Date(),
     periodPayDate: new Date(),
