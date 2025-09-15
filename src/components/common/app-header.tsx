@@ -25,7 +25,7 @@ const AppHeader = () => {
                     <NavLink className="navLinkClass" to="/aboutUsPage">About Us</NavLink>
                     <NavLink className="navLinkClass" to="/FAQPage">FAQ</NavLink>
                     <NavLink className="navLinkClass" to="/contactUsPage">Contact Us</NavLink>
-                    <NavLink className="navLinkClass" to={`/printTemplate/${templateId}`}>Print Template</NavLink>
+                    {/*<NavLink className="navLinkClass" to={`/printTemplate/${templateId}`}>Print Template</NavLink>*/}
                 </Nav>
             </Container>
         </Navbar>

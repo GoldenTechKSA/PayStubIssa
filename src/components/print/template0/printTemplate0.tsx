@@ -3,9 +3,11 @@ import { CompanyInfo, EmployeeInfo, IncomeDetails, GeneralInfo, PayStubDetails, 
 import { formatCurrency, getWeeksToDateThisYear, formatDate, calculateFederalIncomeTax2025 } from "../../../utils/util";
 import { netPayAsStringCurrent, totalEarningsAsStringYTD, totalEarningsAsStringCurrent, grossPayAsString, grossPayAsStringYTD, netPayAsStringYTD } from "../../../utils/earnings-calculator";
 import { overtimeAsStringCurrent, overtimeAsStringYTD } from "../../../utils/overtime-calculator";
-import { totalTaxesTitle, currentTaxesAsString, taxesAsStringYTD} from "../../../utils/taxes-calculator";
+import { taxesAsString2025, totalTaxesTitle, currentTaxesAsString, taxesAsStringYTD} from "../../../utils/taxes-calculator";
 import { medicalDeductionAsStringYTD, dentalDeductionAsStringYTD, deduction401kAsStringYTD, visionDeductionAsStringYTD, otherDeductionAsStringYTD, 
   totalDeductionsTitle, medicalDeductionAsString, dentalDeductionAsString, deduction401kAsString, visionDeductionAsString, otherDeductionAsString, currentDeductionsAsString, deductionsAsStringYTD } from "../../../utils/deductions-calculator";
+import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../../../types/tax-rate-types";
+
 import "./printTemplate0.css";
 
 type Earnings = { description: string; rate: string | number; hours: string | number; current: string | number; ytd: string | number; };
@@ -38,11 +40,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
   const directDeposit = !!paymentMethod;
   const emptyCell = "-";
 
-  const federalTax = 1;
-  const stateTax = 1;
-  const socialSecurityTax = 1;
-  const medicareTax = 1;
-  
+//  console.log("PrintTemplate0 Rendered with canPrintStub:", canPrintStub);
+
   const FedIncomeTaxYTD = "NotReady";
   const totalDeductionsCurrent = "CurrentNotReady";
   const totalDeductionsYTD = "YTDNotReady";
@@ -59,18 +58,24 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
     { description: "Vision", current: `${visionDeductionAsString(visionDeduction as number)}`, ytd: `${visionDeductionAsStringYTD(visionDeduction as number)}` },
     { description: "Other", current:  `${otherDeductionAsString(otherDeduction as number)}`, ytd: `${otherDeductionAsStringYTD(otherDeduction as number)}` }
   ];
-  const taxes: Taxes[] = [
-    { description: "Federal Income Tax", current: `${FedIncomeTaxYTD}`, ytd: `${FedIncomeTaxYTD}` },
-    { description: "Social Security Tax", current: " ", ytd: " " },
-    { description: "Medicare Tax", current: " ", ytd: " " },
-    { description: "State Income Tax", current: " ", ytd: " " }
-  ];
 
-  // Example: Replace this with your actual payment check logic
-  const [hasPaid, setHasPaid] = useState(canPrintStub); // false = watermark shown
-  const handlePrint = () => {
-    window.print();
+    const input: TaxCalculationInput = {
+    grossIncome: 100000,
+    filingStatus: 'single',
+    stateCode: 'WA',
+    additionalDeductions: 5000
   };
+
+  const {federalIncomeTaxAsString, socialSecurityTaxAsString, medicareTaxAsString, stateIncomeTaxAsString, federalIncomeTaxAsStringYTD, socialSecurityTaxAsStringYTD, medicareTaxAsStringYTD,
+     stateIncomeTaxAsStringYTD, totalTaxesAsString } = taxesAsString2025(input);
+
+
+  const taxes: Taxes[] = [
+    { description: "Federal Income Tax", current: `${federalIncomeTaxAsString}`, ytd: `${federalIncomeTaxAsStringYTD}` },
+    { description: "Social Security Tax", current: `${socialSecurityTaxAsString}`, ytd: `${socialSecurityTaxAsStringYTD}` },
+    { description: "Medicare Tax", current: `${medicareTaxAsString}`, ytd: `${medicareTaxAsStringYTD}` },
+    { description: "State Income Tax", current: `${stateIncomeTaxAsString}`, ytd: `${stateIncomeTaxAsStringYTD}` }
+  ];
 
   return (
     <div className="paystub-print-root0">
@@ -117,33 +122,9 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
       </style>
       <div className="paystub-print-paper0" style={{ position: "relative" }}>
         {/* Watermark Overlay */}
-        {!hasPaid && (
-          <div className="paystub-watermark0" style={{
-            display: "grid",
-            gridTemplateRows: "repeat(3, 1fr)",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "0",
-            pointerEvents: "none"
-          }}>
+        {!canPrintStub && ( <div className="paystub-watermark0" style={{display: "grid", gridTemplateRows: "repeat(3, 1fr)", gridTemplateColumns: "repeat(2, 1fr)", gap: "0", pointerEvents: "none" }}>
             {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  opacity: 0.58,
-                  fontSize: "4rem",
-                  color: "#d32f2f",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  transform: "rotate(-20deg)",
-                  userSelect: "none",
-                  pointerEvents: "none"
-                }}
-              >
+              <div key={i} style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.58, fontSize: "4rem", color: "#d32f2f", fontWeight: "bold", textAlign: "center", transform: "rotate(-20deg)", userSelect: "none", pointerEvents: "none" }}>
                 Draft Paystub
               </div>
             ))}
@@ -252,16 +233,16 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
               <th>Description</th>
               <th>Rate</th>
               <th>Hours</th>
-              <th>Current</th>
-              <th>YTD</th>
+              <th>Amount</th>
+              <th>YTD Total</th>
 
               <th>Description</th>
-              <th>Current</th>
-              <th>YTD</th>
+              <th>Amount</th>
+              <th>YTD Total</th>
 
               <th>Description</th>
-              <th>Current</th>
-              <th>YTD</th>
+              <th>Amount</th>
+              <th>YTD Total</th>
             </tr>
           </thead>
           <tbody>
@@ -296,8 +277,8 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
               <td>{deductionsAsStringYTD(deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction)}</td>
 
               <td>{totalTaxesTitle}</td>
-              <td>{currentTaxesAsString(federalTax, stateTax, socialSecurityTax, medicareTax)}</td>
-              <td>{taxesAsStringYTD(federalTax, stateTax, socialSecurityTax, medicareTax)}</td>
+              <td>{currentTaxesAsString(1, 1, 1, 1)}</td>
+              <td>{taxesAsStringYTD(1, 1, 1, 1)}</td>
             </tr>
           </tbody>
          </table>

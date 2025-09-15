@@ -94,7 +94,7 @@ const SpecialPriceBanner: React.FC = () => {
       <div>
         {/* Main Ticker */}
         <TickerBanner 
-          message="🚨 BREAKING: New product launch announcement • Limited time offer: 50% off all items • Free shipping worldwide • Join thousands of satisfied customers"
+          message="🚨 SPECIAL OFFER: Save more when you buy multiple paystubs! • Get 30% off your second paystub • Fast, secure, and accurate paystub generation • Trusted by thousands of satisfied customers"
           speed={40}
           backgroundColor="#fef3c7"
           textColor="#92400e"

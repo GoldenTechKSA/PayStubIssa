@@ -90,15 +90,23 @@ body {
   width: 70px;
 }
 
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1 0 auto;
+}
+
 .footer {
-  background: #7e8797;
-  color: #f5f6fa;
   font-size: 1rem;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 70px;
-  min-width: 100%;
-  overflow-x: hidden;
+  flex-shrink: 0;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
 }
 
 .footer span {
