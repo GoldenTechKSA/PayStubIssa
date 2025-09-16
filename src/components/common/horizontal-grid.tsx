@@ -1,34 +1,32 @@
-import React, {useEffect} from "react";
+import React from "react";
 import "../../index.css";
-import { useSelector, useDispatch } from "react-redux";
-import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
+import { useDispatch } from "react-redux";
 import { updateAppSettings } from "../../redux/actions";
 
-type GridCell = {
-  id: number;
-  imageUrl: string;
-  description: string;
-};
+export interface ImageFileData {
+    id: number;
+    imageName: string;
+    description: string;
+}
 
 type HorizontalGridProps = {
+  updateIndex: (i: number) => void;
   // The current index is used to highlight the selected cell
   currentIndex: number;
-  cells: GridCell[];
+  cells: ImageFileData[];
 };
 
-const HorizontalGrid: React.FC<HorizontalGridProps> = ({ currentIndex, cells }) => {
-  const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
+const HorizontalGrid: React.FC<HorizontalGridProps> = ({ updateIndex, currentIndex, cells }) => {
   const dispatch = useDispatch();
-//  console.log(`3 HorizontalGrid:templateId= ${templateId}, coming from userSelector call = ${currentIndex}`);
 
   const onCellClick = (event, id) => {
-      event.preventDefault();
-      dispatch(updateAppSettings({ templateId: id, nextTabStep: "template" }));
+    updateIndex(id);
+    event.preventDefault();
+    dispatch(updateAppSettings({ templateId: id, nextTabStep: "template" }));
   };
   
   // Returns the image source path for a given image file name
   function getImageSrc(imageUrl: string): string {
-    // console.log("ImageUrl in HorizontalGrid = ", imageUrl);
     return `/images/${imageUrl}`;
   }
 
@@ -36,8 +34,8 @@ const HorizontalGrid: React.FC<HorizontalGridProps> = ({ currentIndex, cells }) 
     <div className="horizontal-grid-container">
       <div className="horizontal-grid">
         {cells.map((cell) => (
-          <div key={cell.id} className="grid-cell" onClick={e => onCellClick(e, cell.id)} role="button" tabIndex={0} >
-            <img src={getImageSrc(cell.imageUrl)} alt={`Item ${cell.id}`} />
+          <div key={cell.id} className="grid-cell" onClick={e => onCellClick(e, cell.id)} role="button" tabIndex={currentIndex} >
+            <img src={getImageSrc(cell.imageName)} alt={cell.description} />
             <p className="grid-description">{cell.description}</p>
           </div>
         ))}
@@ -46,6 +44,5 @@ const HorizontalGrid: React.FC<HorizontalGridProps> = ({ currentIndex, cells }) 
   );
 };
 
-
 export default HorizontalGrid;
-export type { GridCell, HorizontalGridProps };
+export type { HorizontalGridProps };

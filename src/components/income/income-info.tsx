@@ -35,7 +35,7 @@ const IncomeInfo = () => {
     const [overtimeHoursWorkedTouched, setOvertimeHoursWorkedTouched] = useState(false);
     const [enableOtherDeductions, setEnableOtherDeductions] = useState(false);
 
-    console.log("IncomeInfo component rendered with initial values:", income);
+//    console.log("IncomeInfo component rendered with initial values:", income);
 
     const dispatch = useDispatch();
 
