@@ -70,8 +70,7 @@ const CompanyInfo = () => {
             event.stopPropagation();
         }
         dispatch(saveCompanyInfo({ companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail }));
-        console.log("Company details saved:", { companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail });
-        console.log("moving to the next screen <Employee Information>: (employee)");
+//        console.log("Company details saved:", { companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail });
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
 
@@ -171,8 +170,9 @@ const CompanyInfo = () => {
                         <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
                     <Col>
-                    {/* enable this when we are ready for full validation <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button> */}
-                        <Button className="float-left" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
+                        {/* enable this when we are ready for full validation <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button> */}
+                        {/* <Button className="float-left" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button> */}
+                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
                     </Col>
                 </Row>
             </Row>

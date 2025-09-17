@@ -1,5 +1,40 @@
 import { FilingStatus } from "types/tax-rate-types";
 
+export const isValidDate = (dateStr: string): boolean => {
+    // Expected format: YYYY-MM-DD (from HTML date input)
+    const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+    if (!regex.test(dateStr)) return false;
+
+    const [yearStr, monthStr, dayStr] = dateStr.split('-');
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+    const day = Number(dayStr);
+
+    // Additional validation for days in specific months
+    if (month === 2) { // February
+        const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        if (day > (isLeapYear ? 29 : 28)) return false;
+    } else if ([4, 6, 9, 11].includes(month)) { // Months with 30 days
+        if (day > 30) return false;
+    }
+
+    // Construct the date and check for validity
+    const date = new Date(year, month - 1, day);
+    if (
+        date.getFullYear() !== year ||
+        date.getMonth() + 1 !== month ||
+        date.getDate() !== day
+    ) {
+        return false; // Invalid calendar date
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize today's date to midnight
+    date.setHours(0, 0, 0, 0); // Also normalize the input date to midnight
+    
+    return date <= today; // Reject future dates
+}
+
 // Helper to format date fields safely
 export const formatDate = (date: Date | string | undefined | null) => {
   if (!date) return "";

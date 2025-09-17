@@ -4,6 +4,7 @@ import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveEmployeeInfo } from "../../redux/actions";
 import { FILINGSTATUS, STATESLIST } from "../../constants/globals";
 import { EmployeeInfo as EmployeeDetails, PayStubDetails } from "assets/data/pay-stub-details";
+import { isValidDate as isValidHireDate } from "../../utils/util";
 
 const EmployeeInfo = () => {
     const employee = useSelector<PayStubDetails, EmployeeDetails>(state => state.employeeInfo);
@@ -39,29 +40,24 @@ const EmployeeInfo = () => {
     const dispatch = useDispatch();
 
     const handleSubmitGoNext = (event) => {
-        event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
+            event.preventDefault();
             event.stopPropagation();
         }
         dispatch(saveEmployeeInfo({ employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus}));
-        console.log("Employee Info Saved:", { employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus });
-        console.log("moving to the next screen <Income Details>: (income)");
+//        console.log("Employee Info Saved:", { employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail, employeeHireDate, employeeMarriedStatus });
         dispatch(updateAppSettings({ nextTabStep: "income" }));
-        };
+    };
 
     const handleSubmitGoBack = (event) => {
-        event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
+            event.preventDefault();
             event.stopPropagation();
         }
-//        dispatch(saveEmployeeInfo({ employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipcode, employeeSSN, employeePhone, employeeEmail, employeeMarriedStatus}));
         dispatch(updateAppSettings({ nextTabStep: "company" }));
-        };
-    const isFormValid = isValidName(employeeFirstName) && isValidName(employeeLastName) &&  isValidAddress(employeeAddress1) && isValidZipCode(employeeZipCode) &&
-        isValidSSN(employeeSSN) && isValidPhone(employeePhone) && isValidID(employeeID) && isValidHireDate(employeeHireDate.toISOString().split("T")[0]) &&
-        employeeCity.trim().length >= 2 && employeeState && employeeEmail.trim().length > 0 && employeeMarriedStatus;
+    };
 
     // Validation functions
     function isValidName(name: string): boolean {
@@ -82,33 +78,14 @@ const EmployeeInfo = () => {
         const regex = /^(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/;
         return regex.test(phone);
     }
-    function isValidID(id: string): boolean {
-        return id.trim().length > 0 && /^[a-zA-Z0-9]+$/.test(id);
+    function isValidEmployeeID(id: string): boolean {
+        return id.trim().length > 0 && /^[a-zA-Z0-9-]+$/.test(id);
     }
-    function isValidHireDate(dateStr: string): boolean {
-        // Expected format: MM/DD/YYYY
-        const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-        if (!regex.test(dateStr)) return false;
 
-        const [monthStr, dayStr, yearStr] = dateStr.split('/');
-        const month = Number(monthStr);
-        const day = Number(dayStr);
-        const year = Number(yearStr);
-
-        // Construct the date and check for validity
-        const date = new Date(year, month - 1, day); // JS months are 0-indexed
-        if (
-            date.getFullYear() !== year ||
-            date.getMonth() + 1 !== month ||
-            date.getDate() !== day
-        ) {
-            return false; // Invalid calendar date
-        }
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Normalize today's date to midnight
-        return date <= today; // Reject future dates
-    }
+    // Overall form validity
+    const isFormValid = isValidName(employeeFirstName) && isValidName(employeeLastName) &&  isValidAddress(employeeAddress1) && isValidZipCode(employeeZipCode) &&
+                        isValidSSN(employeeSSN) && isValidPhone(employeePhone) && isValidEmployeeID(employeeID) && isValidHireDate(employeeHireDate.toISOString().split("T")[0]) &&
+                        employeeCity.trim().length >= 2 && employeeState && employeeEmail.trim().length > 0 && employeeMarriedStatus;
 
     return (
         <Container className="m-0 p-0 no-gutters">
@@ -187,7 +164,7 @@ const EmployeeInfo = () => {
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeId">
-                            <Form.Control type="text" placeholder="Enter Employee ID" value={employeeID} onBlur={() => setEmployeeIDTouched(true)} isInvalid={employeeIDTouched && !isValidID(employeeID)} onChange={e => setEmployeeID(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Enter Employee ID" value={employeeID} onBlur={() => setEmployeeIDTouched(true)} isInvalid={employeeIDTouched && !isValidEmployeeID(employeeID)} onChange={e => setEmployeeID(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">
                                 Please provide a valid employee ID.
                             </Form.Control.Feedback>
@@ -196,7 +173,7 @@ const EmployeeInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="hireDateId" >
                             <Form.Label className="mb-0 me-2" style={{ whiteSpace: "nowrap", fontWeight: 500 }}>Hiring Date</Form.Label>
-                            <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate.toISOString().split("T")[0]} onBlur={() => setEmployeeHireDateTouched} isInvalid={employeeHireDateTouched && !isValidHireDate(employeeHireDate.toISOString().split("T")[0])} 
+                            <Form.Control type="date" placeholder="Hiring Date" value={employeeHireDate.toISOString().split("T")[0]} onBlur={() => setEmployeeHireDateTouched(true)} isInvalid={employeeHireDateTouched && !isValidHireDate(employeeHireDate.toISOString().split("T")[0])} 
                             onChange={e => setEmployeeHireDate(new Date(e.target.value))}/>
                             <Form.Control.Feedback type="invalid">
                                 Please provide a valid hire date.
@@ -218,7 +195,7 @@ const EmployeeInfo = () => {
                         <Button className="float-right" variant="secondary" onClick={handleSubmitGoBack}>Go Back</Button>
                     </Col>
                     <Col>
-                        <Button className="float-left" disabled={!!isFormValid} onClick={handleSubmitGoNext}>Save & Continue</Button>
+                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit" >Save & Continue</Button>
                     </Col>
                 </Row>
             </Row>
