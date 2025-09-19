@@ -1,6 +1,4 @@
 import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, PayStubDetails } from "./pay-stub-details";
-import { STATESLIST } from "../../constants/globals";
-
 
 const appSettings: AppSettings = {
     templateId: 0,

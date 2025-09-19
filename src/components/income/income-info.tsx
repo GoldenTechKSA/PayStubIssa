@@ -4,6 +4,7 @@ import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveIncomeDetails } from "../../redux/actions";
 import { PAYPERIODTYPE } from "../../constants/globals";
 import { IncomeDetails, PayStubDetails } from "assets/data/pay-stub-details";
+import { isValidDate, formatCurrency } from "../../utils/util";
 
 const IncomeInfo = () => {
     const income = useSelector<PayStubDetails, IncomeDetails>(state => state.incomeDetails);
@@ -11,12 +12,12 @@ const IncomeInfo = () => {
     const [ periodStartDate, setPeriodStartDate ] = useState("");
     const [ periodEndDate, setPeriodEndDate ] = useState("");
     const [ periodPayDate, setPeriodPayDate ] = useState("");
-    const [periodType, setPeriodType] = useState(income.periodType || "Weekly");
-    const [wageType, setWageType] = useState(income.wageType || "Hourly");
-    const [hourlyRate, setHourlyRate] = useState<number>(income.hourlyRate || 0);
-    const [hoursWorked, setHoursWorked] = useState<number>(income.hoursWorked || 0);
-    const [overtimeRate, setOvertimeRate] = useState<number>(income.overtimeRate || 0);
-    const [overtimeHours, setOvertimeHoursWorked] = useState<number>(income.overtimeHours || 0);
+    const [ periodType, setPeriodType] = useState(income.periodType || "Weekly");
+    const [ wageType, setWageType] = useState(income.wageType || "Hourly");
+    const [ hourlyRate, setHourlyRate] = useState<number>(income.hourlyRate || 0);
+    const [ hoursWorked, setHoursWorked] = useState<number>(income.hoursWorked || 0);
+    const [ overtimeRate, setOvertimeRate] = useState<number>(income.overtimeRate || 0);
+    const [ overtimeHours, setOvertimeHoursWorked] = useState<number>(income.overtimeHours || 0);
     const [ bonusAmount, setBonusAmount ] = useState<number>(income.bonusAmount || 0 );
     const [ deduction401k, setDeduction401k ] = useState<number>(income.deduction401k || 0 );
     const [ medicalDeduction, setMedicalDeduction ] = useState<number>(income.medicalDeduction || 0 );
@@ -34,57 +35,31 @@ const IncomeInfo = () => {
     const [overtimeRateTouched, setOvertimeRateTouched] = useState(false);
     const [overtimeHoursWorkedTouched, setOvertimeHoursWorkedTouched] = useState(false);
     const [enableOtherDeductions, setEnableOtherDeductions] = useState(false);
-
-//    console.log("IncomeInfo component rendered with initial values:", income);
-
+    const [ bonusAmountTouched, setBonusAmountTouched ] = useState(false);
+    
     const dispatch = useDispatch();
 
-    const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && annualSalary > 0 && ((wageType === "Hourly" && hourlyRate > 0 && hoursWorked > 0) || (wageType === "Salary" && annualSalary > 0)) && periodType !== "";
-
-    function isValidDate(dateStr: string): boolean {
-        // Expected format: MM/DD/YYYY
-        const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-        if (!regex.test(dateStr)) return false;
-
-        const [monthStr, dayStr, yearStr] = dateStr.split('/');
-        const month = Number(monthStr);
-        const day = Number(dayStr);
-        const year = Number(yearStr);
-
-        // Construct the date and check for validity
-        const date = new Date(year, month - 1, day); // JS months are 0-indexed
-        if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) {
-            return false; // Invalid calendar date
-        }
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Normalize today's date to midnight
-        return date <= today; // Reject future dates
-    }
-
     const handleSubmitGoNext = (event) => {
-        event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
+            event.preventDefault();
             event.stopPropagation();
         }
-        dispatch(saveIncomeDetails({ annualSalary, wageType, hourlyRate, hoursWorked, overtimeHours, overtimeRate, bonusAmount, deduction401k, 
-            medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodType }));
-        const total = hourlyRate * hoursWorked;   // IssamR clean later
-        console.log("Income details saved:", { total, annualSalary, wageType, hourlyRate, hoursWorked, periodStartDate, periodEndDate, periodType });
-        console.log("moving to the next screen <General Details>: (general)");
+        dispatch(saveIncomeDetails({ annualSalary, wageType, hourlyRate, hoursWorked, overtimeHours, overtimeRate, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodType }));
+        console.log("Income details saved:", { annualSalary, wageType, hourlyRate, hoursWorked, periodStartDate, periodEndDate, periodType });
         dispatch(updateAppSettings({ nextTabStep: "general" }));
-        };
+    };
 
     const handleSubmitGoBack = (event) => {
-        event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
+            event.preventDefault();
             event.stopPropagation();
         }
-//        dispatch(saveIncomeDetails({ annualSalary, periodStartDate, periodEndDate, checkNumber, periodType }));
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
-        };
+    };
+
+    const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && annualSalary > 0 && ((wageType === "Hourly" && hourlyRate > 0 && hoursWorked > 0) || (wageType === "Salary" && annualSalary > 0)) && periodType !== "";
 
     return (
         <Container className="m-0 p-0 no-gutters">
@@ -110,7 +85,6 @@ const IncomeInfo = () => {
                                 <Form.Control
                                     type="number"
                                     min={0}
-                                    step="0.01"
                                     placeholder="Hourly Rate"
                                     value={hourlyRate === 0 ? "" : hourlyRate}
                                     onBlur={() => setHourlyRateTouched(true)}
@@ -124,7 +98,6 @@ const IncomeInfo = () => {
                                 <Form.Control
                                     type="number"
                                     min={0}
-                                    step="0.01"
                                     placeholder="Hours Worked"
                                     value={hoursWorked === 0 ? "" : hoursWorked}
                                     onBlur={() => setHoursWorkedTouched(true)}
@@ -138,7 +111,6 @@ const IncomeInfo = () => {
                                 <Form.Control
                                     type="number"
                                     min={0}
-                                    step="0.01"
                                     placeholder="Overtime Rate"
                                     value={overtimeRate === 0 ? "" : overtimeRate}
                                     onBlur={() => setOvertimeRateTouched(true)}
@@ -152,7 +124,6 @@ const IncomeInfo = () => {
                                 <Form.Control
                                     type="number"
                                     min={0}
-                                    step="0.01"
                                     placeholder="Overtime Hours Worked"
                                     value={overtimeHours === 0 ? "" : overtimeHours}
                                     onBlur={() => setOvertimeHoursWorkedTouched(true)}
@@ -161,6 +132,20 @@ const IncomeInfo = () => {
                                 />
                                 <Form.Control.Feedback type="invalid">Please provide a valid number of overtime hours worked.</Form.Control.Feedback>
                             </Form.Group>
+                            <Form.Group as={Col} controlId="bounusAmountId">
+                                <Form.Label>Bonus</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    min={0}
+                                    placeholder="Bonus Amount"
+                                    value={bonusAmount === 0 ? "" : bonusAmount}
+                                    onBlur={() => setBonusAmountTouched(true)}
+                                    isInvalid={bonusAmountTouched &&  bonusAmount <= 0}
+                                    onChange={e => setBonusAmount(parseFloat(e.target.value))}
+                                />
+                                <Form.Control.Feedback type="invalid">Please provide a valid Bonus amount.</Form.Control.Feedback>
+                            </Form.Group>
+
                         </Row>
                     )}
                     {wageType === "Salary" && (
@@ -168,12 +153,10 @@ const IncomeInfo = () => {
                             <Form.Group as={Col} controlId="AnnualIncomeId">
                                 <Form.Label>Salary Amount($)</Form.Label>
                                 <Form.Control
-                                    type="text"
-                                    pattern="^\$?\d{1,3}(,\d{3})*$"
+                                    type="number"
+                                    pattern="^\$?\d{1,3}(,\d{3})*$" onBlur={() => setAnnualSalaryTouched(true)} isInvalid={annualSalaryTouched && !annualSalary}
                                     placeholder="Base Salary (Pre-Tax)"
                                     value={annualSalary === 0 ? "" : annualSalary}
-                                    onBlur={() => setAnnualSalaryTouched(true)}
-                                    isInvalid={annualSalaryTouched && !annualSalary}
                                     onChange={e => setAnnualSalary(parseInt(e.target.value))}
                                 />
                                 <Form.Control.Feedback type="invalid">Please provide a valid income amount.</Form.Control.Feedback>
@@ -184,23 +167,23 @@ const IncomeInfo = () => {
                         <Row>
                             <Col as={Col} controlId="MedicalDeductionId">
                                 <Form.Label>Medical ($)</Form.Label>
-                                <Form.Control type="text" pattern="^\$?\d{1,3}(,\d{3})*$" value={medicalDeduction === 0 ? "" : medicalDeduction} onChange={e => setMedicalDeduction(parseInt(e.target.value))}/>
+                                <Form.Control type="text" inputMode="numeric" placeholder="0.00" pattern="^\$?\d{1,3}(,\d{3})*(\.\d{2})?$" value={medicalDeduction === 0 ? "" : formatCurrency(medicalDeduction)} onChange={e => setMedicalDeduction(parseInt(e.target.value))}/>
                             </Col>
                             <Col as={Col} controlId="DentalDeductionId">
                                 <Form.Label>Dental($)</Form.Label>
-                                <Form.Control type="text" pattern="^\$?\d{1,3}(,\d{3})*$" value={dentalDeduction === 0 ? "" : dentalDeduction} onChange={e => setDentalDeduction(parseInt(e.target.value))}/>
+                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={dentalDeduction === 0 ? "" : dentalDeduction} onChange={e => setDentalDeduction(parseInt(e.target.value))}/>
                             </Col>
                             <Col as={Col} controlId="VisionDeductionId">
                                 <Form.Label>Vision($)</Form.Label>
-                                <Form.Control type="text" pattern="^\$?\d{1,3}(,\d{3})*$" value={visionDeduction === 0 ? "" : visionDeduction} onChange={e => setVisionDeduction(parseInt(e.target.value))}/>
+                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={visionDeduction === 0 ? "" : visionDeduction} onChange={e => setVisionDeduction(parseInt(e.target.value))}/>
                             </Col>
                             <Col as={Col} controlId="Deduction401kId">
                                 <Form.Label>401k($)</Form.Label>
-                                <Form.Control type="text" pattern="^\$?\d{1,3}(,\d{3})*$" value={deduction401k === 0 ? "" : deduction401k} onChange={e => setDeduction401k(parseInt(e.target.value))}/>
+                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={deduction401k === 0 ? "" : deduction401k} onChange={e => setDeduction401k(parseInt(e.target.value))}/>
                             </Col>
                             <Col as={Col} controlId="OtherDeductionId">
                                 <Form.Label>Other Deductions($)</Form.Label>
-                                <Form.Control type="text" pattern="^\$?\d{1,3}(,\d{3})*$" value={otherDeduction === 0 ? "" : otherDeduction} onChange={e => setOtherDeduction(parseInt(e.target.value))}/>
+                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={otherDeduction === 0 ? "" : otherDeduction} onChange={e => setOtherDeduction(parseInt(e.target.value))}/>
                             </Col>
                         </Row>
                     )}
@@ -244,7 +227,7 @@ const IncomeInfo = () => {
                         <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
                     <Col>
-                        <Button className="float-left" disabled={!!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
+                        <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
                     </Col>
                 </Row>
             </Row>

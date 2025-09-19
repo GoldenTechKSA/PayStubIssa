@@ -62,6 +62,42 @@ export const formatCurrency = (amount: number): string => {
     }).format(amount);
 }
 
+export const isValidString = (input: string): boolean => {
+//  * Validates if a string contains only alphanumeric characters and spaces
+//  * @param input - The string to validate
+//  * @returns boolean - True if the string contains only alphanumeric characters and spaces, false otherwise
+//  */
+  // Check if input is a string
+  if (typeof input !== 'string') {
+    return false;
+  }
+
+  // Regular expression to match only alphanumeric characters and spaces
+  // ^ - start of string
+  // [a-zA-Z0-9 ] - alphanumeric characters (a-z, A-Z, 0-9) and space
+  // + - one or more occurrences
+  // $ - end of string
+  const alphaNumericSpaceRegex = /^[a-zA-Z0-9 ]+$/;
+  return alphaNumericSpaceRegex.test(input);
+};
+
+export function isValidStubCount(input: string | number): boolean {
+    // First check if it's a valid number format
+    if (typeof input === 'string') {
+        const regex = /^\d+$/; // Matches one or more digits
+        if (!regex.test(input)) {
+            return false;
+        }
+    }
+    
+    // Convert to number for range validation
+    const num = typeof input === 'number' ? input : Number(input);
+    
+    // Check if it's a valid number and within range
+    return Number.isInteger(num) && num > 0 && num <= 12;
+}
+
+
 interface TaxResult {
     taxAmount: number;
     effectiveRate: number;
