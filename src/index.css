@@ -10,6 +10,10 @@ body {
   padding: 0 10px;
 }
 
+.label_fontsize {
+  font-size: 0.90rem;
+}
+
 .tab-custom-height {
   height: auto;
 }

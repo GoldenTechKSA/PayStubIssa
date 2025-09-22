@@ -12,7 +12,7 @@ const CompanyInfo = () => {
     const [companyAddress1, setCompanyAddress1] = useState(companyInfo.companyAddress1 || "");
     const [companyAddress2, setCompanyAddress2] = useState(companyInfo.companyAddress2 || "");
     const [companyCity, setCompanyCity] = useState(companyInfo.companyCity || "");
-    const [companyState, setCompanyState] = useState(companyInfo.companyState || "");
+    const [companyState, setCompanyState] = useState(companyInfo.companyState || "Washington");
     const [companyZipCode, setCompanyZipCode] = useState(companyInfo.companyZipCode || "");
     const [companyLogo, setCompanyLogo] = useState(companyInfo.companyLogo ||  "");
     const [companyPhone, setCompanyPhone] = useState(companyInfo.companyPhone || "");
@@ -22,10 +22,8 @@ const CompanyInfo = () => {
 
 
     const [companyNameTouched, setCompanyNameTouched] = useState(false);
-    const [companyEINTouched, setCompanyEINTouched] = useState(false);
     const [companyAddress1Touched, setCompanyAddress1Touched] = useState(false);
     const [companyCityTouched, setCompanyCityTouched] = useState(false);
-    const [companyStateTouched, setCompanyStateTouched] = useState(false);
     const [companyZipCodeTouched, setCompanyZipCodeTouched] = useState(false);
     const [companyPhoneTouched, setCompanyPhoneTouched] = useState(false);
     const [companyEmailTouched, setCompanyEmailTouched] = useState(false);
@@ -70,12 +68,11 @@ const CompanyInfo = () => {
             event.stopPropagation();
         }
         dispatch(saveCompanyInfo({ companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail }));
-//        console.log("Company details saved:", { companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail });
+        console.log("Company details saved:", { companyName, companyEIN, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyLogo, companyPhone, companyEmail });
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
 
-    const isFormValid = isValidCompanyName(companyName) && isValidEIN(companyEIN) &&  isValidAddress(companyAddress1) && companyCity.trim().length >= 2 && companyState && 
-        isValidZipCode(companyZipCode) && isValidUSPhone(companyPhone) && /^\S+@\S+\.\S+$/.test(companyEmail);
+    const isFormValid = isValidCompanyName(companyName) && isValidAddress(companyAddress1) && companyCity.trim().length >= 2 && isValidZipCode(companyZipCode) && isValidUSPhone(companyPhone) && /^\S+@\S+\.\S+$/.test(companyEmail);
 
     // Handler for file upload
     const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,61 +95,54 @@ const CompanyInfo = () => {
             </Row>
             <Row className="mb-4 mx-4 border p-4">
                 <Form>
-                    <Row>
+                    <Row> {/* company name, company EIN */}
                         <Form.Group as={Col} controlId="companyNameId">
-                            <Form.Control placeholder="Enter Company Name" maxLength={100} onBlur={() => setCompanyNameTouched(true)} isInvalid={companyNameTouched && !isValidCompanyName(companyName)}  required value={companyName} onChange={e => setCompanyName(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid company name(3–100 characters).
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Enter company name</Form.Label>
+                            <Form.Control required maxLength={100} onBlur={() => setCompanyNameTouched(true)} isInvalid={companyNameTouched && !isValidCompanyName(companyName)}  value={companyName} onChange={e => setCompanyName(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">Please provide a valid company name(3–100 characters).</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEinId">
-                            <Form.Control placeholder="Company EIN" onBlur={() => setCompanyEINTouched(true)} isInvalid={companyEINTouched && !isValidEIN(companyEIN)} value={companyEIN} onChange={e => setCompanyEIN(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid EIN. It should be xx-xxxxxxx (9 digits).
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Enter company EIN - XX-XXXXXXX 9 digits(optional)</Form.Label>
+                            <Form.Control value={companyEIN} onChange={e => setCompanyEIN(e.target.value)}/>
                         </Form.Group>
                     </Row>
-                    <Form.Group className="mb-2" controlId="companyAddress1Id">
-                        <Form.Control required placeholder="Enter Company Address (i.e 1234 Main St)" onBlur={() => setCompanyAddress1Touched(true)} isInvalid={companyAddress1Touched && !isValidAddress(companyAddress1)} value={companyAddress1} onChange={e => setCompanyAddress1(e.target.value)}/>
-                        <Form.Control.Feedback type="invalid">
-                            Please provide a valid address (at least 5 characters).
-                        </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group className="mb-2" controlId="companyAddress2Id">
-                        <Form.Control placeholder="suite, unit, or floor" value={companyAddress2} onChange={e => setCompanyAddress2(e.target.value)}/>
-                    </Form.Group>
-                    <Row>
+                    <Row> {/* company address 1, company address 2 */}
+                        <Form.Group as={Col} className="mb-2" controlId="companyAddress1Id">
+                            <Form.Label className="label_fontsize">Enter company address (i.e 1234 Main St)</Form.Label>
+                            <Form.Control required onBlur={() => setCompanyAddress1Touched(true)} isInvalid={companyAddress1Touched && !isValidAddress(companyAddress1)} value={companyAddress1} onChange={e => setCompanyAddress1(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">Please provide a valid address (at least 5 characters).</Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} className="mb-2" controlId="companyAddress2Id">
+                            <Form.Label className="label_fontsize">Suite, unit, or floor (i.e suite 100A)</Form.Label>
+                            <Form.Control placeholder="suite, unit, or floor" value={companyAddress2} onChange={e => setCompanyAddress2(e.target.value)}/>
+                        </Form.Group>
+                    </Row>
+                    <Row> {/* company city, company state, company zip code */}
                         <Form.Group as={Col} controlId="companyCityId">
-                            <Form.Control placeholder="City" onBlur={() => setCompanyCityTouched(true)} isInvalid={companyCityTouched && !companyCity} value={companyCity} required onChange={e => setCompanyCity(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid city (at least 2 characters).
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">City</Form.Label>
+                            <Form.Control required onBlur={() => setCompanyCityTouched(true)} isInvalid={companyCityTouched && !companyCity} value={companyCity} onChange={e => setCompanyCity(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">Please provide a valid city (at least 2 characters).</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyStateId">
-                            <Form.Control required as="select" value={companyState} onBlur={() => setCompanyStateTouched(true)} isInvalid={companyStateTouched && !companyState} onChange={(e) => setCompanyState(e.target.value)}>
-                                { STATESLIST.map((s) => <option key={s.code} value={s.name}>{s.name}</option> )}
-                            </Form.Control>
-                            <Form.Control.Feedback type="invalid">Please select a state.</Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">State</Form.Label>
+                            <Form.Control as="select" value={companyState} onChange={(e) => setCompanyState(e.target.value)}>{ STATESLIST.map((s) => <option key={s.code} value={s.name}>{s.name}</option> )}</Form.Control>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyZipCodeId">
-                            <Form.Control placeholder="Zip Code" onBlur={() => setCompanyZipCodeTouched(true)} isInvalid={companyZipCodeTouched && !isValidZipCode(companyZipCode)} value={companyZipCode} onChange={e => setCompanyZipCode(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid zip code (5 digits).
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Zip code</Form.Label>
+                            <Form.Control required onBlur={() => setCompanyZipCodeTouched(true)} isInvalid={companyZipCodeTouched && !isValidZipCode(companyZipCode)} value={companyZipCode} onChange={e => setCompanyZipCode(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">Please provide a valid zip code (5 digits).</Form.Control.Feedback>
                         </Form.Group>
                     </Row>
-                    <Row>
+                    <Row> {/* company phone, company email, company logo */}
                         <Form.Group as={Col} controlId="companyPhoneId">
-                            <Form.Control placeholder="Enter Company Phone Number" onBlur={() => setCompanyPhoneTouched(true)} isInvalid={companyPhoneTouched && !isValidUSPhone(companyPhone)} value={companyPhone} onChange={e => setCompanyPhone(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid phone number (10 digits).
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Enter company phone number</Form.Label>
+                            <Form.Control onBlur={() => setCompanyPhoneTouched(true)} isInvalid={companyPhoneTouched && !isValidUSPhone(companyPhone)} value={companyPhone} onChange={e => setCompanyPhone(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">Please provide a valid phone number (10 digits).</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEmailId">
-                            <Form.Control type="email" placeholder="Enter Company Email" onBlur={() => setCompanyEmailTouched(true)} isInvalid={companyEmailTouched && !/^\S+@\S+\.\S+$/.test(companyEmail)} value={companyEmail} onChange={e => setCompanyEmail(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid email address.
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Enter company email</Form.Label>
+                            <Form.Control type="email" onBlur={() => setCompanyEmailTouched(true)} isInvalid={companyEmailTouched && !/^\S+@\S+\.\S+$/.test(companyEmail)} value={companyEmail} onChange={e => setCompanyEmail(e.target.value)}/>
+                            <Form.Control.Feedback type="invalid">Please provide a valid email address.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyLogo">
                             <Button variant="outline-primary" type="button" onClick={() => fileInputRef.current?.click()} className="mb-2">Upload Company Logo</Button>
@@ -170,8 +160,6 @@ const CompanyInfo = () => {
                         <Button className="float-right " variant="secondary" onClick={handleSubmitGoBack} type="submit">Go Back</Button>
                     </Col>
                     <Col>
-                        {/* enable this when we are ready for full validation <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button> */}
-                        {/* <Button className="float-left" onClick={handleSubmitGoNext} type="submit">Save & Continue</Button> */}
                         <Button className="float-left" disabled={!isFormValid} onClick={handleSubmitGoNext} type="submit">Save & Continue</Button>
                     </Col>
                 </Row>
