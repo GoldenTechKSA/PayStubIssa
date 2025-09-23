@@ -87,8 +87,8 @@ const EmployeeInfo = () => {
                 <Form>
                     <Row> {/* FirstName, LastName */ }
                         <Form.Group as={Col} controlId="employeeFirstNameId">
-                            <Form.Label required className="label_fontsize">Enter first name</Form.Label>
-                            <Form.Control type="text" value={employeeFirstName} maxLength={100} onBlur={() => setEmployeeFirstNameTouched(true)} isInvalid={employeeFirstNameTouched && !isValidName(employeeFirstName)} onChange={e => setEmployeeFirstName(e.target.value)}/>
+                            <Form.Label  className="label_fontsize">Enter first name</Form.Label>
+                            <Form.Control required type="text" value={employeeFirstName} maxLength={100} onBlur={() => setEmployeeFirstNameTouched(true)} isInvalid={employeeFirstNameTouched && !isValidName(employeeFirstName)} onChange={e => setEmployeeFirstName(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid first name.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} sm="2" controlId="employeeMidInitialId">
@@ -102,9 +102,9 @@ const EmployeeInfo = () => {
                         </Form.Group>
                     </Row>
                     <Row> {/* Address, Apt, Suite, Unit */ }
-                        <Form.Group as={Col} required className="mb-2"  controlId="employeeAddress1Id">
+                        <Form.Group as={Col} className="mb-2"  controlId="employeeAddress1Id">
                             <Form.Label className="label_fontsize">Enter employee address</Form.Label>
-                            <Form.Control value={employeeAddress1} onBlur={() => setEmployeeAddress1Touched(true)} isInvalid={employeeAddress1Touched && !isValidAddress(employeeAddress1)} onChange={e => setEmployeeAddress1(e.target.value)}/>
+                            <Form.Control required value={employeeAddress1} onBlur={() => setEmployeeAddress1Touched(true)} isInvalid={employeeAddress1Touched && !isValidAddress(employeeAddress1)} onChange={e => setEmployeeAddress1(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid address (at least 5 characters).</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} className="mb-2" controlId="employeeAddress2Id">
@@ -130,7 +130,7 @@ const EmployeeInfo = () => {
                     </Row>
                     <Row> {/* Employee SSN, Phone, employee ID */ }
                         <Form.Group as={Col} controlId="employeeSsnId">
-                        <Form.Label className="label_fontsize">Enter employee SSN</Form.Label>
+                            <Form.Label className="label_fontsize">Enter employee SSN</Form.Label>
                             <Form.Control type="text" value={employeeSSN} onChange={e => setEmployeeSSN(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeePhoneId">
