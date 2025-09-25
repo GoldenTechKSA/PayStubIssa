@@ -1,6 +1,14 @@
 import React, {useState} from "react";
+import { useSelector } from "react-redux";
 import { CompanyInfo, EmployeeInfo, IncomeDetails, GeneralInfo, PayStubDetails, } from "../../../assets/data/pay-stub-details";
-import {formatCurrency, getWeeksToDateThisYear, formatDate, calculateFederalIncomeTax2025 } from "../../../utils/util";
+import { formatCurrency, getWeeksToDateThisYear, formatDate, calculateFederalIncomeTax2025 } from "../../../utils/util";
+import { netPayAsStringCurrent, totalEarningsAsStringYTD, totalEarningsAsStringCurrent, grossPayAsString, grossPayAsStringYTD, netPayAsStringYTD } from "../../../utils/earnings-calculator";
+import { overtimeAsStringCurrent, overtimeAsStringYTD } from "../../../utils/overtime-calculator";
+import { taxesAsString2025, totalTaxesTitle, currentTaxesAsString, taxesAsStringYTD} from "../../../utils/taxes-calculator";
+import { medicalDeductionAsStringYTD, dentalDeductionAsStringYTD, deduction401kAsStringYTD, visionDeductionAsStringYTD, otherDeductionAsStringYTD, 
+  totalDeductionsTitle, medicalDeductionAsString, dentalDeductionAsString, deduction401kAsString, visionDeductionAsString, otherDeductionAsString, currentDeductionsAsString, deductionsAsStringYTD } from "../../../utils/deductions-calculator";
+import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../../../types/tax-rate-types";
+
 import "./printTemplate0.css";
 
 type Earnings = { description: string; rate: string | number; hours: string | number; current: string | number; ytd: string | number; };
@@ -12,82 +20,67 @@ interface PrintTemplate0Props {
   canPrintStub: Boolean;
 }
 
-
 const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } ) => {
   // Destructure store properties using types
-  const companyInfo: CompanyInfo = store.companyInfo;   // Company Info
-  const employeeInfo: EmployeeInfo = store.employeeInfo;   // Employee Info
-  const incomeDetails: IncomeDetails = store.incomeDetails;   // Income Details
-  const generalInfo: GeneralInfo = store.generalInfo;   // General Info
+  const companyInfo: CompanyInfo = useSelector<PayStubDetails, CompanyInfo>(state => state.companyInfo);   // Company Info
+  const employeeInfo: EmployeeInfo = useSelector<PayStubDetails, EmployeeInfo>(state => state.employeeInfo);   // Employee Info
+  const incomeDetails: IncomeDetails = useSelector<PayStubDetails, IncomeDetails>(state => state.incomeDetails);   // Income Details
+  const generalInfo: GeneralInfo = useSelector<PayStubDetails, GeneralInfo>(state => state.generalInfo);   // General Info
 
   const {companyName, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyPhone, companyEmail, companyEIN,} = companyInfo;
+  console.log("PrintTemplate0 companyInfo:", companyInfo);
   const {employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeePhone, employeeEmail, employeeSSN, employeeID, employeeMarriedStatus, } = employeeInfo;
-  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
-  const {employmentType, paymentMethod, paymentFrequency, payStubNumber, payStubCount, checkNumber,} = generalInfo;
-
-  // Compose values for the template
+  console.log("PrintTemplate0 employeeInfo:", employeeInfo);
+  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, 
+    periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
+  console.log("PrintTemplate0 incomeDetails:", incomeDetails);
+  const {employmentType, paymentMethod, paymentFrequency, payStubNumber, payStubCount, checkNumber, extraNotes} = generalInfo;
+  console.log("PrintTemplate0 generalInfo:", generalInfo);
   const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName].filter(Boolean).join(" ");
   const employeeFullAddress = [employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode].filter(Boolean).join(", ");
   const companyFullAddress = [companyAddress1, companyAddress2, companyCity, companyState, companyZipCode].filter(Boolean).join(", ");
   const payPeriod = `${formatDate(periodStartDate)} - ${formatDate(periodEndDate)}`;
-  const grossPayT = hourlyRate * hoursWorked;
+console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
+  const specialNotes = !!extraNotes;
+  const directDeposit = !!paymentMethod;
+  const emptyCell = "-";
 
-  const grossPay = hourlyRate ? `${grossPayT.toFixed(2)}` : "N/A";
-  const deduction401kStr = deduction401k ? `${deduction401k.toFixed(2)}` : "N/A";
-  const medicalDeductionStr = medicalDeduction ? `${medicalDeduction.toFixed(2)}` : "N/A";
-  const dentalDeductionStr = dentalDeduction ? `${dentalDeduction.toFixed(2)}` : "N/A";
-  const visionDeductionStr = visionDeduction ? `${visionDeduction.toFixed(2)}` : "N/A";
-  const otherDeductionStr = otherDeduction ? `${otherDeduction.toFixed(2)}` : "N/A";
-  
-  const annualSalaryDisplay = annualSalary ? `$${annualSalary.toFixed(2)}` : "N/A";
-  const hourlyRateDisplay = hourlyRate ? `$${hourlyRate.toFixed(2)}` : "N/A";
-  const overtimeTotal = overtimeRate ? (overtimeRate * overtimeHours).toFixed(2) : "N/A";
-  const overtimeYTDTotal = overtimeHours ? (overtimeHours * overtimeRate * getWeeksToDateThisYear()).toFixed(2) : "0";
-  const totalDeductions = "NotReady";
-  const totalDeductionsYTD = "NotReady";
-  const totalTaxes = "NotReady";
-  const totalTaxesYTD = "NotReady";
-  const grossPayYTD = (grossPayT * getWeeksToDateThisYear()).toFixed(2) || "N/A";
-  const netPay = "NotReady";
-  const netPayYTD = "NotReady";
-
-  const result = calculateFederalIncomeTax2025(100000, employeeMarriedStatus as  'single' | 'marriedFilingJointly' | 'marriedFilingSeparately' | 'headOfHousehold');
-  const currentFedIncomeTax = `${formatCurrency(result.taxAmount)}`;
-  console.log(`Tax Amount: ${formatCurrency(result.taxAmount)}`);
-  console.log(`After-Tax Income: ${formatCurrency(result.afterTaxIncome)}`);
+//  console.log("PrintTemplate0 Rendered with canPrintStub:", canPrintStub);
 
   const FedIncomeTaxYTD = "NotReady";
-  const totalEarnings = `$${(grossPayT + (overtimeRate ? (overtimeRate * overtimeHours) : 0) + (bonusAmount || 0)).toFixed(2)}`;
-  const totalEarningsYTD = `$${((parseFloat(grossPayYTD) || 0) + (overtimeYTDTotal ? parseFloat(overtimeYTDTotal) : 0) + (bonusAmount ? bonusAmount * payStubCount : 0)).toFixed(2)}`;
-  const directDeposit = "****1234(NotReady)";
-  const emptyCell = "-";
-  const totalDeductionsText = "Total Deductions";
-  const totalTaxesText = "Total Taxes";
+  const totalDeductionsCurrent = "CurrentNotReady";
+  const totalDeductionsYTD = "YTDNotReady";
 
   const earnings: Earnings[] = [
-    { description: "Regular Pay", rate: `$${hourlyRate}`, hours: `${hoursWorked}`, current: `$${grossPay}`, ytd:`$${grossPayYTD}` },
-    { description: "Overtime", rate: `$${overtimeRate}`, hours: `${overtimeHours}`, current: `${overtimeTotal}`, ytd: `${overtimeYTDTotal}` },
+    { description: "Regular Pay", rate: `$${hourlyRate}`, hours: `${hoursWorked}`, current: `${grossPayAsString(hourlyRate, hoursWorked)}`, ytd:`${grossPayAsStringYTD(hourlyRate, hoursWorked)}` },
+    { description: "Overtime", rate: `$${overtimeRate}`, hours: `${overtimeHours}`, current: `${overtimeAsStringCurrent(overtimeRate, overtimeHours)}`, ytd: `${overtimeAsStringYTD(overtimeRate, overtimeHours)}` },
     { description: "Bonus", rate: " ", hours: " ", current: `$${bonusAmount}`, ytd: `$${bonusAmount}` }
   ];
   const deductions: Deductions[] = [
-    { description: "Medical", current:`$${medicalDeductionStr}`, ytd: " " },
-    { description: "Dental", current: `$${dentalDeductionStr}`, ytd: " " },
-    { description: "401(k)", current: `$${deduction401kStr}`, ytd: " " },
-    { description: "Vision", current: `$${visionDeductionStr}`, ytd: " " },
-    { description: "Other", current: `$${otherDeductionStr}`, ytd: " " }
-  ];
-  const taxes: Taxes[] = [
-    { description: "Federal Income Tax", current: `${currentFedIncomeTax}`, ytd: `${FedIncomeTaxYTD}` },
-    { description: "Social Security Tax", current: " ", ytd: " " },
-    { description: "Medicare Tax", current: " ", ytd: " " },
-    { description: "State Income Tax", current: " ", ytd: " " }
+    { description: "Medical", current:`${medicalDeductionAsString(medicalDeduction as number)}`, ytd: `${medicalDeductionAsStringYTD(medicalDeduction as number)}` },
+    { description: "Dental", current: `${dentalDeductionAsString(dentalDeduction as number)}`, ytd: `${dentalDeductionAsStringYTD(dentalDeduction as number)}` },
+    { description: "401(k)", current: `${deduction401kAsString(deduction401k as number)}`, ytd: `${deduction401kAsStringYTD(deduction401k as number)}` },
+    { description: "Vision", current: `${visionDeductionAsString(visionDeduction as number)}`, ytd: `${visionDeductionAsStringYTD(visionDeduction as number)}` },
+    { description: "Other", current:  `${otherDeductionAsString(otherDeduction as number)}`, ytd: `${otherDeductionAsStringYTD(otherDeduction as number)}` }
   ];
 
-  // Example: Replace this with your actual payment check logic
-  const [hasPaid, setHasPaid] = useState(canPrintStub); // false = watermark shown
-  const handlePrint = () => {
-    window.print();
+    const input: TaxCalculationInput = {
+    grossIncome: 100000,
+    filingStatus: 'single',
+    stateCode: 'WA',
+    additionalDeductions: 5000
   };
+
+  const {federalIncomeTaxAsString, socialSecurityTaxAsString, medicareTaxAsString, stateIncomeTaxAsString, federalIncomeTaxAsStringYTD, socialSecurityTaxAsStringYTD, medicareTaxAsStringYTD,
+     stateIncomeTaxAsStringYTD, totalTaxesAsString } = taxesAsString2025(input);
+
+
+  const taxes: Taxes[] = [
+    { description: "Federal Income Tax", current: `${federalIncomeTaxAsString}`, ytd: `${federalIncomeTaxAsStringYTD}` },
+    { description: "Social Security Tax", current: `${socialSecurityTaxAsString}`, ytd: `${socialSecurityTaxAsStringYTD}` },
+    { description: "Medicare Tax", current: `${medicareTaxAsString}`, ytd: `${medicareTaxAsStringYTD}` },
+    { description: "State Income Tax", current: `${stateIncomeTaxAsString}`, ytd: `${stateIncomeTaxAsStringYTD}` }
+  ];
 
   return (
     <div className="paystub-print-root0">
@@ -134,13 +127,14 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
       </style>
       <div className="paystub-print-paper0" style={{ position: "relative" }}>
         {/* Watermark Overlay */}
-        {!hasPaid && (
-          <div className="paystub-watermark0">
-            Printing is disabled. Please complete your payment to unlock and print your paystub.
-            Once payment is received, printing will be enabled for your records.
+        {!canPrintStub && ( <div className="paystub-watermark0" style={{display: "grid", gridTemplateRows: "repeat(3, 1fr)", gridTemplateColumns: "repeat(2, 1fr)", gap: "0", pointerEvents: "none" }}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.58, fontSize: "4rem", color: "#d32f2f", fontWeight: "bold", textAlign: "center", transform: "rotate(-20deg)", userSelect: "none", pointerEvents: "none" }}>
+                Draft Paystub
+              </div>
+            ))}
           </div>
         )}
-
         {/* Header */}
         <div className="paystub-header0">
           {/* Company Logo */}
@@ -244,16 +238,16 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
               <th>Description</th>
               <th>Rate</th>
               <th>Hours</th>
-              <th>Current</th>
-              <th>YTD</th>
+              <th>Amount</th>
+              <th>YTD Total</th>
 
               <th>Description</th>
-              <th>Current</th>
-              <th>YTD</th>
+              <th>Amount</th>
+              <th>YTD Total</th>
 
               <th>Description</th>
-              <th>Current</th>
-              <th>YTD</th>
+              <th>Amount</th>
+              <th>YTD Total</th>
             </tr>
           </thead>
           <tbody>
@@ -280,16 +274,16 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
               <td>GROSS PAY</td>
               <td>{emptyCell}</td>
               <td>{emptyCell}</td>
-              <td>{totalEarnings}</td>
-              <td>{totalEarningsYTD}</td>
+              <td>{totalEarningsAsStringCurrent(hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount)}</td>
+              <td>{totalEarningsAsStringYTD(hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount)}</td>
 
-              <td>{totalDeductionsText}</td>
-              <td>{totalDeductions}</td>
-              <td>{totalDeductionsYTD}</td>
+              <td>{totalDeductionsTitle}</td>
+              <td>{currentDeductionsAsString(deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction)}</td>
+              <td>{deductionsAsStringYTD(deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction)}</td>
 
-              <td>{totalTaxesText}</td>
-              <td>{totalTaxes}</td>
-              <td>{totalTaxesYTD}</td>
+              <td>{totalTaxesTitle}</td>
+              <td>{currentTaxesAsString(1, 1, 1, 1)}</td>
+              <td>{taxesAsStringYTD(1, 1, 1, 1)}</td>
             </tr>
           </tbody>
          </table>
@@ -298,15 +292,15 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
         <div className="paystub-netpay-row0">
           <div>
             <span className="paystub-label0">Net Pay (This Period):</span>
-            <span className="paystub-netpay-amount0">{netPay}</span>
+            <span className="paystub-netpay-amount0">{`${netPayAsStringCurrent()}`}</span>
           </div>
           <div>
             <span className="paystub-label0">Net Pay (YTD):</span>
-            <span className="paystub-netpay-amount0">{netPayYTD}</span>
+            <span className="paystub-netpay-amount0">{`$${netPayAsStringYTD()}`}</span>
           </div>
           {directDeposit && (<div>
             <span className="paystub-label0">Direct Deposit:</span>
-            <span>{directDeposit}</span>
+            <span>{paymentMethod}</span>
           </div>)}
         </div>
 
@@ -315,6 +309,7 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
           <div>This is not a check. For questions about your pay stub, please contact HR.</div>
           <div>{companyName} - Confidential</div>
           <div>{companyFullAddress}</div> 
+          {specialNotes && (<div>{extraNotes}</div>)} 
         </div>
       </div>
     </div>

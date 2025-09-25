@@ -44,6 +44,7 @@ export interface IncomeDetails {
     dentalDeduction?: number; // Optional dental deduction amount
     visionDeduction?: number; // Optional vision deduction amount
     otherDeduction?: number; // Optional other deduction amount
+    unionDues?: number; // Optional union dues percentage (e.g., 0.01 for 1%)
     periodStartDate: Date;
     periodEndDate: Date;
     periodPayDate: Date;
@@ -51,7 +52,7 @@ export interface IncomeDetails {
 }
 export interface GeneralInfo {
     employmentType: string;
-    paymentMethod: string;
+    paymentMethod: string; // "Direct Deposit" or "Check"
     paymentFrequency: string;
     payStubCount: number;
     payStubNumber: number;

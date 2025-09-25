@@ -5,6 +5,7 @@ import { updateAppSettings, saveGeneralInfo } from "../../redux/actions";
 import { useNavigate } from 'react-router-dom';
 import { PAYMENTMETHOD } from "../../constants/globals";
 import { GeneralInfo as GeneralDetails, PayStubDetails } from "assets/data/pay-stub-details";
+import { isValidStubCount, isValidString } from "../../utils/util";
 
 const GeneralInfo = () => {
     const general = useSelector<PayStubDetails, GeneralDetails>(state => state.generalInfo);
@@ -12,8 +13,11 @@ const GeneralInfo = () => {
     const [ payStubCount, setPayStubCount ] = useState(general.payStubCount || 1);
     const [ payStubNumber, setPaystubNumber ] = useState(general.payStubNumber || 1);
     const [ checkNumber, setCheckNumber ] = useState(general.checkNumber || 5000);
-    const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "Direct Deposit");
+    const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "None");
     const [ extraNotes, setExtraNotes ] = useState("");
+
+    const [ employmentTypeTouched, setEmploymentTypeTouched ] = useState(false);
+    const [ extraNotesTouched, setExtraNotesTouched ] = useState(false);
     const [ payStubCountTouched, setPayStubCountTouched ] = useState(false);
     const [ paymentMethodTouched, setPaymentMethodTouched ] = useState(false);
 
@@ -21,28 +25,19 @@ const GeneralInfo = () => {
     const navigate = useNavigate();
  
     const handleSubmitPreviewPaystub = (event) => {
-        event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
+            event.preventDefault();
             event.stopPropagation();
         }
         dispatch(saveGeneralInfo({ payStubCount, paymentMethod, payStubNumber, checkNumber, extraNotes }));
-        console.log("General Info Saved:", { payStubCount, payStubNumber, checkNumber, extraNotes });
-        console.log("moving to the next screen to preview the paystub details (paystubPreview)");
         navigate('/paystubPreview');
     };
-
-    function isValidStubCount(input): boolean {
-        const regex = /^\d+$/; // Matches one or more digits
-        return regex.test(input);
-    }
 
     function isValidCheckNum(input): boolean {
         const regex = /^\d{3,}$/; // Matches strings with only digits and at least 3 of them
         return regex.test(input);
     }
-
-    const isFormValid = isValidCheckNum(checkNumber) && isValidStubCount(payStubCount);
 
     const handleSubmitGoBack = (event) => {
         event.preventDefault();
@@ -52,6 +47,8 @@ const GeneralInfo = () => {
         }
         dispatch(updateAppSettings({ nextTabStep: "income" }));
     };
+
+    const isFormValid = isValidStubCount(payStubCount) && isValidString(employmentType) && isValidString(paymentMethod);
 
     return (
         <Container className="m-0 p-0 no-gutters">
@@ -64,21 +61,21 @@ const GeneralInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="employmentTypeId">
                             <Form.Label>What type of employment applies to this pay period?</Form.Label>
-                            <Form.Control placeholder="(e.g., full-time, part-time, contractor, salary)" value={employmentType} onChange={e => setEmploymentType(e.target.value)} />
+                            <Form.Control placeholder="(e.g., full-time, part-time, contractor, salary)" value={employmentType} onBlur={() => setEmploymentTypeTouched(true)} isInvalid={employmentTypeTouched && !isValidString(employmentType)} onChange={e => setEmploymentType(e.target.value)} />
                             <Form.Control.Feedback type="invalid">Please specify the employment category for this pay period (e.g., full-time, part-time, contract).</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="paymentMethodId">
                             <Form.Label>Select the payment method for this pay period:</Form.Label>
                             <Form.Control as="select" value={paymentMethod} onBlur={() => setPaymentMethodTouched(true)} isInvalid={paymentMethodTouched && !paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
                                 { PAYMENTMETHOD.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}
-                            <Form.Control.Feedback type="invalid">Please Select how you received payment for this pay period. (e.g. via direct deposit, physical check, wire transfer, or other means.</Form.Control.Feedback>
                             </Form.Control>
+                            <Form.Control.Feedback type="invalid">Please Select how you received payment for this pay period. (e.g. via direct deposit, physical check, wire transfer, or other means).</Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} className="mb-4" controlId="payStubCountId">
                             <Form.Label>How many paystubs do you need?</Form.Label>
-                            <Form.Control placeholder="example 1, 2 or 3" value={payStubCount} onBlur={() => setPayStubCountTouched(true)} isInvalid={payStubCountTouched && !isValidStubCount(payStubCount)} onChange={e => setPayStubCount(parseInt(e.target.value))} />
+                            <Form.Control placeholder="example 1, 2 or 3, etc." value={payStubCount} onBlur={() => setPayStubCountTouched(true)} isInvalid={payStubCountTouched && !isValidStubCount(payStubCount)} onChange={e => setPayStubCount(parseInt(e.target.value))} />
                             <Form.Control.Feedback type="invalid">Please provide a valid number of paystubs.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="checkNumberId">
@@ -95,7 +92,7 @@ const GeneralInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="extraNotesId">
                             <Form.Label>Additional Notes or Reference</Form.Label>
-                            <Form.Control as="textarea" rows={2} placeholder="Extra notes for internal reference" value={extraNotes} onChange={e => setExtraNotes(e.target.value)} />
+                            <Form.Control as="textarea" rows={2} placeholder="Extra notes for internal reference" value={extraNotes} onBlur={() => setExtraNotesTouched(true)} isInvalid={extraNotesTouched && !isValidString(extraNotes)} onChange={e => setExtraNotes(e.target.value)} />
                         </Form.Group>
                     </Row>
                 </Form>

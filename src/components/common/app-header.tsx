@@ -1,16 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import BlurOnIcon from '@mui/icons-material/BlurOn';
 import { green } from '@mui/material/colors';
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { AppSettings, PayStubDetails } from "../../assets/data/pay-stub-details";
 
 const AppHeader = () => {
-    const { templateId } = useSelector<PayStubDetails, AppSettings>( state => state.appSettings);
-    // useEffect(() => {
-    //     console.log("Template id in the header component templateId=", templateId);
-    // }, [templateId]);
 
     return (
         <Navbar className="no-print">
@@ -25,7 +19,7 @@ const AppHeader = () => {
                     <NavLink className="navLinkClass" to="/aboutUsPage">About Us</NavLink>
                     <NavLink className="navLinkClass" to="/FAQPage">FAQ</NavLink>
                     <NavLink className="navLinkClass" to="/contactUsPage">Contact Us</NavLink>
-                    <NavLink className="navLinkClass" to={`/printTemplate/${templateId}`}>Print Template</NavLink>
+                    {/*<NavLink className="navLinkClass" to={`/printTemplate/${templateId}`}>Print Template</NavLink>*/}
                 </Nav>
             </Container>
         </Navbar>

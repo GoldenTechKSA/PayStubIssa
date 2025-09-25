@@ -67,4 +67,16 @@ export interface TaxCalculationResult {
   totalTaxes: number;
   netIncome: number;
   effectiveTaxRate: number;
-}
+};
+
+export interface TaxCalculationResultAsString {
+  federalIncomeTaxAsString: string;
+  socialSecurityTaxAsString: string;
+  medicareTaxAsString: string;
+  stateIncomeTaxAsString: string;
+  totalTaxesAsString: string;
+  federalIncomeTaxAsStringYTD: string;
+  socialSecurityTaxAsStringYTD: string;
+  medicareTaxAsStringYTD: string;
+  stateIncomeTaxAsStringYTD: string;
+  totalTaxesAsStringYTD: string;}

@@ -1,6 +1,4 @@
 import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, PayStubDetails } from "./pay-stub-details";
-import { STATESLIST } from "../../constants/globals";
-
 
 const appSettings: AppSettings = {
     templateId: 0,
@@ -39,21 +37,22 @@ const employeeInfo: EmployeeInfo = {
 };
 
 const incomeDetails: IncomeDetails = {
-    annualSalary: 100000,
+    annualSalary: 0,
     wageType: "Hourly", 
-    hourlyRate: 20.50, // Example hourly rate
-    hoursWorked: 4.25, // Example hours worked per week
-    overtimeRate: 30.25, // Example overtime hourly rate
-    overtimeHours: 10.5, // Example overtime hours worked per week
-    bonusAmount: 200.50, // Example extrea bonus amount
-    deduction401k: 100.45, // Optional 401K amount
-    medicalDeduction: 130.25, // Optional medical deduction amount
-    dentalDeduction: 15.90, // Optional dental deduction amount
-    visionDeduction: 10.75, // Optional vision deduction amount
-    otherDeduction: 5.25, // Optional other deduction amount
-    periodStartDate: new Date(),
-    periodEndDate: new Date(),
-    periodPayDate: new Date(),
+    hourlyRate: 0, // Example hourly rate
+    hoursWorked: 0, // Example hours worked per week
+    overtimeRate: 0, // Example overtime hourly rate
+    overtimeHours: 0, // Example overtime hours worked per week
+    bonusAmount: 0, // Example extrea bonus amount
+    deduction401k: 0, // Optional 401K amount
+    medicalDeduction: 0, // Optional medical deduction amount
+    dentalDeduction: 0, // Optional dental deduction amount
+    visionDeduction: 0, // Optional vision deduction amount
+    otherDeduction: 0, // Optional other deduction amount
+    unionDues: 0, // Optional union dues percentage (e.g., 0.01 for 1%)
+    periodStartDate: null as unknown as Date,
+    periodEndDate: null as unknown as Date,
+    periodPayDate: null as unknown as Date,
     periodType: "Weekly"
 };
 

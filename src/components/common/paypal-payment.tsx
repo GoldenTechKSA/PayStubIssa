@@ -1,13 +1,14 @@
 import React, { useRef, useEffect } from "react";
 
-// Business SandBox Account for Testing: sb-3cbdv6115562@business.example.com tTk9q7!<
-// Personal SandBox Account used to test CC transations: sb-93etm6755470@personal.example.com H$%j4Cu)
-
-const PayPal = ({ onPaymentSuccess }: { onPaymentSuccess: () => void }) => {
+const PayPal = ({ onPaymentSuccess, onPaymentError }) => {
     const paypal = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        window.paypal.Buttons({
+        // Capture the current ref value
+        const paypalContainer = paypal.current;
+
+        // Render PayPal Buttons
+        const buttons = window.paypal.Buttons({
             createOrder: (data, actions) => {
                 return actions.order.create({
                     intent: "CAPTURE",
@@ -20,26 +21,37 @@ const PayPal = ({ onPaymentSuccess }: { onPaymentSuccess: () => void }) => {
                             }
                         }
                     ]
-                })
+                });
             },
             onApprove: async (data, actions) => {
-                const order = await actions.order.capture().then(function(details){
-                    alert("Transaction completed by " + details.payer.name.given_name);
-                    onPaymentSuccess(); // <-- Activate canPrint flag
-                });
+                const order = await actions.order.capture();
+                onPaymentSuccess(order);
                 console.log("Successful Order", order);
             },
             onError: (err) => {
+                onPaymentError(err);
                 console.log(err);
             }
-        }).render(paypal.current)
-    }, [onPaymentSuccess])
+        });
+
+        if (paypalContainer) {
+            buttons.render(paypalContainer);
+        }
+
+        // Cleanup: use the captured ref value
+        return () => {
+            buttons.close && buttons.close();
+            if (paypalContainer) {
+                paypalContainer.innerHTML = "";
+            }
+        };
+    }, [onPaymentSuccess, onPaymentError]);
 
     return (
         <div className="no-print">
             <div ref={paypal} />
         </div>
     );
-}
+};
 
 export default PayPal;

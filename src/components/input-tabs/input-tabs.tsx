@@ -14,7 +14,6 @@ export type InputTabsProps = {
 
 const InputTabs: React.FC<InputTabsProps> = ({ id }) => {
     const { nextTabStep } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    const { templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
 
     return (
         <Container className="no-print tab-container-relative">

@@ -12,6 +12,8 @@ const PaystubPreview = () => {
     const dispatch = useDispatch();
     const templateId = state.appSettings.templateId;
 
+    const devMode = (process.env.NODE_ENV === "production" ? false : true)
+
     const printPaystub = async () => {
         console.log("Printing paystub with template type:", templateId);
         navigate(`/printTemplate/${templateId}`);
@@ -257,7 +259,7 @@ const PaystubPreview = () => {
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
                 <strong>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
             </p>
-
+{ devMode && (
             <table>
             <tbody>
 {/* ============================================================================================================================================================== */}
@@ -440,7 +442,7 @@ const PaystubPreview = () => {
                     </tr>
             </tbody>
             </table>
-
+)}
             {/* Print Pay Stub Button*/}
             <Button className="float-right mb-4" onClick={printPaystub} type="button">
                 Continue to Preview & Payment
