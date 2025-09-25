@@ -24,18 +24,10 @@ const IncomeInfo = () => {
     const [ dentalDeduction, setDentalDeduction ] = useState<number>(income.dentalDeduction || 0 );
     const [ visionDeduction, setVisionDeduction ] = useState<number>(income.visionDeduction || 0 );
     const [ otherDeduction, setOtherDeduction ] = useState<number>(income.otherDeduction || 0 );
+    const [ unionDues, setUnionDues ] = useState<number>(income.unionDues || 0 );
 
     const [ annualSalaryTouched, setAnnualSalaryTouched ] = useState(false);
-    const [ periodStartDateTouched, setPeriodStartDateTouched ] = useState(false);
-    const [ periodEndDateTouched, setPeriodEndDateTouched ] = useState(false);
-    const [ periodPayDateTouched, setPeriodPayDateTouched ] = useState(false);
-    const [ periodTypeTouched, setPeriodTypeTouched ] = useState(false);
-    const [hourlyRateTouched, setHourlyRateTouched] = useState(false);
-    const [hoursWorkedTouched, setHoursWorkedTouched] = useState(false);
-    const [overtimeRateTouched, setOvertimeRateTouched] = useState(false);
-    const [overtimeHoursWorkedTouched, setOvertimeHoursWorkedTouched] = useState(false);
     const [enableOtherDeductions, setEnableOtherDeductions] = useState(false);
-    const [ bonusAmountTouched, setBonusAmountTouched ] = useState(false);
     
     const dispatch = useDispatch();
 
@@ -45,8 +37,8 @@ const IncomeInfo = () => {
             event.preventDefault();
             event.stopPropagation();
         }
-        dispatch(saveIncomeDetails({ annualSalary, wageType, hourlyRate, hoursWorked, overtimeHours, overtimeRate, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodType }));
-        console.log("Income details saved:", { annualSalary, wageType, hourlyRate, hoursWorked, periodStartDate, periodEndDate, periodType });
+        dispatch(saveIncomeDetails({ annualSalary, wageType, hourlyRate, hoursWorked, overtimeHours, overtimeRate, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodPayDate, periodType }));
+        console.log("Income details saved:", { annualSalary, wageType, hourlyRate, hoursWorked, overtimeHours, overtimeRate, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodPayDate, periodType });
         dispatch(updateAppSettings({ nextTabStep: "general" }));
     };
 
@@ -59,7 +51,46 @@ const IncomeInfo = () => {
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
 
-    const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && annualSalary > 0 && ((wageType === "Hourly" && hourlyRate > 0 && hoursWorked > 0) || (wageType === "Salary" && annualSalary > 0)) && periodType !== "";
+
+    const parseMedicalDeduction = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = e.target.value;
+        const parsed = parseFloat(value);
+        setMedicalDeduction(isNaN(parsed) || value === "" ? 0 : parsed);
+    }
+
+    const parseDentalDeduction = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = e.target.value.replace(/[$,]/g, '');
+        const parsed = parseFloat(value);
+        setDentalDeduction(isNaN(parsed) || value === "" ? 0 : parsed);
+    }
+
+    const parseVisionDeduction = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = e.target.value.replace(/[$,]/g, '');
+        const parsed = parseFloat(value);
+        setVisionDeduction(isNaN(parsed) || value === "" ? 0 : parsed);
+    }
+
+    const parseDeduction401k = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = e.target.value.replace("%", "").trim();
+        const parsed = parseFloat(value) / 100;
+        setDeduction401k(isNaN(parsed) || value === "" ? 0 : parsed);
+    }
+    const parseUnionDues = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = e.target.value.replace("%", "").trim();
+        const parsed = parseFloat(value) / 100;
+        setUnionDues(isNaN(parsed) || value === "" ? 0 : parsed);
+    }
+
+    // Calculate gross pay based on wage type and inputs
+    const calculateGrossPay = (): number => {
+        if (wageType === "Hourly") {
+            return (hourlyRate * hoursWorked) + (overtimeRate * overtimeHours) + bonusAmount;
+        } else { // Salary
+            return annualSalary / (periodType === "Weekly" ? 52 : periodType === "Bi-Weekly" ? 26 : periodType === "Semi-Monthly" ? 24 : 12) + bonusAmount;
+        }
+    }
+    // Form is valid only if all required fields are filled out correctly
+    const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && isValidDate(periodPayDate) && ((wageType === "Hourly" && hourlyRate > 0 && hoursWorked > 0) || (wageType === "Salary" && annualSalary > 0));
 
     return (
         <Container className="m-0 p-0 no-gutters">
@@ -68,157 +99,203 @@ const IncomeInfo = () => {
             </Row>
             <Row className="mb-4 mx-4  border p-4">
                 <Form>
-                    <Row className="mb-3">
+                    <Row className="mb-3"> {/* Wage Type Selection, either Hourly wage or yearly Salary */ }
                         <Col>
-                            <Form.Label className="mr-4">Do you earn wages hourly or receive a fixed salary?</Form.Label>
+                            <Form.Label className="mr-4 label_fontsize">Do you earn wages hourly or receive a fixed salary?</Form.Label>
                             <Button variant={wageType === "Hourly" ? "primary" : "outline-primary"} onClick={() => setWageType("Hourly")} className="me-2">Hourly Wage</Button>
                             <Button variant={wageType === "Salary" ? "primary" : "outline-primary"} onClick={() => setWageType("Salary")}>Yearly Salary</Button>
                         </Col>
-                        <Col>
-                            <Form.Check type="checkbox" id="enableOtherDeductions" label="Include other deductions (Medical, Dental, Vision, 401k...)" className="mt-3" checked={enableOtherDeductions} onChange={e => setEnableOtherDeductions(e.target.checked)}/>                        
-                        </Col>
                     </Row>
                     {wageType === "Hourly" && (
-                        <Row>
-                            <Form.Group as={Col} controlId="hourlyRateId">
-                                <Form.Label>Hourly Rate ($)</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    min={0}
-                                    placeholder="Hourly Rate"
-                                    value={hourlyRate === 0 ? "" : hourlyRate}
-                                    onBlur={() => setHourlyRateTouched(true)}
-                                    isInvalid={hourlyRateTouched && hourlyRate <= 0}
-                                    onChange={e => setHourlyRate(parseFloat(e.target.value))}
-                                />
-                                <Form.Control.Feedback type="invalid">Please provide a valid hourly rate.</Form.Control.Feedback>
-                            </Form.Group>
-                            <Form.Group as={Col} controlId="hoursWorkedId">
-                                <Form.Label>Hours Worked</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    min={0}
-                                    placeholder="Hours Worked"
-                                    value={hoursWorked === 0 ? "" : hoursWorked}
-                                    onBlur={() => setHoursWorkedTouched(true)}
-                                    isInvalid={hoursWorkedTouched && hoursWorked <= 0}
-                                    onChange={e => setHoursWorked(parseFloat(e.target.value))}
-                                />
-                                <Form.Control.Feedback type="invalid">Please provide a valid number of hours worked.</Form.Control.Feedback>
-                            </Form.Group>
-                            <Form.Group as={Col} controlId="overtimeRateId">
-                                <Form.Label>Overtime Hourly Rate ($)</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    min={0}
-                                    placeholder="Overtime Rate"
-                                    value={overtimeRate === 0 ? "" : overtimeRate}
-                                    onBlur={() => setOvertimeRateTouched(true)}
-                                    isInvalid={overtimeRateTouched && overtimeRate <= 0}
-                                    onChange={e => setOvertimeRate(parseFloat(e.target.value))}
-                                />
-                                <Form.Control.Feedback type="invalid">Please provide a valid overtime rate.</Form.Control.Feedback>
-                            </Form.Group>
-                            <Form.Group as={Col} controlId="overtimeWorkedId">
-                                <Form.Label>Overtime Hours Worked</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    min={0}
-                                    placeholder="Overtime Hours Worked"
-                                    value={overtimeHours === 0 ? "" : overtimeHours}
-                                    onBlur={() => setOvertimeHoursWorkedTouched(true)}
-                                    isInvalid={overtimeHoursWorkedTouched && overtimeHours <= 0}
-                                    onChange={e => setOvertimeHoursWorked(parseFloat(e.target.value))}
-                                />
-                                <Form.Control.Feedback type="invalid">Please provide a valid number of overtime hours worked.</Form.Control.Feedback>
-                            </Form.Group>
-                            <Form.Group as={Col} controlId="bounusAmountId">
-                                <Form.Label>Bonus</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    min={0}
-                                    placeholder="Bonus Amount"
-                                    value={bonusAmount === 0 ? "" : bonusAmount}
-                                    onBlur={() => setBonusAmountTouched(true)}
-                                    isInvalid={bonusAmountTouched &&  bonusAmount <= 0}
-                                    onChange={e => setBonusAmount(parseFloat(e.target.value))}
-                                />
-                                <Form.Control.Feedback type="invalid">Please provide a valid Bonus amount.</Form.Control.Feedback>
-                            </Form.Group>
-
-                        </Row>
+                        <section className="section_background p-3 mb-3 rounded">
+                            <Row className="my-0"> {/* Pay Description: pay, rate, hours, totals */ }
+                                <Col>
+                                    <Form.Label className="label_fontsize"> </Form.Label>
+                                </Col>
+                                <Col>
+                                    <Form.Label className="label_fontsize">Rate (hourly)</Form.Label>
+                                </Col>
+                                <Col>
+                                    <Form.Label className="label_fontsize">Hours worked</Form.Label>
+                                </Col>
+                                <Col>
+                                    <Form.Label className="label_fontsize">Total</Form.Label>
+                                </Col>
+                            </Row>
+                            <Row className="my-0 align-items-center"> {/* Regular Pay Row */ }
+                                <Col>
+                                    <Form.Label className="label_fontsize">Regular pay {<span className="required-asterisk">*</span>}</Form.Label>
+                                </Col>
+                                <Col>
+                                    <Form.Control required min="0" type="number" step="any" value={undefined} onChange={e => setHourlyRate(parseFloat(e.target.value))}/>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId="hoursWorkedId">
+                                        <Form.Control required min="0" type="number" step="any" value={undefined} onChange={e => setHoursWorked(parseFloat(e.target.value))}/>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Label className="label_fontsize">{isNaN(hoursWorked) || isNaN(hourlyRate) ? "--" : formatCurrency(hoursWorked*hourlyRate)}</Form.Label>
+                                </Col>
+                            </Row>
+                            <Row className="my-0 align-items-center"> {/* Overtime Pay Row */ }
+                                <Col>
+                                    <Form.Label className="label_fontsize">Overtime (if applicable)</Form.Label>
+                                </Col>
+                                <Col>
+                                    <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setOvertimeRate(parseFloat(e.target.value))}/>
+                                </Col>
+                                <Col>
+                                    <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setOvertimeHoursWorked(parseFloat(e.target.value))}/>
+                                </Col>
+                                <Col>
+                                    <Form.Label className="label_fontsize">{isNaN(overtimeHours) || isNaN(overtimeRate) ? "--" : formatCurrency(overtimeHours*overtimeRate)}</Form.Label>
+                                </Col>
+                            </Row>
+                            <Row className="my-0 align-items-center"> {/* Bonus Pay Row */ }
+                                <Col>
+                                    <Form.Label className="label_fontsize">Bonus</Form.Label>
+                                </Col>
+                                <Col>
+                                    <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setBonusAmount(parseFloat(e.target.value))}/>
+                                </Col>
+                                <Col>
+                                    <Form.Label className="label_fontsize"> </Form.Label>
+                                </Col>
+                                <Col>
+                                    <Form.Label className="label_fontsize">{isNaN(bonusAmount) ? "--" : formatCurrency(bonusAmount)}</Form.Label>
+                                </Col>
+                            </Row>
+                        </section>
                     )}
                     {wageType === "Salary" && (
                         <Row>
                             <Form.Group as={Col} controlId="AnnualIncomeId">
-                                <Form.Label>Salary Amount($)</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    pattern="^\$?\d{1,3}(,\d{3})*$" onBlur={() => setAnnualSalaryTouched(true)} isInvalid={annualSalaryTouched && !annualSalary}
-                                    placeholder="Base Salary (Pre-Tax)"
-                                    value={annualSalary === 0 ? "" : annualSalary}
-                                    onChange={e => setAnnualSalary(parseInt(e.target.value))}
-                                />
+                                <Form.Label className="label_fontsize">Salary Amount($) {<span className="required-asterisk">*</span>}</Form.Label>
+                                <Form.Control type="number" min="0" step="any" onBlur={() => setAnnualSalaryTouched(true)} isInvalid={annualSalaryTouched && !annualSalary} value={annualSalary} onChange={e => setAnnualSalary(parseFloat(e.target.value))}/>
                                 <Form.Control.Feedback type="invalid">Please provide a valid income amount.</Form.Control.Feedback>
                             </Form.Group>
                         </Row>
                     )}
+                    <Row className="mb-3"> {/* Wage Type Selection, either Hourly wage or yearly Salary */ }
+                        <Form.Check type="checkbox" id="enableOtherDeductions" label="Include other deductions (Medical, Dental, Vision, 401k...)" className="mt-2 label_fontsize" checked={enableOtherDeductions} onChange={e => setEnableOtherDeductions(e.target.checked)}/>                        
+                    </Row>
                     { enableOtherDeductions && (
-                        <Row>
-                            <Col as={Col} controlId="MedicalDeductionId">
-                                <Form.Label>Medical ($)</Form.Label>
-                                <Form.Control type="text" inputMode="numeric" placeholder="0.00" pattern="^\$?\d{1,3}(,\d{3})*(\.\d{2})?$" value={medicalDeduction === 0 ? "" : formatCurrency(medicalDeduction)} onChange={e => setMedicalDeduction(parseInt(e.target.value))}/>
-                            </Col>
-                            <Col as={Col} controlId="DentalDeductionId">
-                                <Form.Label>Dental($)</Form.Label>
-                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={dentalDeduction === 0 ? "" : dentalDeduction} onChange={e => setDentalDeduction(parseInt(e.target.value))}/>
-                            </Col>
-                            <Col as={Col} controlId="VisionDeductionId">
-                                <Form.Label>Vision($)</Form.Label>
-                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={visionDeduction === 0 ? "" : visionDeduction} onChange={e => setVisionDeduction(parseInt(e.target.value))}/>
-                            </Col>
-                            <Col as={Col} controlId="Deduction401kId">
-                                <Form.Label>401k($)</Form.Label>
-                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={deduction401k === 0 ? "" : deduction401k} onChange={e => setDeduction401k(parseInt(e.target.value))}/>
-                            </Col>
-                            <Col as={Col} controlId="OtherDeductionId">
-                                <Form.Label>Other Deductions($)</Form.Label>
-                                <Form.Control type="number" pattern="^\$?\d{1,3}(,\d{3})*$" value={otherDeduction === 0 ? "" : otherDeduction} onChange={e => setOtherDeduction(parseInt(e.target.value))}/>
-                            </Col>
-                        </Row>
+                        <section className="section_background p-3 mb-3 rounded">
+                            <Row className="my-0"> {/* Deductions Description: deduction type, amounts */ }
+                                <Col className="col_background p-3 m-2 rounded">  {/* Medical, Dental, Vision, etc Deduction Col */ }
+                                    <Row className="my-0 align-items-center">
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Coverage Type</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Deduction Amount</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Per Pay Period</Form.Label>
+                                        </Col>
+                                    </Row>
+                                    <Row className="my-0 align-items-center"> {/* Bonus Pay Row */ }
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Medical</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setMedicalDeduction(parseFloat(e.target.value))}/>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">{isNaN(medicalDeduction) ? "--" : formatCurrency(medicalDeduction)}</Form.Label>
+                                        </Col>
+                                    </Row>
+                                    <Row className="my-0 align-items-center"> {/* Bonus Pay Row */ }
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Dental</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setDentalDeduction(parseFloat(e.target.value))}/>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">{isNaN(dentalDeduction) ? "--" : formatCurrency(dentalDeduction)}</Form.Label>
+                                        </Col>
+                                    </Row>
+                                    <Row className="my-0 align-items-center"> {/* Bonus Pay Row */ }
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Vision</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setVisionDeduction(parseFloat(e.target.value))}/>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">{isNaN(visionDeduction) ? "--" : formatCurrency(visionDeduction)}</Form.Label>
+                                        </Col>
+                                    </Row>
+                                    <Row className="my-0 align-items-center"> {/* Bonus Pay Row */ }
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Others</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setOtherDeduction(parseFloat(e.target.value))}/>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">{isNaN(otherDeduction) ? "--" : formatCurrency(otherDeduction)}</Form.Label>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                                <Col className="col_background p-3 m-2 rounded"> {/* 401K, Union Dues, etc Deduction Col */ }
+                                    <Row className="my-0 align-items-center"> 
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Benefit Type</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Rate (%)</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Per Paycheck</Form.Label>
+                                        </Col>
+                                    </Row>
+                                    <Row className="my-0 align-items-center"> {/* Bonus Pay Row */ }
+                                        <Col>
+                                            <Form.Label className="label_fontsize">401K($)</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control min="0" type="number" step="any" value={undefined} onChange={parseDeduction401k}/>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">{isNaN(deduction401k) ? "--" : formatCurrency(calculateGrossPay()*deduction401k)}</Form.Label>
+                                        </Col>
+                                    </Row>
+                                    <Row className="my-0 align-items-center"> {/* Bonus Pay Row */ }
+                                        <Col>
+                                            <Form.Label className="label_fontsize">Union Dues</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control min="0" type="number" step="any" value={undefined} onChange={parseUnionDues}/>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label className="label_fontsize">{isNaN(unionDues) ? "--" : formatCurrency(calculateGrossPay()*unionDues)}</Form.Label>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </section>
                     )}
                     <Row>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
-                            <Form.Label>How often are you paid?</Form.Label>
-                            <Form.Control as="select" required value={periodType} onBlur={() => setPeriodTypeTouched(true)} isInvalid={periodTypeTouched && !periodType} onChange={e => setPeriodType(e.target.value)}>
-                                { PAYPERIODTYPE.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}
-                            <Form.Control.Feedback type="invalid">
-                                Please select a pay period type (weekly, monthly, etc.).
-                            </Form.Control.Feedback>
-                            </Form.Control>
+                            <Form.Label className="label_fontsize">How often are you paid?</Form.Label>
+                            <Form.Control as="select" value={periodType} onChange={e => setPeriodType(e.target.value)}>{ PAYPERIODTYPE.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}</Form.Control>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} controlId="startDateId">
-                            <Form.Label>Pay period start date</Form.Label>
-                            <Form.Control type="date" placeholder="Pay period start date" value={periodStartDate} onBlur={() => setPeriodStartDateTouched(true)} isInvalid={periodStartDateTouched && !isValidDate(periodStartDate)} onChange={e => setPeriodStartDate(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid start date.
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Pay period start date {<span className="required-asterisk">*</span>}</Form.Label>
+                            <Form.Control required type="date" value={periodStartDate} onChange={e => setPeriodStartDate(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="endDateId">
-                            <Form.Label>Pay period end date</Form.Label>
-                            <Form.Control type="date" placeholder="Pay period end date" value={periodEndDate} onBlur={() => setPeriodEndDateTouched(true)} isInvalid={periodEndDateTouched && !isValidDate(periodEndDate)} onChange={e => setPeriodEndDate(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid end date.
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Pay period end date {<span className="required-asterisk">*</span>}</Form.Label>
+                            <Form.Control required type="date" value={periodEndDate} onChange={e => setPeriodEndDate(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="payDateId">
-                            <Form.Label>Pay date</Form.Label>
-                            <Form.Control type="date" placeholder="Pay period date" value={periodPayDate} onBlur={() => setPeriodPayDateTouched(true)} isInvalid={periodPayDateTouched && !isValidDate(periodPayDate)} onChange={e => setPeriodPayDate(e.target.value)}/>
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid pay date.
-                            </Form.Control.Feedback>
+                            <Form.Label className="label_fontsize">Pay date {<span className="required-asterisk">*</span>}</Form.Label>
+                            <Form.Control required type="date" value={periodPayDate} onChange={e => setPeriodPayDate(e.target.value)}/>
                         </Form.Group>
                     </Row>
                 </Form>

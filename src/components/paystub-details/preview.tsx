@@ -18,12 +18,13 @@ import PrintTemplate12 from "../print/template12/printTemplate12";
 import PrintTemplate13 from "../print/template13/printTemplate13";
 import PayPal from "../common/paypal-payment";
 import * as templateIds from "../../constants/template-ids";
-import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
+import { CompanyInfo, AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings } from "../../redux/actions";
 import { telemetryService } from "../../services/telemetry-service";
 
 const Preview = ({store}) => {
     const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    const companyInfo = useSelector<PayStubDetails, CompanyInfo>(state => state.companyInfo);
     const [canPrintStub, setCanPrintStub] = useState(canPrint);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -54,6 +55,8 @@ const Preview = ({store}) => {
             paystubTemplate: templateId
         });    
     };
+
+    console.log("Render Preview with store:", store, "CompanyInfo:", companyInfo);
 
     const handlePaymentError = (error: any) => {
         // Telemetry event logging for payment errors

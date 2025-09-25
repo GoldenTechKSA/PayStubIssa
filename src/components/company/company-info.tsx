@@ -97,7 +97,7 @@ const CompanyInfo = () => {
                 <Form>
                     <Row> {/* company name, company EIN */}
                         <Form.Group as={Col} controlId="companyNameId">
-                            <Form.Label className="label_fontsize">Enter company name</Form.Label>
+                            <Form.Label className="label_fontsize">Enter company name {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required maxLength={100} onBlur={() => setCompanyNameTouched(true)} isInvalid={companyNameTouched && !isValidCompanyName(companyName)}  value={companyName} onChange={e => setCompanyName(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid company name(3–100 characters).</Form.Control.Feedback>
                         </Form.Group>
@@ -108,7 +108,7 @@ const CompanyInfo = () => {
                     </Row>
                     <Row> {/* company address 1, company address 2 */}
                         <Form.Group as={Col} className="mb-2" controlId="companyAddress1Id">
-                            <Form.Label className="label_fontsize">Enter company address (i.e 1234 Main St)</Form.Label>
+                            <Form.Label className="label_fontsize">Enter company address (i.e 1234 Main St) {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required onBlur={() => setCompanyAddress1Touched(true)} isInvalid={companyAddress1Touched && !isValidAddress(companyAddress1)} value={companyAddress1} onChange={e => setCompanyAddress1(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid address (at least 5 characters).</Form.Control.Feedback>
                         </Form.Group>
@@ -119,7 +119,7 @@ const CompanyInfo = () => {
                     </Row>
                     <Row> {/* company city, company state, company zip code */}
                         <Form.Group as={Col} controlId="companyCityId">
-                            <Form.Label className="label_fontsize">City</Form.Label>
+                            <Form.Label className="label_fontsize">City {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required onBlur={() => setCompanyCityTouched(true)} isInvalid={companyCityTouched && !companyCity} value={companyCity} onChange={e => setCompanyCity(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid city (at least 2 characters).</Form.Control.Feedback>
                         </Form.Group>
@@ -128,19 +128,19 @@ const CompanyInfo = () => {
                             <Form.Control as="select" value={companyState} onChange={(e) => setCompanyState(e.target.value)}>{ STATESLIST.map((s) => <option key={s.code} value={s.name}>{s.name}</option> )}</Form.Control>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyZipCodeId">
-                            <Form.Label className="label_fontsize">Zip code</Form.Label>
+                            <Form.Label className="label_fontsize">Zip code {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required onBlur={() => setCompanyZipCodeTouched(true)} isInvalid={companyZipCodeTouched && !isValidZipCode(companyZipCode)} value={companyZipCode} onChange={e => setCompanyZipCode(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid zip code (5 digits).</Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row> {/* company phone, company email, company logo */}
                         <Form.Group as={Col} controlId="companyPhoneId">
-                            <Form.Label className="label_fontsize">Enter company phone number</Form.Label>
+                            <Form.Label className="label_fontsize">Enter company phone number {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control onBlur={() => setCompanyPhoneTouched(true)} isInvalid={companyPhoneTouched && !isValidUSPhone(companyPhone)} value={companyPhone} onChange={e => setCompanyPhone(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid phone number (10 digits).</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEmailId">
-                            <Form.Label className="label_fontsize">Enter company email</Form.Label>
+                            <Form.Label className="label_fontsize">Enter company email {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control type="email" onBlur={() => setCompanyEmailTouched(true)} isInvalid={companyEmailTouched && !/^\S+@\S+\.\S+$/.test(companyEmail)} value={companyEmail} onChange={e => setCompanyEmail(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid email address.</Form.Control.Feedback>
                         </Form.Group>

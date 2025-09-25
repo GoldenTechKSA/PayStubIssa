@@ -87,7 +87,7 @@ const EmployeeInfo = () => {
                 <Form>
                     <Row> {/* FirstName, LastName */ }
                         <Form.Group as={Col} controlId="employeeFirstNameId">
-                            <Form.Label  className="label_fontsize">Enter first name</Form.Label>
+                            <Form.Label  className="label_fontsize">Enter first name {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required type="text" value={employeeFirstName} maxLength={100} onBlur={() => setEmployeeFirstNameTouched(true)} isInvalid={employeeFirstNameTouched && !isValidName(employeeFirstName)} onChange={e => setEmployeeFirstName(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid first name.</Form.Control.Feedback>
                         </Form.Group>
@@ -96,14 +96,14 @@ const EmployeeInfo = () => {
                             <Form.Control type="text" value={employeeMiddleInitial} onChange={e => setEmployeeMiddleInitial(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col}  controlId="employeeLastNameId">
-                            <Form.Label className="label_fontsize">Enter last name</Form.Label>
+                            <Form.Label className="label_fontsize">Enter last name {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required type="text" value={employeeLastName} maxLength={100} onBlur={() => setEmployeeLastNameTouched(true)} isInvalid={employeeLastNameTouched && !isValidName(employeeLastName)} onChange={e => setEmployeeLastName(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid last name.</Form.Control.Feedback>
                         </Form.Group>
                     </Row>
                     <Row> {/* Address, Apt, Suite, Unit */ }
                         <Form.Group as={Col} className="mb-2"  controlId="employeeAddress1Id">
-                            <Form.Label className="label_fontsize">Enter employee address</Form.Label>
+                            <Form.Label className="label_fontsize">Enter employee address {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required value={employeeAddress1} onBlur={() => setEmployeeAddress1Touched(true)} isInvalid={employeeAddress1Touched && !isValidAddress(employeeAddress1)} onChange={e => setEmployeeAddress1(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid address (at least 5 characters).</Form.Control.Feedback>
                         </Form.Group>
@@ -114,7 +114,7 @@ const EmployeeInfo = () => {
                     </Row>
                     <Row> {/* City, State, Zipcode */ }
                         <Form.Group as={Col} controlId="employeeCityId">
-                            <Form.Label className="label_fontsize">City</Form.Label>
+                            <Form.Label className="label_fontsize">City {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required value={employeeCity} onBlur={() => setEmployeeCityTouched(true)} isInvalid={employeeCityTouched && !employeeCity} onChange={e => setEmployeeCity(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid city (at least 2 characters).</Form.Control.Feedback>
                         </Form.Group>
@@ -123,7 +123,7 @@ const EmployeeInfo = () => {
                             <Form.Control as="select" value={employeeState} onChange={e => setEmployeeState(e.target.value)} >{ STATESLIST.map((s) => <option key={s.code} value={s.name}>{s.name}</option> )}</Form.Control>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeZipCodeId">
-                            <Form.Label className="label_fontsize">Zip code</Form.Label>
+                            <Form.Label className="label_fontsize">Zip code {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control required value={employeeZipCode} onBlur={() => setEmployeeZipCodeTouched(true)} isInvalid={employeeZipCodeTouched && !isValidZipCode(employeeZipCode)} onChange={e => setEmployeeZipCode(e.target.value)}/>
                             <Form.Control.Feedback type="invalid">Please provide a valid zip code (5 digits).</Form.Control.Feedback>
                         </Form.Group>
@@ -148,7 +148,7 @@ const EmployeeInfo = () => {
                             <Form.Control type="text" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="hireDateId" >
-                            <Form.Label className="label_fontsize">Hiring Date</Form.Label>
+                            <Form.Label className="label_fontsize">Hiring Date {<span className="required-asterisk">*</span>}</Form.Label>
                             <Form.Control type="date" value={employeeHireDate.toISOString().split("T")[0]} onChange={e => setEmployeeHireDate(new Date(e.target.value))}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeeMarriedStatusId">

@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { useSelector } from "react-redux";
 import { CompanyInfo, EmployeeInfo, IncomeDetails, GeneralInfo, PayStubDetails, } from "../../../assets/data/pay-stub-details";
 import { formatCurrency, getWeeksToDateThisYear, formatDate, calculateFederalIncomeTax2025 } from "../../../utils/util";
 import { netPayAsStringCurrent, totalEarningsAsStringYTD, totalEarningsAsStringCurrent, grossPayAsString, grossPayAsStringYTD, netPayAsStringYTD } from "../../../utils/earnings-calculator";
@@ -21,21 +22,25 @@ interface PrintTemplate0Props {
 
 const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } ) => {
   // Destructure store properties using types
-  const companyInfo: CompanyInfo = store.companyInfo;   // Company Info
-  const employeeInfo: EmployeeInfo = store.employeeInfo;   // Employee Info
-  const incomeDetails: IncomeDetails = store.incomeDetails;   // Income Details
-  const generalInfo: GeneralInfo = store.generalInfo;   // General Info
+  const companyInfo: CompanyInfo = useSelector<PayStubDetails, CompanyInfo>(state => state.companyInfo);   // Company Info
+  const employeeInfo: EmployeeInfo = useSelector<PayStubDetails, EmployeeInfo>(state => state.employeeInfo);   // Employee Info
+  const incomeDetails: IncomeDetails = useSelector<PayStubDetails, IncomeDetails>(state => state.incomeDetails);   // Income Details
+  const generalInfo: GeneralInfo = useSelector<PayStubDetails, GeneralInfo>(state => state.generalInfo);   // General Info
 
   const {companyName, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyPhone, companyEmail, companyEIN,} = companyInfo;
+  console.log("PrintTemplate0 companyInfo:", companyInfo);
   const {employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeePhone, employeeEmail, employeeSSN, employeeID, employeeMarriedStatus, } = employeeInfo;
+  console.log("PrintTemplate0 employeeInfo:", employeeInfo);
   const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, 
     periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
+  console.log("PrintTemplate0 incomeDetails:", incomeDetails);
   const {employmentType, paymentMethod, paymentFrequency, payStubNumber, payStubCount, checkNumber, extraNotes} = generalInfo;
+  console.log("PrintTemplate0 generalInfo:", generalInfo);
   const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName].filter(Boolean).join(" ");
   const employeeFullAddress = [employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode].filter(Boolean).join(", ");
   const companyFullAddress = [companyAddress1, companyAddress2, companyCity, companyState, companyZipCode].filter(Boolean).join(", ");
   const payPeriod = `${formatDate(periodStartDate)} - ${formatDate(periodEndDate)}`;
-
+console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
   const specialNotes = !!extraNotes;
   const directDeposit = !!paymentMethod;
   const emptyCell = "-";

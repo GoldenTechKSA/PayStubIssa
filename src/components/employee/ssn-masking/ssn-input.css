@@ -1,0 +1,125 @@
+/* SSN Input Component Styles */
+.ssn-input-group {
+  margin-bottom: 1.5rem;
+}
+
+.ssn-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.required-asterisk {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.ssn-input {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 1.1rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  transition: all 0.2s ease-in-out;
+  letter-spacing: 0.05em;
+}
+
+.ssn-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.ssn-input:hover:not(:disabled) {
+  border-color: #d1d5db;
+  background-color: #ffffff;
+}
+
+.ssn-input:disabled {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Validation states */
+.ssn-input--success {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.ssn-input--success:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.ssn-input--error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.ssn-input--error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Feedback text */
+.ssn-error-text {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.ssn-success-text {
+  color: #059669;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.ssn-helper-text {
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ssn-input {
+    font-size: 1rem;
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .ssn-label {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation for smooth transitions */
+.ssn-input-group {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus ring for accessibility */
+.ssn-input:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

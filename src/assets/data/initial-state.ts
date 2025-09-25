@@ -37,21 +37,22 @@ const employeeInfo: EmployeeInfo = {
 };
 
 const incomeDetails: IncomeDetails = {
-    annualSalary: 100000,
+    annualSalary: 0,
     wageType: "Hourly", 
-    hourlyRate: 1.0, // Example hourly rate
-    hoursWorked: 1.0, // Example hours worked per week
-    overtimeRate: 1.0, // Example overtime hourly rate
-    overtimeHours: 1.0, // Example overtime hours worked per week
-    bonusAmount: 3.0, // Example extrea bonus amount
-    deduction401k: 1, // Optional 401K amount
-    medicalDeduction: 1, // Optional medical deduction amount
-    dentalDeduction: 1, // Optional dental deduction amount
-    visionDeduction: 1, // Optional vision deduction amount
-    otherDeduction: 1, // Optional other deduction amount
-    periodStartDate: new Date(),
-    periodEndDate: new Date(),
-    periodPayDate: new Date(),
+    hourlyRate: 0, // Example hourly rate
+    hoursWorked: 0, // Example hours worked per week
+    overtimeRate: 0, // Example overtime hourly rate
+    overtimeHours: 0, // Example overtime hours worked per week
+    bonusAmount: 0, // Example extrea bonus amount
+    deduction401k: 0, // Optional 401K amount
+    medicalDeduction: 0, // Optional medical deduction amount
+    dentalDeduction: 0, // Optional dental deduction amount
+    visionDeduction: 0, // Optional vision deduction amount
+    otherDeduction: 0, // Optional other deduction amount
+    unionDues: 0, // Optional union dues percentage (e.g., 0.01 for 1%)
+    periodStartDate: null as unknown as Date,
+    periodEndDate: null as unknown as Date,
+    periodPayDate: null as unknown as Date,
     periodType: "Weekly"
 };
 
