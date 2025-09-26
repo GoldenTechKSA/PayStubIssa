@@ -1,0 +1,15 @@
+{
+    "employmentType": [
+        { "id": "1", "name": "Employee" },
+        { "id": "2", "name": "Independent Contractor" },
+        { "id": "3", "name": "Temporary employee" },
+        { "id": "4", "name": "On-call employee" },
+        { "id": "5", "name": "Seasonal employee" },
+        { "id": "6", "name": "Contract employee" },
+        { "id": "7", "name": "Exempt" },
+        { "id": "8", "name": "Non-exempt" },
+        { "id": "9", "name": "Full-time" },
+        { "id": "10", "name": "Part-time" },
+        { "id": "11", "name": "Volunteer " }
+    ]
+}

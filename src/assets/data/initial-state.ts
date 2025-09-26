@@ -57,11 +57,11 @@ const incomeDetails: IncomeDetails = {
 };
 
 const generalInfo: GeneralInfo = {
-    employmentType: "Contractor",
+    employmentType: "Employee",
     paymentMethod: "Direct Deposit",
-    paymentFrequency: "Bi-Weekly",
-    payStubCount: 3,
-    payStubNumber: 1,
+    paymentFrequency: "",
+    payStubCount: 0,
+    payStubNumber: 0,
     extraNotes: "This is an example note for the pay stub.",
     checkNumber: 5001
 };
