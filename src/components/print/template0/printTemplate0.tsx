@@ -8,6 +8,7 @@ import { taxesAsString2025, totalTaxesTitle, currentTaxesAsString, taxesAsString
 import { medicalDeductionAsStringYTD, dentalDeductionAsStringYTD, deduction401kAsStringYTD, visionDeductionAsStringYTD, otherDeductionAsStringYTD, 
   totalDeductionsTitle, medicalDeductionAsString, dentalDeductionAsString, deduction401kAsString, visionDeductionAsString, otherDeductionAsString, currentDeductionsAsString, deductionsAsStringYTD } from "../../../utils/deductions-calculator";
 import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../../../types/tax-rate-types";
+import PDFDownloadButton from "../../pdf/pdf-button-comp";
 
 import "./printTemplate0.css";
 
@@ -125,7 +126,7 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
         }
         `}
       </style>
-      <div className="paystub-print-paper0" style={{ position: "relative" }}>
+      <div id="pdf-content" className="paystub-print-paper0" style={{ position: "relative" }}>
         {/* Watermark Overlay */}
         {!canPrintStub && ( <div className="paystub-watermark0" style={{display: "grid", gridTemplateRows: "repeat(3, 1fr)", gridTemplateColumns: "repeat(2, 1fr)", gap: "0", pointerEvents: "none" }}>
             {Array.from({ length: 8 }).map((_, i) => (
@@ -312,6 +313,7 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
           {specialNotes && (<div>{extraNotes}</div>)} 
         </div>
       </div>
+      <PDFDownloadButton targetId="pdf-content" fileName="my-document" buttonText="Export as PDF"/>
     </div>
   );
 };
