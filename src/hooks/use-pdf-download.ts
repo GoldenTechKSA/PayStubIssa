@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { PDFOptions } from '../components/PDFOptions';
+import type { PDFOptions } from '../components/pdf/pdf-options';
 
 interface UsePDFDownloadReturn {
   generatePDF: (element: HTMLElement, options: PDFOptions) => Promise<void>;
@@ -74,7 +74,7 @@ export const usePDFDownload = (): UsePDFDownloadReturn => {
       pdf.setProperties({
         title: options.filename,
         creator: 'PDF Download App',
-        producer: 'React PDF Generator'
+        author: 'React PDF Generator'
       });
 
       // Add first page

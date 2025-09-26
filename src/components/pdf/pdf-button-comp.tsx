@@ -6,12 +6,14 @@ interface PDFDownloadButtonProps {
   targetId: string;
   fileName?: string;
   buttonText?: string;
+  marginInches?: number; // Margin in inches (default: 0.5)
 }
 
 const PDFDownloadButton: React.FC<PDFDownloadButtonProps> = ({
   targetId,
   fileName = 'document',
-  buttonText = 'Download PDF'
+  buttonText = 'Download PDF',
+  marginInches = 0.5
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,30 +36,51 @@ const PDFDownloadButton: React.FC<PDFDownloadButtonProps> = ({
       });
 
       // Create PDF
-      const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: 'portrait',
-        unit: 'mm',
+        unit: 'in', // Changed to inches for easier margin calculation
         format: 'a4'
       });
 
-      // Calculate dimensions to fit content
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 295; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      // Convert margin from inches to the PDF's unit (inches)
+      const margin = marginInches;
+      
+      // A4 dimensions in inches: 8.27 x 11.69
+      const pageWidth = 8.27;
+      const pageHeight = 11.69;
+      
+      // Calculate available width and height with margins
+      const availableWidth = pageWidth - (2 * margin);
+      const availableHeight = pageHeight - (2 * margin);
+      
+      // Calculate image dimensions to fit within available space
+      const imgAspectRatio = canvas.width / canvas.height;
+      let imgWidth = availableWidth;
+      let imgHeight = imgWidth / imgAspectRatio;
+      
+      // If image is too tall for the page, scale by height instead
+      if (imgHeight > availableHeight) {
+        imgHeight = availableHeight;
+        imgWidth = imgHeight * imgAspectRatio;
+      }
+
+      const imgData = canvas.toDataURL('image/png');
+      let positionX = margin;
+      let positionY = margin;
       let heightLeft = imgHeight;
-      let position = 0;
+      let currentPage = 1;
 
       // Add first page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      pdf.addImage(imgData, 'PNG', positionX, positionY, imgWidth, imgHeight);
+      heightLeft -= availableHeight;
 
       // Add additional pages if content overflows
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
+      while (heightLeft > 0) {
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        currentPage++;
+        positionY = margin - (currentPage - 1) * availableHeight;
+        pdf.addImage(imgData, 'PNG', positionX, positionY, imgWidth, imgHeight);
+        heightLeft -= availableHeight;
       }
 
       // Download the PDF

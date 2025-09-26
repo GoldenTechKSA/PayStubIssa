@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
-import PDFOptions, { type PDFOptions as PDFOptionsType } from './PDFOptions';
-import SampleContent from './SampleContent';
-import ErrorDisplay from './ErrorDisplay';
-import DownloadButton from './DownloadButton';
-import { usePDFDownload } from '../hooks/usePDFDownload';
+import PDFOptions, { type PDFOptions as PDFOptionsType } from './pdf-options';
+import SampleContent from './sample-content';
+import ErrorDisplay from './error-display';
+import DownloadButton from './download-button';
+import { usePDFDownload } from '../../hooks/use-pdf-download';
 
 const PDFDownloadApp: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);
