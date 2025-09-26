@@ -17,6 +17,7 @@ import PrintTemplate11 from "../print/template11/printTemplate11";
 import PrintTemplate12 from "../print/template12/printTemplate12";
 import PrintTemplate13 from "../print/template13/printTemplate13";
 import PayPal from "../common/paypal-payment";
+import PDFDownloadButton from "../pdf/pdf-button-comp";
 import * as templateIds from "../../constants/template-ids";
 import { CompanyInfo, AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings } from "../../redux/actions";
@@ -111,8 +112,10 @@ const Preview = ({store}) => {
                     { canPrintStub && (<Row className="no-print mb-3">
                         {/* Print Pay Stub Button*/}
                         <Button className="float-right mb-4" onClick={printPaystub} type="button">Print Paystub</Button>
-                    </Row>
-                )}
+                    </Row>)}
+                    { canPrintStub && (<Row className="no-print mb-3">
+                        <PDFDownloadButton targetId="pdf-content" fileName="my-document" buttonText="Export as PDF"/>
+                    </Row>)}
                 </Col>
             </Row>
         </div>

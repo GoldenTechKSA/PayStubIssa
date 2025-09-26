@@ -8,7 +8,6 @@ import { taxesAsString2025, totalTaxesTitle, currentTaxesAsString, taxesAsString
 import { medicalDeductionAsStringYTD, dentalDeductionAsStringYTD, deduction401kAsStringYTD, visionDeductionAsStringYTD, otherDeductionAsStringYTD, 
   totalDeductionsTitle, medicalDeductionAsString, dentalDeductionAsString, deduction401kAsString, visionDeductionAsString, otherDeductionAsString, currentDeductionsAsString, deductionsAsStringYTD } from "../../../utils/deductions-calculator";
 import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../../../types/tax-rate-types";
-import PDFDownloadButton from "../../pdf/pdf-button-comp";
 
 import "./printTemplate0.css";
 
@@ -313,7 +312,6 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
           {specialNotes && (<div>{extraNotes}</div>)} 
         </div>
       </div>
-      <PDFDownloadButton targetId="pdf-content" fileName="my-document" buttonText="Export as PDF"/>
     </div>
   );
 };
