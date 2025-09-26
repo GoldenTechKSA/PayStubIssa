@@ -5,6 +5,7 @@ import { updateAppSettings, saveIncomeDetails } from "../../redux/actions";
 import { PAYPERIODTYPE } from "../../constants/globals";
 import { IncomeDetails, PayStubDetails } from "assets/data/pay-stub-details";
 import { isValidDate, formatCurrency } from "../../utils/util";
+import { calculateEndDate, calculatePayDate } from "../../utils/date-calculator";
 
 const IncomeInfo = () => {
     const income = useSelector<PayStubDetails, IncomeDetails>(state => state.incomeDetails);
@@ -89,6 +90,39 @@ const IncomeInfo = () => {
             return annualSalary / (periodType === "Weekly" ? 52 : periodType === "Bi-Weekly" ? 26 : periodType === "Semi-Monthly" ? 24 : 12) + bonusAmount;
         }
     }
+
+    // Handler for period type change
+    const handlePeriodTypeChange = (e) => {
+        const newPeriodType = e.target.value;
+        setPeriodType(newPeriodType);
+        
+        if (periodStartDate && newPeriodType) {
+            const calculatedEndDate = calculateEndDate(periodStartDate, newPeriodType);
+            setPeriodEndDate(calculatedEndDate);
+            
+            if (calculatedEndDate) {
+                const calculatedPayDate = calculatePayDate(calculatedEndDate);
+                setPeriodPayDate(calculatedPayDate);
+            }
+        }
+    };
+
+    // Handler for start date change
+    const handleStartDateChange = (e) => {
+        const newStartDate = e.target.value;
+        setPeriodStartDate(newStartDate);
+        
+        if (newStartDate && periodType) {
+        const calculatedEndDate = calculateEndDate(newStartDate, periodType);
+        setPeriodEndDate(calculatedEndDate);
+        
+        if (calculatedEndDate) {
+            const calculatedPayDate = calculatePayDate(calculatedEndDate);
+            setPeriodPayDate(calculatedPayDate);
+        }
+        }
+    };    
+
     // Form is valid only if all required fields are filled out correctly
     const isFormValid = isValidDate(periodStartDate) && isValidDate(periodEndDate) && isValidDate(periodPayDate) && ((wageType === "Hourly" && hourlyRate > 0 && hoursWorked > 0) || (wageType === "Salary" && annualSalary > 0));
 
@@ -281,13 +315,13 @@ const IncomeInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
                             <Form.Label className="label_fontsize">How often are you paid?</Form.Label>
-                            <Form.Control as="select" value={periodType} onChange={e => setPeriodType(e.target.value)}>{ PAYPERIODTYPE.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}</Form.Control>
+                            <Form.Control as="select" value={periodType} onChange={handlePeriodTypeChange}>{ PAYPERIODTYPE.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}</Form.Control>
                         </Form.Group>
                     </Row>
                     <Row>
                         <Form.Group as={Col} controlId="startDateId">
                             <Form.Label className="label_fontsize">Pay period start date {<span className="required-asterisk">*</span>}</Form.Label>
-                            <Form.Control required type="date" value={periodStartDate} onChange={e => setPeriodStartDate(e.target.value)}/>
+                            <Form.Control required type="date" value={periodStartDate} onChange={handleStartDateChange}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="endDateId">
                             <Form.Label className="label_fontsize">Pay period end date {<span className="required-asterisk">*</span>}</Form.Label>
