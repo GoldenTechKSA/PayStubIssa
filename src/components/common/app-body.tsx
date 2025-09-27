@@ -19,7 +19,9 @@ const AppBody = () => {
                 setGridCells(
                     imageData.map((data, i) => ({
                         id: i,
+                        imageFile: data.imageFile,
                         imageName: data.imageName,
+                        title: data.title,
                         description: data.description,
                     }))
                 )})

@@ -5,7 +5,9 @@ import { updateAppSettings } from "../../redux/actions";
 
 export interface ImageFileData {
     id: number;
+    imageFile: string;
     imageName: string;
+    title: string;
     description: string;
 }
 
@@ -33,7 +35,7 @@ const HorizontalGrid: React.FC<HorizontalGridProps> = ({ updateIndex, currentInd
   return (
     <div className="horizontal-grid-container">
       <div className="horizontal-grid">
-        {cells.map((cell) => (
+        {cells.map((cell) => cell.id <= 13 && (
           <div key={cell.id} className="grid-cell" onClick={e => onCellClick(e, cell.id)} role="button" tabIndex={currentIndex} >
             <img src={getImageSrc(cell.imageName)} alt={cell.description} />
             <p className="grid-description">{cell.description}</p>

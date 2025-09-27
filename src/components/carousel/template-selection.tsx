@@ -17,7 +17,9 @@ const TemplateSelection = ({index}) => {
                 setPayStubTemplates(
                     files.map((file, i) => ({
                         id: i,
+                        imageFile: file.imageFile,
                         imageName: file.imageName,
+                        title: file.title,
                         description: file.description,
                     }))
                 );
@@ -51,7 +53,7 @@ const TemplateSelection = ({index}) => {
                 <Carousel id="TemplateSelectionCarousel" activeIndex={currentIndex} onSelect={handleSelect} indicators={false} wrap={false} interval={null} prevIcon={<span aria-hidden="true" className="carousel-control-prev-icon"/>} nextIcon={<span aria-hidden="true" className="carousel-control-next-icon"/>}>
                     { payStubTemplates.map((template, i) => (
                         <Carousel.Item className="carousel-item" key={i}>
-                            <Image className="w-100 h-100 img-fluid" src={getImageSrc(template.imageName)} />
+                            <Image className="w-100 h-100 img-fluid" src={getImageSrc(template.imageFile)} />
                             <Carousel.Caption className="carousel-title">{template.description}</Carousel.Caption>
                         </Carousel.Item>
                     ))}
