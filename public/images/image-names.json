@@ -81,7 +81,7 @@
     "imageFile": "picture13.png",
     "imageName": "paystub-profit-sharing.png",
     "title": "Profit-Sharing Distribution Statement",
-    "description": "Outlines an employee's share of company profits distributed as part of a compensation package. This is often a separate payment from regular wages."
+    "description": "Outlines an employee share of company profits distributed as part of a compensation package. This is often a separate payment from regular wages."
   },
   {
     "imageFile": "picture14.png",
@@ -135,7 +135,7 @@
     "imageFile": "picture22.png",
     "imageName": "paystub-construction-certified.png",
     "title": "Construction Payroll - Certified Paystub",
-    "description": "Used for public works projects, this 'certified' report includes detailed labor classifications, prevailing wages, and fringe benefit contributions as required by law."
+    "description": "Used for public works projects, this certified report includes detailed labor classifications, prevailing wages, and fringe benefit contributions as required by law."
   },
   {
     "imageFile": "picture23.png",
@@ -161,7 +161,7 @@
     "title": "Non-Profit Grant-Funded Position Paystub",
     "description": "For employees whose salary is funded by a specific grant. The stub may include the grant name and number for accounting purposes."
   },
-    {
+  {
     "imageFile": "picture27.png",
     "imageName": "paystub-seasonal.png",
     "title": "Seasonal Employment Paystub",

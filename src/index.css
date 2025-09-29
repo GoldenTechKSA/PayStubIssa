@@ -307,12 +307,19 @@ body {
   width: 100%;
   overflow-x: auto;
   border-radius: 8px;     /* Rounded corners for outer border */
+  overflow-y: hidden;      /* Optional: hide vertical scroll */
+  white-space: nowrap;     /* Alternative method (not needed if using flex) */
+  /* Optional: hide scrollbar if desired (but keep functionality) */
+  -ms-overflow-style: -ms-autohiding-scrollbar; /* IE/Edge */
+  scrollbar-width: thin;   /* Firefox */
 }
 
-/* Grid layout - collapsed borders between cells */
 .horizontal-grid {
   display: flex;
-  border-collapse: collapse; /* Ensures borders merge */
+  flex-wrap: nowrap;       /* Prevent wrapping to next line */
+  gap: 8px;                /* Optional: space between cells */
+  padding: 8px;            /* Optional: some breathing room */
+  min-width: fit-content;  /* Ensures container expands beyond viewport if needed */
 }
 
 /* Remove right border from the last cell to avoid double outer border */
@@ -357,12 +364,14 @@ body {
 .grid-cell {
     width: 120px;         /* or your desired width */
     height: 120px;        /* or your desired height */
+    flex: 0 0 auto;          /* do not grow or shrink, use intrinsic width */
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     border-radius: 0.4rem; /* optional: for rounded corners */
     background: #f7fafc;    /* optional: for a soft background */
+    outline: none;
 }
 .grid-cell img {
     width: 100%;

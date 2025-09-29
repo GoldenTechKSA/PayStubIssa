@@ -2,6 +2,7 @@ import React from "react";
 import "../../index.css";
 import { useDispatch } from "react-redux";
 import { updateAppSettings } from "../../redux/actions";
+import { getImageSrc } from "../../utils/util";
 
 export interface ImageFileData {
     id: number;
@@ -27,18 +28,12 @@ const HorizontalGrid: React.FC<HorizontalGridProps> = ({ updateIndex, currentInd
     dispatch(updateAppSettings({ templateId: id, nextTabStep: "template" }));
   };
   
-  // Returns the image source path for a given image file name
-  function getImageSrc(imageUrl: string): string {
-    return `/images/${imageUrl}`;
-  }
-
   return (
     <div className="horizontal-grid-container">
       <div className="horizontal-grid">
-        {cells.map((cell) => cell.id <= 13 && (
+        {cells.map((cell) => (
           <div key={cell.id} className="grid-cell" onClick={e => onCellClick(e, cell.id)} role="button" tabIndex={currentIndex} >
-            <img src={getImageSrc(cell.imageName)} alt={cell.description} />
-            <p className="grid-description">{cell.description}</p>
+            <img src={getImageSrc(cell.imageFile)} alt={cell.title} />
           </div>
         ))}
       </div>

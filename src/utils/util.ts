@@ -1,5 +1,13 @@
 import { FilingStatus } from "types/tax-rate-types";
 
+// Returns the image source path for a given image file name
+export const getImageSrc = (imageUrl: string): string => {
+    const path = process.env.REACT_APP_IMAGE_FOLDER_PATH || "./web/images/";
+    console.log("path: ", path, "imageUrl inside Util", imageUrl);
+    if (!imageUrl) return "";
+    return `${path}${imageUrl}`;
+}
+
 export const isValidDate = (dateStr: string): boolean => {
     // Expected format: YYYY-MM-DD (from HTML date input)
     const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;

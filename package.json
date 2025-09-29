@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "description": "PayStubs Easy, Cheap",
-  "homepage": "http://www.paystubissa.com",
+  "homepage": ".",
   "dependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@emotion/react": "^11.14.0",
