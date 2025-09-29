@@ -104,6 +104,14 @@ const PaystubPreview = () => {
                             <Form.Control readOnly defaultValue={state.companyInfo.companyEmail} />
                         </Form.Group>
                     </Col>
+                    <Col>
+                        <Form.Group as={Col} controlId="companyLogo">
+                            <Form.Label>Company Logo</Form.Label>
+                            <div className="mt-2">
+                                <img src={state.companyInfo.companyLogo} alt="Company Logo Preview" style={{ maxWidth: "120px", maxHeight: "60px", borderRadius: "6px", border: "1px solid #eee" }}/>
+                            </div>
+                        </Form.Group>
+                    </Col>
                 </Row>
             </Form>
             {/* Employee Info */}
