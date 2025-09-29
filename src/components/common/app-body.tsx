@@ -10,9 +10,8 @@ const AppBody = () => {
     const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [gridCells, setGridCells] = useState<ImageFileData[]>([]);
     const [index, setIndex] = useState<number>(templateId);
-    const imageDataPath = process.env.REACT_APP_IMAGE_DATA_PATH || "./web/images/image-names.json";
+    const imageDataPath = `${process.env.PUBLIC_URL}/images/image-names.json`; 
 
-    console.log("imageDataPath = process.env.REACT_APP_IMAGE_DATA_PATH", imageDataPath);
     // Fetch image names from the images folder
     useEffect(() => {
         fetch(imageDataPath)   /* Use this line for local testing: `${process.env.PUBLIC_URL}/images/image-names.json` */
@@ -30,8 +29,6 @@ const AppBody = () => {
             .catch(err => {console.error("Error fetching image names:", err);
         });
     }, []);
-
-    console.log("Inside AppBody: Loading and Reading image-names from json file in the images folder", gridCells);
 
     const updateIndex = (i: number) => {
         setIndex(i);

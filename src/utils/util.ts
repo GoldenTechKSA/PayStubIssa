@@ -1,11 +1,10 @@
 import { FilingStatus } from "types/tax-rate-types";
 
 // Returns the image source path for a given image file name
-export const getImageSrc = (imageUrl: string): string => {
-    const path = process.env.REACT_APP_IMAGE_FOLDER_PATH || "./web/images/";
-    console.log("path: ", path, "imageUrl inside Util", imageUrl);
-    if (!imageUrl) return "";
-    return `${path}${imageUrl}`;
+export const getImageSrc = (filename: string): string => {
+    const imagePath = `${process.env.PUBLIC_URL}/images/${filename}`; 
+    if (!filename) return "";
+    return imagePath;
 }
 
 export const isValidDate = (dateStr: string): boolean => {
