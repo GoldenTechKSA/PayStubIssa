@@ -327,36 +327,55 @@ const PaystubPreview = () => {
                     General Information
                 </a>
                 <Row xs={1} md={2} className="g-2">
-                    <Col>
+                    {state.generalInfo.employmentType && (<Col>
                         <Form.Group>
                             <Form.Label>Employment Type</Form.Label>
                             <Form.Control readOnly defaultValue={state.generalInfo.employmentType} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                    {state.generalInfo.paymentMethod && (<Col>
                         <Form.Group>
                             <Form.Label>Payment Method</Form.Label>
                             <Form.Control readOnly defaultValue={state.generalInfo.paymentMethod} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                     {state.generalInfo.paymentFrequency && (<Col>
                         <Form.Group>
                             <Form.Label>How often you get paid?</Form.Label>
                             <Form.Control readOnly defaultValue={state.generalInfo.paymentFrequency} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                    {state.generalInfo.payStubCount > 0 && (<Col>
                         <Form.Group>
                             <Form.Label>Number of paystubs requested</Form.Label>
                             <Form.Control readOnly defaultValue={state.generalInfo.payStubCount} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                    {state.generalInfo.payStubNumber > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Paystub number or id</Form.Label>
+                            <Form.Control readOnly defaultValue={state.generalInfo.payStubNumber} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.generalInfo.checkNumber > 0 && (<Col>
                         <Form.Group>
                             <Form.Label>Starting check number</Form.Label>
                             <Form.Control readOnly defaultValue={state.generalInfo.checkNumber} />
                         </Form.Group>
                     </Col>
+                    )}
+                    {state.generalInfo.extraNotes && (<Col>
+                        <Form.Group>
+                            <Form.Label>Additional notes or reference</Form.Label>
+                            <Form.Control readOnly defaultValue={state.generalInfo.extraNotes} />
+                        </Form.Group>
+                    </Col>
+                    )}
                 </Row>
             </Form>
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>

@@ -10,17 +10,15 @@ import { isValidStubCount, isValidString } from "../../utils/util";
 
 const GeneralInfo = () => {
     const general = useSelector<PayStubDetails, GeneralDetails>(state => state.generalInfo);
-    const [ employmentType, setEmploymentType ] = useState(general.employmentType || "Contractor");
+    const [ employmentType, setEmploymentType ] = useState(general.employmentType || "");
     const [ payStubCount, setPayStubCount ] = useState(general.payStubCount || 1);
-    const [ payStubNumber, setPaystubNumber ] = useState(general.payStubNumber || 1);
+    const [ payStubNumber, setPaystubNumber ] = useState(general.payStubNumber || 0);
     const [ checkNumber, setCheckNumber ] = useState(general.checkNumber || 5000);
-    const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "None");
+    const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "");
     const [ extraNotes, setExtraNotes ] = useState("");
 
-    const [ employmentTypeTouched, setEmploymentTypeTouched ] = useState(false);
     const [ extraNotesTouched, setExtraNotesTouched ] = useState(false);
     const [ payStubCountTouched, setPayStubCountTouched ] = useState(false);
-    const [ paymentMethodTouched, setPaymentMethodTouched ] = useState(false);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
