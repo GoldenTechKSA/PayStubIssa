@@ -69,6 +69,15 @@ export const formatCurrency = (amount: number): string => {
     }).format(amount);
 }
 
+// Helper function to format percentage
+export const formatPercentage = (amount: number): string => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'percent',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
+}
+
 export const isValidString = (input: string): boolean => {
 //  * Validates if a string contains only alphanumeric characters and spaces
 //  * @param input - The string to validate

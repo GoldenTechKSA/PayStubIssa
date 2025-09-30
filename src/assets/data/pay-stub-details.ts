@@ -39,12 +39,12 @@ export interface IncomeDetails {
     overtimeRate: number; // Example overtime hourly rate
     overtimeHours: number; // Example overtime hours worked per week
     bonusAmount: number; // Example extrea bonus amount
-    deduction401k?: number; // Optional 401K amount
-    medicalDeduction?: number; // Optional medical deduction amount
-    dentalDeduction?: number; // Optional dental deduction amount
-    visionDeduction?: number; // Optional vision deduction amount
-    otherDeduction?: number; // Optional other deduction amount
-    unionDues?: number; // Optional union dues percentage (e.g., 0.01 for 1%)
+    deduction401k: number; // Optional 401K amount
+    medicalDeduction: number; // Optional medical deduction amount
+    dentalDeduction: number; // Optional dental deduction amount
+    visionDeduction: number; // Optional vision deduction amount
+    otherDeduction: number; // Optional other deduction amount
+    unionDues: number; // Optional union dues percentage (e.g., 0.01 for 1%)
     periodStartDate: Date;
     periodEndDate: Date;
     periodPayDate: Date;

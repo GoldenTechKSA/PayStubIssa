@@ -5,6 +5,7 @@ import store from "../../redux/store";
 import "../../index.css";
 import { useDispatch } from "react-redux";
 import { updateAppSettings } from "../../redux/actions";
+import { formatPercentage, formatCurrency } from "../../utils/util";
 
 const PaystubPreview = () => {
     const state = store.getState();
@@ -13,6 +14,7 @@ const PaystubPreview = () => {
     const templateId = state.appSettings.templateId;
 
     const devMode = (process.env.NODE_ENV === "production" ? false : true)
+    console.log("store.getState() - State:", state);
 
     const printPaystub = async () => {
         console.log("Printing paystub with template type:", templateId);
@@ -62,12 +64,13 @@ const PaystubPreview = () => {
                             <Form.Control readOnly defaultValue={state.companyInfo.companyName} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    { state.companyInfo.companyEIN && (<Col>
                         <Form.Group>
                             <Form.Label>Company EIN</Form.Label>
                             <Form.Control readOnly defaultValue={state.companyInfo.companyEIN} />
                         </Form.Group>
                     </Col>
+                    )}
                     <Col>
                         <Form.Group>
                             <Form.Label>Company Address</Form.Label>
@@ -104,7 +107,7 @@ const PaystubPreview = () => {
                             <Form.Control readOnly defaultValue={state.companyInfo.companyEmail} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    { state.companyInfo.companyLogo && (<Col>
                         <Form.Group as={Col} controlId="companyLogo">
                             <Form.Label>Company Logo</Form.Label>
                             <div className="mt-2">
@@ -112,6 +115,7 @@ const PaystubPreview = () => {
                             </div>
                         </Form.Group>
                     </Col>
+                    )}
                 </Row>
             </Form>
             {/* Employee Info */}
@@ -126,12 +130,13 @@ const PaystubPreview = () => {
                             <Form.Control readOnly defaultValue={state.employeeInfo.employeeFirstName} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    { state.employeeInfo.employeeMiddleInitial && (<Col>
                         <Form.Group>
                             <Form.Label>Middle Initial</Form.Label>
                             <Form.Control readOnly defaultValue={state.employeeInfo.employeeMiddleInitial} />
                         </Form.Group>
                     </Col>
+                    )}
                     <Col>
                         <Form.Group>
                             <Form.Label>Last Name</Form.Label>
@@ -162,30 +167,34 @@ const PaystubPreview = () => {
                             <Form.Control readOnly defaultValue={state.employeeInfo.employeeZipCode} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    {state.employeeInfo.employeePhone && (<Col>
                         <Form.Group>
                             <Form.Label>Phone Number</Form.Label>
                             <Form.Control readOnly defaultValue={state.employeeInfo.employeePhone} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                    {state.employeeInfo.employeeSSN && (<Col>
                         <Form.Group>
                             <Form.Label>Employee SSN</Form.Label>
                             <Form.Control readOnly defaultValue={state.employeeInfo.employeeSSN} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                    {state.employeeInfo.employeeEmail && (<Col>
                         <Form.Group>
                             <Form.Label>Employee Email</Form.Label>
                             <Form.Control readOnly defaultValue={state.employeeInfo.employeeEmail} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                    {state.employeeInfo.employeeID && (<Col>
                         <Form.Group>
                             <Form.Label>Employee ID</Form.Label>
                             <Form.Control readOnly defaultValue={state.employeeInfo.employeeID} />
                         </Form.Group>
                     </Col>
+                    )}
                     <Col>
                         <Form.Group>
                             <Form.Label>Filing Status</Form.Label>
@@ -196,14 +205,100 @@ const PaystubPreview = () => {
             </Form>
             {/* Income Info */}
             <Form className="m-3">
-                <a className="company-info-link" tabIndex={0} onClick={e=> onIncomeDetailsClick(e)} href="/income-details">
-                    Income Details
-                </a>
+                <a className="company-info-link" tabIndex={0} onClick={e=> onIncomeDetailsClick(e)} href="/income-details">Income Details</a>
                 <Row xs={1} md={2} className="g-2">
                     <Col>
                         <Form.Group>
+                            <Form.Label>Earned Wages (Hourly or Salary)</Form.Label>
+                            <Form.Control readOnly defaultValue={state.incomeDetails.wageType} />
+                        </Form.Group>
+                    </Col>
+                    {state.incomeDetails.annualSalary > 0 && (<Col>
+                        <Form.Group>
                             <Form.Label>Annual Income Amount $</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.annualSalary} />
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.annualSalary)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    <Col>
+                        <Form.Group>
+                            <Form.Label>Regular Pay Rate</Form.Label>
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.hourlyRate)} />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group>
+                            <Form.Label>Regular Pay Hours</Form.Label>
+                            <Form.Control readOnly defaultValue={state.incomeDetails.hoursWorked} />
+                        </Form.Group>
+                    </Col>
+                    {state.incomeDetails.overtimeRate > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Overtime Rate</Form.Label>
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.overtimeRate)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.overtimeHours > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Overtime Hours</Form.Label>
+                            <Form.Control readOnly defaultValue={state.incomeDetails.overtimeHours} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.bonusAmount > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Bonus Amount</Form.Label>
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.bonusAmount)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.deduction401k > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>401k Benefit Rate (%)</Form.Label>
+                            <Form.Control readOnly defaultValue={formatPercentage(state.incomeDetails.deduction401k)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.medicalDeduction > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Medical Coverage Amount</Form.Label>
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.medicalDeduction)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.dentalDeduction > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Dental Coverage Amount</Form.Label>
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.dentalDeduction)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.visionDeduction > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Vision Coverage Amount</Form.Label>
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.visionDeduction)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.otherDeduction > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Other Deductions</Form.Label>
+                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.otherDeduction)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    {state.incomeDetails.unionDues > 0 && (<Col>
+                        <Form.Group>
+                            <Form.Label>Union Dues Rate (%)</Form.Label>
+                            <Form.Control readOnly defaultValue={formatPercentage(state.incomeDetails.unionDues)} />
+                        </Form.Group>
+                    </Col>
+                    )}
+                    <Col>
+                        <Form.Group>
+                            <Form.Label>Pay Period Type</Form.Label>
+                            <Form.Control readOnly defaultValue={state.incomeDetails.periodType} />
                         </Form.Group>
                     </Col>
                     <Col>
@@ -220,8 +315,8 @@ const PaystubPreview = () => {
                     </Col>
                     <Col>
                         <Form.Group>
-                            <Form.Label>Pay Period Type</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.periodType} />
+                            <Form.Label>Pay Period Date</Form.Label>
+                            <Form.Control readOnly defaultValue={state.incomeDetails.periodPayDate} />
                         </Form.Group>
                     </Col>
                 </Row>

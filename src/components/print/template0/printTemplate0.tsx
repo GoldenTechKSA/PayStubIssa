@@ -82,6 +82,29 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
     { description: "State Income Tax", current: `${stateIncomeTaxAsString}`, ytd: `${stateIncomeTaxAsStringYTD}` }
   ];
 
+  function renderCompanyLogo(companyLogo) {
+    // Check if companyLogo is empty (null, undefined, empty string, or falsy)
+    if (!companyLogo) {
+      return (
+        <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
+          <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
+          <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="16" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">LOGO</text>
+        </svg>
+      );
+    }
+    
+    // Return the provided company logo (assuming it's a valid JSX element or image URL)
+    // If companyLogo is a string (URL), render as <img>
+    if (typeof companyLogo === 'string') {
+      return (
+        <img src={companyLogo} alt="Company Logo" style={{ marginRight: "16px" }} width="60" height="60"/>
+      );
+    }
+    
+    // If it's already a JSX element, return it as-is
+    return companyLogo;
+  }
+
   return (
     <div className="paystub-print-root0">
       <style>
@@ -138,10 +161,7 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
         {/* Header */}
         <div className="paystub-header0">
           {/* Company Logo */}
-          <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
-            <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
-            <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="16" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">LOGO</text>
-          </svg>
+          {companyInfo.companyLogo && renderCompanyLogo(companyInfo.companyLogo)}
           <div className="paystub-header-company0">
             <div className="paystub-header-company-name0">{companyName || "Company Name"}</div>
             <div className="paystub-header-company-address0">{companyFullAddress}</div>
