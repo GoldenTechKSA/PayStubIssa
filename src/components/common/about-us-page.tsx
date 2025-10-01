@@ -39,10 +39,10 @@ const AboutUsPage: React.FC = () => {
             <div className="features">
                 <h2>Why Use Our Generator?</h2>
                 <ul className="feature-list">
-                    <li><span className="feature-check">&#9989;</span>IRS-compliant formats</li>
-                    <li><span className="feature-check">&#9989;</span>Automatic tax &amp; deduction calculations</li>
-                    <li><span className="feature-check">&#9989;</span>Secure &amp; confidential (256-bit encryption)</li>
-                    <li><span className="feature-check">&#9989;</span>Mobile-friendly (create stubs on the go)</li>
+                    <li><span className="check">&#10004;</span>IRS-compliant formats</li>
+                    <li><span className="check">&#10004;</span>Automatic tax &amp; deduction calculations</li>
+                    <li><span className="check">&#10004;</span>Secure &amp; confidential (256-bit encryption)</li>
+                    <li><span className="check">&#10004;</span>Mobile-friendly (create stubs on the go)</li>
                 </ul>
             </div>
 
