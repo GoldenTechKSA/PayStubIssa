@@ -11,13 +11,12 @@ import { isValidStubCount, isValidString } from "../../utils/util";
 const GeneralInfo = () => {
     const general = useSelector<PayStubDetails, GeneralDetails>(state => state.generalInfo);
     const [ employmentType, setEmploymentType ] = useState(general.employmentType || "");
+    const [ payStubCountRaw, setPayStubCountRaw ] = useState<string>("");
     const [ payStubCount, setPayStubCount ] = useState(general.payStubCount || 1);
     const [ payStubNumber, setPaystubNumber ] = useState(general.payStubNumber || 0);
     const [ checkNumber, setCheckNumber ] = useState(general.checkNumber || 5000);
     const [ paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "");
     const [ extraNotes, setExtraNotes ] = useState("");
-
-    const [ extraNotesTouched, setExtraNotesTouched ] = useState(false);
     const [ payStubCountTouched, setPayStubCountTouched ] = useState(false);
 
     const dispatch = useDispatch();
@@ -33,9 +32,9 @@ const GeneralInfo = () => {
         navigate('/paystubPreview');
     };
 
-    function isValidCheckNum(input): boolean {
-        const regex = /^\d{3,}$/; // Matches strings with only digits and at least 3 of them
-        return regex.test(input);
+    const setPayStubCountValues= (value: string) => {
+        setPayStubCount(parseInt(value));
+        setPayStubCountRaw(value);
     }
 
     const handleSubmitGoBack = (event) => {
@@ -47,7 +46,7 @@ const GeneralInfo = () => {
         dispatch(updateAppSettings({ nextTabStep: "income" }));
     };
 
-    const isFormValid = isValidStubCount(payStubCount) && isValidString(employmentType) && isValidString(paymentMethod);
+    const isFormValid = isValidStubCount(payStubCountRaw);
 
     return (
         <Container className="m-0 p-0 no-gutters">
@@ -59,18 +58,16 @@ const GeneralInfo = () => {
                     <Row>
                         <Form.Group as={Col} className="mb-4" controlId="payStubCountId">
                             <Form.Label className="label_fontsize">How many paystubs do you need? {<span className="required-asterisk">*</span>}</Form.Label>
-                            <Form.Control placeholder="example 1, 2 or 3, etc." value={payStubCount} onBlur={() => setPayStubCountTouched(true)} isInvalid={payStubCountTouched && !isValidStubCount(payStubCount)} onChange={e => setPayStubCount(parseInt(e.target.value))} />
+                            <Form.Control required min="1" max="12" type="number" step="1" value={undefined} onBlur={() => setPayStubCountTouched(true)} isInvalid={payStubCountTouched && !isValidStubCount(payStubCountRaw)} onChange={e => setPayStubCountValues(e.target.value)} />
                             <Form.Control.Feedback type="invalid">Please provide a valid number of paystubs.</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="checkNumberId">
                             <Form.Label className="label_fontsize">Enter check number associated with this paystub:</Form.Label>
-                            <Form.Control placeholder="Enter a check number" value={checkNumber} isInvalid={!isValidCheckNum(checkNumber)} onChange={e => setCheckNumber(parseInt(e.target.value))} />
-                            <Form.Control.Feedback type="invalid">Please provide a valid check number (at least 3 digits).</Form.Control.Feedback>
+                            <Form.Control min="0" type="number" step="any" value={undefined} onChange={e => setCheckNumber(parseInt(e.target.value))} />
                         </Form.Group>
                         <Form.Group as={Col} controlId="paystubId">
                             <Form.Label className="label_fontsize">Enter paystub number associated with this pay period:</Form.Label>
-                            <Form.Control placeholder="Enter paystub number" value={payStubNumber} onChange={e => setPaystubNumber(parseInt(e.target.value))} />
-                            <Form.Control.Feedback type="invalid">Please provide a valid paystub number (at least 1 digit).</Form.Control.Feedback>
+                            <Form.Control min="0" type="number" step="1" value={undefined} onChange={e => setPaystubNumber(parseInt(e.target.value))} />
                         </Form.Group>
                     </Row>
                     <Row>
@@ -86,7 +83,7 @@ const GeneralInfo = () => {
                     <Row>
                         <Form.Group as={Col} controlId="extraNotesId">
                             <Form.Label className="label_fontsize">Additional Notes or Reference</Form.Label>
-                            <Form.Control as="textarea" rows={2} placeholder="Extra notes for internal reference - Optional" value={extraNotes} onBlur={() => setExtraNotesTouched(true)} isInvalid={extraNotesTouched && !isValidString(extraNotes)} onChange={e => setExtraNotes(e.target.value)} />
+                            <Form.Control as="textarea" rows={2} placeholder="Extra notes for internal reference - Optional" value={extraNotes} onChange={e => setExtraNotes(e.target.value)} />
                         </Form.Group>
                     </Row>
                 </Form>

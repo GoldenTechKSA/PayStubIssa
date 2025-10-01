@@ -97,22 +97,22 @@ export const isValidString = (input: string): boolean => {
   return alphaNumericSpaceRegex.test(input);
 };
 
-export function isValidStubCount(input: string | number): boolean {
-    // First check if it's a valid number format
+export const isValidStubCount = (input: string | number): boolean => {
+    // Handle string inputs
     if (typeof input === 'string') {
-        const regex = /^\d+$/; // Matches one or more digits
-        if (!regex.test(input)) {
-            return false;
-        }
+        // Must contain only digits, no leading zeros (except for "0" which we'll reject anyway)
+        const regex = /^[1-9]\d*$/; // Matches positive integers without leading zeros
+        if (!regex.test(input)) return false;
+        const num = Number(input);
+        return num >= 1 && num <= 12;
     }
-    
-    // Convert to number for range validation
-    const num = typeof input === 'number' ? input : Number(input);
-    
-    // Check if it's a valid number and within range
-    return Number.isInteger(num) && num > 0 && num <= 12;
+    // Handle number inputs
+    if (typeof input === 'number') {
+        // Must be an integer (no decimal part) and within range
+        return Number.isInteger(input) && input >= 1 && input <= 12;
+    }
+    return false;
 }
-
 
 interface TaxResult {
     taxAmount: number;

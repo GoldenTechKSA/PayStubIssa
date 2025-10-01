@@ -52,25 +52,6 @@ const IncomeInfo = () => {
         dispatch(updateAppSettings({ nextTabStep: "employee" }));
     };
 
-
-    const parseMedicalDeduction = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const value = e.target.value;
-        const parsed = parseFloat(value);
-        setMedicalDeduction(isNaN(parsed) || value === "" ? 0 : parsed);
-    }
-
-    const parseDentalDeduction = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const value = e.target.value.replace(/[$,]/g, '');
-        const parsed = parseFloat(value);
-        setDentalDeduction(isNaN(parsed) || value === "" ? 0 : parsed);
-    }
-
-    const parseVisionDeduction = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const value = e.target.value.replace(/[$,]/g, '');
-        const parsed = parseFloat(value);
-        setVisionDeduction(isNaN(parsed) || value === "" ? 0 : parsed);
-    }
-
     const parseDeduction401k = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const value = e.target.value.replace("%", "").trim();
         const parsed = parseFloat(value) / 100;
@@ -314,7 +295,7 @@ const IncomeInfo = () => {
                     )}
                     <Row>
                         <Form.Group as={Col} controlId="payPeriodTypeId">
-                            <Form.Label className="label_fontsize">How often are you paid?</Form.Label>
+                            <Form.Label className="label_fontsize">How often are you paid?  *Tip - ensure that the period end date is not in the future</Form.Label>
                             <Form.Control as="select" value={periodType} onChange={handlePeriodTypeChange}>{ PAYPERIODTYPE.map((p) => <option key={p.count} value={p.name}>{p.name}</option> )}</Form.Control>
                         </Form.Group>
                     </Row>
