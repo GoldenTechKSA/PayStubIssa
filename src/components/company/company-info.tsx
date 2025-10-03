@@ -4,6 +4,7 @@ import { Form, Row, Col, Container, Button } from "react-bootstrap";
 import { updateAppSettings, saveCompanyInfo } from "../../redux/actions";
 import { STATESLIST } from "../../constants/globals";
 import { CompanyInfo as CompanyDetails, PayStubDetails } from "assets/data/pay-stub-details";
+import { EINInput } from "./ein-input";
 
 const CompanyInfo = () => {
     const companyInfo = useSelector<PayStubDetails, CompanyDetails>(state => state.companyInfo);
@@ -102,8 +103,7 @@ const CompanyInfo = () => {
                             <Form.Control.Feedback type="invalid">Please provide a valid company name(3–100 characters).</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} controlId="companyEinId">
-                            <Form.Label className="label_fontsize">Enter company EIN - XX-XXXXXXX 9 digits(optional)</Form.Label>
-                            <Form.Control value={companyEIN} onChange={e => setCompanyEIN(e.target.value)}/>
+                            <EINInput value={companyEIN} onChange={setCompanyEIN}/>
                         </Form.Group>
                     </Row>
                     <Row> {/* company address 1, company address 2 */}

@@ -5,6 +5,7 @@ import { updateAppSettings, saveEmployeeInfo } from "../../redux/actions";
 import { FILINGSTATUS, STATESLIST } from "../../constants/globals";
 import { EmployeeInfo as EmployeeDetails, PayStubDetails } from "assets/data/pay-stub-details";
 import { isValidDate as isValidHireDate } from "../../utils/util";
+import { SSNInput } from "./ssn-input";
 
 const EmployeeInfo = () => {
     const employee = useSelector<PayStubDetails, EmployeeDetails>(state => state.employeeInfo);
@@ -130,8 +131,7 @@ const EmployeeInfo = () => {
                     </Row>
                     <Row> {/* Employee SSN, Phone, employee ID */ }
                         <Form.Group as={Col} controlId="employeeSsnId">
-                            <Form.Label className="label_fontsize">Enter employee SSN</Form.Label>
-                            <Form.Control type="text" value={employeeSSN} onChange={e => setEmployeeSSN(e.target.value)}/>
+                            <SSNInput value={employeeSSN} onChange={setEmployeeSSN}/>
                         </Form.Group>
                         <Form.Group as={Col} controlId="employeePhoneId">
                             <Form.Label className="label_fontsize">Enter phone number</Form.Label>
