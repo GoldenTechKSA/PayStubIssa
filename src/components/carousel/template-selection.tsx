@@ -27,12 +27,14 @@ const TemplateSelection = ({index, carouselImages}) => {
             <Row  className="mt-1 mb-2">
                 <h2>Select PayStub template to use:</h2>
             </Row>
-            <Row className="remove-later-hero-block">
+            <Row className="mt-1 mb-2">
                 <Carousel id="TemplateSelectionCarousel" activeIndex={currentIndex} onSelect={handleSelect} indicators={false} wrap={false} interval={null} prevIcon={<span aria-hidden="true" className="carousel-control-prev-icon"/>} nextIcon={<span aria-hidden="true" className="carousel-control-next-icon"/>}>
                     { carouselImages.map((template, i) => (
-                        <Carousel.Item className="carousel-item" key={i}>
-                            <Image className="w-100 h-100 img-fluid" src={getImageSrc(template.imageFile)} alt={template.title}/>
-                            <Carousel.Caption className="carousel-title">{template.description}</Carousel.Caption>
+                        <Carousel.Item key={i}>
+                            <div className="template-carousel-content">
+                                <Image src={getImageSrc(template.imageFile)} alt={template.title}/>
+                                <Carousel.Caption className="carousel-title">{template.description}</Carousel.Caption>
+                            </div>
                         </Carousel.Item>
                     ))}
                 </Carousel>

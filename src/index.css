@@ -52,6 +52,13 @@ body {
     justify-content: center;
 }
 
+.template-carousel-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+}
+
 .hero-block .carousel,
 .hero-block .carousel-inner,
 .hero-block .carousel-item {
