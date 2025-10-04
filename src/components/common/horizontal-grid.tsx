@@ -32,8 +32,11 @@ const HorizontalGrid: React.FC<HorizontalGridProps> = ({ updateIndex, currentInd
     <div className="horizontal-grid-container">
       <div className="horizontal-grid">
         {cells.map((cell) => (
-          <div key={cell.id} className="grid-cell" onClick={e => onCellClick(e, cell.id)} role="button" tabIndex={currentIndex} >
-            <img src={getImageSrc(cell.imageFile)} alt={cell.title} />
+          <div key={cell.id} className={`grid-cell ${currentIndex === cell.id ? 'selected' : ''}`} onClick={e => onCellClick(e, cell.id)} role="button" tabIndex={0} >
+            <div className="image-container">
+              <img src={getImageSrc(cell.imageFile)} alt={cell.title} />
+            </div>
+            <div className="image-title">{cell.title}</div>
           </div>
         ))}
       </div>

@@ -357,7 +357,7 @@ body {
 .horizontal-grid-outer {
     background: linear-gradient(1800deg, #cbd9e5 60%, #eaf4fe 100%);
     box-shadow: 6px 6px 6px rgba(44, 62, 80, 0.10);
-    padding: 2.5rem 1.5rem;
+    padding: 1rem 1rem;
     width: 100%;
     margin-left: auto;
     margin-right: auto;}
@@ -748,4 +748,74 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
     border-bottom: 2px solid #1976d2;
     text-decoration: none;
     outline: none;
+}
+
+.horizontal-grid-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.horizontal-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 10px; /* Adjust spacing between cells as needed */
+  padding: 0 10px;
+  min-height: 100px; /* Set your desired total cell height */
+}
+
+.grid-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px; /* Adjust as needed for your layout */
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.grid-cell:hover {
+  transform: scale(1.10);
+}
+
+.grid-cell.selected {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+/* Image container takes 70% of cell height */
+.image-container {
+  flex: 0 0 70%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Maintains aspect ratio while filling container */
+  display: block;
+}
+
+/* Title container takes 30% of cell height */
+.image-title {
+  flex: 0 0 30%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px; /* 3px padding on all sides as requested */
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 10px; /* Reduced font size */
+  font-weight: 500;
+  text-align: center;
+  overflow: hidden;
+  /* Allow text wrapping instead of single line */
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.2;
 }
