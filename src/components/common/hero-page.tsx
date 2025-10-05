@@ -3,7 +3,6 @@ import "../../index.css";
 import { useNavigate } from "react-router-dom";
 import HeroImage from "../../assets/images/heroimage.png";
 import SpecialPriceBanner from "./special-price-banner"; // <-- Import the banner
-import { display } from "html2canvas/dist/types/css/property-descriptors/display";
 
 const HeroPage = () => {
   const steps = [
