@@ -3,6 +3,7 @@ import "../../index.css";
 import { useNavigate } from "react-router-dom";
 import HeroImage from "../../assets/images/heroimage.png";
 import SpecialPriceBanner from "./special-price-banner"; // <-- Import the banner
+import { display } from "html2canvas/dist/types/css/property-descriptors/display";
 
 const HeroPage = () => {
   const steps = [
@@ -26,11 +27,20 @@ const HeroPage = () => {
     setOpenIndex(openIndex === idx ? null : idx);
   };
 
+  // TODO: Function to determine if the special price banner should be displayed, based on date range
+  // in the future, this can be moved to a config file or environment variable, instead of hardcoding the dates here
+  const displaySpecialPriceBanner = () : boolean => {
+    const currentDate = new Date();
+    const startDate = new Date('2025-10-01');
+    const endDate = new Date('2025-12-31');
+    return currentDate >= startDate && currentDate <= endDate;
+  };
+
   return (
     <>
         <section className="banner">
           {/* SpecialPriceBanner inserted here */}
-          <SpecialPriceBanner />
+          { displaySpecialPriceBanner() && <SpecialPriceBanner />}
         </section>
         <section className="hero">
           <div className="heroContent">
