@@ -16,7 +16,7 @@ const AppHeader = () => {
                 {/* <Navbar.Brand href="/specialOfferPage" >Special Price!</Navbar.Brand> */}
                 {canPrint && <Navbar.Brand href="/paystubPreview">Preview your Paystub</Navbar.Brand>}
                 <Nav>
-                    <NavLink className="navLinkClass" to="/dailySpecialPage">Daily Special</NavLink>
+                    {/* <NavLink className="navLinkClass" to="/dailySpecialPage">Daily Special</NavLink> */}
                     <NavLink className="navLinkClass" to="/aboutUsPage">About Us</NavLink>
                     <NavLink className="navLinkClass" to="/FAQPage">FAQ</NavLink>
                     <NavLink className="navLinkClass" to="/contactUsPage">Contact Us</NavLink>

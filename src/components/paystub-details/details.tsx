@@ -45,6 +45,10 @@ const PaystubPreview = () => {
         navigate("/appBody");
     };
     
+    const IsHourlyWages = () => {
+        return state.incomeDetails.wageType === "Hourly";
+    };
+
     return (
         <Container>
             <p className="text-info mb-4" style={{ fontSize: "1.5rem", marginTop: "2rem", fontWeight: 500, background: "#f8f9fa", borderRadius: "0.5rem", padding: "1rem 1.5rem", border: "1px solid #d1e7fd", boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
@@ -213,47 +217,49 @@ const PaystubPreview = () => {
                             <Form.Control readOnly defaultValue={state.incomeDetails.wageType} />
                         </Form.Group>
                     </Col>
-                    {state.incomeDetails.annualSalary > 0 && (<Col>
+                    {state.incomeDetails.wageType === "Salary" && state.incomeDetails.annualSalary > 0 && (<Col>
                         <Form.Group>
                             <Form.Label>Annual Income Amount $</Form.Label>
                             <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.annualSalary)} />
                         </Form.Group>
                     </Col>
                     )}
-                    <Col>
+                    { IsHourlyWages() && (<Col>
                         <Form.Group>
                             <Form.Label>Regular Pay Rate</Form.Label>
                             <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.hourlyRate)} />
                         </Form.Group>
                     </Col>
-                    <Col>
+                    )}
+                    {IsHourlyWages() &&  (<Col>
                         <Form.Group>
                             <Form.Label>Regular Pay Hours</Form.Label>
                             <Form.Control readOnly defaultValue={state.incomeDetails.hoursWorked} />
                         </Form.Group>
                     </Col>
-                    {state.incomeDetails.overtimeRate > 0 && (<Col>
+                    )}
+                    {IsHourlyWages() && state.incomeDetails.overtimeRate > 0 && (<Col>
                         <Form.Group>
                             <Form.Label>Overtime Rate</Form.Label>
                             <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.overtimeRate)} />
                         </Form.Group>
                     </Col>
                     )}
-                    {state.incomeDetails.overtimeHours > 0 && (<Col>
+                    {IsHourlyWages() && state.incomeDetails.overtimeHours > 0 && (<Col>
                         <Form.Group>
                             <Form.Label>Overtime Hours</Form.Label>
                             <Form.Control readOnly defaultValue={state.incomeDetails.overtimeHours} />
                         </Form.Group>
                     </Col>
                     )}
-                    {state.incomeDetails.bonusAmount > 0 && (<Col>
+                    {IsHourlyWages() && state.incomeDetails.bonusAmount > 0 && (<Col>
                         <Form.Group>
                             <Form.Label>Bonus Amount</Form.Label>
                             <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.bonusAmount)} />
                         </Form.Group>
                     </Col>
                     )}
-                    {state.incomeDetails.deduction401k > 0 && (<Col>
+                    {IsHourlyWages() && state.incomeDetails.deduction401k > 0 && (<Col>
                         <Form.Group>
                             <Form.Label>401k Benefit Rate (%)</Form.Label>
                             <Form.Control readOnly defaultValue={formatPercentage(state.incomeDetails.deduction401k)} />

@@ -88,6 +88,19 @@ const IncomeInfo = () => {
         }
     };
 
+    const handleWageTypeChange = (newWageType: string) => {
+        setWageType(newWageType);
+        if (newWageType === "Hourly") { // clear salary field
+            setAnnualSalary(0);
+        } else { // clear hourly fields
+            setHourlyRate(0);
+            setHoursWorked(0);
+            setOvertimeRate(0);
+            setOvertimeHoursWorked(0);
+            setBonusAmount(0);
+        }
+    };
+
     // Handler for start date change
     const handleStartDateChange = (e) => {
         const newStartDate = e.target.value;
@@ -117,8 +130,8 @@ const IncomeInfo = () => {
                     <Row className="mb-3"> {/* Wage Type Selection, either Hourly wage or yearly Salary */ }
                         <Col>
                             <Form.Label className="mr-4 label_fontsize">Do you earn wages hourly or receive a fixed salary?</Form.Label>
-                            <Button variant={wageType === "Hourly" ? "primary" : "outline-primary"} onClick={() => setWageType("Hourly")} className="me-2">Hourly Wage</Button>
-                            <Button variant={wageType === "Salary" ? "primary" : "outline-primary"} onClick={() => setWageType("Salary")}>Yearly Salary</Button>
+                            <Button variant={wageType === "Hourly" ? "primary" : "outline-primary"} onClick={() => handleWageTypeChange("Hourly")} className="me-2">Hourly Wage</Button>
+                            <Button variant={wageType === "Salary" ? "primary" : "outline-primary"} onClick={() => handleWageTypeChange("Salary")}>Yearly Salary</Button>
                         </Col>
                     </Row>
                     {wageType === "Hourly" && (

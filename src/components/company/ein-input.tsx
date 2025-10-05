@@ -95,7 +95,6 @@ export const EINInput: React.FC<EINInputProps> = ({ value, onChange }) => {
         onChange={handleInputChange}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
-        placeholder="XX-XXXXXXX"
         maxLength={11}
       />
     </Form.Group>
