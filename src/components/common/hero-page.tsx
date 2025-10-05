@@ -31,7 +31,7 @@ const HeroPage = () => {
   // in the future, this can be moved to a config file or environment variable, instead of hardcoding the dates here
   const displaySpecialPriceBanner = () : boolean => {
     const currentDate = new Date();
-    const startDate = new Date('2025-10-01');
+    const startDate = new Date('2025-11-01');
     const endDate = new Date('2025-12-31');
     return currentDate >= startDate && currentDate <= endDate;
   };
