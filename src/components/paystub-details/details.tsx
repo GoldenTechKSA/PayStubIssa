@@ -80,6 +80,67 @@ const PaystubPreview = () => {
     return `XXX-XX-${lastFour}`;
     };    
 
+
+//=========================================================================================================================
+// Example implementations – adjust based on your data model
+
+const calculatePeriodStart = (index) => {
+  // Example: if base period is 2024-06-01, each stub is 2 weeks apart
+  const baseDate = new Date(state.incomeDetails?.periodStartDate || '2024-01-01');
+  const periodDays = getDaysPerPeriod(state.generalInfo.paymentFrequency); // e.g., 14 for biweekly
+  const newDate = new Date(baseDate);
+  newDate.setDate(baseDate.getDate() + index * periodDays);
+  return newDate;
+};
+
+const calculatePeriodEnd = (index) => {
+  const start = calculatePeriodStart(index);
+  const periodDays = getDaysPerPeriod(state.generalInfo.paymentFrequency);
+  const end = new Date(start);
+  end.setDate(start.getDate() + periodDays - 1);
+  return end;
+};
+
+const calculatePayDate = (index) => {
+  const basePayDate = new Date(state.incomeDetails?.periodPayDate || '2024-01-15');
+  const periodDays = getDaysPerPeriod(state.generalInfo.paymentFrequency);
+  const newDate = new Date(basePayDate);
+  newDate.setDate(basePayDate.getDate() + index * periodDays);
+  return newDate;
+};
+
+const getDaysPerPeriod = (frequency) => {
+  switch (frequency?.toLowerCase()) {
+    case 'weekly': return 7;
+    case 'biweekly': return 14;
+    case 'semimonthly': return 15; // approximate
+    case 'monthly': return 30;
+    default: return 14;
+  }
+};
+
+const getPaystubImageUrl = (stubNumber) => {
+  // Return URL to generated or stored paystub image
+  // e.g., `/api/paystubs/${stubNumber}/preview`
+  return `/paystubs/preview/${stubNumber}.png`; // adjust as needed
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+// Optional: handle paystub selection
+const onPaystubSelect = (stubNumber) => {
+  console.log('Selected paystub:', stubNumber);
+  // Navigate to detail view, open modal, etc.
+};//======== PAYSTUB MULTI-CARD VIEW HELPERS =========================================================================================
+
+
+
     return (
         <Container>
             <p className="text-info mb-4" style={{ fontSize: "1.5rem", marginTop: "2rem", fontWeight: 500, background: "#f8f9fa", borderRadius: "0.5rem", padding: "1rem 1.5rem", border: "1px solid #d1e7fd", boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
@@ -263,214 +324,282 @@ const PaystubPreview = () => {
             </div>
 
             <div className="d-flex flex-column flex-md-row gap-4 p-4" style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            {/* Left Card: Income Details */}
-            <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
-                <table className="income-info-table w-100">
-                <thead>
-                    <tr>
-                    <th colSpan={2} className="text-start pb-3">
-                        <a 
-                        className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
-                        tabIndex={0} 
-                        onClick={e => onIncomeDetailsClick(e)} 
-                        href="/income-details"
-                        style={{ color: '#2563eb' }}
-                        >
-                        Income Details
-                        </a>
-                    </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Earned Wages (Hourly or Salary)</strong>
-                        {state.incomeDetails.wageType}
-                    </td>
-                    {state.incomeDetails.wageType === "Salary" && state.incomeDetails.annualSalary > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Annual Income Amount $</strong>
-                        {formatCurrency(state.incomeDetails.annualSalary)}
-                        </td>
-                    )}
-                    </tr>
-
-                    {IsHourlyWages() && (
-                    <>
+                {/* Left Card: Income Details */}
+                <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
+                    <table className="income-info-table w-100">
+                    <thead>
                         <tr>
-                        <td className="py-2">
-                            <strong className="d-block text-muted fw-normal mb-1">Regular Pay Rate</strong>
-                            {formatCurrency(state.incomeDetails.hourlyRate)}
-                        </td>
-                        <td className="py-2">
-                            <strong className="d-block text-muted fw-normal mb-1">Regular Pay Hours</strong>
-                            {state.incomeDetails.hoursWorked}
-                        </td>
+                        <th colSpan={2} className="text-start pb-3">
+                            <a 
+                            className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
+                            tabIndex={0} 
+                            onClick={e => onIncomeDetailsClick(e)} 
+                            href="/income-details"
+                            style={{ color: '#2563eb' }}
+                            >
+                            Income Details
+                            </a>
+                        </th>
                         </tr>
+                    </thead>
+                    <tbody>
                         <tr>
-                        {state.incomeDetails.overtimeRate > 0 && (
+                        <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Earned Wages (Hourly or Salary)</strong>
+                            {state.incomeDetails.wageType}
+                        </td>
+                        {state.incomeDetails.wageType === "Salary" && state.incomeDetails.annualSalary > 0 && (
                             <td className="py-2">
-                            <strong className="d-block text-muted fw-normal mb-1">Overtime Rate</strong>
-                            {formatCurrency(state.incomeDetails.overtimeRate)}
-                            </td>
-                        )}
-                        {state.incomeDetails.overtimeHours > 0 && (
-                            <td className="py-2">
-                            <strong className="d-block text-muted fw-normal mb-1">Overtime Hours</strong>
-                            {state.incomeDetails.overtimeHours}
+                            <strong className="d-block text-muted fw-normal mb-1">Annual Income Amount $</strong>
+                            {formatCurrency(state.incomeDetails.annualSalary)}
                             </td>
                         )}
                         </tr>
-                        <tr>
-                        {state.incomeDetails.bonusAmount > 0 && (
+
+                        {IsHourlyWages() && (
+                        <>
+                            <tr>
                             <td className="py-2">
-                            <strong className="d-block text-muted fw-normal mb-1">Bonus Amount</strong>
-                            {formatCurrency(state.incomeDetails.bonusAmount)}
+                                <strong className="d-block text-muted fw-normal mb-1">Regular Pay Rate</strong>
+                                {formatCurrency(state.incomeDetails.hourlyRate)}
+                            </td>
+                            <td className="py-2">
+                                <strong className="d-block text-muted fw-normal mb-1">Regular Pay Hours</strong>
+                                {state.incomeDetails.hoursWorked}
+                            </td>
+                            </tr>
+                            <tr>
+                            {state.incomeDetails.overtimeRate > 0 && (
+                                <td className="py-2">
+                                <strong className="d-block text-muted fw-normal mb-1">Overtime Rate</strong>
+                                {formatCurrency(state.incomeDetails.overtimeRate)}
+                                </td>
+                            )}
+                            {state.incomeDetails.overtimeHours > 0 && (
+                                <td className="py-2">
+                                <strong className="d-block text-muted fw-normal mb-1">Overtime Hours</strong>
+                                {state.incomeDetails.overtimeHours}
+                                </td>
+                            )}
+                            </tr>
+                            <tr>
+                            {state.incomeDetails.bonusAmount > 0 && (
+                                <td className="py-2">
+                                <strong className="d-block text-muted fw-normal mb-1">Bonus Amount</strong>
+                                {formatCurrency(state.incomeDetails.bonusAmount)}
+                                </td>
+                            )}
+                            {state.incomeDetails.deduction401k > 0 && (
+                                <td className="py-2">
+                                <strong className="d-block text-muted fw-normal mb-1">401k Benefit Rate (%)</strong>
+                                {formatPercentage(state.incomeDetails.deduction401k)}
+                                </td>
+                            )}
+                            </tr>
+                        </>
+                        )}
+
+                        <tr>
+                        {state.incomeDetails.medicalDeduction > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Medical Coverage Amount</strong>
+                            {formatCurrency(state.incomeDetails.medicalDeduction)}
                             </td>
                         )}
-                        {state.incomeDetails.deduction401k > 0 && (
+                        {state.incomeDetails.dentalDeduction > 0 && (
                             <td className="py-2">
-                            <strong className="d-block text-muted fw-normal mb-1">401k Benefit Rate (%)</strong>
-                            {formatPercentage(state.incomeDetails.deduction401k)}
+                            <strong className="d-block text-muted fw-normal mb-1">Dental Coverage Amount</strong>
+                            {formatCurrency(state.incomeDetails.dentalDeduction)}
                             </td>
                         )}
                         </tr>
-                    </>
-                    )}
+                        <tr>
+                        {state.incomeDetails.visionDeduction > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Vision Coverage Amount</strong>
+                            {formatCurrency(state.incomeDetails.visionDeduction)}
+                            </td>
+                        )}
+                        {state.incomeDetails.otherDeduction > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Other Deductions</strong>
+                            {formatCurrency(state.incomeDetails.otherDeduction)}
+                            </td>
+                        )}
+                        </tr>
+                        <tr>
+                        {state.incomeDetails.unionDues > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Union Dues Rate (%)</strong>
+                            {formatPercentage(state.incomeDetails.unionDues)}
+                            </td>
+                        )}
+                        <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Pay Period Type</strong>
+                            {state.incomeDetails.periodType}
+                        </td>
+                        </tr>
+                        <tr>
+                        <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Pay Period Start Date</strong>
+                            {state.incomeDetails.periodStartDate}
+                        </td>
+                        <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Pay Period End Date</strong>
+                            {state.incomeDetails.periodEndDate}
+                        </td>
+                        </tr>
+                        <tr>
+                        <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Pay Period Date</strong>
+                            {state.incomeDetails.periodPayDate}
+                        </td>
+                        <td></td>
+                        </tr>
+                    </tbody>
+                    </table>
+                </div>
+                {/* General Info Section */}
+                <div className="m-3">
+                {/* Always show General Information table */}
+                <div className="border rounded-3 shadow-sm bg-white p-4 mb-4">
+                    <a 
+                    className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none mb-3"
+                    tabIndex={0} 
+                    onClick={e => onGeneralInfoClick(e)} 
+                    href="/general-info"
+                    style={{ color: '#2563eb' }}
+                    >
+                    General Information
+                    </a>
 
-                    <tr>
-                    {state.incomeDetails.medicalDeduction > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Medical Coverage Amount</strong>
-                        {formatCurrency(state.incomeDetails.medicalDeduction)}
-                        </td>
-                    )}
-                    {state.incomeDetails.dentalDeduction > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Dental Coverage Amount</strong>
-                        {formatCurrency(state.incomeDetails.dentalDeduction)}
-                        </td>
-                    )}
-                    </tr>
-                    <tr>
-                    {state.incomeDetails.visionDeduction > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Vision Coverage Amount</strong>
-                        {formatCurrency(state.incomeDetails.visionDeduction)}
-                        </td>
-                    )}
-                    {state.incomeDetails.otherDeduction > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Other Deductions</strong>
-                        {formatCurrency(state.incomeDetails.otherDeduction)}
-                        </td>
-                    )}
-                    </tr>
-                    <tr>
-                    {state.incomeDetails.unionDues > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Union Dues Rate (%)</strong>
-                        {formatPercentage(state.incomeDetails.unionDues)}
-                        </td>
-                    )}
-                    <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Pay Period Type</strong>
-                        {state.incomeDetails.periodType}
-                    </td>
-                    </tr>
-                    <tr>
-                    <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Pay Period Start Date</strong>
-                        {state.incomeDetails.periodStartDate}
-                    </td>
-                    <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Pay Period End Date</strong>
-                        {state.incomeDetails.periodEndDate}
-                    </td>
-                    </tr>
-                    <tr>
-                    <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Pay Period Date</strong>
-                        {state.incomeDetails.periodPayDate}
-                    </td>
-                    <td></td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
+                    <table className="general-info-table w-100">
+                    <tbody>
+                        <tr>
+                        {state.generalInfo.employmentType && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Employment Type</strong>
+                            {state.generalInfo.employmentType}
+                            </td>
+                        )}
+                        {state.generalInfo.paymentMethod && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Payment Method</strong>
+                            {state.generalInfo.paymentMethod}
+                            </td>
+                        )}
+                        </tr>
+                        <tr>
+                        {state.generalInfo.paymentFrequency && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">How often you get paid?</strong>
+                            {state.generalInfo.paymentFrequency}
+                            </td>
+                        )}
+                        {state.generalInfo.payStubCount > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Number of paystubs requested</strong>
+                            {state.generalInfo.payStubCount}
+                            </td>
+                        )}
+                        </tr>
+                        <tr>
+                        {state.generalInfo.payStubNumber > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Paystub number or id</strong>
+                            {state.generalInfo.payStubNumber}
+                            </td>
+                        )}
+                        {state.generalInfo.checkNumber > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Starting check number</strong>
+                            {state.generalInfo.checkNumber}
+                            </td>
+                        )}
+                        </tr>
+                        {state.generalInfo.extraNotes && (
+                        <tr>
+                            <td colSpan={2} className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Additional notes or reference</strong>
+                            {state.generalInfo.extraNotes}
+                            </td>
+                        </tr>
+                        )}
+                    </tbody>
+                    </table>
+                </div>
 
-            {/* Right Card: General Information */}
-            <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
-                <table className="general-info-table w-100">
-                <thead>
-                    <tr>
-                    <th colSpan={2} className="text-start pb-3">
-                        <a 
-                        className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
-                        tabIndex={0} 
-                        onClick={e => onGeneralInfoClick(e)} 
-                        href="/general-info"
-                        style={{ color: '#2563eb' }}
-                        >
-                        General Information
-                        </a>
-                    </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    {state.generalInfo.employmentType && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Employment Type</strong>
-                        {state.generalInfo.employmentType}
-                        </td>
-                    )}
-                    {state.generalInfo.paymentMethod && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Payment Method</strong>
-                        {state.generalInfo.paymentMethod}
-                        </td>
-                    )}
-                    </tr>
-                    <tr>
-                    {state.generalInfo.paymentFrequency && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">How often you get paid?</strong>
-                        {state.generalInfo.paymentFrequency}
-                        </td>
-                    )}
-                    {state.generalInfo.payStubCount > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Number of paystubs requested</strong>
-                        {state.generalInfo.payStubCount}
-                        </td>
-                    )}
-                    </tr>
-                    <tr>
-                    {state.generalInfo.payStubNumber > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Paystub number or id</strong>
-                        {state.generalInfo.payStubNumber}
-                        </td>
-                    )}
-                    {state.generalInfo.checkNumber > 0 && (
-                        <td className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Starting check number</strong>
-                        {state.generalInfo.checkNumber}
-                        </td>
-                    )}
-                    </tr>
-                    {state.generalInfo.extraNotes && (
-                    <tr>
-                        <td colSpan={2} className="py-2">
-                        <strong className="d-block text-muted fw-normal mb-1">Additional notes or reference</strong>
-                        {state.generalInfo.extraNotes}
-                        </td>
-                    </tr>
-                    )}
-                </tbody>
-                </table>
-            </div>
+                {/* Paystub Cards – only if payStubCount > 1 */}
+                {state.generalInfo.payStubCount > 1 && (
+                    <div className="mt-2">
+                    <h5 className="mb-3 fw-semibold">Your Paystubs</h5>
+                    <p className="text-muted mb-3">
+                        Select a paystub to view or manage:
+                    </p>
+                    <div className="d-flex flex-column flex-md-row flex-wrap gap-4">
+                        {Array.from({ length: state.generalInfo.payStubCount }, (_, i) => {
+                        const stubNumber = state.generalInfo.payStubNumber + i;
+                        const periodStart = calculatePeriodStart(i);
+                        const periodEnd = calculatePeriodEnd(i);
+                        const payDate = calculatePayDate(i);
+                        const imageUrl = getPaystubImageUrl(stubNumber);
+
+                        return (
+                            <div 
+                            key={stubNumber}
+                            className="border rounded-3 shadow-sm bg-white overflow-hidden"
+                            style={{ 
+                                width: '100%', 
+                                maxWidth: '320px',
+                                cursor: 'pointer',
+                                transition: 'box-shadow 0.2s, transform 0.2s'
+                            }}
+                            onClick={() => onPaystubSelect(stubNumber)}
+                            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)'}
+                            onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}
+                            >
+                            {/* Paystub Image Preview */}
+                            <div className="bg-light d-flex align-items-center justify-content-center p-3" style={{ height: '160px' }}>
+                                {imageUrl ? (
+                                <img 
+                                    src={imageUrl} 
+                                    alt={`Paystub #${stubNumber}`} 
+                                    className="img-fluid"
+                                    style={{ 
+                                    maxHeight: '100%', 
+                                    maxWidth: '100%',
+                                    objectFit: 'contain'
+                                    }}
+                                />
+                                ) : (
+                                <div className="text-center text-muted">
+                                    <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                    <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5z"/>
+                                    </svg>
+                                    <div className="mt-2">Paystub #{stubNumber}</div>
+                                </div>
+                                )}
+                            </div>
+
+                            {/* Paystub Details */}
+                            <div className="p-3">
+                                <h6 className="mb-2 fw-semibold">Paystub #{stubNumber}</h6>
+                                <div className="small text-muted">
+                                <div>Period: {formatDate(periodStart)} – {formatDate(periodEnd)}</div>
+                                <div>Pay Date: {formatDate(payDate)}</div>
+                                {state.generalInfo.checkNumber > 0 && (
+                                    <div>Check #: {state.generalInfo.checkNumber + i}</div>
+                                )}
+                                </div>
+                            </div>
+                            </div>
+                        );
+                        })}
+                    </div>
+                    </div>
+                )}
+                </div>
             </div>
 
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
