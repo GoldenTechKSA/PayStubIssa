@@ -85,380 +85,398 @@ const PaystubPreview = () => {
             <p className="text-info mb-4" style={{ fontSize: "1.5rem", marginTop: "2rem", fontWeight: 500, background: "#f8f9fa", borderRadius: "0.5rem", padding: "1rem 1.5rem", border: "1px solid #d1e7fd", boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
                 Please review all the information below. If everything is correct, click <strong>Continue to Preview & Payment</strong> to see your paystub before finalizing.
             </p>
-            {/* Company Info */}
-            <table className="company-info-table m-3">
-            <thead>
-                <tr>
-                <th colSpan={2} className="text-start py-3">
-                    <a 
-                    className="company-info-link" 
-                    tabIndex={0} 
-                    onClick={e => onCompanyInfoClick(e)} 
-                    href="/appBody"
-                    >
-                    Company Information
-                    </a>
-                </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                <td>
-                    <strong>Company Name</strong><br />
-                    {state.companyInfo.companyName}
-                </td>
-                {state.companyInfo.companyEIN && (
-                    <td>
-                    <strong>Company EIN</strong><br />
-                    {maskEIN(state.companyInfo.companyEIN)}
+            <div className="d-flex flex-column flex-md-row gap-4 p-4" style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            {/* Left Card: Company Info */}
+            <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
+                <table className="company-info-table w-100">
+                <thead>
+                    <tr>
+                    <th colSpan={2} className="text-start pb-3">
+                        <a 
+                        className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
+                        tabIndex={0} 
+                        onClick={e => onCompanyInfoClick(e)} 
+                        href="/appBody"
+                        style={{ color: '#2563eb' }}
+                        >
+                        Company Information
+                        </a>
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Company Name</strong>
+                        {state.companyInfo.companyName}
                     </td>
-                )}
-                </tr>
-                <tr>
-                <td>
-                    <strong>Company Address</strong><br />
-                    {`${state.companyInfo.companyAddress1}${state.companyInfo.companyAddress2 ? `, ${state.companyInfo.companyAddress2}` : ''}`}
-                </td>
-                <td>
-                    <strong>City</strong><br />
-                    {state.companyInfo.companyCity}
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <strong>State</strong><br />
-                    {state.companyInfo.companyState}
-                </td>
-                <td>
-                    <strong>Zip code</strong><br />
-                    {state.companyInfo.companyZipCode}
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <strong>Company Phone</strong><br />
-                    {state.companyInfo.companyPhone}
-                </td>
-                <td>
-                    <strong>Company Email</strong><br />
-                    {state.companyInfo.companyEmail}
-                </td>
-                </tr>
-                {state.companyInfo.companyLogo && (
-                <tr>
-                    <td colSpan={2}>
-                    <strong>Company Logo</strong><br />
-                    <div className="mt-2">
+                    {state.companyInfo.companyEIN && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Company EIN</strong>
+                        {maskEIN(state.companyInfo.companyEIN)}
+                        </td>
+                    )}
+                    </tr>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Company Address</strong>
+                        {`${state.companyInfo.companyAddress1}${state.companyInfo.companyAddress2 ? `, ${state.companyInfo.companyAddress2}` : ''}`}
+                    </td>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">City</strong>
+                        {state.companyInfo.companyCity}
+                    </td>
+                    </tr>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">State</strong>
+                        {state.companyInfo.companyState}
+                    </td>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Zip code</strong>
+                        {state.companyInfo.companyZipCode}
+                    </td>
+                    </tr>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Company Phone</strong>
+                        {state.companyInfo.companyPhone}
+                    </td>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Company Email</strong>
+                        {state.companyInfo.companyEmail}
+                    </td>
+                    </tr>
+                    {state.companyInfo.companyLogo && (
+                    <tr>
+                        <td colSpan={2} className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-2">Company Logo</strong>
                         <img 
-                        src={state.companyInfo.companyLogo} 
-                        alt="Company Logo Preview" 
-                        style={{ 
+                            src={state.companyInfo.companyLogo} 
+                            alt="Company Logo Preview" 
+                            style={{ 
                             maxWidth: "120px", 
                             maxHeight: "60px", 
                             borderRadius: "6px", 
-                            border: "1px solid #eee" 
-                        }}
+                            border: "1px solid #e5e7eb" 
+                            }}
                         />
-                    </div>
-                    </td>
-                </tr>
-                )}
-            </tbody>
-            </table>
-
-            {/* Employee Info */}
-            <table className="employee-info-table m-3">
-            <thead>
-                <tr>
-                <th colSpan={2} className="text-start py-3">
-                    <a 
-                    className="company-info-link" 
-                    tabIndex={0} 
-                    onClick={e => onEmployeeInfoClick(e)} 
-                    href="/employee-info"
-                    >
-                    Employee Information
-                    </a>
-                </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                <td>
-                    <strong>First Name</strong><br />
-                    {state.employeeInfo.employeeFirstName}
-                </td>
-                {state.employeeInfo.employeeMiddleInitial && (
-                    <td>
-                    <strong>Middle Initial</strong><br />
-                    {state.employeeInfo.employeeMiddleInitial}
-                    </td>
-                )}
-                </tr>
-                <tr>
-                <td>
-                    <strong>Last Name</strong><br />
-                    {state.employeeInfo.employeeLastName}
-                </td>
-                <td>
-                    <strong>Address</strong><br />
-                    {`${state.employeeInfo.employeeAddress1}${state.employeeInfo.employeeAddress2 ? `, ${state.employeeInfo.employeeAddress2}` : ''}`}
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <strong>City</strong><br />
-                    {state.employeeInfo.employeeCity}
-                </td>
-                <td>
-                    <strong>State</strong><br />
-                    {state.employeeInfo.employeeState}
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <strong>Zip code</strong><br />
-                    {state.employeeInfo.employeeZipCode}
-                </td>
-                {state.employeeInfo.employeePhone && (
-                    <td>
-                    <strong>Phone Number</strong><br />
-                    {state.employeeInfo.employeePhone}
-                    </td>
-                )}
-                </tr>
-                <tr>
-                {state.employeeInfo.employeeSSN && (
-                    <td>
-                    <strong>Employee SSN</strong><br />
-                    {maskSSN(state.employeeInfo.employeeSSN)}
-                    </td>
-                )}
-                {state.employeeInfo.employeeEmail && (
-                    <td>
-                    <strong>Employee Email</strong><br />
-                    {state.employeeInfo.employeeEmail}
-                    </td>
-                )}
-                </tr>
-                <tr>
-                {state.employeeInfo.employeeID && (
-                    <td>
-                    <strong>Employee ID</strong><br />
-                    {state.employeeInfo.employeeID}
-                    </td>
-                )}
-                <td>
-                    <strong>Filing Status</strong><br />
-                    {state.employeeInfo.employeeMarriedStatus}
-                </td>
-                </tr>
-            </tbody>
-            </table>
-            {/* Income Info */}
-            <table className="income-info-table m-3">
-            <thead>
-                <tr>
-                <th colSpan={2} className="text-start py-3">
-                    <a 
-                    className="company-info-link" 
-                    tabIndex={0} 
-                    onClick={e => onIncomeDetailsClick(e)} 
-                    href="/income-details"
-                    >
-                    Income Details
-                    </a>
-                </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                <td>
-                    <strong>Earned Wages (Hourly or Salary)</strong><br />
-                    {state.incomeDetails.wageType}
-                </td>
-                {state.incomeDetails.wageType === "Salary" && state.incomeDetails.annualSalary > 0 && (
-                    <td>
-                    <strong>Annual Income Amount $</strong><br />
-                    {formatCurrency(state.incomeDetails.annualSalary)}
-                    </td>
-                )}
-                </tr>
-
-                {IsHourlyWages() && (
-                <>
-                    <tr>
-                    <td>
-                        <strong>Regular Pay Rate</strong><br />
-                        {formatCurrency(state.incomeDetails.hourlyRate)}
-                    </td>
-                    <td>
-                        <strong>Regular Pay Hours</strong><br />
-                        {state.incomeDetails.hoursWorked}
-                    </td>
-                    </tr>
-                    <tr>
-                    {state.incomeDetails.overtimeRate > 0 && (
-                        <td>
-                        <strong>Overtime Rate</strong><br />
-                        {formatCurrency(state.incomeDetails.overtimeRate)}
                         </td>
+                    </tr>
                     )}
-                    {state.incomeDetails.overtimeHours > 0 && (
-                        <td>
-                        <strong>Overtime Hours</strong><br />
-                        {state.incomeDetails.overtimeHours}
+                </tbody>
+                </table>
+            </div>
+
+            {/* Right Card: Employee Info */}
+            <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
+                <table className="employee-info-table w-100">
+                <thead>
+                    <tr>
+                    <th colSpan={2} className="text-start pb-3">
+                        <a 
+                        className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
+                        tabIndex={0} 
+                        onClick={e => onEmployeeInfoClick(e)} 
+                        href="/employee-info"
+                        style={{ color: '#2563eb' }}
+                        >
+                        Employee Information
+                        </a>
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">First Name</strong>
+                        {state.employeeInfo.employeeFirstName}
+                    </td>
+                    {state.employeeInfo.employeeMiddleInitial && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Middle Initial</strong>
+                        {state.employeeInfo.employeeMiddleInitial}
                         </td>
                     )}
                     </tr>
                     <tr>
-                    {state.incomeDetails.bonusAmount > 0 && (
-                        <td>
-                        <strong>Bonus Amount</strong><br />
-                        {formatCurrency(state.incomeDetails.bonusAmount)}
-                        </td>
-                    )}
-                    {state.incomeDetails.deduction401k > 0 && (
-                        <td>
-                        <strong>401k Benefit Rate (%)</strong><br />
-                        {formatPercentage(state.incomeDetails.deduction401k)}
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Last Name</strong>
+                        {state.employeeInfo.employeeLastName}
+                    </td>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Address</strong>
+                        {`${state.employeeInfo.employeeAddress1}${state.employeeInfo.employeeAddress2 ? `, ${state.employeeInfo.employeeAddress2}` : ''}`}
+                    </td>
+                    </tr>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">City</strong>
+                        {state.employeeInfo.employeeCity}
+                    </td>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">State</strong>
+                        {state.employeeInfo.employeeState}
+                    </td>
+                    </tr>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Zip code</strong>
+                        {state.employeeInfo.employeeZipCode}
+                    </td>
+                    {state.employeeInfo.employeePhone && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Phone Number</strong>
+                        {state.employeeInfo.employeePhone}
                         </td>
                     )}
                     </tr>
-                </>
-                )}
+                    <tr>
+                    {state.employeeInfo.employeeSSN && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Employee SSN</strong>
+                        {maskSSN(state.employeeInfo.employeeSSN)}
+                        </td>
+                    )}
+                    {state.employeeInfo.employeeEmail && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Employee Email</strong>
+                        {state.employeeInfo.employeeEmail}
+                        </td>
+                    )}
+                    </tr>
+                    <tr>
+                    {state.employeeInfo.employeeID && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Employee ID</strong>
+                        {state.employeeInfo.employeeID}
+                        </td>
+                    )}
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Filing Status</strong>
+                        {state.employeeInfo.employeeMarriedStatus}
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            </div>
 
-                <tr>
-                {state.incomeDetails.medicalDeduction > 0 && (
-                    <td>
-                    <strong>Medical Coverage Amount</strong><br />
-                    {formatCurrency(state.incomeDetails.medicalDeduction)}
+            <div className="d-flex flex-column flex-md-row gap-4 p-4" style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            {/* Left Card: Income Details */}
+            <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
+                <table className="income-info-table w-100">
+                <thead>
+                    <tr>
+                    <th colSpan={2} className="text-start pb-3">
+                        <a 
+                        className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
+                        tabIndex={0} 
+                        onClick={e => onIncomeDetailsClick(e)} 
+                        href="/income-details"
+                        style={{ color: '#2563eb' }}
+                        >
+                        Income Details
+                        </a>
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Earned Wages (Hourly or Salary)</strong>
+                        {state.incomeDetails.wageType}
                     </td>
-                )}
-                {state.incomeDetails.dentalDeduction > 0 && (
-                    <td>
-                    <strong>Dental Coverage Amount</strong><br />
-                    {formatCurrency(state.incomeDetails.dentalDeduction)}
+                    {state.incomeDetails.wageType === "Salary" && state.incomeDetails.annualSalary > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Annual Income Amount $</strong>
+                        {formatCurrency(state.incomeDetails.annualSalary)}
+                        </td>
+                    )}
+                    </tr>
+
+                    {IsHourlyWages() && (
+                    <>
+                        <tr>
+                        <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Regular Pay Rate</strong>
+                            {formatCurrency(state.incomeDetails.hourlyRate)}
+                        </td>
+                        <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Regular Pay Hours</strong>
+                            {state.incomeDetails.hoursWorked}
+                        </td>
+                        </tr>
+                        <tr>
+                        {state.incomeDetails.overtimeRate > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Overtime Rate</strong>
+                            {formatCurrency(state.incomeDetails.overtimeRate)}
+                            </td>
+                        )}
+                        {state.incomeDetails.overtimeHours > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Overtime Hours</strong>
+                            {state.incomeDetails.overtimeHours}
+                            </td>
+                        )}
+                        </tr>
+                        <tr>
+                        {state.incomeDetails.bonusAmount > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">Bonus Amount</strong>
+                            {formatCurrency(state.incomeDetails.bonusAmount)}
+                            </td>
+                        )}
+                        {state.incomeDetails.deduction401k > 0 && (
+                            <td className="py-2">
+                            <strong className="d-block text-muted fw-normal mb-1">401k Benefit Rate (%)</strong>
+                            {formatPercentage(state.incomeDetails.deduction401k)}
+                            </td>
+                        )}
+                        </tr>
+                    </>
+                    )}
+
+                    <tr>
+                    {state.incomeDetails.medicalDeduction > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Medical Coverage Amount</strong>
+                        {formatCurrency(state.incomeDetails.medicalDeduction)}
+                        </td>
+                    )}
+                    {state.incomeDetails.dentalDeduction > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Dental Coverage Amount</strong>
+                        {formatCurrency(state.incomeDetails.dentalDeduction)}
+                        </td>
+                    )}
+                    </tr>
+                    <tr>
+                    {state.incomeDetails.visionDeduction > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Vision Coverage Amount</strong>
+                        {formatCurrency(state.incomeDetails.visionDeduction)}
+                        </td>
+                    )}
+                    {state.incomeDetails.otherDeduction > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Other Deductions</strong>
+                        {formatCurrency(state.incomeDetails.otherDeduction)}
+                        </td>
+                    )}
+                    </tr>
+                    <tr>
+                    {state.incomeDetails.unionDues > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Union Dues Rate (%)</strong>
+                        {formatPercentage(state.incomeDetails.unionDues)}
+                        </td>
+                    )}
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Pay Period Type</strong>
+                        {state.incomeDetails.periodType}
                     </td>
-                )}
-                </tr>
-                <tr>
-                {state.incomeDetails.visionDeduction > 0 && (
-                    <td>
-                    <strong>Vision Coverage Amount</strong><br />
-                    {formatCurrency(state.incomeDetails.visionDeduction)}
+                    </tr>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Pay Period Start Date</strong>
+                        {state.incomeDetails.periodStartDate}
                     </td>
-                )}
-                {state.incomeDetails.otherDeduction > 0 && (
-                    <td>
-                    <strong>Other Deductions</strong><br />
-                    {formatCurrency(state.incomeDetails.otherDeduction)}
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Pay Period End Date</strong>
+                        {state.incomeDetails.periodEndDate}
                     </td>
-                )}
-                </tr>
-                <tr>
-                {state.incomeDetails.unionDues > 0 && (
-                    <td>
-                    <strong>Union Dues Rate (%)</strong><br />
-                    {formatPercentage(state.incomeDetails.unionDues)}
+                    </tr>
+                    <tr>
+                    <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Pay Period Date</strong>
+                        {state.incomeDetails.periodPayDate}
                     </td>
-                )}
-                <td>
-                    <strong>Pay Period Type</strong><br />
-                    {state.incomeDetails.periodType}
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <strong>Pay Period Start Date</strong><br />
-                    {state.incomeDetails.periodStartDate}
-                </td>
-                <td>
-                    <strong>Pay Period End Date</strong><br />
-                    {state.incomeDetails.periodEndDate}
-                </td>
-                </tr>
-                <tr>
-                <td>
-                    <strong>Pay Period Date</strong><br />
-                    {state.incomeDetails.periodPayDate}
-                </td>
-                <td></td> {/* Placeholder to maintain 2-column structure */}
-                </tr>
-            </tbody>
-            </table>
-            {/* General Info */}
-            <table className="general-info-table m-3">
-            <thead>
-                <tr>
-                <th colSpan={2} className="text-start py-3">
-                    <a 
-                    className="company-info-link" 
-                    tabIndex={0} 
-                    onClick={e => onGeneralInfoClick(e)} 
-                    href="/general-info"
-                    >
-                    General Information
-                    </a>
-                </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                {state.generalInfo.employmentType && (
-                    <td>
-                    <strong>Employment Type</strong><br />
-                    {state.generalInfo.employmentType}
-                    </td>
-                )}
-                {state.generalInfo.paymentMethod && (
-                    <td>
-                    <strong>Payment Method</strong><br />
-                    {state.generalInfo.paymentMethod}
-                    </td>
-                )}
-                </tr>
-                <tr>
-                {state.generalInfo.paymentFrequency && (
-                    <td>
-                    <strong>How often you get paid?</strong><br />
-                    {state.generalInfo.paymentFrequency}
-                    </td>
-                )}
-                {state.generalInfo.payStubCount > 0 && (
-                    <td>
-                    <strong>Number of paystubs requested</strong><br />
-                    {state.generalInfo.payStubCount}
-                    </td>
-                )}
-                </tr>
-                <tr>
-                {state.generalInfo.payStubNumber > 0 && (
-                    <td>
-                    <strong>Paystub number or id</strong><br />
-                    {state.generalInfo.payStubNumber}
-                    </td>
-                )}
-                {state.generalInfo.checkNumber > 0 && (
-                    <td>
-                    <strong>Starting check number</strong><br />
-                    {state.generalInfo.checkNumber}
-                    </td>
-                )}
-                </tr>
-                {state.generalInfo.extraNotes && (
-                <tr>
-                    <td colSpan={2}>
-                    <strong>Additional notes or reference</strong><br />
-                    {state.generalInfo.extraNotes}
-                    </td>
-                </tr>
-                )}
-            </tbody>
-            </table>            
+                    <td></td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+
+            {/* Right Card: General Information */}
+            <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
+                <table className="general-info-table w-100">
+                <thead>
+                    <tr>
+                    <th colSpan={2} className="text-start pb-3">
+                        <a 
+                        className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
+                        tabIndex={0} 
+                        onClick={e => onGeneralInfoClick(e)} 
+                        href="/general-info"
+                        style={{ color: '#2563eb' }}
+                        >
+                        General Information
+                        </a>
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    {state.generalInfo.employmentType && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Employment Type</strong>
+                        {state.generalInfo.employmentType}
+                        </td>
+                    )}
+                    {state.generalInfo.paymentMethod && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Payment Method</strong>
+                        {state.generalInfo.paymentMethod}
+                        </td>
+                    )}
+                    </tr>
+                    <tr>
+                    {state.generalInfo.paymentFrequency && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">How often you get paid?</strong>
+                        {state.generalInfo.paymentFrequency}
+                        </td>
+                    )}
+                    {state.generalInfo.payStubCount > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Number of paystubs requested</strong>
+                        {state.generalInfo.payStubCount}
+                        </td>
+                    )}
+                    </tr>
+                    <tr>
+                    {state.generalInfo.payStubNumber > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Paystub number or id</strong>
+                        {state.generalInfo.payStubNumber}
+                        </td>
+                    )}
+                    {state.generalInfo.checkNumber > 0 && (
+                        <td className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Starting check number</strong>
+                        {state.generalInfo.checkNumber}
+                        </td>
+                    )}
+                    </tr>
+                    {state.generalInfo.extraNotes && (
+                    <tr>
+                        <td colSpan={2} className="py-2">
+                        <strong className="d-block text-muted fw-normal mb-1">Additional notes or reference</strong>
+                        {state.generalInfo.extraNotes}
+                        </td>
+                    </tr>
+                    )}
+                </tbody>
+                </table>
+            </div>
+            </div>
+
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
                 <strong>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
             </p>
+
 { devMode && (
             <table>
             <tbody>
