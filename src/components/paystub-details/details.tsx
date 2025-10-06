@@ -49,341 +49,413 @@ const PaystubPreview = () => {
         return state.incomeDetails.wageType === "Hourly";
     };
 
+    // Helper function to mask EIN
+    const maskEIN = (ein) => {
+    if (!ein) return '';
+    // Remove any non-digit characters
+    const digitsOnly = ein.replace(/\D/g, '');
+    // Ensure we have at least 2 digits for the prefix
+    if (digitsOnly.length < 2) {
+        return digitsOnly;
+    }
+    // Take first 2 digits and mask the rest with 'x'
+    const prefix = digitsOnly.substring(0, 2);
+    const maskedPart = 'x'.repeat(Math.max(0, digitsOnly.length - 2));
+    return `${prefix}-${maskedPart}`;
+    };
+
+    // Helper function to mask SSN
+    const maskSSN = (ssn) => {
+    if (!ssn) return '';
+    // Remove any non-digit characters
+    const digitsOnly = ssn.replace(/\D/g, '');
+    // Ensure we have at least 5 digits to show the last 4
+    if (digitsOnly.length < 5) {
+        // If we have less than 5 digits, show what we have (though this is unusual)
+        return 'XXX-XX-' + digitsOnly;
+    }
+    
+    // Take the last 4 digits and mask the first 5 with 'X'
+    const lastFour = digitsOnly.slice(-4);
+    return `XXX-XX-${lastFour}`;
+    };    
+
     return (
         <Container>
             <p className="text-info mb-4" style={{ fontSize: "1.5rem", marginTop: "2rem", fontWeight: 500, background: "#f8f9fa", borderRadius: "0.5rem", padding: "1rem 1.5rem", border: "1px solid #d1e7fd", boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
                 Please review all the information below. If everything is correct, click <strong>Continue to Preview & Payment</strong> to see your paystub before finalizing.
             </p>
             {/* Company Info */}
-            <Form className="m-3">
-                <Row className="mt-3 mb-4">
-                    <a className="company-info-link" tabIndex={0} onClick={e=> onCompanyInfoClick(e)} href="/appBody">
-                        Company Information
+            <table className="company-info-table m-3">
+            <thead>
+                <tr>
+                <th colSpan={2} className="text-start py-3">
+                    <a 
+                    className="company-info-link" 
+                    tabIndex={0} 
+                    onClick={e => onCompanyInfoClick(e)} 
+                    href="/appBody"
+                    >
+                    Company Information
                     </a>
-                </Row>
-                <Row xs={1} md={2} className="g-2">
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Company Name</Form.Label>
-                            <Form.Control readOnly defaultValue={state.companyInfo.companyName} />
-                        </Form.Group>
-                    </Col>
-                    { state.companyInfo.companyEIN && (<Col>
-                        <Form.Group>
-                            <Form.Label>Company EIN</Form.Label>
-                            <Form.Control readOnly defaultValue={state.companyInfo.companyEIN} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Company Address</Form.Label>
-                            <Form.Control readOnly defaultValue={`${state.companyInfo.companyAddress1}, ${state.companyInfo.companyAddress2}`} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>City</Form.Label>
-                            <Form.Control readOnly defaultValue={state.companyInfo.companyCity} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>State</Form.Label>
-                            <Form.Control readOnly defaultValue={state.companyInfo.companyState} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Zip code</Form.Label>
-                            <Form.Control readOnly defaultValue={state.companyInfo.companyZipCode} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Company Phone</Form.Label>
-                            <Form.Control readOnly defaultValue={state.companyInfo.companyPhone} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Company Email</Form.Label>
-                            <Form.Control readOnly defaultValue={state.companyInfo.companyEmail} />
-                        </Form.Group>
-                    </Col>
-                    { state.companyInfo.companyLogo && (<Col>
-                        <Form.Group as={Col} controlId="companyLogo">
-                            <Form.Label>Company Logo</Form.Label>
-                            <div className="mt-2">
-                                <img src={state.companyInfo.companyLogo} alt="Company Logo Preview" style={{ maxWidth: "120px", maxHeight: "60px", borderRadius: "6px", border: "1px solid #eee" }}/>
-                            </div>
-                        </Form.Group>
-                    </Col>
-                    )}
-                </Row>
-            </Form>
+                </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td>
+                    <strong>Company Name</strong><br />
+                    {state.companyInfo.companyName}
+                </td>
+                {state.companyInfo.companyEIN && (
+                    <td>
+                    <strong>Company EIN</strong><br />
+                    {maskEIN(state.companyInfo.companyEIN)}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                <td>
+                    <strong>Company Address</strong><br />
+                    {`${state.companyInfo.companyAddress1}${state.companyInfo.companyAddress2 ? `, ${state.companyInfo.companyAddress2}` : ''}`}
+                </td>
+                <td>
+                    <strong>City</strong><br />
+                    {state.companyInfo.companyCity}
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <strong>State</strong><br />
+                    {state.companyInfo.companyState}
+                </td>
+                <td>
+                    <strong>Zip code</strong><br />
+                    {state.companyInfo.companyZipCode}
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <strong>Company Phone</strong><br />
+                    {state.companyInfo.companyPhone}
+                </td>
+                <td>
+                    <strong>Company Email</strong><br />
+                    {state.companyInfo.companyEmail}
+                </td>
+                </tr>
+                {state.companyInfo.companyLogo && (
+                <tr>
+                    <td colSpan={2}>
+                    <strong>Company Logo</strong><br />
+                    <div className="mt-2">
+                        <img 
+                        src={state.companyInfo.companyLogo} 
+                        alt="Company Logo Preview" 
+                        style={{ 
+                            maxWidth: "120px", 
+                            maxHeight: "60px", 
+                            borderRadius: "6px", 
+                            border: "1px solid #eee" 
+                        }}
+                        />
+                    </div>
+                    </td>
+                </tr>
+                )}
+            </tbody>
+            </table>
+
             {/* Employee Info */}
-            <Form className="m-3">
-                <a className="company-info-link" tabIndex={0} onClick={e=> onEmployeeInfoClick(e)} href="/employee-info">
+            <table className="employee-info-table m-3">
+            <thead>
+                <tr>
+                <th colSpan={2} className="text-start py-3">
+                    <a 
+                    className="company-info-link" 
+                    tabIndex={0} 
+                    onClick={e => onEmployeeInfoClick(e)} 
+                    href="/employee-info"
+                    >
                     Employee Information
-                </a>
-                <Row xs={1} md={2} className="g-2">
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>First Name</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeFirstName} />
-                        </Form.Group>
-                    </Col>
-                    { state.employeeInfo.employeeMiddleInitial && (<Col>
-                        <Form.Group>
-                            <Form.Label>Middle Initial</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeMiddleInitial} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Last Name</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeLastName} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Address</Form.Label>
-                            <Form.Control readOnly defaultValue={`${state.employeeInfo.employeeAddress1}, ${state.employeeInfo.employeeAddress2}`} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>City</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeCity} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>State</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeState} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Zip code</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeZipCode} />
-                        </Form.Group>
-                    </Col>
-                    {state.employeeInfo.employeePhone && (<Col>
-                        <Form.Group>
-                            <Form.Label>Phone Number</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeePhone} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.employeeInfo.employeeSSN && (<Col>
-                        <Form.Group>
-                            <Form.Label>Employee SSN</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeSSN} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.employeeInfo.employeeEmail && (<Col>
-                        <Form.Group>
-                            <Form.Label>Employee Email</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeEmail} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.employeeInfo.employeeID && (<Col>
-                        <Form.Group>
-                            <Form.Label>Employee ID</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeID} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Filing Status</Form.Label>
-                            <Form.Control readOnly defaultValue={state.employeeInfo.employeeMarriedStatus} />
-                        </Form.Group>
-                    </Col>
-                </Row>
-            </Form>
+                    </a>
+                </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td>
+                    <strong>First Name</strong><br />
+                    {state.employeeInfo.employeeFirstName}
+                </td>
+                {state.employeeInfo.employeeMiddleInitial && (
+                    <td>
+                    <strong>Middle Initial</strong><br />
+                    {state.employeeInfo.employeeMiddleInitial}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                <td>
+                    <strong>Last Name</strong><br />
+                    {state.employeeInfo.employeeLastName}
+                </td>
+                <td>
+                    <strong>Address</strong><br />
+                    {`${state.employeeInfo.employeeAddress1}${state.employeeInfo.employeeAddress2 ? `, ${state.employeeInfo.employeeAddress2}` : ''}`}
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <strong>City</strong><br />
+                    {state.employeeInfo.employeeCity}
+                </td>
+                <td>
+                    <strong>State</strong><br />
+                    {state.employeeInfo.employeeState}
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <strong>Zip code</strong><br />
+                    {state.employeeInfo.employeeZipCode}
+                </td>
+                {state.employeeInfo.employeePhone && (
+                    <td>
+                    <strong>Phone Number</strong><br />
+                    {state.employeeInfo.employeePhone}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                {state.employeeInfo.employeeSSN && (
+                    <td>
+                    <strong>Employee SSN</strong><br />
+                    {maskSSN(state.employeeInfo.employeeSSN)}
+                    </td>
+                )}
+                {state.employeeInfo.employeeEmail && (
+                    <td>
+                    <strong>Employee Email</strong><br />
+                    {state.employeeInfo.employeeEmail}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                {state.employeeInfo.employeeID && (
+                    <td>
+                    <strong>Employee ID</strong><br />
+                    {state.employeeInfo.employeeID}
+                    </td>
+                )}
+                <td>
+                    <strong>Filing Status</strong><br />
+                    {state.employeeInfo.employeeMarriedStatus}
+                </td>
+                </tr>
+            </tbody>
+            </table>
             {/* Income Info */}
-            <Form className="m-3">
-                <a className="company-info-link" tabIndex={0} onClick={e=> onIncomeDetailsClick(e)} href="/income-details">Income Details</a>
-                <Row xs={1} md={2} className="g-2">
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Earned Wages (Hourly or Salary)</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.wageType} />
-                        </Form.Group>
-                    </Col>
-                    {state.incomeDetails.wageType === "Salary" && state.incomeDetails.annualSalary > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Annual Income Amount $</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.annualSalary)} />
-                        </Form.Group>
-                    </Col>
+            <table className="income-info-table m-3">
+            <thead>
+                <tr>
+                <th colSpan={2} className="text-start py-3">
+                    <a 
+                    className="company-info-link" 
+                    tabIndex={0} 
+                    onClick={e => onIncomeDetailsClick(e)} 
+                    href="/income-details"
+                    >
+                    Income Details
+                    </a>
+                </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td>
+                    <strong>Earned Wages (Hourly or Salary)</strong><br />
+                    {state.incomeDetails.wageType}
+                </td>
+                {state.incomeDetails.wageType === "Salary" && state.incomeDetails.annualSalary > 0 && (
+                    <td>
+                    <strong>Annual Income Amount $</strong><br />
+                    {formatCurrency(state.incomeDetails.annualSalary)}
+                    </td>
+                )}
+                </tr>
+
+                {IsHourlyWages() && (
+                <>
+                    <tr>
+                    <td>
+                        <strong>Regular Pay Rate</strong><br />
+                        {formatCurrency(state.incomeDetails.hourlyRate)}
+                    </td>
+                    <td>
+                        <strong>Regular Pay Hours</strong><br />
+                        {state.incomeDetails.hoursWorked}
+                    </td>
+                    </tr>
+                    <tr>
+                    {state.incomeDetails.overtimeRate > 0 && (
+                        <td>
+                        <strong>Overtime Rate</strong><br />
+                        {formatCurrency(state.incomeDetails.overtimeRate)}
+                        </td>
                     )}
-                    { IsHourlyWages() && (<Col>
-                        <Form.Group>
-                            <Form.Label>Regular Pay Rate</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.hourlyRate)} />
-                        </Form.Group>
-                    </Col>
+                    {state.incomeDetails.overtimeHours > 0 && (
+                        <td>
+                        <strong>Overtime Hours</strong><br />
+                        {state.incomeDetails.overtimeHours}
+                        </td>
                     )}
-                    {IsHourlyWages() &&  (<Col>
-                        <Form.Group>
-                            <Form.Label>Regular Pay Hours</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.hoursWorked} />
-                        </Form.Group>
-                    </Col>
+                    </tr>
+                    <tr>
+                    {state.incomeDetails.bonusAmount > 0 && (
+                        <td>
+                        <strong>Bonus Amount</strong><br />
+                        {formatCurrency(state.incomeDetails.bonusAmount)}
+                        </td>
                     )}
-                    {IsHourlyWages() && state.incomeDetails.overtimeRate > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Overtime Rate</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.overtimeRate)} />
-                        </Form.Group>
-                    </Col>
+                    {state.incomeDetails.deduction401k > 0 && (
+                        <td>
+                        <strong>401k Benefit Rate (%)</strong><br />
+                        {formatPercentage(state.incomeDetails.deduction401k)}
+                        </td>
                     )}
-                    {IsHourlyWages() && state.incomeDetails.overtimeHours > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Overtime Hours</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.overtimeHours} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {IsHourlyWages() && state.incomeDetails.bonusAmount > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Bonus Amount</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.bonusAmount)} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {IsHourlyWages() && state.incomeDetails.deduction401k > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>401k Benefit Rate (%)</Form.Label>
-                            <Form.Control readOnly defaultValue={formatPercentage(state.incomeDetails.deduction401k)} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.incomeDetails.medicalDeduction > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Medical Coverage Amount</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.medicalDeduction)} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.incomeDetails.dentalDeduction > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Dental Coverage Amount</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.dentalDeduction)} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.incomeDetails.visionDeduction > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Vision Coverage Amount</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.visionDeduction)} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.incomeDetails.otherDeduction > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Other Deductions</Form.Label>
-                            <Form.Control readOnly defaultValue={formatCurrency(state.incomeDetails.otherDeduction)} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.incomeDetails.unionDues > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Union Dues Rate (%)</Form.Label>
-                            <Form.Control readOnly defaultValue={formatPercentage(state.incomeDetails.unionDues)} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Pay Period Type</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.periodType} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Pay Period Start Date</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.periodStartDate} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Pay Period End Date</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.periodEndDate} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group>
-                            <Form.Label>Pay Period Date</Form.Label>
-                            <Form.Control readOnly defaultValue={state.incomeDetails.periodPayDate} />
-                        </Form.Group>
-                    </Col>
-                </Row>
-            </Form>
+                    </tr>
+                </>
+                )}
+
+                <tr>
+                {state.incomeDetails.medicalDeduction > 0 && (
+                    <td>
+                    <strong>Medical Coverage Amount</strong><br />
+                    {formatCurrency(state.incomeDetails.medicalDeduction)}
+                    </td>
+                )}
+                {state.incomeDetails.dentalDeduction > 0 && (
+                    <td>
+                    <strong>Dental Coverage Amount</strong><br />
+                    {formatCurrency(state.incomeDetails.dentalDeduction)}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                {state.incomeDetails.visionDeduction > 0 && (
+                    <td>
+                    <strong>Vision Coverage Amount</strong><br />
+                    {formatCurrency(state.incomeDetails.visionDeduction)}
+                    </td>
+                )}
+                {state.incomeDetails.otherDeduction > 0 && (
+                    <td>
+                    <strong>Other Deductions</strong><br />
+                    {formatCurrency(state.incomeDetails.otherDeduction)}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                {state.incomeDetails.unionDues > 0 && (
+                    <td>
+                    <strong>Union Dues Rate (%)</strong><br />
+                    {formatPercentage(state.incomeDetails.unionDues)}
+                    </td>
+                )}
+                <td>
+                    <strong>Pay Period Type</strong><br />
+                    {state.incomeDetails.periodType}
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <strong>Pay Period Start Date</strong><br />
+                    {state.incomeDetails.periodStartDate}
+                </td>
+                <td>
+                    <strong>Pay Period End Date</strong><br />
+                    {state.incomeDetails.periodEndDate}
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <strong>Pay Period Date</strong><br />
+                    {state.incomeDetails.periodPayDate}
+                </td>
+                <td></td> {/* Placeholder to maintain 2-column structure */}
+                </tr>
+            </tbody>
+            </table>
             {/* General Info */}
-            <Form className="m-3">
-                <a className="company-info-link" tabIndex={0} onClick={e=> onGeneralInfoClick(e)} href="/general-info">
+            <table className="general-info-table m-3">
+            <thead>
+                <tr>
+                <th colSpan={2} className="text-start py-3">
+                    <a 
+                    className="company-info-link" 
+                    tabIndex={0} 
+                    onClick={e => onGeneralInfoClick(e)} 
+                    href="/general-info"
+                    >
                     General Information
-                </a>
-                <Row xs={1} md={2} className="g-2">
-                    {state.generalInfo.employmentType && (<Col>
-                        <Form.Group>
-                            <Form.Label>Employment Type</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.employmentType} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.generalInfo.paymentMethod && (<Col>
-                        <Form.Group>
-                            <Form.Label>Payment Method</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.paymentMethod} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                     {state.generalInfo.paymentFrequency && (<Col>
-                        <Form.Group>
-                            <Form.Label>How often you get paid?</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.paymentFrequency} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.generalInfo.payStubCount > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Number of paystubs requested</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.payStubCount} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.generalInfo.payStubNumber > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Paystub number or id</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.payStubNumber} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.generalInfo.checkNumber > 0 && (<Col>
-                        <Form.Group>
-                            <Form.Label>Starting check number</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.checkNumber} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                    {state.generalInfo.extraNotes && (<Col>
-                        <Form.Group>
-                            <Form.Label>Additional notes or reference</Form.Label>
-                            <Form.Control readOnly defaultValue={state.generalInfo.extraNotes} />
-                        </Form.Group>
-                    </Col>
-                    )}
-                </Row>
-            </Form>
+                    </a>
+                </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                {state.generalInfo.employmentType && (
+                    <td>
+                    <strong>Employment Type</strong><br />
+                    {state.generalInfo.employmentType}
+                    </td>
+                )}
+                {state.generalInfo.paymentMethod && (
+                    <td>
+                    <strong>Payment Method</strong><br />
+                    {state.generalInfo.paymentMethod}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                {state.generalInfo.paymentFrequency && (
+                    <td>
+                    <strong>How often you get paid?</strong><br />
+                    {state.generalInfo.paymentFrequency}
+                    </td>
+                )}
+                {state.generalInfo.payStubCount > 0 && (
+                    <td>
+                    <strong>Number of paystubs requested</strong><br />
+                    {state.generalInfo.payStubCount}
+                    </td>
+                )}
+                </tr>
+                <tr>
+                {state.generalInfo.payStubNumber > 0 && (
+                    <td>
+                    <strong>Paystub number or id</strong><br />
+                    {state.generalInfo.payStubNumber}
+                    </td>
+                )}
+                {state.generalInfo.checkNumber > 0 && (
+                    <td>
+                    <strong>Starting check number</strong><br />
+                    {state.generalInfo.checkNumber}
+                    </td>
+                )}
+                </tr>
+                {state.generalInfo.extraNotes && (
+                <tr>
+                    <td colSpan={2}>
+                    <strong>Additional notes or reference</strong><br />
+                    {state.generalInfo.extraNotes}
+                    </td>
+                </tr>
+                )}
+            </tbody>
+            </table>            
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
                 <strong>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
             </p>
