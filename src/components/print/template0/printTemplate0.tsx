@@ -10,6 +10,9 @@ import { medicalDeductionAsStringYTD, dentalDeductionAsStringYTD, deduction401kA
 import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../../../types/tax-rate-types";
 
 import "./printTemplate0.css";
+import PaystubHeader0 from "./paystub-header0";
+import EmployeePayInfo0 from "./employee-pay-info0";
+import PaystubFooter0 from "./paystub-footer0";
 
 type Earnings = { description: string; rate: string | number; hours: string | number; current: string | number; ytd: string | number; };
 type Deductions = { description: string; current: string | number; ytd: string | number; };
@@ -28,24 +31,21 @@ const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } )
   const generalInfo: GeneralInfo = useSelector<PayStubDetails, GeneralInfo>(state => state.generalInfo);   // General Info
 
   const {companyName, companyAddress1, companyAddress2, companyCity, companyState, companyZipCode, companyPhone, companyEmail, companyEIN,} = companyInfo;
-  console.log("PrintTemplate0 companyInfo:", companyInfo);
   const {employeeFirstName, employeeMiddleInitial, employeeLastName, employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode, employeePhone, employeeEmail, employeeSSN, employeeID, employeeMarriedStatus, } = employeeInfo;
-  console.log("PrintTemplate0 employeeInfo:", employeeInfo);
-  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, 
-    periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
-  console.log("PrintTemplate0 incomeDetails:", incomeDetails);
+  const {annualSalary, wageType, hourlyRate, hoursWorked, overtimeRate, overtimeHours, bonusAmount, deduction401k, medicalDeduction, dentalDeduction, visionDeduction, otherDeduction, periodStartDate, periodEndDate, periodPayDate, periodType, } = incomeDetails;
   const {employmentType, paymentMethod, paymentFrequency, payStubNumber, payStubCount, checkNumber, extraNotes} = generalInfo;
-  console.log("PrintTemplate0 generalInfo:", generalInfo);
   const employeeFullName = [employeeFirstName, employeeMiddleInitial, employeeLastName].filter(Boolean).join(" ");
   const employeeFullAddress = [employeeAddress1, employeeAddress2, employeeCity, employeeState, employeeZipCode].filter(Boolean).join(", ");
   const companyFullAddress = [companyAddress1, companyAddress2, companyCity, companyState, companyZipCode].filter(Boolean).join(", ");
   const payPeriod = `${formatDate(periodStartDate)} - ${formatDate(periodEndDate)}`;
-console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
   const specialNotes = !!extraNotes;
   const directDeposit = !!paymentMethod;
   const emptyCell = "-";
 
-//  console.log("PrintTemplate0 Rendered with canPrintStub:", canPrintStub);
+  console.log("PrintTemplate0 generalInfo:", generalInfo);
+  console.log("PrintTemplate0 employeeInfo:", employeeInfo);
+  console.log("PrintTemplate0 companyInfo:", companyInfo);
+  console.log("PrintTemplate0 incomeDetails:", incomeDetails);
 
   const FedIncomeTaxYTD = "NotReady";
   const totalDeductionsCurrent = "CurrentNotReady";
@@ -64,16 +64,14 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
     { description: "Other", current:  `${otherDeductionAsString(otherDeduction as number)}`, ytd: `${otherDeductionAsStringYTD(otherDeduction as number)}` }
   ];
 
-    const input: TaxCalculationInput = {
+  const input: TaxCalculationInput = {
     grossIncome: 100000,
     filingStatus: 'single',
     stateCode: 'WA',
     additionalDeductions: 5000
   };
 
-  const {federalIncomeTaxAsString, socialSecurityTaxAsString, medicareTaxAsString, stateIncomeTaxAsString, federalIncomeTaxAsStringYTD, socialSecurityTaxAsStringYTD, medicareTaxAsStringYTD,
-     stateIncomeTaxAsStringYTD, totalTaxesAsString } = taxesAsString2025(input);
-
+  const {federalIncomeTaxAsString, socialSecurityTaxAsString, medicareTaxAsString, stateIncomeTaxAsString, federalIncomeTaxAsStringYTD, socialSecurityTaxAsStringYTD, medicareTaxAsStringYTD, stateIncomeTaxAsStringYTD, totalTaxesAsString } = taxesAsString2025(input);
 
   const taxes: Taxes[] = [
     { description: "Federal Income Tax", current: `${federalIncomeTaxAsString}`, ytd: `${federalIncomeTaxAsStringYTD}` },
@@ -81,6 +79,27 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
     { description: "Medicare Tax", current: `${medicareTaxAsString}`, ytd: `${medicareTaxAsStringYTD}` },
     { description: "State Income Tax", current: `${stateIncomeTaxAsString}`, ytd: `${stateIncomeTaxAsStringYTD}` }
   ];
+
+  function renderCompanyLogo(companyLogo) {
+    // Check if companyLogo is empty (null, undefined, empty string, or falsy)
+    if (!companyLogo) {
+      return (
+        <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
+          <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
+          <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="16" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">LOGO</text>
+        </svg>
+      );
+    }
+    
+    // Return the provided company logo (assuming it's a valid JSX element or image URL)
+    // If companyLogo is a string (URL), render as <img>
+    if (typeof companyLogo === 'string') {
+      return ( <img src={companyLogo} alt="Company Logo" style={{ marginRight: "16px" }} width="60" height="60"/> );
+    }
+    
+    // If it's already a JSX element, return it as-is
+    return companyLogo;
+  }
 
   return (
     <div className="paystub-print-root0">
@@ -125,7 +144,7 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
         }
         `}
       </style>
-      <div className="paystub-print-paper0" style={{ position: "relative" }}>
+      <div id="pdf-content" className="paystub-print-paper0" style={{ position: "relative" }}>
         {/* Watermark Overlay */}
         {!canPrintStub && ( <div className="paystub-watermark0" style={{display: "grid", gridTemplateRows: "repeat(3, 1fr)", gridTemplateColumns: "repeat(2, 1fr)", gap: "0", pointerEvents: "none" }}>
             {Array.from({ length: 8 }).map((_, i) => (
@@ -136,95 +155,15 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
           </div>
         )}
         {/* Header */}
-        <div className="paystub-header0">
-          {/* Company Logo */}
-          <svg width="60" height="60" viewBox="0 0 60 60" style={{ marginRight: "16px" }} aria-label="Company SVG Logo" className="paystub-company-svglogo0">
-            <circle cx="30" cy="30" r="28" fill="#2563eb" stroke="#1e293b" strokeWidth="2" />
-            <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="16" fill="#fff" fontFamily="Arial, sans-serif" fontWeight="bold">LOGO</text>
-          </svg>
-          <div className="paystub-header-company0">
-            <div className="paystub-header-company-name0">{companyName || "Company Name"}</div>
-            <div className="paystub-header-company-address0">{companyFullAddress}</div>
-            <div className="paystub-header-company-contact0">{companyPhone}{companyPhone && companyEmail ? " | " : ""}{companyEmail}</div>
-            <div className="paystub-header-company-ein0">{companyEIN && `EIN: ${companyEIN}`}</div>
-          </div>
-          <div className="">
-            <div className="paystub-header-title0">PAY STUB</div>
-            <div className="paystub-header-company-ein0">{payStubNumber && `Paystub ID: ${payStubNumber}`}</div>
-          </div>
-        </div>
+        <PaystubHeader0 companyInfo={{ companyLogo: companyInfo.companyLogo }} companyName={companyName} companyFullAddress={companyFullAddress}
+          companyPhone={companyPhone} companyEmail={companyEmail} companyEIN={companyEIN} payStubNumber={payStubNumber} renderCompanyLogo={renderCompanyLogo}
+        />
+
 
         {/* Employee & Pay Info */}
-        <div className="paystub-info-row0">
-          <div className="paystub-info-col0">
-            <table>
-              <tbody>
-                <tr>
-                  <td className="paystub-label0">Employee Name:</td>
-                  <td>{employeeFullName}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Employee ID:</td>
-                  <td>{employeeID}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">SSN:</td>
-                  <td>{employeeSSN}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Address:</td>
-                  <td>{employeeFullAddress}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Phone:</td>
-                  <td>{employeePhone}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Email:</td>
-                  <td>{employeeEmail}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Filing Status:</td>
-                  <td>{employeeMarriedStatus}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="paystub-info-col0">
-            <table>
-              <tbody>
-                <tr>
-                  <td className="paystub-label0">Pay Date:</td>
-                  <td>{formatDate(periodPayDate)}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Check #:</td>
-                  <td>{checkNumber}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Pay Period:</td>
-                  <td>{payPeriod}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Pay Method:</td>
-                  <td>{paymentMethod}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Employment Type:</td>
-                  <td>{employmentType}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Pay Frequency:</td>
-                  <td>{paymentFrequency}</td>
-                </tr>
-                <tr>
-                  <td className="paystub-label0">Annual Salary:</td>
-                  <td>{annualSalary}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <EmployeePayInfo0 employeeFullName={employeeFullName} employeeID={employeeID} employeeSSN={employeeSSN} employeeFullAddress={employeeFullAddress} employeePhone={employeePhone} employeeEmail={employeeEmail} employeeMarriedStatus={employeeMarriedStatus} 
+        periodPayDate={periodPayDate} checkNumber={checkNumber} payPeriod={payPeriod} paymentMethod={paymentMethod} employmentType={employmentType} paymentFrequency={paymentFrequency} annualSalary={annualSalary} formatDate={formatDate}
+        />
 
         {/* Earnings, Deductions, Taxes Table */}
         <table className="paystub-main-table0">
@@ -303,14 +242,8 @@ console.log("PrintTemplate0 Rendered with employeeFullName:", employeeFullName);
             <span>{paymentMethod}</span>
           </div>)}
         </div>
-
         {/* Footer */}
-        <div className="paystub-footer0 paystub-footer-bottom0">
-          <div>This is not a check. For questions about your pay stub, please contact HR.</div>
-          <div>{companyName} - Confidential</div>
-          <div>{companyFullAddress}</div> 
-          {specialNotes && (<div>{extraNotes}</div>)} 
-        </div>
+        <PaystubFooter0 companyName={companyName} companyFullAddress={companyFullAddress} specialNotes={true} extraNotes={extraNotes}/>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ body {
 .navLinkClass {
   text-decoration: none;
   color: gainsboro;
-  padding: 0 10px;
+  padding: 0 20px;
 }
 
 .label_fontsize {
@@ -52,6 +52,13 @@ body {
     justify-content: center;
 }
 
+.template-carousel-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+}
+
 .hero-block .carousel,
 .hero-block .carousel-inner,
 .hero-block .carousel-item {
@@ -90,7 +97,7 @@ body {
 
 .carousel-item {
   background-color: rgba(201, 193, 193, 0.4);
-  height: 50vh;
+  height: 57vh;
 }
 
 .carousel-control-next-icon {
@@ -120,7 +127,7 @@ body {
 .footer {
   font-size: 1rem;
   flex-shrink: 0;
-  background: #fff;
+  background: #C3CEBD;
   border-top: 1px solid #eee;
   padding: 0.75rem 2rem;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
@@ -225,7 +232,7 @@ body {
   align-items: center;
   justify-content: space-evenly;
   padding: 1rem;
-  background-color: #dbdfd7;
+  background-color: #C6D9DB;
   box-shadow: 0 5px 10px rgba(65, 64, 77, 0.1434);
   overflow: hidden;
 }
@@ -297,9 +304,9 @@ body {
 }
 
 .carousel-title {
-  font-size: 2.1rem;
-  font-weight: 700;
-  color: #e9b816;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1b1503;
 }
 
 /* Container for horizontal scroll with outer border */
@@ -307,12 +314,19 @@ body {
   width: 100%;
   overflow-x: auto;
   border-radius: 8px;     /* Rounded corners for outer border */
+  overflow-y: hidden;      /* Optional: hide vertical scroll */
+  white-space: nowrap;     /* Alternative method (not needed if using flex) */
+  /* Optional: hide scrollbar if desired (but keep functionality) */
+  -ms-overflow-style: -ms-autohiding-scrollbar; /* IE/Edge */
+  scrollbar-width: thin;   /* Firefox */
 }
 
-/* Grid layout - collapsed borders between cells */
 .horizontal-grid {
   display: flex;
-  border-collapse: collapse; /* Ensures borders merge */
+  flex-wrap: nowrap;       /* Prevent wrapping to next line */
+  gap: 8px;                /* Optional: space between cells */
+  padding: 8px;            /* Optional: some breathing room */
+  min-width: fit-content;  /* Ensures container expands beyond viewport if needed */
 }
 
 /* Remove right border from the last cell to avoid double outer border */
@@ -343,7 +357,7 @@ body {
 .horizontal-grid-outer {
     background: linear-gradient(1800deg, #cbd9e5 60%, #eaf4fe 100%);
     box-shadow: 6px 6px 6px rgba(44, 62, 80, 0.10);
-    padding: 2.5rem 1.5rem;
+    padding: 1rem 1rem;
     width: 100%;
     margin-left: auto;
     margin-right: auto;}
@@ -357,12 +371,14 @@ body {
 .grid-cell {
     width: 120px;         /* or your desired width */
     height: 120px;        /* or your desired height */
+    flex: 0 0 auto;          /* do not grow or shrink, use intrinsic width */
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     border-radius: 0.4rem; /* optional: for rounded corners */
     background: #f7fafc;    /* optional: for a soft background */
+    outline: none;
 }
 .grid-cell img {
     width: 100%;
@@ -386,21 +402,20 @@ h1, h2 { color: #2a7ae2; }
 .steps, .features { margin-bottom: 2rem; }
 .step-title { font-weight: bold; margin-top: 1.5rem; }
 ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
-.check { color: #2ecc40; margin-right: 0.5em; }
+.check { color: #000000; margin-right: 0.5em; }
 .feature-list { list-style: none; padding: 0; }
 .feature-list li { margin-bottom: 0.5em; }
-.feature-check { color: #2ecc40; margin-right: 0.5em; }
 .support { margin-top: 2rem; font-style: italic; }
 .highlight { background: #eaf6ff; padding: 1em; border-radius: 8px; }
 
 .howitworks-container {
-  background: #f5f8fa;
+  background: #6A7C5F;
   padding: 2rem 4rem;
   max-width: 100%;
 }
 .howitworks-title {
   text-align: center;
-  color: #2873d4;
+  color: #EAE1D6;
   margin-bottom: 2rem;
   font-weight: 700;
 }
@@ -432,7 +447,7 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
   flex-wrap: wrap;
 }
 .howitworks-cell {
-  background: #fff;
+  background: #487984;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(42, 122, 226, 0.08);
   padding: 1.5rem 1rem;
@@ -440,7 +455,7 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
   max-width: 300px;
   cursor: pointer;
   transition: box-shadow 0.2s, background 0.2s;
-  border: 2px solid #eaf6ff;
+  border: 2px solid #C6D9DB;
   outline: none;
 }
 .howitworks-cell:hover, .howitworks-cell.open {
@@ -451,7 +466,7 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
 .howitworks-step-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2a7ae2;
+  color: #C3CEBD;
   margin-bottom: 0.5rem;
 }
 .howitworks-step-details {
@@ -463,10 +478,9 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
 
 /* Modern NavBar styles */
 .no-print.navbar {
-  background: #7e8797 !important;
-  border-radius: 12px 12px 0 0;
+  background: #487984 !important;
   box-shadow: 0 2px 16px rgba(56, 54, 80, 0.89);
-  padding: 0.5rem 0;
+  padding: 0.5rem 2rem;
 }
 
 .navbar-brand {
@@ -733,4 +747,74 @@ ul { list-style: none; margin: 0.5rem 0 1.5rem 1.5rem; }
     border-bottom: 2px solid #1976d2;
     text-decoration: none;
     outline: none;
+}
+
+.horizontal-grid-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.horizontal-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 10px; /* Adjust spacing between cells as needed */
+  padding: 0 10px;
+  min-height: 100px; /* Set your desired total cell height */
+}
+
+.grid-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px; /* Adjust as needed for your layout */
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.grid-cell:hover {
+  transform: scale(1.10);
+}
+
+.grid-cell.selected {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+/* Image container takes 70% of cell height */
+.image-container {
+  flex: 0 0 70%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Maintains aspect ratio while filling container */
+  display: block;
+}
+
+/* Title container takes 30% of cell height */
+.image-title {
+  flex: 0 0 30%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px; /* 3px padding on all sides as requested */
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 10px; /* Reduced font size */
+  font-weight: 500;
+  text-align: center;
+  overflow: hidden;
+  /* Allow text wrapping instead of single line */
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.2;
 }

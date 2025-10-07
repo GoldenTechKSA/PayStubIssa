@@ -60,7 +60,7 @@ const generalInfo: GeneralInfo = {
     employmentType: "",
     paymentMethod: "",
     paymentFrequency: "",
-    payStubCount: 1,
+    payStubCount: 0,
     payStubNumber: 0,
     extraNotes: "",
     checkNumber: 5001

@@ -1,5 +1,12 @@
 import { FilingStatus } from "types/tax-rate-types";
 
+// Returns the image source path for a given image file name
+export const getImageSrc = (filename: string): string => {
+    const imagePath = `${process.env.PUBLIC_URL}/images/${filename}`; 
+    if (!filename) return "";
+    return imagePath;
+}
+
 export const isValidDate = (dateStr: string): boolean => {
     // Expected format: YYYY-MM-DD (from HTML date input)
     const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
@@ -62,6 +69,15 @@ export const formatCurrency = (amount: number): string => {
     }).format(amount);
 }
 
+// Helper function to format percentage
+export const formatPercentage = (amount: number): string => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'percent',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
+}
+
 export const isValidString = (input: string): boolean => {
 //  * Validates if a string contains only alphanumeric characters and spaces
 //  * @param input - The string to validate
@@ -81,22 +97,22 @@ export const isValidString = (input: string): boolean => {
   return alphaNumericSpaceRegex.test(input);
 };
 
-export function isValidStubCount(input: string | number): boolean {
-    // First check if it's a valid number format
+export const isValidStubCount = (input: string | number): boolean => {
+    // Handle string inputs
     if (typeof input === 'string') {
-        const regex = /^\d+$/; // Matches one or more digits
-        if (!regex.test(input)) {
-            return false;
-        }
+        // Must contain only digits, no leading zeros (except for "0" which we'll reject anyway)
+        const regex = /^[1-9]\d*$/; // Matches positive integers without leading zeros
+        if (!regex.test(input)) return false;
+        const num = Number(input);
+        return num >= 1 && num <= 12;
     }
-    
-    // Convert to number for range validation
-    const num = typeof input === 'number' ? input : Number(input);
-    
-    // Check if it's a valid number and within range
-    return Number.isInteger(num) && num > 0 && num <= 12;
+    // Handle number inputs
+    if (typeof input === 'number') {
+        // Must be an integer (no decimal part) and within range
+        return Number.isInteger(input) && input >= 1 && input <= 12;
+    }
+    return false;
 }
-
 
 interface TaxResult {
     taxAmount: number;

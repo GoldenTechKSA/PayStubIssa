@@ -241,10 +241,10 @@ const FAQPage = () => {
 
       <div className="step-title">Why Choose Us?</div>
       <ul className="feature-list">
-        <li><span className="feature-check">&#9989;</span>IRS &amp; SBA-Compliant – Our pay stubs meet official standards for income verification.</li>
-        <li><span className="feature-check">&#9989;</span>Instant Generation – Create, customize, and download pay stubs in minutes.</li>
-        <li><span className="feature-check">&#9989;</span>Secure &amp; Reliable – Bank-level encryption protects your sensitive data.</li>
-        <li><span className="feature-check">&#9989;</span>Accepted Everywhere – Valid for loans, rentals, mortgages, and employment verification.</li>
+        <li><span className="check">&#10004;</span>IRS &amp; SBA-Compliant – Our pay stubs meet official standards for income verification.</li>
+        <li><span className="check">&#10004;</span>Instant Generation – Create, customize, and download pay stubs in minutes.</li>
+        <li><span className="check">&#10004;</span>Secure &amp; Reliable – Bank-level encryption protects your sensitive data.</li>
+        <li><span className="check">&#10004;</span>Accepted Everywhere – Valid for loans, rentals, mortgages, and employment verification.</li>
       </ul>
       <p>
         We’re committed to simplifying payroll for business owners while ensuring accuracy and professionalism in every document.

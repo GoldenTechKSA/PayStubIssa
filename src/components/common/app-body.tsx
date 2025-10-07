@@ -10,16 +10,19 @@ const AppBody = () => {
     const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [gridCells, setGridCells] = useState<ImageFileData[]>([]);
     const [index, setIndex] = useState<number>(templateId);
+    const imageDataPath = `${process.env.PUBLIC_URL}/images/image-names.json`; 
 
     // Fetch image names from the images folder
     useEffect(() => {
-        fetch("/images/image-names.json")
+        fetch(imageDataPath)   /* Use this line for local testing: `${process.env.PUBLIC_URL}/images/image-names.json` */
             .then(res => res.json())
             .then((imageData: ImageFileData[]) => {
                 setGridCells(
                     imageData.map((data, i) => ({
                         id: i,
+                        imageFile: data.imageFile,
                         imageName: data.imageName,
+                        title: data.title,
                         description: data.description,
                     }))
                 )})
@@ -34,7 +37,7 @@ const AppBody = () => {
     return (
         <>
             { nextTabStep === "template" && <div className="horizontal-grid-outer"><HorizontalGrid updateIndex={updateIndex} currentIndex={index} cells={gridCells}/></div> }
-            <div className="jumbotron"><Container className="no-print"><InputTabs id={index}/></Container></div>
+            <div className="jumbotron"><Container className="no-print"><InputTabs id={index} images={gridCells}/></Container></div>
         </>
     );
 }

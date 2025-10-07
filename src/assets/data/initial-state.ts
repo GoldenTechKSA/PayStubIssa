@@ -8,20 +8,20 @@ const appSettings: AppSettings = {
 
 const companyInfo: CompanyInfo = {
     companyName: "Issa Company Limited",
-    companyEIN: "83-1122334",
+    companyEIN: "",
     companyAddress1: "1234 Main St.",
-    companyAddress2: "Suite 500",
+    companyAddress2: "",
     companyCity: "Seattle",
     companyState: "Washington",
     companyZipCode: "98000",
-    companyLogo: "CompanyLogoHere",
+    companyLogo: "",
     companyPhone: "(888) 555-1212",
     companyEmail: "IssaCompany@email.com"
 };
 
 const employeeInfo: EmployeeInfo = {
     employeeFirstName: "John",
-    employeeMiddleInitial: "M",
+    employeeMiddleInitial: "",
     employeeLastName: "Doe",
     employeeAddress1: "1234 Employee Street",
     employeeAddress2: "Apt. 2399",
@@ -57,11 +57,11 @@ const incomeDetails: IncomeDetails = {
 };
 
 const generalInfo: GeneralInfo = {
-    employmentType: "Contractor",
+    employmentType: "Employee",
     paymentMethod: "Direct Deposit",
-    paymentFrequency: "Bi-Weekly",
-    payStubCount: 3,
-    payStubNumber: 1,
+    paymentFrequency: "",
+    payStubCount: 0,
+    payStubNumber: 0,
     extraNotes: "This is an example note for the pay stub.",
     checkNumber: 5001
 };
