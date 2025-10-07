@@ -472,12 +472,13 @@ const PaystubPreview = () => {
                     </tbody>
                     </table>
                     {/* Customize Paystub Cards – only if payStubCount > 1 */}
-                    {state.generalInfo.payStubCount > 1 && (<a className="mt-4 d-inline-block fs-6" tabIndex={0} onClick={customizeMultiplePaystub} href="/appBody" style={{ color: '#2563eb' }}>Customize your Paystub Templates</a>)}
+                    {state.generalInfo.payStubCount > 1 && (<a className="mt-4 d-inline-block fs-6" tabIndex={0} onClick={customizeMultiplePaystub} href="/appBody" style={{ color: '#2563eb' }}>
+                    Customize your <strong><span style={{ color: '#ff0000ff' }}>{state.generalInfo.payStubCount}</span></strong> paystub templates</a>)}
                 </div>
             </div>
 
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
-                <strong>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
+                <strong style={{ color: '#ff0000ff' }}>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
             </p>
 
             {/* Print Pay Stub Button*/}
