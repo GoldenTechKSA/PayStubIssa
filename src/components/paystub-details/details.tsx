@@ -91,12 +91,12 @@ const PaystubPreview = () => {
                 Please review all the information below. If everything is correct, click <strong>Continue to Preview & Payment</strong> to see your paystub before finalizing.
             </p>
             {/* Left Card: Company Info, Right Card: Employee Info */}
-            <div className="d-flex flex-column flex-md-row gap-4 p-4" style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            <div className="d-flex flex-column flex-md-row gap-4 p x-4" style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 <div className="flex-fill border rounded-3 shadow-sm bg-white" style={{ padding: '24px' }}>
                     <table className="company-info-table w-100">
                     <thead>
                         <tr>
-                        <th colSpan={2} className="text-start pb-3">
+                        <th colSpan={2} className="text-start">
                             <a 
                             className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
                             tabIndex={0} 
@@ -176,7 +176,7 @@ const PaystubPreview = () => {
                     <table className="employee-info-table w-100">
                     <thead>
                         <tr>
-                        <th colSpan={2} className="text-start pb-3">
+                        <th colSpan={2} className="text-start">
                             <a 
                             className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
                             tabIndex={0} 
@@ -271,7 +271,7 @@ const PaystubPreview = () => {
                     <table className="income-info-table w-100">
                     <thead>
                         <tr>
-                        <th colSpan={2} className="text-start pb-3">
+                        <th colSpan={2} className="text-start">
                             <a 
                             className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
                             tabIndex={0} 
@@ -405,7 +405,7 @@ const PaystubPreview = () => {
                     <table className="general-info-table w-100">
                     <thead>
                         <tr>
-                        <th colSpan={2} className="text-start pb-3">
+                        <th colSpan={2} className="text-start">
                             <a 
                             className="company-info-link d-inline-block fs-5 fw-semibold text-decoration-none"
                             tabIndex={0} 
@@ -471,20 +471,11 @@ const PaystubPreview = () => {
                         )}
                     </tbody>
                     </table>
+                    {/* Customize Paystub Cards – only if payStubCount > 1 */}
+                    {state.generalInfo.payStubCount > 1 && (<a className="mt-4 d-inline-block fs-6" tabIndex={0} onClick={customizeMultiplePaystub} href="/appBody" style={{ color: '#2563eb' }}>Customize your Paystub Templates</a>)}
                 </div>
             </div>
 
-            <div className="m-3">
-                {/* Paystub Cards – only if payStubCount > 1 */}
-                {state.generalInfo.payStubCount > 1 && (
-                    <div className="mt-2">
-                        <h5 className="mb-3 fw-semibold">Your Paystubs</h5>
-                        <Button className="mb-4" onClick={customizeMultiplePaystub} type="button">
-                            Customize your Paystub Templates
-                        </Button>
-                    </div>
-                )}
-            </div>
             <p className="mb-4" style={{fontSize: "1.1rem", color: "#444", background: "#fff3cd", border: "1px solid #ffeeba", borderRadius: "0.5rem", padding: "1rem 1.5rem", marginTop: "1.5rem"}}>
                 <strong>Note:</strong> Clicking <strong>Continue to Preview & Payment</strong> will show you a sample paystub with some details hidden or omitted. After you complete your payment, the page will update to display the full paystub template you selected, including all your entered details.
             </p>
