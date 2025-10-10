@@ -57,9 +57,9 @@ const App: React.FC= () => {
                         <Route element={<div><h1>Page Not Found!</h1></div>} />
                     </Routes>
                 </main>
-                <section>
+                <footer>
                     <AppFooter />
-                </section>
+                </footer>
             </div>
         </TelemetryErrorBoundary>
     </TelemetryProvider>
