@@ -1,9 +1,11 @@
 /**
  * Template Manager Component
- * Main component that orchestrates template selection and rendering
+ * Main component with print-ready paystub display
  */
 
 import React, { useState, useEffect } from 'react';
+import { Alert, AlertDescription } from './ui/alert';
+import { Button } from './ui/button';
 import { TemplateConfiguration, TemplateMetadata } from '../types/templatetypes';
 import { templateLoader } from '../utils/templateloader';
 import TemplateSelector from './templateselector';
@@ -16,7 +18,7 @@ interface TemplateManagerProps {
 }
 
 export const TemplateManager: React.FC<TemplateManagerProps> = ({
-  initialTemplateId = 'paystub_regular',
+  initialTemplateId = 'classic_blue',
   allowEditing = false,
   onDataChange
 }) => {
@@ -26,7 +28,7 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showJSON, setShowJSON] = useState<boolean>(false);
-  const [viewMode, setViewMode] = useState<'select' | 'preview'>('select');
+  const [viewMode, setViewMode] = useState<'select' | 'preview'>('preview');
 
   useEffect(() => {
     loadTemplates();
@@ -58,7 +60,6 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
       const config = await templateLoader.loadTemplate(templateId);
       
       if (config) {
-        // Validate template
         const validation = templateLoader.validateTemplate(config);
         if (!validation.valid) {
           setError(`Template validation failed: ${validation.errors.join(', ')}`);
@@ -89,6 +90,10 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const exportConfig = () => {
     if (currentConfig) {
       const dataStr = JSON.stringify(currentConfig, null, 2);
@@ -116,19 +121,19 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
   if (error) {
     return (
       <div className="p-8">
-        <div className="bg-red-50 border-red-200">
-          <div>
+        <Alert className="bg-red-50 border-red-200">
+          <AlertDescription>
             <strong>Error:</strong> {error}
-          </div>
-        </div>
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Navigation Bar */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+      {/* Navigation Bar - Hidden when printing */}
+      <div className="bg-white shadow-sm border-b sticky top-0 z-10 no-print">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -155,8 +160,18 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
               </button>
             </div>
             
-            {currentConfig && (
+            {currentConfig && viewMode === 'preview' && (
               <div className="flex items-center space-x-2">
+                <Button
+                  onClick={handlePrint}
+                  variant="default"
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
+                  Print Paystub
+                </Button>
                 <button
                   onClick={() => setShowJSON(!showJSON)}
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm"
@@ -165,7 +180,7 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
                 </button>
                 <button
                   onClick={exportConfig}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm"
                 >
                   Export Config
                 </button>
@@ -175,9 +190,9 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
         </div>
       </div>
 
-      {/* JSON View */}
+      {/* JSON View - Hidden when printing */}
       {showJSON && currentConfig && (
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 no-print">
           <div className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto max-h-96">
             <pre className="text-xs">{JSON.stringify(currentConfig, null, 2)}</pre>
           </div>
@@ -185,9 +200,9 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
       )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className={viewMode === 'preview' ? 'print-container' : 'max-w-7xl mx-auto px-4'}>
         {viewMode === 'select' ? (
-          <div>
+          <div className="no-print">
             <h2 className="text-2xl font-bold mb-4">Choose a Template</h2>
             <TemplateSelector
               templates={templates}
@@ -198,7 +213,14 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
           </div>
         ) : currentConfig ? (
           <div>
-            <div className="flex items-center justify-between mb-4">
+            {/* Print-friendly header - Only shows when printing */}
+            <div className="print-only mb-4 text-center">
+              <h1 className="text-2xl font-bold text-gray-800">Employee Pay Statement</h1>
+              <p className="text-sm text-gray-600">Confidential Document</p>
+            </div>
+
+            {/* Template info - Hidden when printing */}
+            <div className="flex items-center justify-between mb-4 no-print">
               <div>
                 <h2 className="text-2xl font-bold">{currentConfig.metadata.title}</h2>
                 <p className="text-gray-600 text-sm">{currentConfig.metadata.description}</p>
@@ -207,20 +229,112 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
                 <span className="text-sm text-blue-600 font-medium">Editable Mode</span>
               )}
             </div>
+
+            {/* The actual paystub */}
             <TemplateRenderer
               config={currentConfig}
               editable={allowEditing}
               onChange={handleDataChange}
             />
-          </div>
-        ) : (
-          <div className="bg-yellow-50 border-yellow-200">
-            <div>
-              Please select a template to preview
+
+            {/* Print footer - Only shows when printing */}
+            <div className="print-only mt-8 pt-4 border-t text-center text-xs text-gray-500">
+              <p>This document is computer-generated and does not require a signature.</p>
+              <p>For questions, please contact your payroll department.</p>
             </div>
           </div>
+        ) : (
+          <Alert className="bg-yellow-50 border-yellow-200 no-print">
+            <AlertDescription>
+              Please select a template to preview
+            </AlertDescription>
+          </Alert>
         )}
       </div>
+
+      {/* Print-specific styles */}
+      <style>{`
+        @media print {
+          /* Hide everything except the paystub */
+          body * {
+            visibility: hidden;
+          }
+          
+          .print-container,
+          .print-container * {
+            visibility: visible;
+          }
+          
+          .print-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            padding: 0.5in;
+          }
+          
+          /* Hide non-print elements */
+          .no-print {
+            display: none !important;
+          }
+          
+          /* Show print-only elements */
+          .print-only {
+            display: block !important;
+          }
+          
+          /* Remove shadows and backgrounds for print */
+          * {
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+          
+          /* Ensure proper page breaks */
+          .print-container {
+            page-break-after: auto;
+            page-break-inside: avoid;
+          }
+          
+          /* Optimize colors for print */
+          body {
+            background: white !important;
+          }
+          
+          /* Remove rounded corners for cleaner print */
+          * {
+            border-radius: 0 !important;
+          }
+          
+          /* Ensure borders print properly */
+          .border {
+            border: 1px solid #000 !important;
+          }
+          
+          .border-2 {
+            border: 2px solid #000 !important;
+          }
+          
+          /* Ensure text is black for better print quality */
+          h1, h2, h3, h4, h5, h6, p, span, div, td, th {
+            color: #000 !important;
+          }
+          
+          /* Preserve background colors that are important */
+          .bg-blue-50,
+          .bg-blue-100,
+          .bg-gray-50 {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+        
+        /* Hide print-only content on screen */
+        @media screen {
+          .print-only {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
