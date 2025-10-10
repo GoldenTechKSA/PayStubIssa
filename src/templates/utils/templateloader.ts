@@ -32,9 +32,7 @@ export class TemplateLoader {
       // For demo purposes, we'll return a mock registry
       const response = await fetch('/config/template-registry.json');
       this.registry = await response.json();
-      if (!this.registry) {
-        throw new Error('Invalid registry format');
-      }
+      if (!this.registry) { throw new Error('Invalid registry format');}
       return this.registry;
     } catch (error) {
       console.error('Failed to load template registry:', error);

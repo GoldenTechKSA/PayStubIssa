@@ -22,6 +22,7 @@ import * as templateIds from "../../constants/template-ids";
 import { CompanyInfo, AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings } from "../../redux/actions";
 import { telemetryService } from "../../services/telemetry-service";
+import TemplateManager from "templates/components/templatemanager";
 
 const Preview = ({store}) => {
     const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
@@ -90,6 +91,15 @@ const Preview = ({store}) => {
         < div className= "" >
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
                 <Col md={7}>
+                    <main>
+                        <TemplateManager initialTemplateId="paystub_regular" allowEditing={false}
+                            onDataChange={(data) => {
+                            console.log('Paystub data updated:', data);
+                            }}
+                        />
+                    </main>
+
+                    { canPrint && (<div>
                     { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <PrintTemplate0 store={store} canPrintStub={canPrintStub}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_1 && <PrintTemplate1 store={store}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_2 && <PrintTemplate2 store={store}/> }
@@ -104,6 +114,7 @@ const Preview = ({store}) => {
                     { templateId === templateIds.PAYSTUB_TEMPLATE_11 && <PrintTemplate11 store={store}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_12 && <PrintTemplate12 store={store}/> }
                     { templateId === templateIds.PAYSTUB_TEMPLATE_13 && <PrintTemplate13 store={store}/> }
+                    </div> )}
                 </Col>
                 <Col md={{span: 2, offset:1 }}>
                     <Row className="mb-3">

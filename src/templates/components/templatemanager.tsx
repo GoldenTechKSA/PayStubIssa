@@ -16,7 +16,7 @@ interface TemplateManagerProps {
 }
 
 export const TemplateManager: React.FC<TemplateManagerProps> = ({
-  initialTemplateId = 'classic_blue',
+  initialTemplateId = 'paystub_regular',
   allowEditing = false,
   onDataChange
 }) => {

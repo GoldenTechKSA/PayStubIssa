@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-10-07",
+  "templates": [
+    {
+      "template_id": "paystub_regular",
+      "title": "Standard Employee Paystub",
+      "version": "1.0",
+      "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
+      "category": "standard",
+      "thumbnail": "/images/templates/paystub_regular.png",
+      "created_date": "2025-01-01",
+      "last_updated": "2025-10-07",
+      "author": "System"
+    },
+    {
+      "template_id": "paystub_contractor",
+      "title": "Independent Contractor Invoice & Earnings Statement",
+      "version": "1.0",
+      "description": "Designed for 1099 contractors, this template functions as both an invoice for services rendered and an earnings summary. It highlights gross pay without traditional employee tax withholdings, emphasizing it is not a W-2 wage statement.",
+      "category": "modern",
+      "thumbnail": "/images/templates/paystub_contractor.png",
+      "created_date": "2025-01-15",
+      "last_updated": "2025-10-07",
+      "author": "System"
+    }
+  ],
+  "categories": [
+    {
+      "id": "standard",
+      "name": "Standard",
+      "description": "Traditional paystub layouts"
+    },
+    {
+      "id": "modern",
+      "name": "Modern",
+      "description": "Contemporary designs with clean aesthetics"
+    },
+    {
+      "id": "professional",
+      "name": "Professional",
+      "description": "Formal corporate templates"
+    },
+    {
+      "id": "compact",
+      "name": "Compact",
+      "description": "Space-efficient single-page layouts"
+    },
+    {
+      "id": "premium",
+      "name": "Premium",
+      "description": "High-end executive templates"
+    },
+    {
+      "id": "contractor",
+      "name": "Contractor",
+      "description": "Templates for independent contractors"
+    }
+  ]
+}

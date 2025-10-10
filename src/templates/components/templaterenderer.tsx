@@ -173,6 +173,41 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
     }
   };
 
+  // Check if sections should be rendered in 3-column layout
+  const isThreeColumnLayout = () => {
+    const columnSections = config.sections.filter(s => 
+      s.section_id.includes('column') || 
+      (s.section_id === 'left_column' || s.section_id === 'middle_column' || s.section_id === 'right_column')
+    );
+    return columnSections.length === 3;
+  };
+
+  const renderThreeColumnLayout = () => {
+    const leftColumn = config.sections.find(s => s.section_id === 'left_column');
+    const middleColumn = config.sections.find(s => s.section_id === 'middle_column');
+    const rightColumn = config.sections.find(s => s.section_id === 'right_column');
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {leftColumn && (
+          <div className="space-y-2">
+            {renderSection(leftColumn)}
+          </div>
+        )}
+        {middleColumn && (
+          <div className="space-y-2">
+            {renderSection(middleColumn)}
+          </div>
+        )}
+        {rightColumn && (
+          <div className="space-y-2">
+            {renderSection(rightColumn)}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div
       className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto border-2"
@@ -194,11 +229,29 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
         </div>
         {config.sections
           .sort((a, b) => a.order - b.order)
-          .map((section) => (
-            <div key={section.section_id} className="mb-4">
-              {renderSection(section)}
-            </div>
-          ))}
+          .map((section) => {
+            // Skip column sections if we're rendering them in 3-column layout
+            if (isThreeColumnLayout() && 
+                (section.section_id === 'left_column' || 
+                 section.section_id === 'middle_column' || 
+                 section.section_id === 'right_column')) {
+              // Only render the three-column layout once when we hit the first column
+              if (section.section_id === 'left_column') {
+                return (
+                  <div key="three-column-layout" className="mb-4">
+                    {renderThreeColumnLayout()}
+                  </div>
+                );
+              }
+              return null;
+            }
+            
+            return (
+              <div key={section.section_id} className="mb-4">
+                {renderSection(section)}
+              </div>
+            );
+          })}
       </div>
     </div>
   );

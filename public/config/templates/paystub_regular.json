@@ -1,0 +1,318 @@
+{
+  "metadata": {
+    "template_id": "paystub_regular",
+    "title": "Standard Employee Paystub",
+    "version": "1.0",
+    "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
+    "category": "standard"
+  },
+  "sections": [
+    {
+      "section_id": "header",
+      "title": "Company & Employee Information",
+      "order": 1,
+      "layout_type": "grid",
+      "columns": 2,
+      "styling": "bg-blue-50 border-b-2 border-blue-600"
+    },
+    {
+      "section_id": "pay_period",
+      "title": "Pay Period Details",
+      "order": 2,
+      "layout_type": "flex",
+      "styling": "bg-gray-50"
+    },
+    {
+      "section_id": "earnings",
+      "title": "Earnings",
+      "order": 3,
+      "layout_type": "table",
+      "styling": "border border-gray-300"
+    },
+    {
+      "section_id": "deductions",
+      "title": "Deductions",
+      "order": 4,
+      "layout_type": "table",
+      "styling": "border border-gray-300"
+    },
+    {
+      "section_id": "totals",
+      "title": "Summary",
+      "order": 5,
+      "layout_type": "grid",
+      "columns": 2,
+      "styling": "bg-blue-100 font-bold"
+    }
+  ],
+  "fields": [
+    {
+      "field_id": "company_name",
+      "label": "Company Name",
+      "data_type": "string",
+      "position": {
+        "section": "header",
+        "order": 1,
+        "column": 1
+      },
+      "defaultValue": "ABC Corporation",
+      "width": "full",
+      "required": true
+    },
+    {
+      "field_id": "employee_name",
+      "label": "Employee Name",
+      "data_type": "string",
+      "position": {
+        "section": "header",
+        "order": 2,
+        "column": 2
+      },
+      "defaultValue": "John Doe",
+      "width": "full",
+      "required": true
+    },
+    {
+      "field_id": "company_address",
+      "label": "Company Address",
+      "data_type": "string",
+      "position": {
+        "section": "header",
+        "order": 3,
+        "column": 1
+      },
+      "defaultValue": "123 Business St, City, ST 12345",
+      "width": "full"
+    },
+    {
+      "field_id": "employee_id",
+      "label": "Employee ID",
+      "data_type": "string",
+      "position": {
+        "section": "header",
+        "order": 4,
+        "column": 2
+      },
+      "defaultValue": "EMP-001",
+      "width": "full",
+      "required": true
+    },
+    {
+      "field_id": "pay_period_start",
+      "label": "Pay Period Start",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "position": {
+        "section": "pay_period",
+        "order": 1
+      },
+      "defaultValue": "01/01/2025"
+    },
+    {
+      "field_id": "pay_period_end",
+      "label": "Pay Period End",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "position": {
+        "section": "pay_period",
+        "order": 2
+      },
+      "defaultValue": "01/15/2025"
+    },
+    {
+      "field_id": "pay_date",
+      "label": "Pay Date",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "position": {
+        "section": "pay_period",
+        "order": 3
+      },
+      "defaultValue": "01/20/2025"
+    },
+    {
+      "field_id": "regular_hours",
+      "label": "Regular Hours",
+      "data_type": "number",
+      "format": "0.00",
+      "position": {
+        "section": "earnings",
+        "order": 1
+      },
+      "defaultValue": 80,
+      "validation": {
+        "min": 0,
+        "max": 200
+      }
+    },
+    {
+      "field_id": "regular_rate",
+      "label": "Regular Rate",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "earnings",
+        "order": 2
+      },
+      "defaultValue": 25.0
+    },
+    {
+      "field_id": "regular_pay",
+      "label": "Regular Pay",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "earnings",
+        "order": 3
+      },
+      "calculation": "regular_hours * regular_rate",
+      "defaultValue": 2000.0,
+      "editable": false
+    },
+    {
+      "field_id": "overtime_hours",
+      "label": "Overtime Hours",
+      "data_type": "number",
+      "format": "0.00",
+      "position": {
+        "section": "earnings",
+        "order": 4
+      },
+      "defaultValue": 5
+    },
+    {
+      "field_id": "overtime_rate",
+      "label": "Overtime Rate",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "earnings",
+        "order": 5
+      },
+      "defaultValue": 37.5
+    },
+    {
+      "field_id": "overtime_pay",
+      "label": "Overtime Pay",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "earnings",
+        "order": 6
+      },
+      "calculation": "overtime_hours * overtime_rate",
+      "defaultValue": 187.5,
+      "editable": false
+    },
+    {
+      "field_id": "federal_tax",
+      "label": "Federal Tax",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "deductions",
+        "order": 1
+      },
+      "defaultValue": 350.0
+    },
+    {
+      "field_id": "state_tax",
+      "label": "State Tax",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "deductions",
+        "order": 2
+      },
+      "defaultValue": 120.0
+    },
+    {
+      "field_id": "social_security",
+      "label": "Social Security",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "deductions",
+        "order": 3
+      },
+      "defaultValue": 135.63
+    },
+    {
+      "field_id": "medicare",
+      "label": "Medicare",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "deductions",
+        "order": 4
+      },
+      "defaultValue": 31.71
+    },
+    {
+      "field_id": "health_insurance",
+      "label": "Health Insurance",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "deductions",
+        "order": 5
+      },
+      "defaultValue": 150.0
+    },
+    {
+      "field_id": "gross_pay",
+      "label": "Gross Pay",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "totals",
+        "order": 1,
+        "column": 1
+      },
+      "calculation": "regular_pay + overtime_pay",
+      "defaultValue": 2187.5,
+      "editable": false
+    },
+    {
+      "field_id": "total_deductions",
+      "label": "Total Deductions",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "totals",
+        "order": 2,
+        "column": 1
+      },
+      "calculation": "federal_tax + state_tax + social_security + medicare + health_insurance",
+      "defaultValue": 787.34,
+      "editable": false
+    },
+    {
+      "field_id": "net_pay",
+      "label": "Net Pay",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "totals",
+        "order": 3,
+        "column": 2
+      },
+      "calculation": "gross_pay - total_deductions",
+      "defaultValue": 1400.16,
+      "editable": false
+    }
+  ],
+  "styling": {
+    "primaryColor": "#2563eb",
+    "secondaryColor": "#60a5fa",
+    "backgroundColor": "#ffffff",
+    "fontFamily": "Arial, sans-serif",
+    "borderColor": "#d1d5db",
+    "headerBackground": "#eff6ff"
+  },
+  "layout": {
+    "maxWidth": "800px",
+    "padding": "24px",
+    "margin": "auto"
+  }
+}
