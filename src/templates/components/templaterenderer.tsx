@@ -210,19 +210,21 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
 
   return (
     <div
-      className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto border-2"
+      className="bg-white rounded-lg overflow-hidden mx-auto print-paystub"
       style={{
         fontFamily: config.styling.fontFamily,
         backgroundColor: config.styling.backgroundColor,
         borderColor: config.styling.borderColor || '#e5e7eb',
-        maxWidth: config.layout?.maxWidth || '800px',
-        padding: config.layout?.padding || '24px',
-        margin: config.layout?.margin || 'auto'
+        maxWidth: config.layout?.maxWidth || '8.5in',
+        minHeight: '11in',
+        padding: '0.5in',
+        margin: config.layout?.margin || 'auto',
+        border: '1px solid #d1d5db'
       }}
     >
       <div className="space-y-4">
         <div
-          className="text-center text-2xl font-bold mb-6"
+          className="text-center text-2xl font-bold mb-6 print-title"
           style={{ color: config.styling.primaryColor }}
         >
           {config.metadata.title}
@@ -253,6 +255,72 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             );
           })}
       </div>
+
+      {/* Print-specific styles for the paystub */}
+      <style>{`
+        @media print {
+          .print-paystub {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+            border-radius: 0 !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0.5in !important;
+          }
+          
+          .print-title {
+            font-size: 20pt !important;
+            margin-bottom: 20pt !important;
+          }
+          
+          /* Ensure table borders print */
+          table, th, td {
+            border: 1px solid #000 !important;
+          }
+          
+          /* Ensure grid borders print */
+          .border {
+            border: 1px solid #000 !important;
+          }
+          
+          /* Make sure background colors print */
+          .bg-blue-50,
+          .bg-blue-100,
+          .bg-gray-50,
+          .bg-gray-100 {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          /* Font sizes for print */
+          body {
+            font-size: 10pt;
+          }
+          
+          h3 {
+            font-size: 12pt !important;
+          }
+          
+          /* Ensure proper spacing */
+          .space-y-4 > * + * {
+            margin-top: 12pt !important;
+          }
+          
+          /* Column layout for print */
+          .grid {
+            display: grid !important;
+          }
+          
+          .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+          
+          /* Avoid page breaks inside important sections */
+          .border {
+            page-break-inside: avoid;
+          }
+        }
+      `}</style>
     </div>
   );
 };
