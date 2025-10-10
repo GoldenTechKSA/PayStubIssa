@@ -10,7 +10,7 @@ const AppBody = () => {
     const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [gridCells, setGridCells] = useState<ImageFileData[]>([]);
     const [index, setIndex] = useState<number>(templateId);
-    const imageDataPath = `${process.env.PUBLIC_URL}/images/image-names.json`; 
+    const imageDataPath = `${process.env.PUBLIC_URL}/image-names.json`; 
 
     // Fetch image names from the images folder
     useEffect(() => {
