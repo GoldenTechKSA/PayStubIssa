@@ -64,12 +64,12 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
           type={field.data_type === 'number' || field.data_type === 'currency' ? 'number' : 'text'}
           value={value || ''}
           onChange={(e) => handleFieldChange(field.field_id, e.target.value)}
-          className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="form-control form-control-sm"
         />
       );
     }
 
-    return <span>{formattedValue}</span>;
+    return <span className="field-value">{formattedValue}</span>;
   };
 
   const renderTableSection = (section: SectionDefinition) => {
@@ -78,15 +78,15 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
       .sort((a, b) => a.position.order - b.position.order);
 
     return (
-      <div className={`overflow-hidden rounded-lg ${section.styling || ''}`}>
-        <div className="px-4 py-3 bg-gray-100 font-semibold text-sm border-b">
+      <div className={`border rounded ${section.styling || ''}`}>
+        <div className="p-3 bg-light border-bottom fw-semibold small">
           {section.title}
         </div>
-        <div className="divide-y">
+        <div className="list-group list-group-flush">
           {sectionFields.map((field) => (
-            <div key={field.field_id} className="flex justify-between px-4 py-2 hover:bg-gray-50">
-              <span className="text-gray-700">{field.label}</span>
-              <span className="font-medium">{renderField(field, editable)}</span>
+            <div key={field.field_id} className="list-group-item d-flex justify-content-between align-items-center py-2">
+              <span className="text-muted">{field.label}</span>
+              <span className="fw-semibold">{renderField(field, editable)}</span>
             </div>
           ))}
         </div>
@@ -101,14 +101,29 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
 
     const columns = section.columns || 1;
 
+    // Group fields by column
+    const columnFields: FieldDefinition[][] = Array.from({ length: columns }, () => []);
+    sectionFields.forEach(field => {
+      const colIndex = (field.position.column || 1) - 1;
+      if (colIndex >= 0 && colIndex < columns) {
+        columnFields[colIndex].push(field);
+      }
+    });
+
     return (
-      <div className={`p-4 rounded ${section.styling || ''}`}>
-        {section.title && <h3 className="font-semibold mb-3 text-sm uppercase tracking-wide opacity-75">{section.title}</h3>}
-        <div className={`grid gap-4`} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
-          {sectionFields.map((field) => (
-            <div key={field.field_id} className="space-y-1">
-              <div className="text-xs font-medium opacity-75">{field.label}</div>
-              <div className="text-lg font-semibold">{renderField(field, editable)}</div>
+      <div className={`p-3 rounded ${section.styling || ''}`}>
+        {section.title && (
+          <h6 className="section-header mb-3">{section.title}</h6>
+        )}
+        <div className="row">
+          {columnFields.map((fields, colIndex) => (
+            <div key={colIndex} className={`col-md-${12 / columns} column-wrapper`}>
+              {fields.map((field) => (
+                <div key={field.field_id} className="column-field">
+                  <div className="field-label">{field.label}</div>
+                  <div>{renderField(field, editable)}</div>
+                </div>
+              ))}
             </div>
           ))}
         </div>
@@ -122,13 +137,13 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
       .sort((a, b) => a.position.order - b.position.order);
 
     return (
-      <div className={`p-4 ${section.styling || ''}`}>
-        {section.title && <h3 className="font-semibold mb-2">{section.title}</h3>}
-        <div className="flex flex-wrap gap-6">
+      <div className={`p-3 ${section.styling || ''}`}>
+        {section.title && <h6 className="fw-semibold mb-2">{section.title}</h6>}
+        <div className="d-flex flex-wrap gap-4">
           {sectionFields.map((field) => (
-            <div key={field.field_id} className="space-y-1">
-              <div className="text-sm text-gray-600">{field.label}</div>
-              <div className="font-medium">{renderField(field, editable)}</div>
+            <div key={field.field_id} className="flex-grow-1">
+              <div className="small text-muted">{field.label}</div>
+              <div className="fw-semibold">{renderField(field, editable)}</div>
             </div>
           ))}
         </div>
@@ -142,20 +157,22 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
       .sort((a, b) => a.position.order - b.position.order);
 
     return (
-      <div className={`p-4 space-y-3 ${section.styling || ''}`}>
-        {section.title && <h3 className="font-semibold mb-2">{section.title}</h3>}
-        {sectionFields.map((field) => (
-          <div key={field.field_id} className="flex justify-between items-center">
-            <span className="text-sm text-gray-700">{field.label}</span>
-            <span className="font-semibold">{renderField(field, editable)}</span>
-          </div>
-        ))}
+      <div className={`p-3 ${section.styling || ''}`}>
+        {section.title && <h6 className="fw-semibold mb-2">{section.title}</h6>}
+        <div className="d-flex flex-column gap-3">
+          {sectionFields.map((field) => (
+            <div key={field.field_id} className="d-flex justify-content-between align-items-center">
+              <span className="small text-muted">{field.label}</span>
+              <span className="fw-semibold">{renderField(field, editable)}</span>
+            </div>
+          ))}
+        </div>
       </div>
     );
   };
 
   const renderSection = (section: SectionDefinition) => {
-    if (!section.visible && section.visible !== undefined) {
+    if (section.visible === false) {
       return null;
     }
 
@@ -188,19 +205,19 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
     const rightColumn = config.sections.find(s => s.section_id === 'right_column');
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="row g-3">
         {leftColumn && (
-          <div className="space-y-2">
+          <div className="col-md-4">
             {renderSection(leftColumn)}
           </div>
         )}
         {middleColumn && (
-          <div className="space-y-2">
+          <div className="col-md-4">
             {renderSection(middleColumn)}
           </div>
         )}
         {rightColumn && (
-          <div className="space-y-2">
+          <div className="col-md-4">
             {renderSection(rightColumn)}
           </div>
         )}
@@ -210,19 +227,19 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
 
   return (
     <div
-      className="bg-white rounded-lg overflow-hidden mx-auto print-paystub"
+      className="print-paystub bg-white"
       style={{
         fontFamily: config.styling.fontFamily,
         backgroundColor: config.styling.backgroundColor,
-        borderColor: config.styling.borderColor || '#e5e7eb',
+        borderColor: config.styling.borderColor || '#dee2e6',
         maxWidth: config.layout?.maxWidth || '8.5in',
         minHeight: '11in',
-        padding: '0.5in',
+        padding: '2rem',
         margin: config.layout?.margin || 'auto',
-        border: '1px solid #d1d5db'
+        border: '1px solid #dee2e6'
       }}
     >
-      <div className="space-y-6">
+      <div className="d-flex flex-column gap-4">
         {config.sections
           .sort((a, b) => a.order - b.order)
           .map((section) => {
@@ -234,7 +251,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
               // Only render the three-column layout once when we hit the first column
               if (section.section_id === 'left_column') {
                 return (
-                  <div key="three-column-layout" className="mb-6">
+                  <div key="three-column-layout" className="mb-4">
                     {renderThreeColumnLayout()}
                   </div>
                 );
@@ -263,11 +280,6 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             min-height: 0 !important;
           }
           
-          .print-title {
-            font-size: 16pt !important;
-            margin-bottom: 16pt !important;
-          }
-          
           /* Section spacing */
           .section-wrapper {
             margin-bottom: 16pt !important;
@@ -279,23 +291,23 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             border: 1px solid #000 !important;
           }
           
-          /* Ensure grid borders print */
-          .border {
-            border: 1px solid #000 !important;
+          /* Ensure Bootstrap grid maintains structure */
+          .row {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            margin: 0 !important;
           }
           
-          /* Ensure all 3-column grids maintain structure */
-          .grid {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 0.25in !important;
+          .col, .col-md-4 {
+            flex: 1 !important;
+            padding: 0 0.25in !important;
           }
           
           /* Make sure background colors print */
           .bg-blue-50,
           .bg-blue-100,
           .bg-gray-50,
-          .bg-gray-100 {
+          .bg-light {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
@@ -305,41 +317,28 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             font-size: 9pt;
           }
           
-          h3 {
+          h6, .h6 {
             font-size: 10pt !important;
             margin-bottom: 8pt !important;
           }
           
           /* Field labels */
-          .text-xs {
+          .field-label {
             font-size: 7pt !important;
           }
           
           /* Field values */
-          .text-sm {
+          .field-value {
             font-size: 9pt !important;
           }
           
-          /* Ensure proper spacing */
-          .space-y-6 > * + * {
-            margin-top: 16pt !important;
-          }
-          
-          .space-y-3 > * + * {
-            margin-top: 8pt !important;
-          }
-          
-          .space-y-1 > * + * {
-            margin-top: 4pt !important;
-          }
-          
           /* Column spacing */
-          .gap-6 {
-            gap: 0.25in !important;
+          .column-field {
+            margin-bottom: 8pt !important;
           }
           
           /* Avoid page breaks inside sections */
-          .border, .section-wrapper {
+          .border, .section-wrapper, .card {
             page-break-inside: avoid;
           }
         }
