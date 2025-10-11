@@ -222,13 +222,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
         border: '1px solid #d1d5db'
       }}
     >
-      <div className="space-y-4">
-        <div
-          className="text-center text-2xl font-bold mb-6 print-title"
-          style={{ color: config.styling.primaryColor }}
-        >
-          {config.metadata.title}
-        </div>
+      <div className="space-y-6">
         {config.sections
           .sort((a, b) => a.order - b.order)
           .map((section) => {
@@ -240,7 +234,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
               // Only render the three-column layout once when we hit the first column
               if (section.section_id === 'left_column') {
                 return (
-                  <div key="three-column-layout" className="mb-4">
+                  <div key="three-column-layout" className="mb-6">
                     {renderThreeColumnLayout()}
                   </div>
                 );
@@ -249,7 +243,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             }
             
             return (
-              <div key={section.section_id} className="mb-4">
+              <div key={section.section_id} className="section-wrapper">
                 {renderSection(section)}
               </div>
             );
@@ -266,11 +260,18 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
             max-width: 100% !important;
             margin: 0 !important;
             padding: 0.5in !important;
+            min-height: 0 !important;
           }
           
           .print-title {
-            font-size: 20pt !important;
-            margin-bottom: 20pt !important;
+            font-size: 16pt !important;
+            margin-bottom: 16pt !important;
+          }
+          
+          /* Section spacing */
+          .section-wrapper {
+            margin-bottom: 16pt !important;
+            page-break-inside: avoid;
           }
           
           /* Ensure table borders print */
@@ -281,6 +282,13 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
           /* Ensure grid borders print */
           .border {
             border: 1px solid #000 !important;
+          }
+          
+          /* Ensure all 3-column grids maintain structure */
+          .grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 0.25in !important;
           }
           
           /* Make sure background colors print */
@@ -294,29 +302,44 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
           
           /* Font sizes for print */
           body {
-            font-size: 10pt;
+            font-size: 9pt;
           }
           
           h3 {
-            font-size: 12pt !important;
+            font-size: 10pt !important;
+            margin-bottom: 8pt !important;
+          }
+          
+          /* Field labels */
+          .text-xs {
+            font-size: 7pt !important;
+          }
+          
+          /* Field values */
+          .text-sm {
+            font-size: 9pt !important;
           }
           
           /* Ensure proper spacing */
-          .space-y-4 > * + * {
-            margin-top: 12pt !important;
+          .space-y-6 > * + * {
+            margin-top: 16pt !important;
           }
           
-          /* Column layout for print */
-          .grid {
-            display: grid !important;
+          .space-y-3 > * + * {
+            margin-top: 8pt !important;
           }
           
-          .grid-cols-3 {
-            grid-template-columns: repeat(3, 1fr) !important;
+          .space-y-1 > * + * {
+            margin-top: 4pt !important;
           }
           
-          /* Avoid page breaks inside important sections */
-          .border {
+          /* Column spacing */
+          .gap-6 {
+            gap: 0.25in !important;
+          }
+          
+          /* Avoid page breaks inside sections */
+          .border, .section-wrapper {
             page-break-inside: avoid;
           }
         }

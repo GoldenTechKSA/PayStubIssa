@@ -2,55 +2,42 @@
   "metadata": {
     "template_id": "classic_blue",
     "title": "Classic Blue",
-    "version": "1.0",
-    "description": "Traditional paystub with blue header and clean layout",
+    "version": "2.0",
+    "description": "3-column layout paystub with company info, logo, and statement title",
     "category": "standard"
   },
   "sections": [
     {
-      "section_id": "header",
-      "title": "Company & Employee Information",
+      "section_id": "company_header",
+      "title": "Company Header",
       "order": 1,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-blue-50 border-b-2 border-blue-600 py-4"
+      "styling": "bg-blue-50 border-b-2 border-blue-600 py-4 px-4"
     },
     {
-      "section_id": "pay_period",
-      "title": "Pay Period Details",
+      "section_id": "employee_details",
+      "title": "Employee Information",
       "order": 2,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-gray-50 py-3"
+      "styling": "bg-gray-50 py-4 px-4 border-b border-gray-300"
     },
     {
-      "section_id": "left_column",
-      "title": "Earnings",
+      "section_id": "pay_details",
+      "title": "Pay Details",
       "order": 3,
-      "layout_type": "table",
-      "styling": "border border-gray-300 rounded-lg"
-    },
-    {
-      "section_id": "middle_column",
-      "title": "Deductions",
-      "order": 4,
-      "layout_type": "table",
-      "styling": "border border-gray-300 rounded-lg"
-    },
-    {
-      "section_id": "right_column",
-      "title": "Year To Date",
-      "order": 5,
-      "layout_type": "table",
-      "styling": "border border-gray-300 rounded-lg"
-    },
-    {
-      "section_id": "totals",
-      "title": "Summary",
-      "order": 6,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-blue-100 font-bold py-4 mt-4"
+      "styling": "py-4 px-4"
+    },
+    {
+      "section_id": "summary",
+      "title": "Summary",
+      "order": 4,
+      "layout_type": "grid",
+      "columns": 3,
+      "styling": "bg-blue-100 font-bold py-4 px-4 border-t-2 border-blue-600"
     }
   ],
   "fields": [
@@ -59,75 +46,78 @@
       "label": "Company Name",
       "data_type": "string",
       "position": {
-        "section": "header",
+        "section": "company_header",
         "order": 1,
         "column": 1
       },
       "defaultValue": "ABC Corporation",
-      "width": "full",
       "required": true
     },
     {
       "field_id": "company_address",
-      "label": "Company Address",
+      "label": "Address",
       "data_type": "string",
       "position": {
-        "section": "header",
+        "section": "company_header",
         "order": 2,
         "column": 1
       },
-      "defaultValue": "123 Business St, City, ST 12345",
-      "width": "full"
+      "defaultValue": "123 Business Street"
     },
     {
-      "field_id": "employee_name",
-      "label": "Employee Name",
+      "field_id": "company_city_state",
+      "label": "City, State ZIP",
       "data_type": "string",
       "position": {
-        "section": "header",
+        "section": "company_header",
         "order": 3,
-        "column": 2
+        "column": 1
       },
-      "defaultValue": "John Doe",
-      "width": "full",
-      "required": true
+      "defaultValue": "New York, NY 10001"
     },
     {
-      "field_id": "employee_id",
-      "label": "Employee ID",
-      "data_type": "string",
+      "field_id": "company_phone",
+      "label": "Phone",
+      "data_type": "phone",
       "position": {
-        "section": "header",
+        "section": "company_header",
         "order": 4,
+        "column": 1
+      },
+      "defaultValue": "(555) 123-4567"
+    },
+    {
+      "field_id": "company_logo",
+      "label": "Company Logo",
+      "data_type": "string",
+      "position": {
+        "section": "company_header",
+        "order": 1,
         "column": 2
       },
-      "defaultValue": "EMP-001",
-      "width": "full",
-      "required": true
+      "defaultValue": "[LOGO]"
     },
     {
-      "field_id": "department",
-      "label": "Department",
+      "field_id": "paystub_title",
+      "label": "Document Title",
       "data_type": "string",
       "position": {
-        "section": "header",
-        "order": 5,
+        "section": "company_header",
+        "order": 1,
         "column": 3
       },
-      "defaultValue": "Engineering",
-      "width": "full"
+      "defaultValue": "EARNINGS STATEMENT"
     },
     {
-      "field_id": "position",
-      "label": "Position",
+      "field_id": "paystub_id",
+      "label": "Statement ID",
       "data_type": "string",
       "position": {
-        "section": "header",
-        "order": 6,
+        "section": "company_header",
+        "order": 2,
         "column": 3
       },
-      "defaultValue": "Senior Developer",
-      "width": "full"
+      "defaultValue": "PS-2025-001"
     },
     {
       "field_id": "pay_period_start",
@@ -135,9 +125,9 @@
       "data_type": "date",
       "format": "MM/DD/YYYY",
       "position": {
-        "section": "pay_period",
-        "order": 1,
-        "column": 1
+        "section": "company_header",
+        "order": 3,
+        "column": 3
       },
       "defaultValue": "01/01/2025"
     },
@@ -147,9 +137,9 @@
       "data_type": "date",
       "format": "MM/DD/YYYY",
       "position": {
-        "section": "pay_period",
-        "order": 2,
-        "column": 2
+        "section": "company_header",
+        "order": 4,
+        "column": 3
       },
       "defaultValue": "01/15/2025"
     },
@@ -159,11 +149,102 @@
       "data_type": "date",
       "format": "MM/DD/YYYY",
       "position": {
-        "section": "pay_period",
-        "order": 3,
+        "section": "company_header",
+        "order": 5,
         "column": 3
       },
       "defaultValue": "01/20/2025"
+    },
+    {
+      "field_id": "employee_name",
+      "label": "Employee Name",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 1,
+        "column": 1
+      },
+      "defaultValue": "John Doe",
+      "required": true
+    },
+    {
+      "field_id": "employee_id",
+      "label": "Employee ID",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 2,
+        "column": 1
+      },
+      "defaultValue": "EMP-001",
+      "required": true
+    },
+    {
+      "field_id": "employee_ssn",
+      "label": "SSN (Last 4)",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 3,
+        "column": 1
+      },
+      "defaultValue": "XXX-XX-1234"
+    },
+    {
+      "field_id": "employee_address",
+      "label": "Address",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 1,
+        "column": 2
+      },
+      "defaultValue": "456 Elm Street"
+    },
+    {
+      "field_id": "employee_city_state",
+      "label": "City, State ZIP",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 2,
+        "column": 2
+      },
+      "defaultValue": "Brooklyn, NY 11201"
+    },
+    {
+      "field_id": "department",
+      "label": "Department",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 1,
+        "column": 3
+      },
+      "defaultValue": "Engineering"
+    },
+    {
+      "field_id": "position",
+      "label": "Position",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 2,
+        "column": 3
+      },
+      "defaultValue": "Senior Developer"
+    },
+    {
+      "field_id": "hire_date",
+      "label": "Hire Date",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "position": {
+        "section": "employee_details",
+        "order": 3,
+        "column": 3
+      },
+      "defaultValue": "06/15/2020"
     },
     {
       "field_id": "regular_hours",
@@ -171,14 +252,11 @@
       "data_type": "number",
       "format": "0.00",
       "position": {
-        "section": "left_column",
-        "order": 1
+        "section": "pay_details",
+        "order": 1,
+        "column": 1
       },
-      "defaultValue": 80,
-      "validation": {
-        "min": 0,
-        "max": 200
-      }
+      "defaultValue": 80
     },
     {
       "field_id": "regular_rate",
@@ -186,8 +264,9 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "left_column",
-        "order": 2
+        "section": "pay_details",
+        "order": 2,
+        "column": 1
       },
       "defaultValue": 25.0
     },
@@ -197,8 +276,9 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "left_column",
-        "order": 3
+        "section": "pay_details",
+        "order": 3,
+        "column": 1
       },
       "calculation": "regular_hours * regular_rate",
       "defaultValue": 2000.0,
@@ -210,8 +290,9 @@
       "data_type": "number",
       "format": "0.00",
       "position": {
-        "section": "left_column",
-        "order": 4
+        "section": "pay_details",
+        "order": 4,
+        "column": 1
       },
       "defaultValue": 5
     },
@@ -221,8 +302,9 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "left_column",
-        "order": 5
+        "section": "pay_details",
+        "order": 5,
+        "column": 1
       },
       "defaultValue": 37.5
     },
@@ -232,8 +314,9 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "left_column",
-        "order": 6
+        "section": "pay_details",
+        "order": 6,
+        "column": 1
       },
       "calculation": "overtime_hours * overtime_rate",
       "defaultValue": 187.5,
@@ -245,8 +328,21 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "left_column",
-        "order": 7
+        "section": "pay_details",
+        "order": 7,
+        "column": 1
+      },
+      "defaultValue": 0.0
+    },
+    {
+      "field_id": "commission",
+      "label": "Commission",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 8,
+        "column": 1
       },
       "defaultValue": 0.0
     },
@@ -256,8 +352,9 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "middle_column",
-        "order": 1
+        "section": "pay_details",
+        "order": 1,
+        "column": 2
       },
       "defaultValue": 350.0
     },
@@ -267,10 +364,23 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "middle_column",
-        "order": 2
+        "section": "pay_details",
+        "order": 2,
+        "column": 2
       },
       "defaultValue": 120.0
+    },
+    {
+      "field_id": "local_tax",
+      "label": "Local Tax",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 3,
+        "column": 2
+      },
+      "defaultValue": 25.0
     },
     {
       "field_id": "social_security",
@@ -278,8 +388,9 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "middle_column",
-        "order": 3
+        "section": "pay_details",
+        "order": 4,
+        "column": 2
       },
       "defaultValue": 135.63
     },
@@ -289,21 +400,11 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "middle_column",
-        "order": 4
+        "section": "pay_details",
+        "order": 5,
+        "column": 2
       },
       "defaultValue": 31.71
-    },
-    {
-      "field_id": "health_insurance",
-      "label": "Health Insurance",
-      "data_type": "currency",
-      "format": "$0.00",
-      "position": {
-        "section": "middle_column",
-        "order": 5
-      },
-      "defaultValue": 150.0
     },
     {
       "field_id": "retirement_401k",
@@ -311,19 +412,45 @@
       "data_type": "currency",
       "format": "$0.00",
       "position": {
-        "section": "middle_column",
-        "order": 6
+        "section": "pay_details",
+        "order": 6,
+        "column": 2
       },
       "defaultValue": 100.0
+    },
+    {
+      "field_id": "health_insurance",
+      "label": "Health Insurance",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 7,
+        "column": 2
+      },
+      "defaultValue": 150.0
+    },
+    {
+      "field_id": "dental_insurance",
+      "label": "Dental Insurance",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 8,
+        "column": 2
+      },
+      "defaultValue": 25.0
     },
     {
       "field_id": "ytd_gross",
       "label": "YTD Gross Pay",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "right_column",
-        "order": 1
+        "section": "pay_details",
+        "order": 1,
+        "column": 3
       },
       "defaultValue": 26250.0
     },
@@ -331,10 +458,11 @@
       "field_id": "ytd_federal_tax",
       "label": "YTD Federal Tax",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "right_column",
-        "order": 2
+        "section": "pay_details",
+        "order": 2,
+        "column": 3
       },
       "defaultValue": 4200.0
     },
@@ -342,10 +470,11 @@
       "field_id": "ytd_state_tax",
       "label": "YTD State Tax",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "right_column",
-        "order": 3
+        "section": "pay_details",
+        "order": 3,
+        "column": 3
       },
       "defaultValue": 1440.0
     },
@@ -353,10 +482,11 @@
       "field_id": "ytd_social_security",
       "label": "YTD Social Security",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "right_column",
-        "order": 4
+        "section": "pay_details",
+        "order": 4,
+        "column": 3
       },
       "defaultValue": 1627.5
     },
@@ -364,64 +494,78 @@
       "field_id": "ytd_medicare",
       "label": "YTD Medicare",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "right_column",
-        "order": 5
+        "section": "pay_details",
+        "order": 5,
+        "column": 3
       },
       "defaultValue": 380.5
+    },
+    {
+      "field_id": "ytd_deductions",
+      "label": "YTD Total Deductions",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 6,
+        "column": 3
+      },
+      "defaultValue": 10620.0
     },
     {
       "field_id": "ytd_net_pay",
       "label": "YTD Net Pay",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "right_column",
-        "order": 6
+        "section": "pay_details",
+        "order": 7,
+        "column": 3
       },
-      "defaultValue": 18602.0
+      "defaultValue": 15630.0
     },
     {
-      "field_id": "gross_pay",
-      "label": "Gross Pay",
+      "field_id": "current_gross",
+      "label": "Current Gross Pay",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "totals",
+        "section": "summary",
         "order": 1,
         "column": 1
       },
-      "calculation": "regular_pay + overtime_pay + bonus",
+      "calculation": "regular_pay + overtime_pay + bonus + commission",
       "defaultValue": 2187.5,
       "editable": false
     },
     {
-      "field_id": "total_deductions",
-      "label": "Total Deductions",
+      "field_id": "current_deductions",
+      "label": "Current Total Deductions",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "totals",
-        "order": 2,
+        "section": "summary",
+        "order": 1,
         "column": 2
       },
-      "calculation": "federal_tax + state_tax + social_security + medicare + health_insurance + retirement_401k",
-      "defaultValue": 887.34,
+      "calculation": "federal_tax + state_tax + local_tax + social_security + medicare + retirement_401k + health_insurance + dental_insurance",
+      "defaultValue": 937.34,
       "editable": false
     },
     {
-      "field_id": "net_pay",
-      "label": "Net Pay",
+      "field_id": "current_net_pay",
+      "label": "Current Net Pay",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
-        "section": "totals",
-        "order": 3,
+        "section": "summary",
+        "order": 1,
         "column": 3
       },
-      "calculation": "gross_pay - total_deductions",
-      "defaultValue": 1300.16,
+      "calculation": "current_gross - current_deductions",
+      "defaultValue": 1250.16,
       "editable": false
     }
   ],
@@ -435,7 +579,7 @@
   },
   "layout": {
     "maxWidth": "900px",
-    "padding": "24px",
+    "padding": "0",
     "margin": "auto"
   }
 }
