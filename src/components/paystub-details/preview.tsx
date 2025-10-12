@@ -23,6 +23,7 @@ import { CompanyInfo, AppSettings, PayStubDetails } from "assets/data/pay-stub-d
 import { updateAppSettings } from "../../redux/actions";
 import { telemetryService } from "../../services/telemetry-service";
 import TemplateManager from "templates/components/templatemanager";
+import TemplateRegistry from "components3col/templateregistry";
 
 const Preview = ({store}) => {
     const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
@@ -92,11 +93,12 @@ const Preview = ({store}) => {
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
                 <Col md={7}>
                     <main>
-                        <TemplateManager initialTemplateId="paystub_regular" allowEditing={false}
+                        {/* <TemplateManager initialTemplateId="paystub_regular" allowEditing={false}
                             onDataChange={(data) => {
                             console.log('Paystub data updated:', data);
                             }}
-                        />
+                        /> */}
+                        <TemplateRegistry />
                     </main>
 
                     { canPrint && (<div>

@@ -1,0 +1,250 @@
+{
+  "template_id": "advanced-3column-paystub",
+  "title": "Advanced 3-Column Paystub",
+  "version": "3.0",
+  "description": "Professional paystub with consistent 3-column layout using Redux store data structure",
+  "layout_type": "3-column-consistent",
+  "styling": {
+    "container": "border rounded-lg p-4 bg-white shadow-md max-w-6xl mx-auto",
+    "header_container": "grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-lg",
+    "body_container": "grid grid-cols-1 md:grid-cols-3 gap-6 mb-6",
+    "summary_container": "grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-100 rounded-lg border-t-2 border-gray-300",
+    "column": "space-y-3",
+    "section": "p-3 rounded border",
+    "section_title": "font-bold text-lg mb-2 pb-1 border-b text-center",
+    "field": "flex justify-between py-1",
+    "field_label": "font-medium text-gray-700",
+    "field_value": "text-right font-semibold",
+    "logo_container": "flex justify-center items-center h-20",
+    "logo": "max-h-16 max-w-full",
+    "paystub_title": "text-2xl font-bold text-center mb-2",
+    "paystub_id": "text-center text-gray-600",
+    "array_table": "w-full text-sm border-collapse",
+    "array_th": "text-left py-2 px-2 border-b font-medium bg-gray-100",
+    "array_td": "py-2 px-2 border-b",
+    "array_tr": "hover:bg-gray-50"
+  },
+  "header": {
+    "columns": [
+      {
+        "column_id": "header_company_info",
+        "fields": [
+          {
+            "field_id": "company_name",
+            "label": "Company Name",
+            "data_type": "string"
+          },
+          {
+            "field_id": "company_address",
+            "label": "Address",
+            "data_type": "string"
+          },
+          {
+            "field_id": "company_city_state_zip",
+            "label": "City, State ZIP",
+            "data_type": "string"
+          },
+          {
+            "field_id": "company_phone",
+            "label": "Phone",
+            "data_type": "string"
+          },
+          {
+            "field_id": "company_tax_id",
+            "label": "Tax ID",
+            "data_type": "string"
+          }
+        ]
+      },
+      {
+        "column_id": "header_logo",
+        "fields": [
+          {
+            "field_id": "company_logo",
+            "label": "Company Logo",
+            "data_type": "image",
+            "position": "center"
+          }
+        ]
+      },
+      {
+        "column_id": "header_title",
+        "fields": [
+          {
+            "field_id": "paystub_title",
+            "label": "Paystub Title",
+            "data_type": "string",
+            "format": "title"
+          },
+          {
+            "field_id": "paystub_id",
+            "label": "Paystub ID",
+            "data_type": "string"
+          },
+          {
+            "field_id": "pay_period",
+            "label": "Pay Period",
+            "data_type": "date_range",
+            "format": "MM/DD/YYYY - MM/DD/YYYY"
+          },
+          {
+            "field_id": "pay_date",
+            "label": "Pay Date",
+            "data_type": "date",
+            "format": "MM/DD/YYYY"
+          }
+        ]
+      }
+    ]
+  },
+  "body": {
+    "columns": [
+      {
+        "column_id": "employee_info",
+        "title": "Employee Information",
+        "fields": [
+          {
+            "field_id": "employee_name",
+            "label": "Employee Name",
+            "data_type": "string"
+          },
+          {
+            "field_id": "employee_id",
+            "label": "Employee ID",
+            "data_type": "string"
+          },
+          {
+            "field_id": "employee_address",
+            "label": "Address",
+            "data_type": "string"
+          },
+          {
+            "field_id": "employee_city_state_zip",
+            "label": "City, State ZIP",
+            "data_type": "string"
+          },
+          {
+            "field_id": "employee_ssn",
+            "label": "SSN",
+            "data_type": "string",
+            "format": "masked"
+          },
+          {
+            "field_id": "department",
+            "label": "Department",
+            "data_type": "string"
+          },
+          {
+            "field_id": "position",
+            "label": "Position",
+            "data_type": "string"
+          },
+          {
+            "field_id": "hire_date",
+            "label": "Hire Date",
+            "data_type": "date",
+            "format": "MM/DD/YYYY"
+          }
+        ]
+      },
+      {
+        "column_id": "earnings",
+        "title": "Earnings",
+        "fields": [
+          {
+            "field_id": "earnings_items",
+            "label": "Earnings Details",
+            "data_type": "array",
+            "array_type": "earnings"
+          }
+        ]
+      },
+      {
+        "column_id": "deductions_taxes",
+        "title": "Deductions & Taxes",
+        "fields": [
+          {
+            "field_id": "deductions_items",
+            "label": "Deductions",
+            "data_type": "array",
+            "array_type": "deductions"
+          },
+          {
+            "field_id": "taxes_items",
+            "label": "Taxes",
+            "data_type": "array",
+            "array_type": "taxes"
+          }
+        ]
+      }
+    ]
+  },
+  "summary": {
+    "columns": [
+      {
+        "column_id": "summary_earnings",
+        "title": "Earnings Summary",
+        "fields": [
+          {
+            "field_id": "current_gross",
+            "label": "Current Gross Pay",
+            "data_type": "currency",
+            "format": "$0,0.00"
+          },
+          {
+            "field_id": "ytd_gross",
+            "label": "YTD Gross Pay",
+            "data_type": "currency",
+            "format": "$0,0.00"
+          }
+        ]
+      },
+      {
+        "column_id": "summary_deductions",
+        "title": "Deductions Summary",
+        "fields": [
+          {
+            "field_id": "current_deductions",
+            "label": "Current Deductions",
+            "data_type": "currency",
+            "format": "$0,0.00"
+          },
+          {
+            "field_id": "ytd_deductions",
+            "label": "YTD Deductions",
+            "data_type": "currency",
+            "format": "$0,0.00"
+          }
+        ]
+      },
+      {
+        "column_id": "summary_totals",
+        "title": "Final Summary",
+        "fields": [
+          {
+            "field_id": "net_pay",
+            "label": "Net Pay",
+            "data_type": "currency",
+            "format": "$0,0.00"
+          },
+          {
+            "field_id": "ytd_net",
+            "label": "YTD Net Pay",
+            "data_type": "currency",
+            "format": "$0,0.00"
+          },
+          {
+            "field_id": "payment_method",
+            "label": "Payment Method",
+            "data_type": "string"
+          },
+          {
+            "field_id": "check_number",
+            "label": "Check Number",
+            "data_type": "string"
+          }
+        ]
+      }
+    ]
+  }
+}
