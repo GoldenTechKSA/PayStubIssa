@@ -206,7 +206,7 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
     company_city_state_zip: `${companyInfo.companyCity}, ${companyInfo.companyState} ${companyInfo.companyZipCode}`,
     company_phone: companyInfo.companyPhone,
     company_tax_id: companyInfo.companyEIN,
-    company_logo: "/images/company-logo.png",
+    company_logo: "/images/default-logo.png",
     paystub_title: "Pay Stub",
     paystub_id: generalInfo.payStubNumber,
     pay_period: { start: incomeDetails.periodStartDate, end: incomeDetails.periodEndDate },

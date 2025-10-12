@@ -3,8 +3,8 @@
     {
       "template_id": "standard-paystub",
       "title": "Standard Paystub",
-      "config_path": "/templates/advanced-3column-paystub.json",
-      "thumbnail": "/images/picture0.png",
+      "config_path": "/templates/paystub0.json",
+      "thumbnail": "/images/thumb0.png",
       "category": "Basic",
       "description": "A clean, professional paystub layout with all essential fields"
     }

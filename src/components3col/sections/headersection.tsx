@@ -13,21 +13,9 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ header, store, styling })
   
   return (
     <div className={styling.header_container}>
-      <CompanyInfoColumn 
-        fields={companyColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
-      <LogoColumn 
-        fields={logoColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
-      <PaystubTitleColumn 
-        fields={titleColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
+      <CompanyInfoColumn fields={companyColumn.fields} store={store} styling={styling} />
+      <LogoColumn fields={logoColumn.fields} store={store} styling={styling} />
+      <PaystubTitleColumn fields={titleColumn.fields} store={store} styling={styling} />
     </div>
   );
 };

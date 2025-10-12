@@ -89,22 +89,18 @@ const TemplateRegistry: React.FC = () => {
   
   return (
     <div className="template-registry max-w-7xl mx-auto p-4">
-      <TemplateSelector 
+      {/* TODO: this is not needed in the final implmentation keep here for now, but commented out 
+      MAYBE IN THE FUTURE WHEN WE ENABLE THE CONCEPT OF SELECTING A NEW TEMPLATE AFTER THE USER GET
+      HERE WE CAN ENABLE SOME SORT OF TEMPLATE SELECTION CONTROL SO THE USER CAN PREVIEW DIFFERENT TEMPLATES*/}
+      {/* <TemplateSelector 
         templates={templates} 
         onSelect={setSelectedTemplate}
         selectedTemplateId={selectedTemplate?.template_id || null}
-      />
+      /> */}
       
       <div className="mt-8">
-        <h2 className="text-lg font-bold mb-4 text-center">Preview</h2>
-        {selectedTemplate && (
-          <Advanced3ColumnTemplate 
-            template={selectedTemplate}
-            store={mockStore}
-            styling={selectedTemplate.styling}
-            canPrintStub={canPrintStub}
-          />
-        )}
+        {/* <h2 className="text-lg font-bold mb-4 text-center">Preview</h2> */}
+        {selectedTemplate && ( <Advanced3ColumnTemplate template={selectedTemplate} store={mockStore} styling={selectedTemplate.styling} canPrintStub={canPrintStub} /> )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { TemplateRegistryItem, FullTemplate } from '../components3col/types';
 
 export const fetchTemplateRegistry = async (): Promise<TemplateRegistryItem[]> => {
   try {
-    const response = await fetch('/templates/latest-image-names.json');
+    const response = await fetch('/templates/template-names.json');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
