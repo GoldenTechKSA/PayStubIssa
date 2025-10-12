@@ -1,7 +1,7 @@
 {
   "template_id": "standard-paystub",
   "title": "Advanced 3-Column Paystub",
-  "version": "3.2",
+  "version": "3.3",
   "description": "Professional paystub with consistent 3-column layout using Bootstrap 5",
   "layout_type": "3-column-consistent",
   "styling": {
@@ -16,10 +16,10 @@
     "field_label": "fw-medium text-muted flex-grow-1",
     "field_value": "text-end fw-semibold flex-grow-1 ms-3",
     "logo_container": "d-flex justify-content-center align-items-center mb-3",
-    "logo": "img-fluid",
+    "logo": "img-fluid max-height-100px",
     "paystub_title": "text-center fs-2 fw-bold mb-2",
     "paystub_id": "text-center text-muted mb-3",
-    "array_table": "table table-sm w-100 mt-2",
+    "array_table": "table table-bordered table-sm w-100 mt-2",
     "array_th": "text-start fw-bold bg-light",
     "array_td": "text-start py-2",
     "array_tr": ""

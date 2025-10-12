@@ -4,7 +4,6 @@ import EarningsSummaryColumn from '../columns/summary/earningssummarycolumn';
 import DeductionsSummaryColumn from '../columns/summary/deductionssummarycolumn';
 import FinalSummaryColumn from '../columns/summary/finalsummarycolumn';
 
-
 interface SummarySectionProps extends TemplateProps {
   summary: SectionDefinition;
 }
@@ -14,24 +13,30 @@ const SummarySection: React.FC<SummarySectionProps> = ({ summary, store, styling
   
   return (
     <div className={styling.summary_container}>
-      <EarningsSummaryColumn 
-        title={earningsColumn.title}
-        fields={earningsColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
-      <DeductionsSummaryColumn 
-        title={deductionsColumn.title}
-        fields={deductionsColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
-      <FinalSummaryColumn 
-        title={finalColumn.title}
-        fields={finalColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
+      <div className="col-md-4">
+        <EarningsSummaryColumn 
+          title={earningsColumn.title}
+          fields={earningsColumn.fields} 
+          store={store} 
+          styling={styling} 
+        />
+      </div>
+      <div className="col-md-4">
+        <DeductionsSummaryColumn 
+          title={deductionsColumn.title}
+          fields={deductionsColumn.fields} 
+          store={store} 
+          styling={styling} 
+        />
+      </div>
+      <div className="col-md-4">
+        <FinalSummaryColumn 
+          title={finalColumn.title}
+          fields={finalColumn.fields} 
+          store={store} 
+          styling={styling} 
+        />
+      </div>
     </div>
   );
 };
