@@ -49,7 +49,7 @@ const App: React.FC= () => {
                         <Route path="/aboutUsPage" element={<AboutUsPage />} />
                         <Route path="/FAQPage" element={<FAQPage />} />
                         <Route path="/contactUsPage" element={<ContactUsPage />} />
-                        <Route path="/printTemplate/:templateId" element={<Preview store={store.getState()} />} />
+                        <Route path="/printTemplate/:templateId" element={<Preview />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
                         <Route path="/accessibility" element={<AccessibilityPolicy />} />
                         <Route path="/terms" element={<TermsOfUser />} />

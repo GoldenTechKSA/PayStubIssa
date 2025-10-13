@@ -9,9 +9,8 @@ const CalculatedField: React.FC<FieldProps> = ({ field, store, styling }) => {
   const calculatedValue = calculateField(field.calculation!, templateData);
   const formattedValue = formatValue(calculatedValue, field);
   
-  const fieldClass = styling.field || 'py-2 px-1';
-  const contentClass = styling.field_content || 'fw-medium';
-
+  const fieldClass = styling.field;
+  const contentClass = field.calculation ? styling.calculated_field : styling.field_content;
   return (
     <div className={fieldClass}>
       <span className={contentClass}>

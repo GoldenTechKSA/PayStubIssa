@@ -19,18 +19,21 @@ import PrintTemplate13 from "../print/template13/printTemplate13";
 import PayPal from "../common/paypal-payment";
 import PDFDownloadButton from "../pdf/pdf-button-comp";
 import * as templateIds from "../../constants/template-ids";
-import { CompanyInfo, AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
+import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings } from "../../redux/actions";
 import { telemetryService } from "../../services/telemetry-service";
 import TemplateManager from "templates/components/templatemanager";
 import TemplateRegistry from "components3col/templateregistry";
+import store from "../../redux/store";
 
-const Preview = ({store}) => {
+const Preview = () => {
+    const state = store.getState();
     const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
-    const companyInfo = useSelector<PayStubDetails, CompanyInfo>(state => state.companyInfo);
     const [canPrintStub, setCanPrintStub] = useState(canPrint);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    console.log("store: in Preview Component", store, "CompanyInfo:", state);
 
     useEffect(() => {
         dispatch(updateAppSettings({ canPrint: canPrintStub }));
@@ -58,8 +61,6 @@ const Preview = ({store}) => {
             paystubTemplate: templateId
         });    
     };
-
-    console.log("Render Preview with store:", store, "CompanyInfo:", companyInfo);
 
     const handlePaymentError = (error: any) => {
         // Telemetry event logging for payment errors
@@ -98,24 +99,24 @@ const Preview = ({store}) => {
                             console.log('Paystub data updated:', data);
                             }}
                         /> */}
-                        <TemplateRegistry />
+                        <TemplateRegistry store={state} canPrintStub={canPrintStub}/>
                     </main>
 
                     { canPrint && (<div>
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <PrintTemplate0 store={store} canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_1 && <PrintTemplate1 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_2 && <PrintTemplate2 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_3 && <PrintTemplate3 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_4 && <PrintTemplate4 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_5 && <PrintTemplate5 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_6 && <PrintTemplate6 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_7 && <PrintTemplate7 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_8 && <PrintTemplate8 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_9 && <PrintTemplate9 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_10 && <PrintTemplate10 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_11 && <PrintTemplate11 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_12 && <PrintTemplate12 store={store}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_13 && <PrintTemplate13 store={store}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <PrintTemplate0 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_1 && <PrintTemplate1 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_2 && <PrintTemplate2 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_3 && <PrintTemplate3 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_4 && <PrintTemplate4 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_5 && <PrintTemplate5 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_6 && <PrintTemplate6 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_7 && <PrintTemplate7 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_8 && <PrintTemplate8 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_9 && <PrintTemplate9 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_10 && <PrintTemplate10 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_11 && <PrintTemplate11 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_12 && <PrintTemplate12 canPrintStub={canPrintStub}/> }
+                    { templateId === templateIds.PAYSTUB_TEMPLATE_13 && <PrintTemplate13 canPrintStub={canPrintStub}/> }
                     </div> )}
                 </Col>
                 <Col md={{span: 2, offset:1 }}>

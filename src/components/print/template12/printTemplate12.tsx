@@ -1,12 +1,13 @@
 import React from "react";
 import { PayStubDetails } from "../../../assets/data/pay-stub-details";
 import "./printTemplate12.css";
+import store from "../../../redux/store";
 
 interface PrintTemplate12Props {
-  store: PayStubDetails;
+  canPrintStub?: boolean;
 }
 
-const PrintTemplate12: React.FC<PrintTemplate12Props> = ({ store }) => {
+const PrintTemplate12: React.FC<PrintTemplate12Props> = () => {
   // Helper functions
   const formatDate = (date: Date | string | undefined | null) => {
     if (!date) return "";
@@ -16,16 +17,16 @@ const PrintTemplate12: React.FC<PrintTemplate12Props> = ({ store }) => {
   };
 
   // Company Info
-  const company = store.companyInfo;
+  const company = store.getState().companyInfo;
   const companyFullAddress = [company.companyAddress1, company.companyAddress2, company.companyCity, company.companyState, company.companyZipCode,].filter(Boolean).join(", ");
 
   // Employee Info
-  const emp = store.employeeInfo;
+  const emp = store.getState().employeeInfo;
   const employeeFullName = [emp.employeeFirstName, emp.employeeMiddleInitial, emp.employeeLastName].filter(Boolean).join(" ");
 
   // Pay Period Info
-  const income = store.incomeDetails;
-  const general = store.generalInfo;
+  const income = store.getState().incomeDetails;
+  const general = store.getState().generalInfo;
   const payPeriod = `${formatDate(income.periodStartDate)} - ${formatDate(income.periodEndDate)}`;
 
   // Earnings, Taxes, Deductions (replace with your actual data structure)

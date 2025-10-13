@@ -1,6 +1,7 @@
 import React from "react";
 import { PayStubDetails } from "../../../assets/data/pay-stub-details";
 import "./printTemplate13.css";
+import store from "../../../redux/store";
 
 // Example data for table rows (replace with real props/data as needed)
 const earningsRows = [
@@ -18,11 +19,11 @@ const deductionsRows = [
 ];
 
 interface PrintTemplate13Props {
-  store: PayStubDetails;
+  canPrintStub?: boolean;
 }
 
-const PrintTemplate13: React.FC<PrintTemplate13Props> = ({ store }) => {
-  const { companyInfo, employeeInfo, incomeDetails, generalInfo } = store;
+const PrintTemplate13: React.FC<PrintTemplate13Props> = () => {
+  const { companyInfo, employeeInfo, incomeDetails, generalInfo } = store.getState();
 
   // Calculate totals
   const earningsTotal = earningsRows.reduce((sum, row) => sum + row.amount, 0);

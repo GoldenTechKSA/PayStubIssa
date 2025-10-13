@@ -5,22 +5,24 @@
   "description": "Professional paystub with consistent 3-column layout using Bootstrap 5",
   "layout_type": "3-column-consistent",
   "styling": {
-    "container": "border rounded p-4 bg-white shadow-sm mx-auto",
-    "header_container": "row g-4 mb-5 p-4 bg-light rounded border",
-    "body_container": "row g-5 mb-5",
-    "summary_container": "row g-4 p-4 bg-light rounded border-top border-3",
-    "column": "mb-4",
+    "container": "bg-white ",
+    "header_container": "row border-bottom p-2",
+    "body_container": "row",
+    "summary_container": "row g-4 p-4 border-top",
+    "column": "mb-0",
     "section": "p-3 rounded bg-white border",
     "section_title": "fw-bold fs-5 mb-3 pb-2 border-bottom text-center",
-    "field": "py-2 px-1",
-    "field_content": "fw-medium",
-    "logo_container": "d-flex justify-content-center align-items-center mb-3",
-    "logo": "img-fluid max-height-100px",
-    "paystub_title": "text-center fs-2 fw-bold mb-2",
-    "paystub_id": "text-center text-muted mb-3",
+    "field": "",
+    "field_content": "",
+    "company_name_field": "fs-5 fw-bold",
+    "calculated_field": "fw-semibold fs-1 text-primary font-monospace",
+    "logo_container": "d-flex justify-content-center align-items-center",
+    "logo": "img-fluid object-fit-contain max-height-48px max-width-48px",
+    "paystub_title": "text-left fs-1 fw-bold mb-3",
+    "paystub_id": "text-muted mb-3",
     "array_table": "table table-bordered table-sm w-100 mt-2",
     "array_th": "text-start fw-bold bg-light",
-    "array_td": "text-start py-2",
+    "array_td": "text-start py-1",
     "array_tr": ""
   },
   "header": {
@@ -30,27 +32,23 @@
         "fields": [
           {
             "field_id": "company_name",
-            "label": "Company Name",
             "data_type": "string"
           },
           {
             "field_id": "company_address",
-            "label": "Address",
             "data_type": "string"
           },
           {
             "field_id": "company_city_state_zip",
-            "label": "City, State ZIP",
             "data_type": "string"
           },
           {
             "field_id": "company_phone",
-            "label": "Phone",
             "data_type": "string"
           },
           {
             "field_id": "company_tax_id",
-            "label": "Tax ID",
+            "label": "Company EIN: ",
             "data_type": "string"
           }
         ]
@@ -71,24 +69,24 @@
         "fields": [
           {
             "field_id": "paystub_title",
-            "label": "Paystub Title",
+            "label": "Pay Stub",
             "data_type": "string",
             "format": "title"
           },
           {
             "field_id": "paystub_id",
-            "label": "Paystub ID",
+            "label": "Paystub ID: ",
             "data_type": "string"
           },
           {
             "field_id": "pay_period",
-            "label": "Pay Period",
+            "label": "Pay Period: ",
             "data_type": "date_range",
             "format": "MM/DD/YYYY - MM/DD/YYYY"
           },
           {
             "field_id": "pay_date",
-            "label": "Pay Date",
+            "label": "Pay Date: ",
             "data_type": "date",
             "format": "MM/DD/YYYY"
           }
@@ -104,43 +102,40 @@
         "fields": [
           {
             "field_id": "employee_name",
-            "label": "Employee Name",
-            "data_type": "string"
-          },
-          {
-            "field_id": "employee_id",
-            "label": "Employee ID",
             "data_type": "string"
           },
           {
             "field_id": "employee_address",
-            "label": "Address",
             "data_type": "string"
           },
           {
             "field_id": "employee_city_state_zip",
-            "label": "City, State ZIP",
             "data_type": "string"
           },
           {
             "field_id": "employee_ssn",
-            "label": "SSN",
+            "label": "SSN: ",
             "data_type": "string",
             "format": "masked"
           },
           {
+            "field_id": "employee_id",
+            "label": "Employee ID: ",
+            "data_type": "string"
+          },
+          {
             "field_id": "department",
-            "label": "Department",
+            "label": "Department: ",
             "data_type": "string"
           },
           {
             "field_id": "position",
-            "label": "Position",
+            "label": "Position: ",
             "data_type": "string"
           },
           {
             "field_id": "hire_date",
-            "label": "Hire Date",
+            "label": "Hire Date: ",
             "data_type": "date",
             "format": "MM/DD/YYYY"
           }
@@ -186,13 +181,13 @@
         "fields": [
           {
             "field_id": "current_gross",
-            "label": "Current Gross Pay",
+            "label": "Current Gross Pay: ",
             "data_type": "currency",
             "format": "$0,0.00"
           },
           {
             "field_id": "ytd_gross",
-            "label": "YTD Gross Pay",
+            "label": "YTD Gross Pay: ",
             "data_type": "currency",
             "format": "$0,0.00"
           }
@@ -204,13 +199,13 @@
         "fields": [
           {
             "field_id": "current_deductions",
-            "label": "Current Deductions",
+            "label": "Current Deductions: ",
             "data_type": "currency",
             "format": "$0,0.00"
           },
           {
             "field_id": "ytd_deductions",
-            "label": "YTD Deductions",
+            "label": "YTD Deductions: ",
             "data_type": "currency",
             "format": "$0,0.00"
           }
@@ -222,24 +217,24 @@
         "fields": [
           {
             "field_id": "net_pay",
-            "label": "Net Pay",
+            "label": "Net Pay: ",
             "data_type": "currency",
             "format": "$0,0.00"
           },
           {
             "field_id": "ytd_net",
-            "label": "YTD Net Pay",
+            "label": "YTD Net Pay: ",
             "data_type": "currency",
             "format": "$0,0.00"
           },
           {
             "field_id": "payment_method",
-            "label": "Payment Method",
+            "label": "Payment Method: ",
             "data_type": "string"
           },
           {
             "field_id": "check_number",
-            "label": "Check Number",
+            "label": "Check Number: ",
             "data_type": "string"
           }
         ]

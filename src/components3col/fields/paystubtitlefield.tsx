@@ -7,8 +7,7 @@ const PaystubTitleField: React.FC<FieldProps> = ({ field, store, styling }) => {
   
   return (
     <>
-      <div className={styling.paystub_title}>Pay Stub</div>
-      <div className={styling.paystub_id}>ID: {templateData.paystub_id || 'N/A'}</div>
+      <div className={styling.paystub_title}>{field.label}</div>
     </>
   );
 };

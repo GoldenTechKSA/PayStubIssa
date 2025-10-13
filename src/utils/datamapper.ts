@@ -80,12 +80,9 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
   const { companyInfo, employeeInfo, incomeDetails, generalInfo } = store;
   
   // Format addresses
-  const employeeFullName = [employeeInfo.employeeFirstName, employeeInfo.employeeMiddleInitial, employeeInfo.employeeLastName]
-    .filter(Boolean).join(" ");
-  const employeeFullAddress = [employeeInfo.employeeAddress1, employeeInfo.employeeAddress2, employeeInfo.employeeCity, employeeInfo.employeeState, employeeInfo.employeeZipCode]
-    .filter(Boolean).join(", ");
-  const companyFullAddress = [companyInfo.companyAddress1, companyInfo.companyAddress2, companyInfo.companyCity, companyInfo.companyState, companyInfo.companyZipCode]
-    .filter(Boolean).join(", ");
+  const employeeFullName = [employeeInfo.employeeFirstName, employeeInfo.employeeMiddleInitial, employeeInfo.employeeLastName].filter(Boolean).join(" ");
+  const employeeFullAddress = [employeeInfo.employeeAddress1, employeeInfo.employeeAddress2].filter(Boolean).join(", ");
+  const companyFullAddress = [companyInfo.companyAddress1, companyInfo.companyAddress2].filter(Boolean).join(", ");
   
   // Format pay period
   const formatDate = (dateString: string): string => {

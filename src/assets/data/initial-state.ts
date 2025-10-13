@@ -3,12 +3,12 @@ import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, Pay
 const appSettings: AppSettings = {
     templateId: 0,
     nextTabStep: "template",
-    canPrint: false
+    canPrint: true
 };
 
 const companyInfo: CompanyInfo = {
     companyName: "Issa Company Limited",
-    companyEIN: "",
+    companyEIN: "11-2233445",
     companyAddress1: "1234 Main St.",
     companyAddress2: "",
     companyCity: "Seattle",
