@@ -93,12 +93,12 @@ const Preview = ({store}) => {
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
                 <Col md={7}>
                     <main>
-                        <TemplateManager initialTemplateId="paystub_regular" allowEditing={false}
+                        {/* <TemplateManager initialTemplateId="paystub_regular" allowEditing={false}
                             onDataChange={(data) => {
                             console.log('Paystub data updated:', data);
                             }}
-                        />
-                        {/* <TemplateRegistry /> */}
+                        /> */}
+                        <TemplateRegistry />
                     </main>
 
                     { canPrint && (<div>

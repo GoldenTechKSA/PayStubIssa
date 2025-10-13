@@ -35,11 +35,11 @@ const ArrayFieldRenderer: React.FC<FieldProps> = ({ field, store, styling }) => 
   const columns = getArrayColumns((field as any).array_type || 'earnings');
   
   return (
-    <table className={styling.array_table || "w-full text-sm"}>
+    <table className={styling.array_table || "table table-sm w-100"}>
       <thead>
         <tr>
           {columns.map(col => (
-            <th key={col.key} className={styling.array_th || "text-left py-1 border-b font-medium"}>
+            <th key={col.key} className={styling.array_th || "text-start fw-bold bg-light"}>
               {col.label}
             </th>
           ))}
@@ -47,9 +47,9 @@ const ArrayFieldRenderer: React.FC<FieldProps> = ({ field, store, styling }) => 
       </thead>
       <tbody>
         {arrayData.map((item: any, index: number) => (
-          <tr key={index} className={styling.array_tr || "hover:bg-gray-50"}>
+          <tr key={index} className={styling.array_tr || ""}>
             {columns.map(col => (
-              <td key={col.key} className={styling.array_td || "py-1"}>
+              <td key={col.key} className={styling.array_td || "text-start py-2"}>
                 {item[col.key]}
               </td>
             ))}
