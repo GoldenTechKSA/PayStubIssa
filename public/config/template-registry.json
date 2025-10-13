@@ -5,10 +5,10 @@
     {
       "template_id": "paystub_regular",
       "title": "Standard Employee Paystub",
-      "version": "1.0",
+      "version": "3.0",
       "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
       "category": "standard",
-      "thumbnail": "/images/templates/paystub_regular.png",
+      "thumbnail": "/images/templates/thumb0.png",
       "created_date": "2025-01-01",
       "last_updated": "2025-10-07",
       "author": "System"

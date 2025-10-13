@@ -15,12 +15,7 @@ interface TemplateRendererProps {
   onChange?: (data: Record<string, any>) => void;
 }
 
-export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
-  config,
-  data: externalData,
-  editable = false,
-  onChange
-}) => {
+export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data: externalData, editable = false, onChange}) => {
   const [fieldData, setFieldData] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -57,18 +52,6 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   const renderField = (field: FieldDefinition, isEditable: boolean) => {
     const value = fieldData[field.field_id];
     const formattedValue = fieldFormatter.format(value, field);
-
-    if (isEditable && field.editable !== false && !field.calculation) {
-      return (
-        <input
-          type={field.data_type === 'number' || field.data_type === 'currency' ? 'number' : 'text'}
-          value={value || ''}
-          onChange={(e) => handleFieldChange(field.field_id, e.target.value)}
-          className="form-control form-control-sm"
-        />
-      );
-    }
-
     return <span className="field-value">{formattedValue}</span>;
   };
 
@@ -239,10 +222,8 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
         border: '1px solid #dee2e6'
       }}
     >
-      <div className="d-flex flex-column gap-4">
-        {config.sections
-          .sort((a, b) => a.order - b.order)
-          .map((section) => {
+      <div className="d-flex flex-column">
+        {config.sections.sort((a, b) => a.order - b.order).map((section) => {
             // Skip column sections if we're rendering them in 3-column layout
             if (isThreeColumnLayout() && 
                 (section.section_id === 'left_column' || 

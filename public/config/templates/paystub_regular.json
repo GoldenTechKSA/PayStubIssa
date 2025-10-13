@@ -2,18 +2,17 @@
   "metadata": {
     "template_id": "paystub_regular",
     "title": "Standard Employee Paystub",
-    "version": "1.0",
+    "version": "3.0",
     "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
     "category": "standard"
   },
   "sections": [
     {
       "section_id": "company_header",
-      "title": "Company Header",
       "order": 1,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-blue-50 border-b-2 border-blue-600 py-4 px-4"
+      "styling": "bg-black text-white"
     },
     {
       "section_id": "employee_details",
@@ -21,7 +20,7 @@
       "order": 2,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-gray-50 py-4 px-4 border-b border-gray-300"
+      "styling": "bg-black text-white"
     },
     {
       "section_id": "pay_details",
@@ -42,8 +41,7 @@
   ],
   "fields": [
     {
-      "field_id": "company_name",
-      "label": "Company Name",
+      "field_id": "companyName",
       "data_type": "string",
       "position": {
         "section": "company_header",
@@ -54,37 +52,45 @@
       "required": true
     },
     {
-      "field_id": "company_address",
-      "label": "Address",
+      "field_id": "companyFullAddress",
       "data_type": "string",
       "position": {
         "section": "company_header",
         "order": 2,
         "column": 1
       },
-      "defaultValue": "123 Business Street"
+      "defaultValue": "123 Business Street, New York, NY 10001"
     },
     {
-      "field_id": "company_city_state",
-      "label": "City, State ZIP",
-      "data_type": "string",
+      "field_id": "companyPhone",
+      "data_type": "phone",
       "position": {
         "section": "company_header",
         "order": 3,
         "column": 1
       },
-      "defaultValue": "New York, NY 10001"
+      "defaultValue": "(555) 123-4567"
     },
     {
-      "field_id": "company_phone",
-      "label": "Phone",
-      "data_type": "phone",
+      "field_id": "companyEmail",
+      "data_type": "email",
       "position": {
         "section": "company_header",
         "order": 4,
         "column": 1
       },
-      "defaultValue": "(555) 123-4567"
+      "defaultValue": "payroll@company.com"
+    },
+    {
+      "field_id": "companyEIN",
+      "label": "EIN",
+      "data_type": "string",
+      "position": {
+        "section": "company_header",
+        "order": 5,
+        "column": 1
+      },
+      "defaultValue": "12-3456789"
     },
     {
       "field_id": "company_logo",
@@ -109,8 +115,8 @@
       "defaultValue": "EARNINGS STATEMENT"
     },
     {
-      "field_id": "paystub_id",
-      "label": "Statement ID",
+      "field_id": "payStubNumber",
+      "label": "Pay Stub Number",
       "data_type": "string",
       "position": {
         "section": "company_header",
@@ -120,20 +126,19 @@
       "defaultValue": "PS-2025-001"
     },
     {
-      "field_id": "pay_period_start",
-      "label": "Pay Period Start",
-      "data_type": "date",
-      "format": "MM/DD/YYYY",
+      "field_id": "checkNumber",
+      "label": "Check Number",
+      "data_type": "string",
       "position": {
         "section": "company_header",
         "order": 3,
         "column": 3
       },
-      "defaultValue": "01/01/2025"
+      "defaultValue": "CHK-12345"
     },
     {
-      "field_id": "pay_period_end",
-      "label": "Pay Period End",
+      "field_id": "periodStartDate",
+      "label": "Pay Period Start",
       "data_type": "date",
       "format": "MM/DD/YYYY",
       "position": {
@@ -141,11 +146,11 @@
         "order": 4,
         "column": 3
       },
-      "defaultValue": "01/15/2025"
+      "defaultValue": "01/01/2025"
     },
     {
-      "field_id": "pay_date",
-      "label": "Pay Date",
+      "field_id": "periodEndDate",
+      "label": "Pay Period End",
       "data_type": "date",
       "format": "MM/DD/YYYY",
       "position": {
@@ -153,10 +158,22 @@
         "order": 5,
         "column": 3
       },
+      "defaultValue": "01/15/2025"
+    },
+    {
+      "field_id": "periodPayDate",
+      "label": "Pay Date",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "position": {
+        "section": "company_header",
+        "order": 6,
+        "column": 3
+      },
       "defaultValue": "01/20/2025"
     },
     {
-      "field_id": "employee_name",
+      "field_id": "employeeFullName",
       "label": "Employee Name",
       "data_type": "string",
       "position": {
@@ -164,11 +181,11 @@
         "order": 1,
         "column": 1
       },
-      "defaultValue": "John Doe",
+      "defaultValue": "John M. Doe",
       "required": true
     },
     {
-      "field_id": "employee_id",
+      "field_id": "employeeID",
       "label": "Employee ID",
       "data_type": "string",
       "position": {
@@ -180,7 +197,7 @@
       "required": true
     },
     {
-      "field_id": "employee_ssn",
+      "field_id": "employeeSSN",
       "label": "SSN (Last 4)",
       "data_type": "string",
       "position": {
@@ -191,7 +208,18 @@
       "defaultValue": "XXX-XX-1234"
     },
     {
-      "field_id": "employee_address",
+      "field_id": "employeeMarriedStatus",
+      "label": "Filing Status",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 4,
+        "column": 1
+      },
+      "defaultValue": "Single"
+    },
+    {
+      "field_id": "employeeFullAddress",
       "label": "Address",
       "data_type": "string",
       "position": {
@@ -199,76 +227,97 @@
         "order": 1,
         "column": 2
       },
-      "defaultValue": "456 Elm Street"
+      "defaultValue": "456 Elm Street, Brooklyn, NY 11201"
     },
     {
-      "field_id": "employee_city_state",
-      "label": "City, State ZIP",
-      "data_type": "string",
+      "field_id": "employeePhone",
+      "label": "Phone",
+      "data_type": "phone",
       "position": {
         "section": "employee_details",
         "order": 2,
         "column": 2
       },
-      "defaultValue": "Brooklyn, NY 11201"
+      "defaultValue": "(555) 987-6543"
     },
     {
-      "field_id": "department",
-      "label": "Department",
+      "field_id": "employeeEmail",
+      "label": "Email",
+      "data_type": "email",
+      "position": {
+        "section": "employee_details",
+        "order": 3,
+        "column": 2
+      },
+      "defaultValue": "john.doe@email.com"
+    },
+    {
+      "field_id": "employmentType",
+      "label": "Employment Type",
       "data_type": "string",
       "position": {
         "section": "employee_details",
         "order": 1,
         "column": 3
       },
-      "defaultValue": "Engineering"
+      "defaultValue": "Full-Time"
     },
     {
-      "field_id": "position",
-      "label": "Position",
+      "field_id": "wageType",
+      "label": "Wage Type",
       "data_type": "string",
       "position": {
         "section": "employee_details",
         "order": 2,
         "column": 3
       },
-      "defaultValue": "Senior Developer"
+      "defaultValue": "Hourly"
     },
     {
-      "field_id": "hire_date",
-      "label": "Hire Date",
-      "data_type": "date",
-      "format": "MM/DD/YYYY",
+      "field_id": "paymentMethod",
+      "label": "Payment Method",
+      "data_type": "string",
       "position": {
         "section": "employee_details",
         "order": 3,
         "column": 3
       },
-      "defaultValue": "06/15/2020"
+      "defaultValue": "Direct Deposit"
     },
     {
-      "field_id": "regular_hours",
-      "label": "Regular Hours",
-      "data_type": "number",
-      "format": "0.00",
+      "field_id": "paymentFrequency",
+      "label": "Pay Frequency",
+      "data_type": "string",
+      "position": {
+        "section": "employee_details",
+        "order": 4,
+        "column": 3
+      },
+      "defaultValue": "Bi-Weekly"
+    },
+    {
+      "field_id": "hourlyRate",
+      "label": "Hourly Rate",
+      "data_type": "currency",
+      "format": "$0.00",
       "position": {
         "section": "pay_details",
         "order": 1,
         "column": 1
       },
-      "defaultValue": 80
+      "defaultValue": 25.0
     },
     {
-      "field_id": "regular_rate",
-      "label": "Regular Rate",
-      "data_type": "currency",
-      "format": "$0.00",
+      "field_id": "hoursWorked",
+      "label": "Hours Worked",
+      "data_type": "number",
+      "format": "0.00",
       "position": {
         "section": "pay_details",
         "order": 2,
         "column": 1
       },
-      "defaultValue": 25.0
+      "defaultValue": 80
     },
     {
       "field_id": "regular_pay",
@@ -280,33 +329,33 @@
         "order": 3,
         "column": 1
       },
-      "calculation": "regular_hours * regular_rate",
+      "calculation": "hourlyRate * hoursWorked",
       "defaultValue": 2000.0,
       "editable": false
     },
     {
-      "field_id": "overtime_hours",
-      "label": "Overtime Hours",
-      "data_type": "number",
-      "format": "0.00",
-      "position": {
-        "section": "pay_details",
-        "order": 4,
-        "column": 1
-      },
-      "defaultValue": 5
-    },
-    {
-      "field_id": "overtime_rate",
+      "field_id": "overtimeRate",
       "label": "Overtime Rate",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
         "section": "pay_details",
-        "order": 5,
+        "order": 4,
         "column": 1
       },
       "defaultValue": 37.5
+    },
+    {
+      "field_id": "overtimeHours",
+      "label": "Overtime Hours",
+      "data_type": "number",
+      "format": "0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 5,
+        "column": 1
+      },
+      "defaultValue": 5
     },
     {
       "field_id": "overtime_pay",
@@ -318,12 +367,12 @@
         "order": 6,
         "column": 1
       },
-      "calculation": "overtime_hours * overtime_rate",
+      "calculation": "overtimeRate * overtimeHours",
       "defaultValue": 187.5,
       "editable": false
     },
     {
-      "field_id": "bonus",
+      "field_id": "bonusAmount",
       "label": "Bonus",
       "data_type": "currency",
       "format": "$0.00",
@@ -335,20 +384,20 @@
       "defaultValue": 0.0
     },
     {
-      "field_id": "commission",
-      "label": "Commission",
+      "field_id": "annualSalary",
+      "label": "Annual Salary",
       "data_type": "currency",
-      "format": "$0.00",
+      "format": "$0,000.00",
       "position": {
         "section": "pay_details",
         "order": 8,
         "column": 1
       },
-      "defaultValue": 0.0
+      "defaultValue": 52000.0
     },
     {
-      "field_id": "federal_tax",
-      "label": "Federal Tax",
+      "field_id": "federal_income_tax",
+      "label": "Federal Income Tax",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -359,8 +408,8 @@
       "defaultValue": 350.0
     },
     {
-      "field_id": "state_tax",
-      "label": "State Tax",
+      "field_id": "state_income_tax",
+      "label": "State Income Tax",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -371,8 +420,8 @@
       "defaultValue": 120.0
     },
     {
-      "field_id": "local_tax",
-      "label": "Local Tax",
+      "field_id": "social_security_tax",
+      "label": "Social Security Tax",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -380,11 +429,11 @@
         "order": 3,
         "column": 2
       },
-      "defaultValue": 25.0
+      "defaultValue": 135.63
     },
     {
-      "field_id": "social_security",
-      "label": "Social Security",
+      "field_id": "medicare_tax",
+      "label": "Medicare Tax",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -392,11 +441,11 @@
         "order": 4,
         "column": 2
       },
-      "defaultValue": 135.63
+      "defaultValue": 31.71
     },
     {
-      "field_id": "medicare",
-      "label": "Medicare",
+      "field_id": "deduction401k",
+      "label": "401(k) Contribution",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -404,11 +453,11 @@
         "order": 5,
         "column": 2
       },
-      "defaultValue": 31.71
+      "defaultValue": 100.0
     },
     {
-      "field_id": "retirement_401k",
-      "label": "401(k) Contribution",
+      "field_id": "medicalDeduction",
+      "label": "Medical Insurance",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -416,11 +465,11 @@
         "order": 6,
         "column": 2
       },
-      "defaultValue": 100.0
+      "defaultValue": 150.0
     },
     {
-      "field_id": "health_insurance",
-      "label": "Health Insurance",
+      "field_id": "dentalDeduction",
+      "label": "Dental Insurance",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -428,11 +477,11 @@
         "order": 7,
         "column": 2
       },
-      "defaultValue": 150.0
+      "defaultValue": 25.0
     },
     {
-      "field_id": "dental_insurance",
-      "label": "Dental Insurance",
+      "field_id": "visionDeduction",
+      "label": "Vision Insurance",
       "data_type": "currency",
       "format": "$0.00",
       "position": {
@@ -440,7 +489,19 @@
         "order": 8,
         "column": 2
       },
-      "defaultValue": 25.0
+      "defaultValue": 15.0
+    },
+    {
+      "field_id": "otherDeduction",
+      "label": "Other Deductions",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 9,
+        "column": 2
+      },
+      "defaultValue": 0.0
     },
     {
       "field_id": "ytd_gross",
@@ -503,8 +564,8 @@
       "defaultValue": 380.5
     },
     {
-      "field_id": "ytd_deductions",
-      "label": "YTD Total Deductions",
+      "field_id": "ytd_401k",
+      "label": "YTD 401(k)",
       "data_type": "currency",
       "format": "$0,000.00",
       "position": {
@@ -512,7 +573,43 @@
         "order": 6,
         "column": 3
       },
-      "defaultValue": 10620.0
+      "defaultValue": 1200.0
+    },
+    {
+      "field_id": "ytd_medical",
+      "label": "YTD Medical",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 7,
+        "column": 3
+      },
+      "defaultValue": 1800.0
+    },
+    {
+      "field_id": "ytd_dental",
+      "label": "YTD Dental",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 8,
+        "column": 3
+      },
+      "defaultValue": 300.0
+    },
+    {
+      "field_id": "ytd_vision",
+      "label": "YTD Vision",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 9,
+        "column": 3
+      },
+      "defaultValue": 180.0
     },
     {
       "field_id": "ytd_net_pay",
@@ -521,7 +618,7 @@
       "format": "$0,000.00",
       "position": {
         "section": "pay_details",
-        "order": 7,
+        "order": 10,
         "column": 3
       },
       "defaultValue": 15630.0
@@ -536,7 +633,7 @@
         "order": 1,
         "column": 1
       },
-      "calculation": "regular_pay + overtime_pay + bonus + commission",
+      "calculation": "regular_pay + overtime_pay + bonusAmount",
       "defaultValue": 2187.5,
       "editable": false
     },
@@ -550,8 +647,8 @@
         "order": 1,
         "column": 2
       },
-      "calculation": "federal_tax + state_tax + local_tax + social_security + medicare + retirement_401k + health_insurance + dental_insurance",
-      "defaultValue": 937.34,
+      "calculation": "federal_income_tax + state_income_tax + social_security_tax + medicare_tax + deduction401k + medicalDeduction + dentalDeduction + visionDeduction + otherDeduction",
+      "defaultValue": 927.34,
       "editable": false
     },
     {
@@ -565,7 +662,7 @@
         "column": 3
       },
       "calculation": "current_gross - current_deductions",
-      "defaultValue": 1250.16,
+      "defaultValue": 1260.16,
       "editable": false
     }
   ],
