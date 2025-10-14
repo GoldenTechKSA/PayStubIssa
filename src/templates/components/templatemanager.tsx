@@ -4,26 +4,18 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertDescription } from './ui/alert';
-import { Button } from './ui/button';
 import { TemplateConfiguration, TemplateMetadata } from '../types/templatetypes';
 import { templateLoader } from '../utils/templateloader';
 import TemplateSelector from './templateselector';
 import TemplateRenderer from './templaterenderer';
 
 interface TemplateManagerProps {
-  initialTemplateId?: string;
-  allowEditing?: boolean;
-  onDataChange?: (data: Record<string, any>) => void;
+  id: number;
 }
 
-export const TemplateManager: React.FC<TemplateManagerProps> = ({
-  initialTemplateId = 'classic_blue',
-  allowEditing = false,
-  onDataChange
-}) => {
+export const TemplateManager: React.FC<TemplateManagerProps> = ({id}) => {
   const [templates, setTemplates] = useState<TemplateMetadata[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(initialTemplateId);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [currentConfig, setCurrentConfig] = useState<TemplateConfiguration | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +45,7 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
   };
 
   const loadTemplateConfig = async (templateId: string) => {
+    console.log("Loading template config for:", templateId);
     try {
       setLoading(true);
       const config = await templateLoader.loadTemplate(templateId);
@@ -77,10 +70,8 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
     }
   };
 
-  const handleDataChange = (data: Record<string, any>) => {
-    if (onDataChange) {
-      onDataChange(data);
-    }
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplate(templateId);
   };
 
   if (loading && !currentConfig) {
@@ -97,15 +88,21 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({
   return (
     <div className="space-y-6">
       {/* Main Content */}
+      <TemplateSelector templates={templates} onSelect={handleTemplateSelect} id={id} templateId={selectedTemplate}/>
       <div className={'max-w-7xl mx-auto px-4'}>
         {currentConfig && (
           <div>
             {/* The actual paystub */}
-            <TemplateRenderer config={currentConfig} editable={allowEditing} onChange={handleDataChange} />
+            <TemplateRenderer config={currentConfig}/>
           </div>
         )}
       </div>
 
+      {/* Print footer - Only shows when printing */}
+      <div className="print-only mt-8 pt-4 border-t text-center text-xs text-gray-500">
+        <p>This document is computer-generated and does not require a signature.</p>
+        <p>For questions, please contact your payroll department.</p>
+      </div>
       {/* Print-specific styles */}
       <style>{`
         @media print {

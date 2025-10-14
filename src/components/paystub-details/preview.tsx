@@ -2,20 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import PrintTemplate0 from "../print/template0/printTemplate0";
-import PrintTemplate1 from "../print/template1/printTemplate1";
-import PrintTemplate2 from "../print/template2/printTemplate2";
-import PrintTemplate3 from "../print/template3/printTemplate3";
-import PrintTemplate4 from "../print/template4/printTemplate4";
-import PrintTemplate5 from "../print/template5/printTemplate5";
-import PrintTemplate6 from "../print/template6/printTemplate6";
-import PrintTemplate7 from "../print/template7/printTemplate7";
-import PrintTemplate8 from "../print/template8/printTemplate8";
-import PrintTemplate9 from "../print/template9/printTemplate9";
-import PrintTemplate10 from "../print/template10/printTemplate10";
-import PrintTemplate11 from "../print/template11/printTemplate11";
-import PrintTemplate12 from "../print/template12/printTemplate12";
-import PrintTemplate13 from "../print/template13/printTemplate13";
 import PayPal from "../common/paypal-payment";
 import PDFDownloadButton from "../pdf/pdf-button-comp";
 import * as templateIds from "../../constants/template-ids";
@@ -93,12 +79,7 @@ const Preview = () => {
         < div className= "" >
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
                 <Col md={7}>
-                    <main>
-                        <TemplateManager initialTemplateId="paystub_regular" allowEditing={false} onDataChange={(data) => {
-                            console.log('Paystub data updated:', data);
-                        }}/>
-                    </main>
-
+                    <TemplateManager id={templateId} />
                     {/* { canPrint && (
                         <div>
                             { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <TemplateRegistry store={state} id={templateId} canPrintStub={canPrintStub}/> }

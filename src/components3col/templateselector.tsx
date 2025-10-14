@@ -9,13 +9,18 @@ interface TemplateSelectorProps {
 }
 
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({ id, templates, onSelect }) => {
+  const getTemplateIndex = (id: number): number => {
+    // Ensure the index is within bounds
+    return Math.min(id, templates.length - 1);
+  }
+
   useEffect(() => {
     if (templates.length > 0) {
       // Select a random template
       //      const randomIndex = Math.floor(Math.random() * templates.length);
-      const index = Math.min(id, templates.length - 1);
-      const randomTemplate = templates[index];
-      onSelect(randomTemplate);
+      const index = getTemplateIndex(id);
+      const template = templates[index];
+      onSelect(template);
     }
   }, [templates, onSelect]);
 
