@@ -1,54 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import * as templateIds from "../constants/template-ids";
 import { FullTemplate } from './types';
 
 interface TemplateSelectorProps {
+  id: number;
   templates: FullTemplate[];
   onSelect: (template: FullTemplate) => void;
-  selectedTemplateId: string | null;
 }
 
-const TemplateSelector: React.FC<TemplateSelectorProps> = ({ 
-  templates, 
-  onSelect, 
-  selectedTemplateId 
-}) => {
-  return (
-    <div className="template-selector">
-      <h2 className="text-lg font-bold mb-4">Select a Paystub Template</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {templates.map(template => (
-          <div 
-            key={template.template_id}
-            className={`border rounded-lg p-4 cursor-pointer transition-all ${
-              selectedTemplateId === template.template_id 
-                ? 'border-blue-500 bg-blue-50' 
-                : 'border-gray-200 hover:border-blue-300'
-            }`}
-            onClick={() => onSelect(template)}
-          >
-            <div className="flex justify-center mb-3">
-              <img 
-                src={template.thumbnail} 
-                alt={template.title} 
-                className="w-full h-32 object-cover rounded"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/images/default-template-thumb.png';
-                }}
-              />
-            </div>
-            <h3 className="font-bold">{template.title}</h3>
-            <p className="text-sm text-gray-600 mt-1">{template.description}</p>
-            <div className="mt-2">
-              <span className="inline-block px-2 py-1 text-xs bg-gray-200 rounded">
-                {template.category}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const TemplateSelector: React.FC<TemplateSelectorProps> = ({ id, templates, onSelect }) => {
+  useEffect(() => {
+    if (templates.length > 0) {
+      // Select a random template
+      //      const randomIndex = Math.floor(Math.random() * templates.length);
+      const index = Math.min(id, templates.length - 1);
+      const randomTemplate = templates[index];
+      onSelect(randomTemplate);
+    }
+  }, [templates, onSelect]);
+
+  // Return null since no UI should be presented
+  return null;
 };
 
 export default TemplateSelector;

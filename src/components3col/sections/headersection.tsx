@@ -9,13 +9,19 @@ interface HeaderSectionProps extends TemplateProps {
 }
 
 const HeaderSection: React.FC<HeaderSectionProps> = ({ header, store, styling }) => {
-  const [companyColumn, logoColumn, titleColumn] = header.columns;
+  const layoutType = header.columns.length === 2 ? 'col-md-6' : 'col-md-4';
   
   return (
     <div className={styling.header_container}>
-      <div className="col-md-3"> <CompanyInfoColumn fields={companyColumn.fields} store={store} styling={styling}/></div>
-      <div className="col-md-6"> <LogoColumn fields={logoColumn.fields} store={store} styling={styling}/></div>
-      <div className="col-md-3"> <PaystubTitleColumn fields={titleColumn.fields} store={store} styling={styling}/></div>
+      {header.columns.map((column, index) => (
+        <div key={column.column_id} className={layoutType}>
+          {column.column_id === 'header_company_info' && ( <CompanyInfoColumn fields={column.fields} store={store} styling={styling}/>)}
+          {column.column_id === 'header_logo' && ( <LogoColumn fields={column.fields} store={store} styling={styling} />)}
+          {column.column_id === 'header_title' && ( <PaystubTitleColumn fields={column.fields} store={store} styling={styling}/>)}
+          {column.column_id === 'header_company_logo' && ( <CompanyInfoColumn fields={column.fields} store={store} styling={styling}/>)}
+          {column.column_id === 'header_paystub_info' && ( <PaystubTitleColumn fields={column.fields} store={store} styling={styling}/>)}
+        </div>
+     ))}
     </div>
   );
 };

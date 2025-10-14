@@ -94,30 +94,17 @@ const Preview = () => {
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
                 <Col md={7}>
                     <main>
-                        {/* <TemplateManager initialTemplateId="paystub_regular" allowEditing={false}
-                            onDataChange={(data) => {
+                        <TemplateManager initialTemplateId="paystub_regular" allowEditing={false} onDataChange={(data) => {
                             console.log('Paystub data updated:', data);
-                            }}
-                        /> */}
-                        <TemplateRegistry store={state} canPrintStub={canPrintStub}/>
+                        }}/>
                     </main>
 
-                    { canPrint && (<div>
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <PrintTemplate0 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_1 && <PrintTemplate1 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_2 && <PrintTemplate2 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_3 && <PrintTemplate3 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_4 && <PrintTemplate4 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_5 && <PrintTemplate5 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_6 && <PrintTemplate6 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_7 && <PrintTemplate7 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_8 && <PrintTemplate8 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_9 && <PrintTemplate9 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_10 && <PrintTemplate10 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_11 && <PrintTemplate11 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_12 && <PrintTemplate12 canPrintStub={canPrintStub}/> }
-                    { templateId === templateIds.PAYSTUB_TEMPLATE_13 && <PrintTemplate13 canPrintStub={canPrintStub}/> }
-                    </div> )}
+                    {/* { canPrint && (
+                        <div>
+                            { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <TemplateRegistry store={state} id={templateId} canPrintStub={canPrintStub}/> }
+                            { templateId === templateIds.PAYSTUB_TEMPLATE_1 && <TemplateRegistry store={state} id={templateId} canPrintStub={canPrintStub}/> }
+                        </div>
+                    )} */}
                 </Col>
                 <Col md={{span: 2, offset:1 }}>
                     <Row className="mb-3">

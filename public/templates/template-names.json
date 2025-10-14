@@ -9,20 +9,12 @@
       "description": "A clean, professional paystub layout with all essential fields"
     },
     {
-      "template_id": "detailed-paystub",
-      "title": "Detailed Paystub",
-      "config_path": "/templates/template2.json",
-      "thumbnail": "/images/detailed-paystub-thumb.jpg",
-      "category": "Advanced",
-      "description": "Comprehensive paystub with detailed breakdowns of earnings and deductions"
-    },
-    {
-      "template_id": "minimal-paystub",
-      "title": "Minimal Paystub",
-      "config_path": "/templates/template3.json",
-      "thumbnail": "/images/minimal-paystub-thumb.jpg",
-      "category": "Simple",
-      "description": "Streamlined paystub showing only the most critical information"
+      "template_id": "prof-2column-paystub",
+      "title": "Professional 2-Column Paystub",
+      "config_path": "/templates/paystub1.json",
+      "thumbnail": "/images/thumb0.png",
+      "category": "Basic",
+      "description": "A clean, professional 2 column paystub layout with all essential fields"
     }
   ]
 }
