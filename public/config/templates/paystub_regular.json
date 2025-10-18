@@ -12,7 +12,7 @@
       "order": 1,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-black text-white"
+      "styling": "bg-dark text-white"
     },
     {
       "section_id": "employee_details",
@@ -28,7 +28,7 @@
       "order": 3,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "py-4 px-4"
+      "styling": ""
     },
     {
       "section_id": "summary",
@@ -36,13 +36,14 @@
       "order": 4,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-blue-100 font-bold py-4 px-4 border-t-2 border-blue-600"
+      "styling": "bg-light fw-bold py-4 px-4 border-top border-primary"
     }
   ],
   "fields": [
     {
       "field_id": "companyName",
       "data_type": "string",
+      "source": "companyInfo.companyName",
       "position": {
         "section": "company_header",
         "order": 1,
@@ -54,6 +55,7 @@
     {
       "field_id": "companyFullAddress",
       "data_type": "string",
+      "source": "companyInfo.companyAddress1",
       "position": {
         "section": "company_header",
         "order": 2,
@@ -64,6 +66,7 @@
     {
       "field_id": "companyPhone",
       "data_type": "phone",
+      "source": "companyInfo.companyPhone",
       "position": {
         "section": "company_header",
         "order": 3,
@@ -74,6 +77,7 @@
     {
       "field_id": "companyEmail",
       "data_type": "email",
+      "source": "companyInfo.companyEmail",
       "position": {
         "section": "company_header",
         "order": 4,
@@ -84,6 +88,7 @@
     {
       "field_id": "companyEIN",
       "label": "EIN",
+      "source": "companyInfo.companyEIN",
       "data_type": "string",
       "position": {
         "section": "company_header",
@@ -95,6 +100,7 @@
     {
       "field_id": "company_logo",
       "label": "Company Logo",
+      "source": "companyInfo.companyLogo",
       "data_type": "string",
       "position": {
         "section": "company_header",
@@ -118,6 +124,7 @@
       "field_id": "payStubNumber",
       "label": "Pay Stub Number",
       "data_type": "string",
+      "source": "generalInfo.payStubNumber",
       "position": {
         "section": "company_header",
         "order": 2,
@@ -129,6 +136,7 @@
       "field_id": "checkNumber",
       "label": "Check Number",
       "data_type": "string",
+      "source": "generalInfo.checkNumber",
       "position": {
         "section": "company_header",
         "order": 3,
@@ -141,6 +149,7 @@
       "label": "Pay Period Start",
       "data_type": "date",
       "format": "MM/DD/YYYY",
+      "source": "generalInfo.periodStartDate",
       "position": {
         "section": "company_header",
         "order": 4,
@@ -153,6 +162,7 @@
       "label": "Pay Period End",
       "data_type": "date",
       "format": "MM/DD/YYYY",
+      "source": "generalInfo.periodEndDate",
       "position": {
         "section": "company_header",
         "order": 5,
@@ -165,6 +175,7 @@
       "label": "Pay Date",
       "data_type": "date",
       "format": "MM/DD/YYYY",
+      "source": "generalInfo.periodPayDate",
       "position": {
         "section": "company_header",
         "order": 6,
@@ -176,6 +187,7 @@
       "field_id": "employeeFullName",
       "label": "Employee Name",
       "data_type": "string",
+      "source": "employeeInfo.fullName",
       "position": {
         "section": "employee_details",
         "order": 1,
@@ -188,6 +200,7 @@
       "field_id": "employeeID",
       "label": "Employee ID",
       "data_type": "string",
+      "source": "employeeInfo.employeeID",
       "position": {
         "section": "employee_details",
         "order": 2,
@@ -200,6 +213,7 @@
       "field_id": "employeeSSN",
       "label": "SSN (Last 4)",
       "data_type": "string",
+      "source": "employeeInfo.employeeSSN",
       "position": {
         "section": "employee_details",
         "order": 3,
@@ -211,6 +225,7 @@
       "field_id": "employeeMarriedStatus",
       "label": "Filing Status",
       "data_type": "string",
+      "source": "employeeInfo.employeeMarriedStatus",
       "position": {
         "section": "employee_details",
         "order": 4,
@@ -222,6 +237,7 @@
       "field_id": "employeeFullAddress",
       "label": "Address",
       "data_type": "string",
+      "source": "employeeInfo.employeeAddress1",
       "position": {
         "section": "employee_details",
         "order": 1,
@@ -233,6 +249,7 @@
       "field_id": "employeePhone",
       "label": "Phone",
       "data_type": "phone",
+      "source": "employeeInfo.employeePhone",
       "position": {
         "section": "employee_details",
         "order": 2,
@@ -244,6 +261,7 @@
       "field_id": "employeeEmail",
       "label": "Email",
       "data_type": "email",
+      "source": "employeeInfo.employeeEmail",
       "position": {
         "section": "employee_details",
         "order": 3,
@@ -255,6 +273,7 @@
       "field_id": "employmentType",
       "label": "Employment Type",
       "data_type": "string",
+      "source": "employeeInfo.employmentType",
       "position": {
         "section": "employee_details",
         "order": 1,
@@ -266,6 +285,7 @@
       "field_id": "wageType",
       "label": "Wage Type",
       "data_type": "string",
+      "source": "employeeInfo.wageType",
       "position": {
         "section": "employee_details",
         "order": 2,
@@ -277,6 +297,7 @@
       "field_id": "paymentMethod",
       "label": "Payment Method",
       "data_type": "string",
+      "source": "employeeInfo.paymentMethod",
       "position": {
         "section": "employee_details",
         "order": 3,
@@ -288,6 +309,7 @@
       "field_id": "paymentFrequency",
       "label": "Pay Frequency",
       "data_type": "string",
+      "source": "employeeInfo.paymentFrequency",
       "position": {
         "section": "employee_details",
         "order": 4,
@@ -300,6 +322,7 @@
       "label": "Hourly Rate",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "incomeDetails.hourlyRate",
       "position": {
         "section": "pay_details",
         "order": 1,
@@ -312,6 +335,7 @@
       "label": "Hours Worked",
       "data_type": "number",
       "format": "0.00",
+      "source": "incomeDetails.hoursWorked",
       "position": {
         "section": "pay_details",
         "order": 2,
@@ -324,6 +348,7 @@
       "label": "Regular Pay",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "incomeDetails.regularPay",
       "position": {
         "section": "pay_details",
         "order": 3,
@@ -338,6 +363,7 @@
       "label": "Overtime Rate",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "incomeDetails.overtimeRate",
       "position": {
         "section": "pay_details",
         "order": 4,
@@ -350,6 +376,7 @@
       "label": "Overtime Hours",
       "data_type": "number",
       "format": "0.00",
+      "source": "incomeDetails.overtimeHours",
       "position": {
         "section": "pay_details",
         "order": 5,
@@ -362,6 +389,7 @@
       "label": "Overtime Pay",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "incomeDetails.overtimePay",
       "position": {
         "section": "pay_details",
         "order": 6,
@@ -376,6 +404,7 @@
       "label": "Bonus",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "incomeDetails.bonusAmount",
       "position": {
         "section": "pay_details",
         "order": 7,
@@ -388,6 +417,7 @@
       "label": "Annual Salary",
       "data_type": "currency",
       "format": "$0,000.00",
+      "source": "incomeDetails.annualSalary",
       "position": {
         "section": "pay_details",
         "order": 8,
@@ -460,6 +490,7 @@
       "label": "Medical Insurance",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "deductions.medicalDeduction",
       "position": {
         "section": "pay_details",
         "order": 6,
@@ -472,6 +503,7 @@
       "label": "Dental Insurance",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "deductions.dentalDeduction",
       "position": {
         "section": "pay_details",
         "order": 7,
@@ -484,6 +516,7 @@
       "label": "Vision Insurance",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "deductions.visionDeduction",
       "position": {
         "section": "pay_details",
         "order": 8,
@@ -496,6 +529,7 @@
       "label": "Other Deductions",
       "data_type": "currency",
       "format": "$0.00",
+      "source": "deductions.otherDeduction",
       "position": {
         "section": "pay_details",
         "order": 9,

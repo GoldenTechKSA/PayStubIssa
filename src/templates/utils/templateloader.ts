@@ -116,6 +116,7 @@ export class TemplateLoader {
     // Validate field references in sections
     const sectionIds = new Set(config.sections.map(s => s.section_id));
     config.fields.forEach(field => {
+      console.log("Validating field:", field);
       if (!sectionIds.has(field.position.section)) {
         errors.push(`Field ${field.field_id} references non-existent section ${field.position.section}`);
       }
@@ -138,14 +139,6 @@ export class TemplateLoader {
       valid: errors.length === 0,
       errors
     };
-  }
-
-  /**
-   * Preload multiple templates
-   */
-  async preloadTemplates(templateIds: string[]): Promise<void> {
-    const promises = templateIds.map(id => this.loadTemplate(id));
-    await Promise.all(promises);
   }
 }
 

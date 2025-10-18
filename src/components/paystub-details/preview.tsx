@@ -13,13 +13,11 @@ import TemplateRegistry from "components3col/templateregistry";
 import store from "../../redux/store";
 
 const Preview = () => {
-    const state = store.getState();
+    const state: PayStubDetails = store.getState();
     const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [canPrintStub, setCanPrintStub] = useState(canPrint);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    console.log("store: in Preview Component", store, "CompanyInfo:", state);
 
     useEffect(() => {
         dispatch(updateAppSettings({ canPrint: canPrintStub }));
@@ -79,7 +77,7 @@ const Preview = () => {
         < div className= "" >
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
                 <Col md={7}>
-                    <TemplateManager id={templateId} />
+                    <TemplateManager id={templateId} store={state}/>
                     {/* { canPrint && (
                         <div>
                             { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <TemplateRegistry store={state} id={templateId} canPrintStub={canPrintStub}/> }

@@ -17,6 +17,7 @@ export interface TemplateMetadata {
 
 export interface FieldDefinition {
   field_id: string;
+  source: string; // path to data source, e.g. "employee.name"
   label: string;
   data_type: 'string' | 'number' | 'currency' | 'date' | 'percentage' | 'email' | 'phone';
   format?: string;

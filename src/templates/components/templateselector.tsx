@@ -1,6 +1,10 @@
 /**
  * Template Selector Component
- * Displays available templates for user selection
+ * maps the template selected by the user in carousel component to the template configuration
+ * and passes it to the TemplateRenderer component to render the paystub
+ * 
+ * Note: This component does not render any UI, it only handles the logic of selecting a template
+ * and passing the selected template configuration to the TemplateRenderer component.
  */
 
 import React, { useEffect } from 'react';

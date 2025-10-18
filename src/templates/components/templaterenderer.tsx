@@ -1,6 +1,12 @@
 /**
  * Template Renderer Component
- * Dynamically renders paystub templates based on JSON configuration
+ * Dynamically renders paystub templates based on their JSON configuration and maps the redux store data to the template fields.
+ * Supports various layout types (table, grid, flex, stack) and includes print-specific styles for accurate printing.
+ * Handles computed fields using the calculation engine and formats field values based on their data types.
+ * 
+ * Features: Renders sections and fields as per the template configuration
+ * Applies custom styling and layout options from the template configuration
+ * Ensures print-ready formatting with CSS media queries
  */
 
 import React, { useEffect, useState } from 'react';
@@ -11,48 +17,48 @@ import { fieldFormatter } from '../utils/fieldformatter';
 interface TemplateRendererProps {
   config: TemplateConfiguration;
   data?: Record<string, any>;
-  editable?: boolean;
   onChange?: (data: Record<string, any>) => void;
 }
 
-export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data: externalData, editable = false, onChange}) => {
+export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data: externalData, onChange}) => {
   const [fieldData, setFieldData] = useState<Record<string, any>>({});
 
+  console.log("TemplateRenderer: config", config);
+  console.log("TemplateRenderer: externalData", externalData);  
+
+
   useEffect(() => {
+    const initializeData = () => {
+      const initialData: Record<string, any> = {};
+      
+      function getByPath(obj: any, path: string) {
+        return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+      }
+
+      config.fields.forEach((field) => {
+        let value = undefined;
+        if (externalData && field.source) {
+          value = getByPath(externalData, field.source);
+        }
+        if (value !== undefined) {
+          initialData[field.field_id] = value;
+        } else {
+          initialData[field.field_id] = field.defaultValue;
+        }
+      });
+
+      // Calculate computed fields
+      const calculatedData = calculationEngine.calculateDependentFields(config.fields, initialData);
+      setFieldData(calculatedData);
+    };
+
     initializeData();
   }, [config, externalData]);
 
-  const initializeData = () => {
-    const initialData: Record<string, any> = {};
-    
-    // Use external data if provided, otherwise use default values
-    config.fields.forEach((field) => {
-      if (externalData && externalData[field.field_id] !== undefined) {
-        initialData[field.field_id] = externalData[field.field_id];
-      } else {
-        initialData[field.field_id] = field.defaultValue;
-      }
-    });
-
-    // Calculate computed fields
-    const calculatedData = calculationEngine.calculateDependentFields(config.fields, initialData);
-    setFieldData(calculatedData);
-  };
-
-  const handleFieldChange = (fieldId: string, value: any) => {
-    const updatedData = { ...fieldData, [fieldId]: value };
-    const calculatedData = calculationEngine.calculateDependentFields(config.fields, updatedData);
-    setFieldData(calculatedData);
-    
-    if (onChange) {
-      onChange(calculatedData);
-    }
-  };
-
-  const renderField = (field: FieldDefinition, isEditable: boolean) => {
+  const renderField = (field: FieldDefinition) => {
     const value = fieldData[field.field_id];
     const formattedValue = fieldFormatter.format(value, field);
-    return <span className="field-value">{formattedValue}</span>;
+    return <span className="">{formattedValue}</span>;
   };
 
   const renderTableSection = (section: SectionDefinition) => {
@@ -69,7 +75,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
           {sectionFields.map((field) => (
             <div key={field.field_id} className="list-group-item d-flex justify-content-between align-items-center py-2">
               <span className="text-muted">{field.label}</span>
-              <span className="fw-semibold">{renderField(field, editable)}</span>
+              <span className="fw-semibold">{renderField(field)}</span>
             </div>
           ))}
         </div>
@@ -103,8 +109,8 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
             <div key={colIndex} className={`col-md-${12 / columns} column-wrapper`}>
               {fields.map((field) => (
                 <div key={field.field_id} className="column-field">
-                  <div className="field-label">{field.label}</div>
-                  <div>{renderField(field, editable)}</div>
+                  <span className="field-label">{field.label}</span>
+                  <span>{renderField(field)}</span>
                 </div>
               ))}
             </div>
@@ -126,7 +132,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
           {sectionFields.map((field) => (
             <div key={field.field_id} className="flex-grow-1">
               <div className="small text-muted">{field.label}</div>
-              <div className="fw-semibold">{renderField(field, editable)}</div>
+              <div className="fw-semibold">{renderField(field)}</div>
             </div>
           ))}
         </div>
@@ -146,7 +152,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
           {sectionFields.map((field) => (
             <div key={field.field_id} className="d-flex justify-content-between align-items-center">
               <span className="small text-muted">{field.label}</span>
-              <span className="fw-semibold">{renderField(field, editable)}</span>
+              <span className="fw-semibold">{renderField(field)}</span>
             </div>
           ))}
         </div>
@@ -210,120 +216,30 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
 
   return (
     <div
-      className="print-paystub bg-white"
-      style={{
-        fontFamily: config.styling.fontFamily,
-        backgroundColor: config.styling.backgroundColor,
-        borderColor: config.styling.borderColor || '#dee2e6',
-        maxWidth: config.layout?.maxWidth || '8.5in',
-        minHeight: '11in',
-        padding: '2rem',
-        margin: config.layout?.margin || 'auto',
-        border: '1px solid #dee2e6'
-      }}
+      className=""
+      // style={{
+      //   fontFamily: config.styling.fontFamily,
+      //   backgroundColor: config.styling.backgroundColor,
+      //   borderColor: config.styling.borderColor || '#00458aff',
+      //   maxWidth: config.layout?.maxWidth || '8.5in',
+      //   minHeight: '11in',
+      //   border: '1px solid #d80000ff'
+      // }}
     >
-      <div className="d-flex flex-column">
+      <div className="">
         {config.sections.sort((a, b) => a.order - b.order).map((section) => {
             // Skip column sections if we're rendering them in 3-column layout
-            if (isThreeColumnLayout() && 
-                (section.section_id === 'left_column' || 
-                 section.section_id === 'middle_column' || 
-                 section.section_id === 'right_column')) {
+            if (isThreeColumnLayout() && (section.section_id === 'left_column' || section.section_id === 'middle_column' || section.section_id === 'right_column')) {
               // Only render the three-column layout once when we hit the first column
               if (section.section_id === 'left_column') {
-                return (
-                  <div key="three-column-layout" className="mb-4">
-                    {renderThreeColumnLayout()}
-                  </div>
-                );
+                return (<div key="three-column-layout" className="mb-4">{renderThreeColumnLayout()}</div>);
               }
               return null;
             }
-            
-            return (
-              <div key={section.section_id} className="section-wrapper">
-                {renderSection(section)}
-              </div>
-            );
+          
+            return (<div key={section.section_id} className="section-wrapper">{renderSection(section)}</div>);
           })}
       </div>
-
-      {/* Print-specific styles for the paystub */}
-      <style>{`
-        @media print {
-          .print-paystub {
-            box-shadow: none !important;
-            border: 1px solid #000 !important;
-            border-radius: 0 !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 0.5in !important;
-            min-height: 0 !important;
-          }
-          
-          /* Section spacing */
-          .section-wrapper {
-            margin-bottom: 16pt !important;
-            page-break-inside: avoid;
-          }
-          
-          /* Ensure table borders print */
-          table, th, td {
-            border: 1px solid #000 !important;
-          }
-          
-          /* Ensure Bootstrap grid maintains structure */
-          .row {
-            display: flex !important;
-            flex-wrap: nowrap !important;
-            margin: 0 !important;
-          }
-          
-          .col, .col-md-4 {
-            flex: 1 !important;
-            padding: 0 0.25in !important;
-          }
-          
-          /* Make sure background colors print */
-          .bg-blue-50,
-          .bg-blue-100,
-          .bg-gray-50,
-          .bg-light {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          
-          /* Font sizes for print */
-          body {
-            font-size: 9pt;
-          }
-          
-          h6, .h6 {
-            font-size: 10pt !important;
-            margin-bottom: 8pt !important;
-          }
-          
-          /* Field labels */
-          .field-label {
-            font-size: 7pt !important;
-          }
-          
-          /* Field values */
-          .field-value {
-            font-size: 9pt !important;
-          }
-          
-          /* Column spacing */
-          .column-field {
-            margin-bottom: 8pt !important;
-          }
-          
-          /* Avoid page breaks inside sections */
-          .border, .section-wrapper, .card {
-            page-break-inside: avoid;
-          }
-        }
-      `}</style>
     </div>
   );
 };

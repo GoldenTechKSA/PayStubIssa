@@ -16,7 +16,7 @@ const PaystubPreview = () => {
     const devMode = (process.env.NODE_ENV === "production" ? false : true)
 
     const printPaystub = async () => {
-        console.log("store.getState() - State:", state);
+        // console.log("store.getState() - State:", state);
         navigate(`/printTemplate/${templateId}`);
     };
 

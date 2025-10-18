@@ -93,6 +93,7 @@ describe('TemplateLoader', () => {
         sections: [{ section_id: 'header', title: 'Header', order: 1, layout_type: 'grid' }],
         fields: [{
           field_id: 'test_field',
+          source: 'test_field',
           label: 'Test',
           data_type: 'string',
           position: { section: 'invalid_section', order: 1 }
@@ -187,6 +188,7 @@ describe('CalculationEngine', () => {
       const fields: FieldDefinition[] = [
         {
           field_id: 'base',
+          source: 'base',
           label: 'Base',
           data_type: 'currency',
           position: { section: 'test', order: 1 },
@@ -194,6 +196,7 @@ describe('CalculationEngine', () => {
         },
         {
           field_id: 'bonus',
+          source: 'bonus',
           label: 'Bonus',
           data_type: 'currency',
           position: { section: 'test', order: 2 },
@@ -201,6 +204,7 @@ describe('CalculationEngine', () => {
         },
         {
           field_id: 'gross',
+          source: 'gross',
           label: 'Gross',
           data_type: 'currency',
           position: { section: 'test', order: 3 },
@@ -208,6 +212,7 @@ describe('CalculationEngine', () => {
         },
         {
           field_id: 'net',
+          source: 'net',
           label: 'Net',
           data_type: 'currency',
           position: { section: 'test', order: 4 },
@@ -226,6 +231,7 @@ describe('CalculationEngine', () => {
       const fields: FieldDefinition[] = [
         {
           field_id: 'hours',
+          source: 'hours',
           label: 'Hours',
           data_type: 'number',
           position: { section: 'test', order: 1 },
@@ -233,6 +239,7 @@ describe('CalculationEngine', () => {
         },
         {
           field_id: 'rate',
+          source: 'rate',
           label: 'Rate',
           data_type: 'currency',
           position: { section: 'test', order: 2 },
@@ -240,6 +247,7 @@ describe('CalculationEngine', () => {
         },
         {
           field_id: 'gross',
+          source: 'gross',
           label: 'Gross',
           data_type: 'currency',
           position: { section: 'test', order: 3 },
@@ -247,6 +255,7 @@ describe('CalculationEngine', () => {
         },
         {
           field_id: 'tax',
+          source: 'tax',
           label: 'Tax',
           data_type: 'currency',
           position: { section: 'test', order: 4 },
@@ -254,6 +263,7 @@ describe('CalculationEngine', () => {
         },
         {
           field_id: 'net',
+          source: 'net',
           label: 'Net',
           data_type: 'currency',
           position: { section: 'test', order: 5 },
@@ -300,6 +310,7 @@ describe('FieldFormatter', () => {
     it('should format currency with default format', () => {
       const field: FieldDefinition = {
         field_id: 'salary',
+        source: 'salary',
         label: 'Salary',
         data_type: 'currency',
         position: { section: 'test', order: 1 }
@@ -311,6 +322,7 @@ describe('FieldFormatter', () => {
     it('should format currency with $0.00 format', () => {
       const field: FieldDefinition = {
         field_id: 'salary',
+        source: 'salary',
         label: 'Salary',
         data_type: 'currency',
         format: '$0.00',
@@ -325,6 +337,7 @@ describe('FieldFormatter', () => {
     it('should format number with 2 decimals', () => {
       const field: FieldDefinition = {
         field_id: 'hours',
+        source: 'hours',
         label: 'Hours',
         data_type: 'number',
         format: '0.00',
@@ -337,6 +350,7 @@ describe('FieldFormatter', () => {
     it('should format number with 0 decimals', () => {
       const field: FieldDefinition = {
         field_id: 'hours',
+        source: 'hours',
         label: 'Hours',
         data_type: 'number',
         format: '0',
@@ -351,6 +365,7 @@ describe('FieldFormatter', () => {
     it('should format percentage with 2 decimals', () => {
       const field: FieldDefinition = {
         field_id: 'rate',
+        source: 'rate',
         label: 'Rate',
         data_type: 'percentage',
         format: '0.00%',
@@ -365,6 +380,7 @@ describe('FieldFormatter', () => {
     it('should format date as MM/DD/YYYY', () => {
       const field: FieldDefinition = {
         field_id: 'date',
+        source: 'date',
         label: 'Date',
         data_type: 'date',
         format: 'MM/DD/YYYY',
@@ -379,6 +395,7 @@ describe('FieldFormatter', () => {
     it('should validate required field', () => {
       const field: FieldDefinition = {
         field_id: 'name',
+        source: 'name',
         label: 'Name',
         data_type: 'string',
         position: { section: 'test', order: 1 },
@@ -396,6 +413,7 @@ describe('FieldFormatter', () => {
     it('should validate min value', () => {
       const field: FieldDefinition = {
         field_id: 'hours',
+        source: 'hours',
         label: 'Hours',
         data_type: 'number',
         position: { section: 'test', order: 1 },
@@ -413,6 +431,7 @@ describe('FieldFormatter', () => {
     it('should validate max value', () => {
       const field: FieldDefinition = {
         field_id: 'hours',
+        source: 'hours',
         label: 'Hours',
         data_type: 'number',
         position: { section: 'test', order: 1 },
@@ -473,6 +492,7 @@ describe('Integration Tests', () => {
       {
         field: {
           field_id: 'currency_test',
+          source: 'currency_test',
           label: 'Currency',
           data_type: 'currency' as const,
           position: { section: 'test', order: 1 }
@@ -483,6 +503,7 @@ describe('Integration Tests', () => {
       {
         field: {
           field_id: 'number_test',
+          source: 'number_test',
           label: 'Number',
           data_type: 'number' as const,
           format: '0.00',
@@ -494,6 +515,7 @@ describe('Integration Tests', () => {
       {
         field: {
           field_id: 'percentage_test',
+          source: 'percentage_test',
           label: 'Percentage',
           data_type: 'percentage' as const,
           format: '0.00%',
@@ -529,6 +551,7 @@ describe('Error Handling', () => {
     const formatter = FieldFormatter.getInstance();
     const field: FieldDefinition = {
       field_id: 'test',
+      source: 'test',
       label: 'Test',
       data_type: 'currency',
       position: { section: 'test', order: 1 }
@@ -577,6 +600,7 @@ describe('Performance Tests', () => {
     const fields: FieldDefinition[] = [
       {
         field_id: 'base',
+        source: 'base',
         label: 'Base',
         data_type: 'number',
         position: { section: 'test', order: 1 },
@@ -587,6 +611,7 @@ describe('Performance Tests', () => {
     for (let i = 1; i < 100; i++) {
       fields.push({
         field_id: `calc_${i}`,
+        source: `calc_${i}`,
         label: `Calc ${i}`,
         data_type: 'number',
         position: { section: 'test', order: i + 1 },
@@ -608,6 +633,7 @@ describe('Edge Cases', () => {
     const formatter = FieldFormatter.getInstance();
     const field: FieldDefinition = {
       field_id: 'large_value',
+      source: 'large_value',
       label: 'Large Value',
       data_type: 'currency',
       position: { section: 'test', order: 1 }
@@ -622,6 +648,7 @@ describe('Edge Cases', () => {
     const formatter = FieldFormatter.getInstance();
     const field: FieldDefinition = {
       field_id: 'small_value',
+      source: 'small_value',
       label: 'Small Value',
       data_type: 'number',
       format: '0.00',
@@ -636,6 +663,7 @@ describe('Edge Cases', () => {
     const formatter = FieldFormatter.getInstance();
     const field: FieldDefinition = {
       field_id: 'negative',
+      source: 'negative',
       label: 'Negative',
       data_type: 'currency',
       position: { section: 'test', order: 1 }
@@ -653,6 +681,7 @@ describe('Edge Cases', () => {
     const fields: FieldDefinition[] = [
       {
         field_id: 'field_a',
+        source: 'field_a',
         label: 'Field A',
         data_type: 'number',
         position: { section: 'test', order: 1 },
@@ -660,6 +689,7 @@ describe('Edge Cases', () => {
       },
       {
         field_id: 'field_b',
+        source: 'field_b',
         label: 'Field B',
         data_type: 'number',
         position: { section: 'test', order: 2 },
@@ -696,6 +726,7 @@ describe('Edge Cases', () => {
     const formatter = FieldFormatter.getInstance();
     const field: FieldDefinition = {
       field_id: 'company',
+      source: 'company',
       label: 'Company',
       data_type: 'string',
       position: { section: 'test', order: 1 }
