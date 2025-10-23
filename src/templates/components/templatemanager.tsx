@@ -87,10 +87,10 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({id, store}) => 
       {/* Render actual paystub*/}
       {currentConfig && (<div> <TemplateRenderer config={currentConfig} data={store}/></div>)}
       {/* Print footer*/}
-      <div className="">
+      {/* <div className="d-flex justify-content-between align-items-center">
         <p>This document is computer-generated and does not require a signature.</p>
         <p>For questions, please contact your payroll department.</p>
-      </div>
+      </div> */}
     </div>
   );
 };

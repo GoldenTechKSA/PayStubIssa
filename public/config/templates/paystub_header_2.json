@@ -1,0 +1,176 @@
+{
+  "metadata": {
+    "template_id": "paystub_regular",
+    "title": "Standard Employee Paystub",
+    "version": "3.0",
+    "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
+    "category": "standard"
+  },
+  "sections": [
+    {
+      "section_id": "company_header",
+      "order": 1,
+      "layout_type": "grid",
+      "columns": 3,
+      "styling": "bg-light border-top border-primary"
+    }
+  ],
+  "fields": [
+    {
+      "field_id": "companyName",
+      "data_type": "string",
+      "source": "companyInfo.companyName",
+      "position": {
+        "section": "company_header",
+        "order": 1,
+        "column": 2
+      },
+      "defaultValue": "ABC Corporation",
+      "required": true
+    },
+    {
+      "field_id": "companyFullAddress",
+      "data_type": "string",
+      "source": "companyInfo.companyAddress1",
+      "position": {
+        "section": "company_header",
+        "order": 2,
+        "column": 1
+      },
+      "defaultValue": "123 Business Street, New York, NY 10001"
+    },
+    {
+      "field_id": "companyPhone",
+      "data_type": "phone",
+      "source": "companyInfo.companyPhone",
+      "position": {
+        "section": "company_header",
+        "order": 3,
+        "column": 1
+      },
+      "defaultValue": "(555) 123-4567"
+    },
+    {
+      "field_id": "companyEmail",
+      "data_type": "email",
+      "source": "companyInfo.companyEmail",
+      "position": {
+        "section": "company_header",
+        "order": 4,
+        "column": 1
+      },
+      "defaultValue": "payroll@company.com"
+    },
+    {
+      "field_id": "companyEIN",
+      "label": "EIN",
+      "source": "companyInfo.companyEIN",
+      "data_type": "string",
+      "position": {
+        "section": "company_header",
+        "order": 5,
+        "column": 1
+      },
+      "defaultValue": "12-3456789"
+    },
+    {
+      "field_id": "company_logo",
+      "label": "Company Logo2",
+      "source": "companyInfo.companyLogo",
+      "data_type": "string",
+      "position": {
+        "section": "company_header",
+        "order": 2,
+        "column": 2
+      },
+      "defaultValue": "[LOGO2]"
+    },
+    {
+      "field_id": "paystub_title",
+      "label": "Document Title",
+      "data_type": "string",
+      "position": {
+        "section": "company_header",
+        "order": 1,
+        "column": 3
+      },
+      "defaultValue": "EARNINGS STATEMENT"
+    },
+    {
+      "field_id": "payStubNumber",
+      "label": "Pay Stub Number",
+      "data_type": "string",
+      "source": "generalInfo.payStubNumber",
+      "position": {
+        "section": "company_header",
+        "order": 2,
+        "column": 3
+      },
+      "defaultValue": "PS-2025-001"
+    },
+    {
+      "field_id": "checkNumber",
+      "label": "Check Number",
+      "data_type": "string",
+      "source": "generalInfo.checkNumber",
+      "position": {
+        "section": "company_header",
+        "order": 3,
+        "column": 3
+      },
+      "defaultValue": "CHK-12345"
+    },
+    {
+      "field_id": "periodStartDate",
+      "label": "Pay Period Start",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "source": "generalInfo.periodStartDate",
+      "position": {
+        "section": "company_header",
+        "order": 4,
+        "column": 3
+      },
+      "defaultValue": "01/01/2025"
+    },
+    {
+      "field_id": "periodEndDate",
+      "label": "Pay Period End",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "source": "generalInfo.periodEndDate",
+      "position": {
+        "section": "company_header",
+        "order": 5,
+        "column": 3
+      },
+      "defaultValue": "01/15/2025"
+    },
+    {
+      "field_id": "periodPayDate",
+      "label": "Pay Date",
+      "data_type": "date",
+      "format": "MM/DD/YYYY",
+      "source": "generalInfo.periodPayDate",
+      "position": {
+        "section": "company_header",
+        "order": 6,
+        "column": 3
+      },
+      "defaultValue": "01/20/2025"
+    }
+  ],
+  "styling": {
+    "primaryColor": "#2563eb",
+    "secondaryColor": "#60a5fa",
+    "backgroundColor": "#ffffff",
+    "fontFamily": "Arial, sans-serif",
+    "borderColor": "#d1d5db",
+    "headerBackground": "#eff6ff"
+  },
+  "layout": {
+    "maxWidth": "900px",
+    "padding": "0",
+    "margin": "auto"
+  }
+}

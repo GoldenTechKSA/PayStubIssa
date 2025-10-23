@@ -12,31 +12,28 @@
       "order": 1,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-dark text-white"
+      "styling": "bg-light border-top border-primary"
     },
     {
       "section_id": "employee_details",
-      "title": "Employee Information",
       "order": 2,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-black text-white"
+      "styling": "border-top border-primary"
     },
     {
       "section_id": "pay_details",
-      "title": "Pay Details",
       "order": 3,
       "layout_type": "grid",
       "columns": 3,
-      "styling": ""
+      "styling": "bg-light border-top border-primary"
     },
     {
       "section_id": "summary",
-      "title": "Summary",
       "order": 4,
       "layout_type": "grid",
       "columns": 3,
-      "styling": "bg-light fw-bold py-4 px-4 border-top border-primary"
+      "styling": "bg-light fw-bold border-top border-bottom border-primary"
     }
   ],
   "fields": [
@@ -55,7 +52,7 @@
     {
       "field_id": "companyFullAddress",
       "data_type": "string",
-      "source": "companyInfo.companyAddress1",
+      "source": "companyInfo.companyFullAddress",
       "position": {
         "section": "company_header",
         "order": 2,
@@ -111,7 +108,6 @@
     },
     {
       "field_id": "paystub_title",
-      "label": "Document Title",
       "data_type": "string",
       "position": {
         "section": "company_header",
@@ -143,6 +139,19 @@
         "column": 3
       },
       "defaultValue": "CHK-12345"
+    },
+    {
+      "field_id": "periodPayDate",
+      "label": "Pay Period",
+      "data_type": "date",
+      "format": "MM/DD/YYYY to MM/DD/YYYY",
+      "source": "generalInfo.periodPayRange",
+      "position": {
+        "section": "company_header",
+        "order": 7,
+        "column": 3
+      },
+      "defaultValue": "01/20/2025 to 01/20/2025"
     },
     {
       "field_id": "periodStartDate",
@@ -237,7 +246,7 @@
       "field_id": "employeeFullAddress",
       "label": "Address",
       "data_type": "string",
-      "source": "employeeInfo.employeeAddress1",
+      "source": "employeeInfo.employeeFullAddress",
       "position": {
         "section": "employee_details",
         "order": 1,

@@ -100,16 +100,16 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
     });
 
     return (
-      <div className={`p-3 rounded ${section.styling || ''}`}>
+      <div className={`p-3 ${section.styling || ''}`}>
         {section.title && (
-          <h6 className="section-header mb-3">{section.title}</h6>
+          <h6 className="">{section.title}</h6>
         )}
         <div className="row">
           {columnFields.map((fields, colIndex) => (
             <div key={colIndex} className={`col-md-${12 / columns} column-wrapper`}>
               {fields.map((field) => (
-                <div key={field.field_id} className="column-field">
-                  <span className="field-label">{field.label}</span>
+                <div key={field.field_id} className="">
+                  <span className="">{field.label}</span>
                   <span>{renderField(field)}</span>
                 </div>
               ))}
@@ -194,7 +194,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
     const rightColumn = config.sections.find(s => s.section_id === 'right_column');
 
     return (
-      <div className="row g-3">
+      <div className="row">
         {leftColumn && (
           <div className="col-md-4">
             {renderSection(leftColumn)}
@@ -232,12 +232,12 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
             if (isThreeColumnLayout() && (section.section_id === 'left_column' || section.section_id === 'middle_column' || section.section_id === 'right_column')) {
               // Only render the three-column layout once when we hit the first column
               if (section.section_id === 'left_column') {
-                return (<div key="three-column-layout" className="mb-4">{renderThreeColumnLayout()}</div>);
+                return (<div key="three-column-layout" className="">{renderThreeColumnLayout()}</div>);
               }
               return null;
             }
           
-            return (<div key={section.section_id} className="section-wrapper">{renderSection(section)}</div>);
+            return (<div key={section.section_id} className="">{renderSection(section)}</div>);
           })}
       </div>
     </div>
