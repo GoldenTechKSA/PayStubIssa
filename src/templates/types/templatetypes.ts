@@ -52,12 +52,12 @@ export interface SectionDefinition {
   visible?: boolean;
   collapsible?: boolean;
   defaultCollapsed?: boolean;
+  fields: FieldDefinition[];
 }
 
 export interface TemplateConfiguration {
   metadata: TemplateMetadata;
   sections: SectionDefinition[];
-  fields: FieldDefinition[];
   styling: {
     primaryColor?: string;
     secondaryColor?: string;

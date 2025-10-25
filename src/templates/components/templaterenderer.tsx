@@ -1,9 +1,7 @@
-/**
- * Template Renderer Component
- * Dynamically renders paystub templates based on their JSON configuration and maps the redux store data to the template fields.
- * Supports various layout types (table, grid, flex, stack) and includes print-specific styles for accurate printing.
- * Handles computed fields using the calculation engine and formats field values based on their data types.
- */
+// Template Renderer Component
+// Dynamically renders paystub templates based on their JSON configuration and maps the redux store data to the template fields.
+// Supports various layout types (table, grid, flex, stack) and includes print-specific styles for accurate printing.
+// Handles computed fields using the calculation engine and formats field values based on their data types.
 import React, { useEffect, useState } from 'react';
 import { TemplateConfiguration, SectionDefinition, FieldDefinition } from '../types/templatetypes';
 import { calculationEngine } from '../utils/calculationengine';
@@ -28,39 +26,53 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
     return path.split('.').reduce((acc: any, part: string) => acc && acc[part], obj);
   };
 
+  // helper: prefer section.fields, fallback to legacy top-level config.fields
+  const getFieldsForSection = (section: SectionDefinition) : FieldDefinition[] => {
+    if (Array.isArray((section as any).fields) && (section as any).fields.length > 0) {
+      return (section as any).fields as FieldDefinition[];
+    }
+    if (Array.isArray((config as any).fields)) {
+      return (config as any).fields.filter((f: FieldDefinition) => f.position?.section === section.section_id);
+    }
+    return [];
+  };
+
+
+
+
+  // helper: all fields across sections (for initializeData)
+  const getAllFields = (): FieldDefinition[] => {
+    // if top-level fields exist, use them
+    if (Array.isArray((config as any).fields) && (config as any).fields.length > 0) {
+      return (config as any).fields as FieldDefinition[];
+    }
+    // otherwise flatten section.fields
+    return config.sections.flatMap((s: any) => Array.isArray(s.fields) ? s.fields as FieldDefinition[] : []);
+  };
+
+  // use getAllFields in initializeData instead of config.fields
   useEffect(() => {
     const initializeData = () => {
       const initialData: Record<string, any> = {};
+      const allFields = getAllFields();
 
-      config.fields.forEach((field) => {
+      allFields.forEach((field) => {
         let value: any = undefined;
-
         if (field.source) {
-          // Try several ways to resolve the source:
-          // 1) flattened templateData key
+          // existing source resolution (keep your implementation)
           value = getByPath(templateData, field.source);
-          // 2) if not found, try externalData (original store shape)
           if (value === undefined) value = getByPath(externalData, field.source);
-          // 3) fallback to direct lookup on templateData
-          if (value === undefined) value = templateData ? templateData[field.source] : undefined;
+          if (value === undefined) value = templateData ? (templateData as any)[field.source] : undefined;
         }
-
-        // Use value if present (including falsy 0/false/"") otherwise defaultValue
-        if (value !== undefined) {
-          initialData[field.field_id] = value;
-        } else {
-          initialData[field.field_id] = field.defaultValue;
-        }
+        initialData[field.field_id] = value !== undefined ? value : field.defaultValue;
       });
 
-      // Calculate computed fields
-      const calculatedData = calculationEngine.calculateDependentFields(config.fields, initialData);
+      const calculatedData = calculationEngine.calculateDependentFields(allFields, initialData);
       setFieldData(calculatedData);
       if (onChange) onChange(calculatedData);
     };
-
-    initializeData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  initializeData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, externalData]);
 
   const renderField = (field: FieldDefinition) => {
@@ -75,13 +87,12 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   };
 
   // Render a section as a single row containing N Bootstrap columns.
-  // Each column may have its own layout_type (if section.columns is an array of column defs),
+  // in the future we could have each column may have its own layout_type (if section.columns is an array of column defs),
   // otherwise all columns inherit section.layout_type.
-// ...existing code...
   const renderTableSection = (section: SectionDefinition) => {
-    // Gather fields for this section and sort by order/column
-    const sectionFields = config.fields
-      .filter((f) => f.position && f.position.section === section.section_id)
+    // Gather fields from section (new schema) or fallback to top-level fields
+    const sectionFields = getFieldsForSection(section)
+      .slice()
       .sort((a, b) => {
         const ao = a.position?.order ?? 0;
         const bo = b.position?.order ?? 0;
@@ -92,20 +103,16 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
         return (a.field_id || '').localeCompare(b.field_id || '');
       });
 
-    // Normalize columns (number or array of column defs)
-    let columnsDef: Array<{ layout_type?: string; title?: string; styling?: string }> = [];
-    if (Array.isArray((section as any).columns)) {
-      columnsDef = (section as any).columns;
-    } else {
-      const cols = Math.max(1, section.columns || 1);
-      columnsDef = Array.from({ length: cols }, () => ({ layout_type: section.layout_type || 'table' }));
-    }
-    const columns = columnsDef.length;
+    // Always treat section.columns as a number
+    const columns = Math.max(1, (section.columns as number) || 1);
 
-    // Build per-column map: columnIndex -> Map<rowOrder, FieldDefinition[]>
-    const columnsMap: Array<Map<number, FieldDefinition[]>> = Array.from({ length: columns }, () => new Map<number, FieldDefinition[]>());
+    // Build per-column -> rowOrder -> fields map
+    const columnsMap: Array<Map<number, FieldDefinition[]>> = Array.from(
+      { length: columns },
+      () => new Map<number, FieldDefinition[]>()
+    );
 
-    sectionFields.forEach((field) => {
+    sectionFields.forEach(field => {
       const colIndex = Math.min(Math.max(1, field.position?.column ?? 1), columns) - 1;
       const row = field.position?.order ?? 1;
       const m = columnsMap[colIndex];
@@ -116,69 +123,48 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
     const colClass = (12 % columns === 0) ? `col-md-${12 / columns}` : 'col';
 
     return (
-      <div className={`${section.styling || ''}`}>
-        {section.title && (<div className="py-2 bg-light border-bottom fw-semibold small px-3">{section.title}</div>)}
+      <div className={`${section.styling || ''} mb-3`}>
+        {section.title && (
+          <div className="py-2 bg-light border-bottom fw-semibold small px-3">
+            {section.title}
+          </div>
+        )}
 
-        <div className="row ">
+        <div className="row g-3 p-3">
           {columnsMap.map((rowMap, colIdx) => {
-            const colDef = columnsDef[colIdx] || { layout_type: section.layout_type || 'table' };
             const rowOrders = Array.from(rowMap.keys()).sort((a, b) => a - b);
 
-            if ((colDef.layout_type || 'table') === 'table') {
-              return (
-                <div key={colIdx} className={colClass}>
-                  <table className="table border-bottom ">
-                    <tbody>
-                      {rowOrders.map((order) => {
-                        const fieldsInRow = rowMap.get(order) || [];
-                        return (
-                          <tr key={order}>
-                            {fieldsInRow.map((field) => {
-                              const labelClass = `small text-muted ${field.styling || ''}`;
-                              const valueClass = `fw-semibold ${field.styling || ''}`;
-                              return [
-                                <td key={`${field.field_id}-label`} className={labelClass} style={{ whiteSpace: 'nowrap' }}>
-                                  {field.label ?? ''}
-                                </td>,
-                                <td key={`${field.field_id}-value`} className={valueClass} style={{ verticalAlign: 'top' }}>
-                                  {renderField(field)}
-                                </td>
-                              ];
-                            })}
-                          </tr>
-                        );
-                      })}
-
-                      {rowOrders.length === 0 && (
-                        <tr>
-                          <td colSpan={2} className="text-muted small">No fields</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              );
-            }
-
-            // Non-table column layout (stacked)
             return (
               <div key={colIdx} className={colClass}>
-                <div className="d-flex flex-column gap-2">
-                  {rowOrders.map((order) => {
-                    const fieldsInRow = rowMap.get(order) || [];
-                    return (
-                      <div key={order} className="d-flex flex-column">
-                        {fieldsInRow.map((field) => (
-                          <div key={field.field_id} className="mb-1">
-                            <div className={`small text-muted ${field.styling || ''}`}>{field.label}</div>
-                            <div className={`fw-semibold ${field.styling || ''}`}>{renderField(field)}</div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
-                  {rowOrders.length === 0 && <div className="text-muted small">No fields</div>}
-                </div>
+                <table className="table table-borderless mb-0" role="table">
+                  <tbody>
+                    {rowOrders.map((order) => {
+                      const fieldsInRow = rowMap.get(order) || [];
+                      return (
+                        <tr key={order}>
+                          {fieldsInRow.flatMap((field) => {
+                            const labelClass = `small text-muted ${field.styling || ''}`;
+                            const valueClass = `fw-semibold ${field.styling || ''}`;
+                            return [
+                              <td key={`${field.field_id}-label`} className={labelClass} style={{ whiteSpace: 'nowrap' }}>
+                                {field.label ?? ''}
+                              </td>,
+                              <td key={`${field.field_id}-value`} className={valueClass} style={{ verticalAlign: 'top' }}>
+                                {renderField(field)}
+                              </td>
+                            ];
+                          })}
+                        </tr>
+                      );
+                    })}
+
+                    {rowOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={2} className="text-muted small">No fields</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             );
           })}
@@ -188,17 +174,12 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   };
 
   const renderGridSection = (section: SectionDefinition) => {
-    //filter out fields for this section and sort by order
-    const sectionFields = config.fields.filter((f) => f.position.section === section.section_id).sort((a, b) => a.position.order - b.position.order);
-    const columns = section.columns || 1;
-
-    // Group fields by column
+    const sectionFields = getFieldsForSection(section).sort((a,b) => (a.position?.order||0) - (b.position?.order||0));
+    const columns = (section as any).columns || 1;
     const columnFields: FieldDefinition[][] = Array.from({ length: columns }, () => []);
     sectionFields.forEach(field => {
-      const colIndex = (field.position.column || 1) - 1;
-      if (colIndex >= 0 && colIndex < columns) {
-        columnFields[colIndex].push(field);
-      }
+      const colIndex = Math.max(0, (field.position?.column || 1) - 1);
+      if (colIndex < columns) columnFields[colIndex].push(field);
     });
 
     return (
@@ -206,7 +187,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
         {section.title && (<h6 className="">{section.title}</h6>)}
         <div className="row">
           {columnFields.map((fields, colIndex) => (
-            <div key={colIndex} className={`col-md-${12 / columns}`}>
+            <div key={colIndex} className={`col-md-${Math.max(1, Math.floor(12 / columns))}`}>
               {fields.map((field) => (
                 <div key={field.field_id} className="">
                   {field.label && (<span className={`${field.styling}`}>{field.label}: </span>)}
@@ -221,40 +202,22 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   };
 
   const renderFlexSection = (section: SectionDefinition) => {
-    const sectionFields = config.fields
-      .filter((f) => f.position.section === section.section_id)
-      .sort((a, b) => a.position.order - b.position.order);
+    // get fields from section (new schema) or fallback to top-level fields
+    const sectionFields = getFieldsForSection(section)
+      .slice()
+      .sort((a, b) => (a.position?.order ?? 0) - (b.position?.order ?? 0));
 
     return (
       <div className={`p-3 ${section.styling || ''}`}>
         {section.title && <h6 className="fw-semibold mb-2">{section.title}</h6>}
         <div className="d-flex flex-wrap gap-4">
           {sectionFields.map((field) => (
-            <div key={field.field_id} className="flex-grow-1">
-              <div className="small text-muted">{field.label}</div>
-              <div className="fw-semibold">{renderField(field)}</div>
+            <div key={field.field_id} className="d-flex flex-column" style={{ minWidth: 160 }}>
+              <span className={`small text-muted ${field.styling || ''}`}>{field.label}</span>
+              <span className={`fw-semibold ${field.styling || ''}`}>{renderField(field)}</span>
             </div>
           ))}
-        </div>
-      </div>
-    );
-  };
-
-  const renderStackSection = (section: SectionDefinition) => {
-    const sectionFields = config.fields
-      .filter((f) => f.position.section === section.section_id)
-      .sort((a, b) => a.position.order - b.position.order);
-
-    return (
-      <div className={`p-3 ${section.styling || ''}`}>
-        {section.title && <h6 className="fw-semibold mb-2">{section.title}</h6>}
-        <div className="d-flex flex-column gap-3">
-          {sectionFields.map((field) => (
-            <div key={field.field_id} className="d-flex justify-content-between align-items-center">
-              <span className="small text-muted">{field.label}</span>
-              <span className="fw-semibold">{renderField(field)}</span>
-            </div>
-          ))}
+          {sectionFields.length === 0 && <div className="text-muted small">No fields</div>}
         </div>
       </div>
     );
@@ -272,8 +235,6 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
         return renderGridSection(section);
       case 'flex':
         return renderFlexSection(section);
-      case 'stack':
-        return renderStackSection(section);
       default:
         return renderFlexSection(section);
     }

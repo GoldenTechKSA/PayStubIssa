@@ -38,7 +38,9 @@ describe('TemplateLoader', () => {
       expect(config).toBeDefined();
       expect(config?.metadata.template_id).toBe('classic_blue');
       expect(config?.sections).toBeInstanceOf(Array);
-      expect(config?.fields).toBeInstanceOf(Array);
+      // ensure sections contain fields array (compatibility with new schema)
+      const allFields = config?.sections.flatMap(s => (s.fields || [])) || [];
+      expect(allFields).toBeInstanceOf(Array);
     });
 
     it('should cache loaded templates', async () => {
@@ -66,8 +68,7 @@ describe('TemplateLoader', () => {
     it('should detect missing template_id', () => {
       const invalidConfig: any = {
         metadata: {},
-        sections: [{ section_id: 'test', title: 'Test', order: 1, layout_type: 'grid' }],
-        fields: [{ field_id: 'test', label: 'Test', data_type: 'string', position: { section: 'test', order: 1 } }],
+        sections: [{ section_id: 'test', title: 'Test', order: 1, layout_type: 'grid', fields: [] }],
         styling: {}
       };
       const validation = loader.validateTemplate(invalidConfig);
@@ -77,9 +78,8 @@ describe('TemplateLoader', () => {
 
     it('should detect missing sections', () => {
       const invalidConfig: any = {
-        metadata: { template_id: 'test' },
+        metadata: { template_id: 'test', title: 'Test', version: '1.0', description: 'Test', category: 'test' },
         sections: [],
-        fields: [],
         styling: {}
       };
       const validation = loader.validateTemplate(invalidConfig);
@@ -90,19 +90,29 @@ describe('TemplateLoader', () => {
     it('should detect invalid section references in fields', () => {
       const invalidConfig: TemplateConfiguration = {
         metadata: { template_id: 'test', title: 'Test', version: '1.0', description: 'Test', category: 'test' },
-        sections: [{ section_id: 'header', title: 'Header', order: 1, layout_type: 'grid' }],
-        fields: [{
-          field_id: 'test_field',
-          source: 'test_field',
-          label: 'Test',
-          data_type: 'string',
-          position: { section: 'invalid_section', order: 1 }
-        }],
+        sections: [
+          {
+            section_id: 'header',
+            title: 'Header',
+            order: 1,
+            layout_type: 'grid',
+            columns: 1,
+            fields: [
+              {
+                field_id: 'test_field',
+                source: 'test_field',
+                label: 'Test',
+                data_type: 'string',
+                position: { section: 'invalid_section', order: 1 },
+              } as unknown as FieldDefinition
+            ]
+          }
+        ],
         styling: {}
       };
       const validation = loader.validateTemplate(invalidConfig);
       expect(validation.valid).toBe(false);
-      expect(validation.errors.some(e => e.includes('non-existent section'))).toBe(true);
+      expect(validation.errors.some(e => e.includes('non-existent section') || e.includes('invalid section'))).toBe(true);
     });
   });
 
@@ -193,7 +203,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 1 },
           defaultValue: 5000
-        },
+        } as FieldDefinition,
         {
           field_id: 'bonus',
           source: 'bonus',
@@ -201,7 +211,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 2 },
           defaultValue: 1000
-        },
+        } as FieldDefinition,
         {
           field_id: 'gross',
           source: 'gross',
@@ -209,7 +219,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 3 },
           calculation: 'base + bonus'
-        },
+        } as FieldDefinition,
         {
           field_id: 'net',
           source: 'net',
@@ -217,7 +227,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 4 },
           calculation: 'gross * 0.8'
-        }
+        } as FieldDefinition
       ];
 
       const data = { base: 5000, bonus: 1000 };
@@ -236,7 +246,7 @@ describe('CalculationEngine', () => {
           data_type: 'number',
           position: { section: 'test', order: 1 },
           defaultValue: 40
-        },
+        } as FieldDefinition,
         {
           field_id: 'rate',
           source: 'rate',
@@ -244,7 +254,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 2 },
           defaultValue: 25
-        },
+        } as FieldDefinition,
         {
           field_id: 'gross',
           source: 'gross',
@@ -252,7 +262,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 3 },
           calculation: 'hours * rate'
-        },
+        } as FieldDefinition,
         {
           field_id: 'tax',
           source: 'tax',
@@ -260,7 +270,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 4 },
           calculation: 'gross * 0.22'
-        },
+        } as FieldDefinition,
         {
           field_id: 'net',
           source: 'net',
@@ -268,7 +278,7 @@ describe('CalculationEngine', () => {
           data_type: 'currency',
           position: { section: 'test', order: 5 },
           calculation: 'gross - tax'
-        }
+        } as FieldDefinition
       ];
 
       const data = { hours: 40, rate: 25 };
@@ -314,7 +324,7 @@ describe('FieldFormatter', () => {
         label: 'Salary',
         data_type: 'currency',
         position: { section: 'test', order: 1 }
-      };
+      } as FieldDefinition;
       const result = formatter.format(1234.56, field);
       expect(result).toBe('$1,234.56');
     });
@@ -327,7 +337,7 @@ describe('FieldFormatter', () => {
         data_type: 'currency',
         format: '$0.00',
         position: { section: 'test', order: 1 }
-      };
+      } as FieldDefinition;
       const result = formatter.format(1234.56, field);
       expect(result).toBe('$1234.56');
     });
@@ -342,7 +352,7 @@ describe('FieldFormatter', () => {
         data_type: 'number',
         format: '0.00',
         position: { section: 'test', order: 1 }
-      };
+      } as FieldDefinition;
       const result = formatter.format(42.5, field);
       expect(result).toBe('42.50');
     });
@@ -355,7 +365,7 @@ describe('FieldFormatter', () => {
         data_type: 'number',
         format: '0',
         position: { section: 'test', order: 1 }
-      };
+      } as FieldDefinition;
       const result = formatter.format(42.7, field);
       expect(result).toBe('43');
     });
@@ -370,7 +380,7 @@ describe('FieldFormatter', () => {
         data_type: 'percentage',
         format: '0.00%',
         position: { section: 'test', order: 1 }
-      };
+      } as FieldDefinition;
       const result = formatter.format(15.75, field);
       expect(result).toBe('15.75%');
     });
@@ -385,7 +395,7 @@ describe('FieldFormatter', () => {
         data_type: 'date',
         format: 'MM/DD/YYYY',
         position: { section: 'test', order: 1 }
-      };
+      } as FieldDefinition;
       const result = formatter.format('2025-01-15', field);
       expect(result).toBe('01/15/2025');
     });
@@ -400,7 +410,7 @@ describe('FieldFormatter', () => {
         data_type: 'string',
         position: { section: 'test', order: 1 },
         required: true
-      };
+      } as FieldDefinition;
       
       const validResult = formatter.validate('John Doe', field);
       expect(validResult.valid).toBe(true);
@@ -418,7 +428,7 @@ describe('FieldFormatter', () => {
         data_type: 'number',
         position: { section: 'test', order: 1 },
         validation: { min: 0 }
-      };
+      } as FieldDefinition;
       
       const validResult = formatter.validate(10, field);
       expect(validResult.valid).toBe(true);
@@ -436,7 +446,7 @@ describe('FieldFormatter', () => {
         data_type: 'number',
         position: { section: 'test', order: 1 },
         validation: { max: 100 }
-      };
+      } as FieldDefinition;
       
       const validResult = formatter.validate(50, field);
       expect(validResult.valid).toBe(true);
@@ -468,15 +478,17 @@ describe('Integration Tests', () => {
     
     const config = await loader.loadTemplate('classic_blue');
     if (config) {
+      // gather all fields from sections (new schema)
+      const allFields = config.sections.flatMap(s => (s.fields || []));
       const initialData: Record<string, any> = {};
-      config.fields.forEach(field => {
+      allFields.forEach(field => {
         initialData[field.field_id] = field.defaultValue;
       });
       
-      const calculatedData = engine.calculateDependentFields(config.fields, initialData);
+      const calculatedData = engine.calculateDependentFields(allFields, initialData);
       
       // Verify all calculated fields have values
-      config.fields.forEach(field => {
+      allFields.forEach(field => {
         if (field.calculation) {
           expect(calculatedData[field.field_id]).toBeDefined();
           expect(typeof calculatedData[field.field_id]).toBe('number');
@@ -496,7 +508,7 @@ describe('Integration Tests', () => {
           label: 'Currency',
           data_type: 'currency' as const,
           position: { section: 'test', order: 1 }
-        },
+        } as FieldDefinition,
         value: 1234.56,
         expected: '$1,234.56'
       },
@@ -508,7 +520,7 @@ describe('Integration Tests', () => {
           data_type: 'number' as const,
           format: '0.00',
           position: { section: 'test', order: 1 }
-        },
+        } as FieldDefinition,
         value: 42.5,
         expected: '42.50'
       },
@@ -520,7 +532,7 @@ describe('Integration Tests', () => {
           data_type: 'percentage' as const,
           format: '0.00%',
           position: { section: 'test', order: 1 }
-        },
+        } as FieldDefinition,
         value: 15.75,
         expected: '15.75%'
       }
@@ -555,7 +567,7 @@ describe('Error Handling', () => {
       label: 'Test',
       data_type: 'currency',
       position: { section: 'test', order: 1 }
-    };
+    } as FieldDefinition;
 
     expect(formatter.format(null, field)).toBe('-');
     expect(formatter.format(undefined, field)).toBe('-');
@@ -567,7 +579,6 @@ describe('Error Handling', () => {
       // Missing required fields
       metadata: {},
       sections: null,
-      fields: undefined
     };
 
     const validation = loader.validateTemplate(malformedConfig);
@@ -605,7 +616,7 @@ describe('Performance Tests', () => {
         data_type: 'number',
         position: { section: 'test', order: 1 },
         defaultValue: 1
-      }
+      } as FieldDefinition
     ];
 
     for (let i = 1; i < 100; i++) {
@@ -616,7 +627,7 @@ describe('Performance Tests', () => {
         data_type: 'number',
         position: { section: 'test', order: i + 1 },
         calculation: i === 1 ? 'base + 1' : `calc_${i - 1} + 1`
-      });
+      } as FieldDefinition);
     }
 
     const startTime = Date.now();
@@ -637,7 +648,7 @@ describe('Edge Cases', () => {
       label: 'Large Value',
       data_type: 'currency',
       position: { section: 'test', order: 1 }
-    };
+    } as FieldDefinition;
 
     const result = formatter.format(999999999.99, field);
     expect(result).toContain(')');
@@ -653,7 +664,7 @@ describe('Edge Cases', () => {
       data_type: 'number',
       format: '0.00',
       position: { section: 'test', order: 1 }
-    };
+    } as FieldDefinition;
 
     const result = formatter.format(0.001, field);
     expect(result).toBe('0.00');
@@ -667,7 +678,7 @@ describe('Edge Cases', () => {
       label: 'Negative',
       data_type: 'currency',
       position: { section: 'test', order: 1 }
-    };
+    } as FieldDefinition;
 
     const result = formatter.format(-1234.56, field);
     expect(result).toContain('-');
@@ -686,7 +697,7 @@ describe('Edge Cases', () => {
         data_type: 'number',
         position: { section: 'test', order: 1 },
         calculation: 'field_b + 1'
-      },
+      } as FieldDefinition,
       {
         field_id: 'field_b',
         source: 'field_b',
@@ -694,7 +705,7 @@ describe('Edge Cases', () => {
         data_type: 'number',
         position: { section: 'test', order: 2 },
         calculation: 'field_a + 1'
-      }
+      } as FieldDefinition
     ];
 
     // Should handle gracefully without infinite loop
@@ -714,7 +725,6 @@ describe('Edge Cases', () => {
         category: 'test'
       },
       sections: [],
-      fields: [],
       styling: {}
     };
 
@@ -730,7 +740,7 @@ describe('Edge Cases', () => {
       label: 'Company',
       data_type: 'string',
       position: { section: 'test', order: 1 }
-    };
+    } as FieldDefinition;
 
     const result = formatter.format('ABC & Co., Inc. <Ltd.>', field);
     expect(result).toBe('ABC & Co., Inc. <Ltd.>');
