@@ -116,7 +116,7 @@ export class TemplateLoader {
     // Validate field references in sections
     const sectionIds = new Set(config.sections.map(s => s.section_id));
     config.fields.forEach(field => {
-      console.log("Validating field:", field);
+      // console.log("Validating field:", field);
       if (!sectionIds.has(field.position.section)) {
         errors.push(`Field ${field.field_id} references non-existent section ${field.position.section}`);
       }

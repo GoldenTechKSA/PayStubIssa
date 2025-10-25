@@ -13,6 +13,8 @@ import React, { useEffect, useState } from 'react';
 import { TemplateConfiguration, SectionDefinition, FieldDefinition } from '../types/templatetypes';
 import { calculationEngine } from '../utils/calculationengine';
 import { fieldFormatter } from '../utils/fieldformatter';
+import { mapStoreToTemplateData } from '../../utils/datamapper';
+import { PayStubDetails } from 'components3col/types';
 
 interface TemplateRendererProps {
   config: TemplateConfiguration;
@@ -22,29 +24,17 @@ interface TemplateRendererProps {
 
 export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data: externalData, onChange}) => {
   const [fieldData, setFieldData] = useState<Record<string, any>>({});
+  const templateData = mapStoreToTemplateData(externalData as PayStubDetails);
 
-  console.log("TemplateRenderer: config", config);
-  console.log("TemplateRenderer: externalData", externalData);  
-
+  // console.log("TemplateRenderer: config", config);
+  // console.log("TemplateRenderer: externalData", externalData);
+  console.log("TemplateRenderer: templateData", templateData);  
 
   useEffect(() => {
     const initializeData = () => {
       const initialData: Record<string, any> = {};
-      
-      function getByPath(obj: any, path: string) {
-        return path.split('.').reduce((acc, part) => acc && acc[part], obj);
-      }
-
       config.fields.forEach((field) => {
-        let value = undefined;
-        if (externalData && field.source) {
-          value = getByPath(externalData, field.source);
-        }
-        if (value !== undefined) {
-          initialData[field.field_id] = value;
-        } else {
-          initialData[field.field_id] = field.defaultValue;
-        }
+        initialData[field.field_id] = (externalData && field.source) ? templateData[field.source] : field.defaultValue;
       });
 
       // Calculate computed fields
@@ -56,6 +46,10 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   }, [config, externalData]);
 
   const renderField = (field: FieldDefinition) => {
+    if (field.data_type === 'image') {
+      const imageUrl = fieldData[field.source];
+      return imageUrl ? <img className="object-fit-contain max-height-48px max-width-48px" src={imageUrl} alt="Company Logo" /> : null;
+    }
     const value = fieldData[field.field_id];
     const formattedValue = fieldFormatter.format(value, field);
     return <span className="">{formattedValue}</span>;
@@ -84,10 +78,8 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   };
 
   const renderGridSection = (section: SectionDefinition) => {
-    const sectionFields = config.fields
-      .filter((f) => f.position.section === section.section_id)
-      .sort((a, b) => a.position.order - b.position.order);
-
+    //filter out fields for this section and sort by order
+    const sectionFields = config.fields.filter((f) => f.position.section === section.section_id).sort((a, b) => a.position.order - b.position.order);
     const columns = section.columns || 1;
 
     // Group fields by column
@@ -100,17 +92,15 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
     });
 
     return (
-      <div className={`p-3 ${section.styling || ''}`}>
-        {section.title && (
-          <h6 className="">{section.title}</h6>
-        )}
+      <div className={`${section.styling || ''}`}>
+        {section.title && (<h6 className="">{section.title}</h6>)}
         <div className="row">
           {columnFields.map((fields, colIndex) => (
-            <div key={colIndex} className={`col-md-${12 / columns} column-wrapper`}>
+            <div key={colIndex} className={`col-md-${12 / columns}`}>
               {fields.map((field) => (
                 <div key={field.field_id} className="">
-                  <span className="">{field.label}</span>
-                  <span>{renderField(field)}</span>
+                  {field.label && (<span className={`${field.styling}`}>{field.label}: </span>)}
+                  <span className={`${field.styling}`}>{renderField(field)}</span>
                 </div>
               ))}
             </div>

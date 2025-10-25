@@ -17,9 +17,7 @@ export class FieldFormatter {
     return FieldFormatter.instance;
   }
 
-  /**
-   * Format value based on field definition
-   */
+  // Format value based on field definition
   format(value: any, field: FieldDefinition): string {
     if (value === null || value === undefined || value === '') {
       return '-';
@@ -28,30 +26,24 @@ export class FieldFormatter {
     switch (field.data_type) {
       case 'currency':
         return this.formatCurrency(value, field.format);
-      
       case 'number':
         return this.formatNumber(value, field.format);
-      
       case 'percentage':
         return this.formatPercentage(value, field.format);
-      
       case 'date':
         return this.formatDate(value, field.format);
-      
       case 'phone':
         return this.formatPhone(value);
-      
       case 'email':
         return this.formatEmail(value);
-      
+      case 'image':
+        return String(value);
       default:
         return String(value);
     }
   }
 
-  /**
-   * Format currency values
-   */
+  // Format currency values
   private formatCurrency(value: any, format?: string): string {
     const numValue = this.toNumber(value);
     
@@ -72,9 +64,7 @@ export class FieldFormatter {
     }).format(numValue);
   }
 
-  /**
-   * Format number values
-   */
+  // Format number values
   private formatNumber(value: any, format?: string): string {
     const numValue = this.toNumber(value);
     
@@ -94,9 +84,7 @@ export class FieldFormatter {
     return numValue.toString();
   }
 
-  /**
-   * Format percentage values
-   */
+  // Format percentage values
   private formatPercentage(value: any, format?: string): string {
     const numValue = this.toNumber(value);
     
@@ -112,9 +100,7 @@ export class FieldFormatter {
     return `${numValue.toFixed(1)}%`;
   }
 
-  /**
-   * Format date values
-   */
+  // Format date values
   private formatDate(value: any, format?: string): string {
     let date: Date;
     
@@ -153,9 +139,7 @@ export class FieldFormatter {
     }
   }
 
-  /**
-   * Format phone numbers
-   */
+  // Format phone numbers
   private formatPhone(value: any): string {
     const digits = String(value).replace(/\D/g, '');
     
@@ -170,16 +154,12 @@ export class FieldFormatter {
     return String(value);
   }
 
-  /**
-   * Format email addresses
-   */
+  // Format email addresses
   private formatEmail(value: any): string {
     return String(value).toLowerCase().trim();
   }
 
-  /**
-   * Convert value to number
-   */
+  // Convert value to number
   private toNumber(value: any): number {
     if (typeof value === 'number') {
       return value;
@@ -191,9 +171,7 @@ export class FieldFormatter {
     return 0;
   }
 
-  /**
-   * Parse formatted value back to raw value
-   */
+  // Parse formatted value back to raw value
   parse(formattedValue: string, field: FieldDefinition): any {
     switch (field.data_type) {
       case 'currency':
@@ -209,9 +187,7 @@ export class FieldFormatter {
     }
   }
 
-  /**
-   * Validate field value
-   */
+  // Validate field value
   validate(value: any, field: FieldDefinition): { valid: boolean; error?: string } {
     if (field.required && (value === null || value === undefined || value === '')) {
       return { valid: false, error: `${field.label} is required` };

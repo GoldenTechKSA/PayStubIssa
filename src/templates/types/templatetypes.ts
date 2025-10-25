@@ -19,7 +19,7 @@ export interface FieldDefinition {
   field_id: string;
   source: string; // path to data source, e.g. "employee.name"
   label: string;
-  data_type: 'string' | 'number' | 'currency' | 'date' | 'percentage' | 'email' | 'phone';
+  data_type: 'image' | 'string' | 'number' | 'currency' | 'date' | 'percentage' | 'email' | 'phone';
   format?: string;
   position: {
     section: string;
@@ -27,6 +27,7 @@ export interface FieldDefinition {
     column?: number;
     row?: number;
   };
+  styling?: string;
   visibility?: boolean | string; // boolean or conditional expression
   calculation?: string; // formula for computed fields
   defaultValue?: any;

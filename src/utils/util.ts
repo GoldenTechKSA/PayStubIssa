@@ -378,31 +378,31 @@ function displayFICAResults(income: number, filingStatus?: string, isSelfEmploye
             title = 'Employee FICA Tax Calculation';
         }
 
-        console.log(`📊 ${title} for 2025`);
-        console.log('=========================================');
-        console.log(`Annual Income: ${formatCurrency(income)}`);
-        console.log(`Filing Status: ${filingStatus || 'Not specified'}`);
-        console.log('-----------------------------------------');
-        console.log(`Social Security Tax (6.2%): ${formatCurrency(result.socialSecurityTax)}`);
-        console.log(`Medicare Tax: ${formatCurrency(result.medicareTax)}`);
-        console.log(`Total FICA Tax: ${formatCurrency(result.totalFICATax)}`);
+        // console.log(`📊 ${title} for 2025`);
+        // console.log('=========================================');
+        // console.log(`Annual Income: ${formatCurrency(income)}`);
+        // console.log(`Filing Status: ${filingStatus || 'Not specified'}`);
+        // console.log('-----------------------------------------');
+        // console.log(`Social Security Tax (6.2%): ${formatCurrency(result.socialSecurityTax)}`);
+        // console.log(`Medicare Tax: ${formatCurrency(result.medicareTax)}`);
+        // console.log(`Total FICA Tax: ${formatCurrency(result.totalFICATax)}`);
         
-        if (!isSelfEmployed) {
-            console.log(`Employer Match: ${formatCurrency(result.employerMatch)}`);
-            console.log(`Total FICA Contribution: ${formatCurrency(result.totalFICAContribution)}`);
-        } else {
-            console.log(`Self-Employment Tax: ${formatCurrency(result.totalFICATax)}`);
-        }
+        // if (!isSelfEmployed) {
+        //     console.log(`Employer Match: ${formatCurrency(result.employerMatch)}`);
+        //     console.log(`Total FICA Contribution: ${formatCurrency(result.totalFICAContribution)}`);
+        // } else {
+        //     console.log(`Self-Employment Tax: ${formatCurrency(result.totalFICATax)}`);
+        // }
         
-        console.log(`Net Income After FICA: ${formatCurrency(result.netIncomeAfterFICA)}`);
-        console.log('=========================================\n');
+        // console.log(`Net Income After FICA: ${formatCurrency(result.netIncomeAfterFICA)}`);
+        // console.log('=========================================\n');
     } catch (error) {
         console.error('Error:', (error as Error).message);
     }
 }
 
 // Example usage and test cases
-console.log('FICA Tax Calculation Examples:\n');
+// console.log('FICA Tax Calculation Examples:\n');
 
 // Regular employee examples
 displayFICAResults(50000, 'single');
@@ -418,12 +418,12 @@ displayFICAResults(150000, 'married_joint', true);
 
 // Get current FICA limits
 const limits = FICATaxCalculator.getFICALimits();
-console.log('📋 2025 FICA Tax Limits (Estimated):');
-console.log(`Social Security Wage Base: ${formatCurrency(limits.socialSecurityWageBase)}`);
-console.log(`Social Security Rate: ${(limits.socialSecurityRate * 100).toFixed(2)}%`);
-console.log(`Medicare Standard Rate: ${(limits.medicareStandardRate * 100).toFixed(2)}%`);
-console.log(`Additional Medicare Rate: ${(limits.medicareAdditionalRate * 100).toFixed(2)}%`);
-console.log(`Additional Medicare Threshold (Single): ${formatCurrency(limits.additionalMedicareThreshold)}\n`);
+// console.log('📋 2025 FICA Tax Limits (Estimated):');
+// console.log(`Social Security Wage Base: ${formatCurrency(limits.socialSecurityWageBase)}`);
+// console.log(`Social Security Rate: ${(limits.socialSecurityRate * 100).toFixed(2)}%`);
+// console.log(`Medicare Standard Rate: ${(limits.medicareStandardRate * 100).toFixed(2)}%`);
+// console.log(`Additional Medicare Rate: ${(limits.medicareAdditionalRate * 100).toFixed(2)}%`);
+// console.log(`Additional Medicare Threshold (Single): ${formatCurrency(limits.additionalMedicareThreshold)}\n`);
 
 // Advanced usage with custom limits
 const customLimits: Partial<FICALimits> = {
@@ -432,6 +432,6 @@ const customLimits: Partial<FICALimits> = {
 };
 
 const customResult = FICATaxCalculator.calculateFICA(220000, 'single', customLimits);
-console.log('Custom limits calculation:', customResult);
+// console.log('Custom limits calculation:', customResult);
 
 export { FICATaxCalculator, type FICAResult, type FICALimits };

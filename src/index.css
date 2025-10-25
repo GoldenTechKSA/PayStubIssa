@@ -14,6 +14,11 @@ body {
   font-size: 0.90rem;
 }
 
+.paystub_heading_fontsize {
+  font-size: 3.0rem;
+  font-weight: 700;
+}
+
 .section_background {
   background-color: #f4f4f4;
 }
@@ -288,6 +293,77 @@ body {
 
   .heroContent {
     margin-bottom: 2rem;
+  }
+  .print-paystub {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5in !important;
+    min-height: 0 !important;
+  }
+  
+  /* Section spacing */
+  .section-wrapper {
+    margin-bottom: 16pt !important;
+    page-break-inside: avoid;
+  }
+  
+  /* Ensure table borders print */
+  table, th, td {
+    border: 1px solid #000 !important;
+  }
+  
+  /* Ensure Bootstrap grid maintains structure */
+  .row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    margin: 0 !important;
+  }
+  
+  .col, .col-md-4 {
+    flex: 1 !important;
+    padding: 0 0.25in !important;
+  }
+  
+  /* Make sure background colors print */
+  .bg-blue-50,
+  .bg-blue-100,
+  .bg-gray-50,
+  .bg-light {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Font sizes for print */
+  body {
+    font-size: 9pt;
+  }
+  
+  h6, .h6 {
+    font-size: 10pt !important;
+    margin-bottom: 8pt !important;
+  }
+  
+  /* Field labels */
+  .field-label {
+    font-size: 7pt !important;
+  }
+  
+  /* Field values */
+  .field-value {
+    font-size: 9pt !important;
+  }
+  
+  /* Column spacing */
+  .column-field {
+    margin-bottom: 8pt !important;
+  }
+  
+  /* Avoid page breaks inside sections */
+  .border, .section-wrapper, .card {
+    page-break-inside: avoid;
   }
 }
 

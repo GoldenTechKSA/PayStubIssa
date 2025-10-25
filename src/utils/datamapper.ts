@@ -198,26 +198,44 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
   
   return {
     // Header data
+    paystub_title: "Pay Stub",
+
     company_name: companyInfo.companyName,
-    company_address: companyFullAddress,
+    company_address: `${companyFullAddress}, ${companyInfo.companyCity}, ${companyInfo.companyState} ${companyInfo.companyZipCode}`,
     company_city_state_zip: `${companyInfo.companyCity}, ${companyInfo.companyState} ${companyInfo.companyZipCode}`,
     company_phone: companyInfo.companyPhone,
     company_tax_id: companyInfo.companyEIN,
+    company_email: companyInfo.companyEmail,
     company_logo: "/images/default-logo.png",
-    paystub_title: "Pay Stub",
+
     paystub_id: generalInfo.payStubNumber,
+    check_number: generalInfo.checkNumber,
     pay_period: { start: incomeDetails.periodStartDate, end: incomeDetails.periodEndDate },
+    pay_period_start: incomeDetails.periodStartDate,
+    pay_period_end: incomeDetails.periodEndDate,
     pay_date: incomeDetails.periodPayDate,
     
     // Body data - Employee
     employee_name: employeeFullName,
-    employee_id: employeeInfo.employeeID,
     employee_address: employeeFullAddress,
     employee_city_state_zip: `${employeeInfo.employeeCity}, ${employeeInfo.employeeState} ${employeeInfo.employeeZipCode}`,
     employee_ssn: employeeInfo.employeeSSN,
-    department: "Engineering", // This would come from your data
-    position: "Developer", // This would come from your data
-    hire_date: "2020-03-15", // This would come from your data
+    employee_id: employeeInfo.employeeID,
+    employee_phone: employeeInfo.employeePhone,
+    employee_email: employeeInfo.employeeEmail,
+    employee_status: employeeInfo.employeeMarriedStatus,
+    employee_hire_date: employeeInfo.employeeHireDate,
+
+    employee_department: "Engineering",
+    employee_position: "Developer",
+    employee_wage_type: incomeDetails.wageType,
+
+    employment_type: generalInfo.employmentType,
+    payment_method: generalInfo.paymentMethod, // "Direct Deposit" or "Check"
+    payment_frequency: generalInfo.paymentFrequency,
+    paystub_count: generalInfo.payStubCount,
+    extra_notes: generalInfo.extraNotes,
+
     
     // Body data - Earnings (as arrays)
     earnings_items: earnings,
@@ -230,8 +248,6 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
     net_pay: `$${netPayCurrent.toFixed(2)}`,
     ytd_gross: `$${(totalEarningsCurrent * 12).toFixed(2)}`,
     ytd_deductions: `$${((totalDeductionsCurrent + totalTaxesCurrent) * 12).toFixed(2)}`,
-    ytd_net: `$${(netPayCurrent * 12).toFixed(2)}`,
-    payment_method: generalInfo.paymentMethod,
-    check_number: generalInfo.checkNumber
+    ytd_net: `$${(netPayCurrent * 12).toFixed(2)}`
   };
 };

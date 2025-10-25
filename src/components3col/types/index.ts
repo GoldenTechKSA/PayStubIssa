@@ -66,6 +66,7 @@ export interface EmployeeInfo {
   employeeSSN: string;
   employeeID: string;
   employeeMarriedStatus: string;
+  employeeHireDate: Date;
 }
 
 // Income Details
