@@ -26,7 +26,7 @@
       "title": "Pay Details",
       "order": 3,
       "layout_type": "table",
-      "styling": "bg-light border-top border-primary "
+      "styling": "border-top border-primary"
     }
   ],
   "fields": [
@@ -376,7 +376,7 @@
       "source": "incomeDetails.hoursWorked",
       "position": {
         "section": "pay_details",
-        "order": 2,
+        "order": 1,
         "column": 1
       },
       "defaultValue": 80,
@@ -390,7 +390,7 @@
       "source": "incomeDetails.regularPay",
       "position": {
         "section": "pay_details",
-        "order": 3,
+        "order": 1,
         "column": 1
       },
       "calculation": "hourlyRate * hoursWorked",
@@ -406,7 +406,7 @@
       "source": "incomeDetails.overtimeRate",
       "position": {
         "section": "pay_details",
-        "order": 4,
+        "order": 2,
         "column": 1
       },
       "defaultValue": 37.5,
@@ -420,7 +420,7 @@
       "source": "incomeDetails.overtimeHours",
       "position": {
         "section": "pay_details",
-        "order": 5,
+        "order": 2,
         "column": 1
       },
       "defaultValue": 5,
@@ -434,7 +434,7 @@
       "source": "incomeDetails.overtimePay",
       "position": {
         "section": "pay_details",
-        "order": 6,
+        "order": 2,
         "column": 1
       },
       "calculation": "overtimeRate * overtimeHours",
@@ -450,24 +450,10 @@
       "source": "incomeDetails.bonusAmount",
       "position": {
         "section": "pay_details",
-        "order": 7,
+        "order": 3,
         "column": 1
       },
       "defaultValue": 0.0,
-      "styling": "label_fontsize"
-    },
-    {
-      "field_id": "annualSalary",
-      "label": "Annual Salary",
-      "data_type": "currency",
-      "format": "$0,000.00",
-      "source": "incomeDetails.annualSalary",
-      "position": {
-        "section": "pay_details",
-        "order": 8,
-        "column": 1
-      },
-      "defaultValue": 52000.0,
       "styling": "label_fontsize"
     },
     {
@@ -490,8 +476,8 @@
       "format": "$0.00",
       "position": {
         "section": "pay_details",
-        "order": 2,
-        "column": 2
+        "order": 1,
+        "column": 3
       },
       "defaultValue": 120.0,
       "styling": "label_fontsize"
@@ -503,8 +489,8 @@
       "format": "$0.00",
       "position": {
         "section": "pay_details",
-        "order": 3,
-        "column": 2
+        "order": 2,
+        "column": 3
       },
       "defaultValue": 135.63,
       "styling": "label_fontsize"
@@ -516,8 +502,8 @@
       "format": "$0.00",
       "position": {
         "section": "pay_details",
-        "order": 4,
-        "column": 2
+        "order": 3,
+        "column": 3
       },
       "defaultValue": 31.71,
       "styling": "label_fontsize"
@@ -592,19 +578,6 @@
       "styling": "label_fontsize"
     },
     {
-      "field_id": "ytd_gross",
-      "label": "YTD Gross Pay",
-      "data_type": "currency",
-      "format": "$0,000.00",
-      "position": {
-        "section": "pay_details",
-        "order": 1,
-        "column": 3
-      },
-      "defaultValue": 26250.0,
-      "styling": "label_fontsize"
-    },
-    {
       "field_id": "ytd_federal_tax",
       "label": "YTD Federal Tax",
       "data_type": "currency",
@@ -612,7 +585,7 @@
       "position": {
         "section": "pay_details",
         "order": 2,
-        "column": 3
+        "column": 2
       },
       "defaultValue": 4200.0,
       "styling": "label_fontsize"
@@ -625,7 +598,7 @@
       "position": {
         "section": "pay_details",
         "order": 3,
-        "column": 3
+        "column": 2
       },
       "defaultValue": 1440.0,
       "styling": "label_fontsize"
@@ -638,7 +611,7 @@
       "position": {
         "section": "pay_details",
         "order": 4,
-        "column": 3
+        "column": 2
       },
       "defaultValue": 1627.5,
       "styling": "label_fontsize"
@@ -714,10 +687,23 @@
       "format": "$0,000.00",
       "position": {
         "section": "pay_details",
-        "order": 10,
-        "column": 3
+        "order": 5,
+        "column": 1
       },
       "defaultValue": 15630.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_gross",
+      "label": "YTD Gross Pay",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 2,
+        "column": 2
+      },
+      "defaultValue": 26250.0,
       "styling": "label_fontsize"
     }
   ],

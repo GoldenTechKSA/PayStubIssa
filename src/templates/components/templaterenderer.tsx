@@ -3,12 +3,7 @@
  * Dynamically renders paystub templates based on their JSON configuration and maps the redux store data to the template fields.
  * Supports various layout types (table, grid, flex, stack) and includes print-specific styles for accurate printing.
  * Handles computed fields using the calculation engine and formats field values based on their data types.
- * 
- * Features: Renders sections and fields as per the template configuration
- * Applies custom styling and layout options from the template configuration
- * Ensures print-ready formatting with CSS media queries
  */
-
 import React, { useEffect, useState } from 'react';
 import { TemplateConfiguration, SectionDefinition, FieldDefinition } from '../types/templatetypes';
 import { calculationEngine } from '../utils/calculationengine';
@@ -26,37 +21,65 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   const [fieldData, setFieldData] = useState<Record<string, any>>({});
   const templateData = mapStoreToTemplateData(externalData as PayStubDetails);
 
-  // console.log("TemplateRenderer: config", config);
-  // console.log("TemplateRenderer: externalData", externalData);
-  console.log("TemplateRenderer: templateData", templateData);  
+  // Helper: safe dot-path getter (supports direct keys and nested "a.b.c")
+  const getByPath = (obj: any, path?: string) => {
+    if (obj == null || !path) return undefined;
+    if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];
+    return path.split('.').reduce((acc: any, part: string) => acc && acc[part], obj);
+  };
 
   useEffect(() => {
     const initializeData = () => {
       const initialData: Record<string, any> = {};
+
       config.fields.forEach((field) => {
-        initialData[field.field_id] = (externalData && field.source) ? templateData[field.source] : field.defaultValue;
+        let value: any = undefined;
+
+        if (field.source) {
+          // Try several ways to resolve the source:
+          // 1) flattened templateData key
+          value = getByPath(templateData, field.source);
+          // 2) if not found, try externalData (original store shape)
+          if (value === undefined) value = getByPath(externalData, field.source);
+          // 3) fallback to direct lookup on templateData
+          if (value === undefined) value = templateData ? templateData[field.source] : undefined;
+        }
+
+        // Use value if present (including falsy 0/false/"") otherwise defaultValue
+        if (value !== undefined) {
+          initialData[field.field_id] = value;
+        } else {
+          initialData[field.field_id] = field.defaultValue;
+        }
       });
 
       // Calculate computed fields
       const calculatedData = calculationEngine.calculateDependentFields(config.fields, initialData);
       setFieldData(calculatedData);
+      if (onChange) onChange(calculatedData);
     };
 
     initializeData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, externalData]);
 
   const renderField = (field: FieldDefinition) => {
     if (field.data_type === 'image') {
-      const imageUrl = fieldData[field.source];
-      return imageUrl ? <img className="object-fit-contain max-height-48px max-width-48px" src={imageUrl} alt="Company Logo" /> : null;
+      // image source is stored on the field_id after initializeData
+      const imageUrl = fieldData[field.field_id];
+      return imageUrl ? <img className="object-fit-contain" style={{ maxHeight: 148, maxWidth: 148 }} src={imageUrl} alt={field.label || 'image'} /> : null;
     }
     const value = fieldData[field.field_id];
     const formattedValue = fieldFormatter.format(value, field);
     return <span className="">{formattedValue}</span>;
   };
 
+  // Render a section as a single row containing N Bootstrap columns.
+  // Each column may have its own layout_type (if section.columns is an array of column defs),
+  // otherwise all columns inherit section.layout_type.
+// ...existing code...
   const renderTableSection = (section: SectionDefinition) => {
-    // all fields for this section, sorted globally by order then column then field_id
+    // Gather fields for this section and sort by order/column
     const sectionFields = config.fields
       .filter((f) => f.position && f.position.section === section.section_id)
       .sort((a, b) => {
@@ -69,64 +92,93 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
         return (a.field_id || '').localeCompare(b.field_id || '');
       });
 
-    const columns = Math.max(1, section.columns || 1);
+    // Normalize columns (number or array of column defs)
+    let columnsDef: Array<{ layout_type?: string; title?: string; styling?: string }> = [];
+    if (Array.isArray((section as any).columns)) {
+      columnsDef = (section as any).columns;
+    } else {
+      const cols = Math.max(1, section.columns || 1);
+      columnsDef = Array.from({ length: cols }, () => ({ layout_type: section.layout_type || 'table' }));
+    }
+    const columns = columnsDef.length;
 
     // Build per-column map: columnIndex -> Map<rowOrder, FieldDefinition[]>
-    const columnsMap: Array<Map<number, FieldDefinition[]>> = Array.from(
-      { length: columns },
-      () => new Map<number, FieldDefinition[]>()
-    );
+    const columnsMap: Array<Map<number, FieldDefinition[]>> = Array.from({ length: columns }, () => new Map<number, FieldDefinition[]>());
 
     sectionFields.forEach((field) => {
-      const col = Math.min(Math.max(1, field.position?.column ?? 1), columns) - 1;
+      const colIndex = Math.min(Math.max(1, field.position?.column ?? 1), columns) - 1;
       const row = field.position?.order ?? 1;
-      const m = columnsMap[col];
+      const m = columnsMap[colIndex];
       if (!m.has(row)) m.set(row, []);
       m.get(row)!.push(field);
     });
 
-    // For layout: compute col class
     const colClass = (12 % columns === 0) ? `col-md-${12 / columns}` : 'col';
 
     return (
-      <div className={`${section.styling || ''} mb-3`}>
-        {section.title && (
-          <div className="py-2 bg-light border-bottom fw-semibold small px-3">
-            {section.title}
-          </div>
-        )}
+      <div className={`${section.styling || ''}`}>
+        {section.title && (<div className="py-2 bg-light border-bottom fw-semibold small px-3">{section.title}</div>)}
 
-        <div className="row g-3 p-3">
+        <div className="row ">
           {columnsMap.map((rowMap, colIdx) => {
-            // get sorted row orders for this column
+            const colDef = columnsDef[colIdx] || { layout_type: section.layout_type || 'table' };
             const rowOrders = Array.from(rowMap.keys()).sort((a, b) => a - b);
 
+            if ((colDef.layout_type || 'table') === 'table') {
+              return (
+                <div key={colIdx} className={colClass}>
+                  <table className="table border-bottom ">
+                    <tbody>
+                      {rowOrders.map((order) => {
+                        const fieldsInRow = rowMap.get(order) || [];
+                        return (
+                          <tr key={order}>
+                            {fieldsInRow.map((field) => {
+                              const labelClass = `small text-muted ${field.styling || ''}`;
+                              const valueClass = `fw-semibold ${field.styling || ''}`;
+                              return [
+                                <td key={`${field.field_id}-label`} className={labelClass} style={{ whiteSpace: 'nowrap' }}>
+                                  {field.label ?? ''}
+                                </td>,
+                                <td key={`${field.field_id}-value`} className={valueClass} style={{ verticalAlign: 'top' }}>
+                                  {renderField(field)}
+                                </td>
+                              ];
+                            })}
+                          </tr>
+                        );
+                      })}
+
+                      {rowOrders.length === 0 && (
+                        <tr>
+                          <td colSpan={2} className="text-muted small">No fields</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            }
+
+            // Non-table column layout (stacked)
             return (
               <div key={colIdx} className={colClass}>
-                <table className="table table-borderless mb-0">
-                  <tbody>
-                    {rowOrders.map((order) => {
-                      const fieldsInRow = rowMap.get(order) || [];
-                      return (
-                        <tr key={order}>
-                          {fieldsInRow.map((field) => (
-                            <td key={field.field_id} style={{ verticalAlign: 'top' }}>
-                              <div className="small text-muted">{field.label}</div>
-                              <div className="fw-semibold">{renderField(field)}</div>
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })}
-
-                    {/* if this column has no rows, render an empty placeholder */}
-                    {rowOrders.length === 0 && (
-                      <tr>
-                        <td className="text-muted small">No fields</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                <div className="d-flex flex-column gap-2">
+                  {rowOrders.map((order) => {
+                    const fieldsInRow = rowMap.get(order) || [];
+                    return (
+                      <div key={order} className="d-flex flex-column">
+                        {fieldsInRow.map((field) => (
+                          <div key={field.field_id} className="mb-1">
+                            <div className={`small text-muted ${field.styling || ''}`}>{field.label}</div>
+                            <div className={`fw-semibold ${field.styling || ''}`}>{renderField(field)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                  {rowOrders.length === 0 && <div className="text-muted small">No fields</div>}
+                </div>
               </div>
             );
           })}
@@ -263,17 +315,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   };
 
   return (
-    <div
-      className=""
-      // style={{
-      //   fontFamily: config.styling.fontFamily,
-      //   backgroundColor: config.styling.backgroundColor,
-      //   borderColor: config.styling.borderColor || '#00458aff',
-      //   maxWidth: config.layout?.maxWidth || '8.5in',
-      //   minHeight: '11in',
-      //   border: '1px solid #d80000ff'
-      // }}
-    >
+    <div className="">
       <div className="">
         {config.sections.sort((a, b) => a.order - b.order).map((section) => {
             // Skip column sections if we're rendering them in 3-column layout
@@ -293,3 +335,4 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
 };
 
 export default TemplateRenderer;
+// ...existing code...
