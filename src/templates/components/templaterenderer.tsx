@@ -56,22 +56,80 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   };
 
   const renderTableSection = (section: SectionDefinition) => {
+    // all fields for this section, sorted globally by order then column then field_id
     const sectionFields = config.fields
-      .filter((f) => f.position.section === section.section_id)
-      .sort((a, b) => a.position.order - b.position.order);
+      .filter((f) => f.position && f.position.section === section.section_id)
+      .sort((a, b) => {
+        const ao = a.position?.order ?? 0;
+        const bo = b.position?.order ?? 0;
+        const ac = a.position?.column ?? 1;
+        const bc = b.position?.column ?? 1;
+        if (ao !== bo) return ao - bo;
+        if (ac !== bc) return ac - bc;
+        return (a.field_id || '').localeCompare(b.field_id || '');
+      });
+
+    const columns = Math.max(1, section.columns || 1);
+
+    // Build per-column map: columnIndex -> Map<rowOrder, FieldDefinition[]>
+    const columnsMap: Array<Map<number, FieldDefinition[]>> = Array.from(
+      { length: columns },
+      () => new Map<number, FieldDefinition[]>()
+    );
+
+    sectionFields.forEach((field) => {
+      const col = Math.min(Math.max(1, field.position?.column ?? 1), columns) - 1;
+      const row = field.position?.order ?? 1;
+      const m = columnsMap[col];
+      if (!m.has(row)) m.set(row, []);
+      m.get(row)!.push(field);
+    });
+
+    // For layout: compute col class
+    const colClass = (12 % columns === 0) ? `col-md-${12 / columns}` : 'col';
 
     return (
-      <div className={`border rounded ${section.styling || ''}`}>
-        <div className="p-3 bg-light border-bottom fw-semibold small">
-          {section.title}
-        </div>
-        <div className="list-group list-group-flush">
-          {sectionFields.map((field) => (
-            <div key={field.field_id} className="list-group-item d-flex justify-content-between align-items-center py-2">
-              <span className="text-muted">{field.label}</span>
-              <span className="fw-semibold">{renderField(field)}</span>
-            </div>
-          ))}
+      <div className={`${section.styling || ''} mb-3`}>
+        {section.title && (
+          <div className="py-2 bg-light border-bottom fw-semibold small px-3">
+            {section.title}
+          </div>
+        )}
+
+        <div className="row g-3 p-3">
+          {columnsMap.map((rowMap, colIdx) => {
+            // get sorted row orders for this column
+            const rowOrders = Array.from(rowMap.keys()).sort((a, b) => a - b);
+
+            return (
+              <div key={colIdx} className={colClass}>
+                <table className="table table-borderless mb-0">
+                  <tbody>
+                    {rowOrders.map((order) => {
+                      const fieldsInRow = rowMap.get(order) || [];
+                      return (
+                        <tr key={order}>
+                          {fieldsInRow.map((field) => (
+                            <td key={field.field_id} style={{ verticalAlign: 'top' }}>
+                              <div className="small text-muted">{field.label}</div>
+                              <div className="fw-semibold">{renderField(field)}</div>
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+
+                    {/* if this column has no rows, render an empty placeholder */}
+                    {rowOrders.length === 0 && (
+                      <tr>
+                        <td className="text-muted small">No fields</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
         </div>
       </div>
     );

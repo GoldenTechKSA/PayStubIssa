@@ -20,6 +20,13 @@
       "layout_type": "grid",
       "columns": 3,
       "styling": "border-top border-primary"
+    },
+    {
+      "section_id": "pay_details",
+      "title": "Pay Details",
+      "order": 3,
+      "layout_type": "table",
+      "styling": "bg-light border-top border-primary "
     }
   ],
   "fields": [
@@ -345,6 +352,372 @@
         "column": 3
       },
       "defaultValue": "Bi-Weekly",
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "hourlyRate",
+      "label": "Hourly Rate",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "incomeDetails.hourlyRate",
+      "position": {
+        "section": "pay_details",
+        "order": 1,
+        "column": 1
+      },
+      "defaultValue": 25.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "hoursWorked",
+      "label": "Hours Worked",
+      "data_type": "number",
+      "format": "0.00",
+      "source": "incomeDetails.hoursWorked",
+      "position": {
+        "section": "pay_details",
+        "order": 2,
+        "column": 1
+      },
+      "defaultValue": 80,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "regular_pay",
+      "label": "Regular Pay",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "incomeDetails.regularPay",
+      "position": {
+        "section": "pay_details",
+        "order": 3,
+        "column": 1
+      },
+      "calculation": "hourlyRate * hoursWorked",
+      "defaultValue": 2000.0,
+      "editable": false,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "overtimeRate",
+      "label": "Overtime Rate",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "incomeDetails.overtimeRate",
+      "position": {
+        "section": "pay_details",
+        "order": 4,
+        "column": 1
+      },
+      "defaultValue": 37.5,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "overtimeHours",
+      "label": "Overtime Hours",
+      "data_type": "number",
+      "format": "0.00",
+      "source": "incomeDetails.overtimeHours",
+      "position": {
+        "section": "pay_details",
+        "order": 5,
+        "column": 1
+      },
+      "defaultValue": 5,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "overtime_pay",
+      "label": "Overtime Pay",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "incomeDetails.overtimePay",
+      "position": {
+        "section": "pay_details",
+        "order": 6,
+        "column": 1
+      },
+      "calculation": "overtimeRate * overtimeHours",
+      "defaultValue": 187.5,
+      "editable": false,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "bonusAmount",
+      "label": "Bonus",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "incomeDetails.bonusAmount",
+      "position": {
+        "section": "pay_details",
+        "order": 7,
+        "column": 1
+      },
+      "defaultValue": 0.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "annualSalary",
+      "label": "Annual Salary",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "source": "incomeDetails.annualSalary",
+      "position": {
+        "section": "pay_details",
+        "order": 8,
+        "column": 1
+      },
+      "defaultValue": 52000.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "federal_income_tax",
+      "label": "Federal Income Tax",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 1,
+        "column": 2
+      },
+      "defaultValue": 350.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "state_income_tax",
+      "label": "State Income Tax",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 2,
+        "column": 2
+      },
+      "defaultValue": 120.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "social_security_tax",
+      "label": "Social Security Tax",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 3,
+        "column": 2
+      },
+      "defaultValue": 135.63,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "medicare_tax",
+      "label": "Medicare Tax",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 4,
+        "column": 2
+      },
+      "defaultValue": 31.71,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "deduction401k",
+      "label": "401(k) Contribution",
+      "data_type": "currency",
+      "format": "$0.00",
+      "position": {
+        "section": "pay_details",
+        "order": 5,
+        "column": 2
+      },
+      "defaultValue": 100.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "medicalDeduction",
+      "label": "Medical Insurance",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "deductions.medicalDeduction",
+      "position": {
+        "section": "pay_details",
+        "order": 6,
+        "column": 2
+      },
+      "defaultValue": 150.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "dentalDeduction",
+      "label": "Dental Insurance",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "deductions.dentalDeduction",
+      "position": {
+        "section": "pay_details",
+        "order": 7,
+        "column": 2
+      },
+      "defaultValue": 25.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "visionDeduction",
+      "label": "Vision Insurance",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "deductions.visionDeduction",
+      "position": {
+        "section": "pay_details",
+        "order": 8,
+        "column": 2
+      },
+      "defaultValue": 15.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "otherDeduction",
+      "label": "Other Deductions",
+      "data_type": "currency",
+      "format": "$0.00",
+      "source": "deductions.otherDeduction",
+      "position": {
+        "section": "pay_details",
+        "order": 9,
+        "column": 2
+      },
+      "defaultValue": 0.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_gross",
+      "label": "YTD Gross Pay",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 1,
+        "column": 3
+      },
+      "defaultValue": 26250.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_federal_tax",
+      "label": "YTD Federal Tax",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 2,
+        "column": 3
+      },
+      "defaultValue": 4200.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_state_tax",
+      "label": "YTD State Tax",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 3,
+        "column": 3
+      },
+      "defaultValue": 1440.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_social_security",
+      "label": "YTD Social Security",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 4,
+        "column": 3
+      },
+      "defaultValue": 1627.5,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_medicare",
+      "label": "YTD Medicare",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 5,
+        "column": 3
+      },
+      "defaultValue": 380.5,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_401k",
+      "label": "YTD 401(k)",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 6,
+        "column": 3
+      },
+      "defaultValue": 1200.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_medical",
+      "label": "YTD Medical",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 7,
+        "column": 3
+      },
+      "defaultValue": 1800.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_dental",
+      "label": "YTD Dental",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 8,
+        "column": 3
+      },
+      "defaultValue": 300.0,
+      "styling": "label_fontsize"
+    },
+    {
+      "field_id": "ytd_vision",
+      "label": "YTD Vision",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 9,
+        "column": 3
+      },
+      "defaultValue": 180.0
+    },
+    {
+      "field_id": "ytd_net_pay",
+      "label": "YTD Net Pay",
+      "data_type": "currency",
+      "format": "$0,000.00",
+      "position": {
+        "section": "pay_details",
+        "order": 10,
+        "column": 3
+      },
+      "defaultValue": 15630.0,
       "styling": "label_fontsize"
     }
   ],
