@@ -37,9 +37,6 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
     return [];
   };
 
-
-
-
   // helper: all fields across sections (for initializeData)
   const getAllFields = (): FieldDefinition[] => {
     // if top-level fields exist, use them
@@ -89,54 +86,50 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
   // Render a section as a single row containing N Bootstrap columns.
   // in the future we could have each column may have its own layout_type (if section.columns is an array of column defs),
   // otherwise all columns inherit section.layout_type.
+  // ...existing code...
   const renderTableSection = (section: SectionDefinition) => {
-    // Gather fields from section (new schema) or fallback to top-level fields
-    const sectionFields = getFieldsForSection(section)
-      .slice()
-      .sort((a, b) => {
-        const ao = a.position?.order ?? 0;
-        const bo = b.position?.order ?? 0;
-        const ac = a.position?.column ?? 1;
-        const bc = b.position?.column ?? 1;
-        if (ao !== bo) return ao - bo;
-        if (ac !== bc) return ac - bc;
-        return (a.field_id || '').localeCompare(b.field_id || '');
-      });
+    // get fields for this section (no global pre-sort)
+    const allSectionFields = getFieldsForSection(section) || [];
 
-    // Always treat section.columns as a number
-    const columns = Math.max(1, (section.columns as number) || 1);
-
-    // Build per-column -> rowOrder -> fields map
-    const columnsMap: Array<Map<number, FieldDefinition[]>> = Array.from(
-      { length: columns },
-      () => new Map<number, FieldDefinition[]>()
-    );
-
-    sectionFields.forEach(field => {
-      const colIndex = Math.min(Math.max(1, field.position?.column ?? 1), columns) - 1;
-      const row = field.position?.order ?? 1;
-      const m = columnsMap[colIndex];
-      if (!m.has(row)) m.set(row, []);
-      m.get(row)!.push(field);
-    });
-
+    // Determine columns: prefer section.columns, but ensure we cover any column numbers declared on fields
+    const sectionCols = Math.max(1, Number((section.columns as number) || 1) || 1);
+    const maxColInFields = allSectionFields.length
+      ? Math.max(...allSectionFields.map(f => {
+          const c = Number(f.position?.column ?? 1);
+          return Number.isFinite(c) && c >= 1 ? c : 1;
+        }))
+      : 1;
+    const columns = Math.max(sectionCols, maxColInFields);
     const colClass = (12 % columns === 0) ? `col-md-${12 / columns}` : 'col';
 
     return (
-      <div className={`${section.styling || ''} mb-3`}>
-        {section.title && (
-          <div className="py-2 bg-light border-bottom fw-semibold small px-3">
-            {section.title}
-          </div>
-        )}
+      <div className={`${section.styling || ''}`}>
+        {section.title && (<div className="py-2 border-bottom fw-semibold small">{section.title}</div>)}
+        <div className="row">
+          {Array.from({ length: columns }).map((_, colIdx) => {
+            // filter and sort fields for THIS column only (coerce column value to number)
+            const fieldsForCol = allSectionFields
+              .filter(f => {
+                const fCol = Number(f.position?.column ?? 1);
+                const idx = Number.isFinite(fCol) ? Math.max(0, Math.floor(fCol) - 1) : 0;
+                return idx === colIdx;
+              })
+              .slice()
+              .sort((a, b) => (Number(a.position?.order ?? 0) - Number(b.position?.order ?? 0)));
 
-        <div className="row g-3 p-3">
-          {columnsMap.map((rowMap, colIdx) => {
+            // build rowOrder -> fields map for this column
+            const rowMap = new Map<number, FieldDefinition[]>();
+            fieldsForCol.forEach(field => {
+              const row = Number(field.position?.order ?? 1) || 1;
+              if (!rowMap.has(row)) rowMap.set(row, []);
+              rowMap.get(row)!.push(field);
+            });
+
             const rowOrders = Array.from(rowMap.keys()).sort((a, b) => a - b);
 
             return (
               <div key={colIdx} className={colClass}>
-                <table className="table table-borderless mb-0" role="table">
+                <table role="table" className="table table-borderless mb-0">
                   <tbody>
                     {rowOrders.map((order) => {
                       const fieldsInRow = rowMap.get(order) || [];
@@ -146,23 +139,15 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
                             const labelClass = `small text-muted ${field.styling || ''}`;
                             const valueClass = `fw-semibold ${field.styling || ''}`;
                             return [
-                              <td key={`${field.field_id}-label`} className={labelClass} style={{ whiteSpace: 'nowrap' }}>
-                                {field.label ?? ''}
-                              </td>,
-                              <td key={`${field.field_id}-value`} className={valueClass} style={{ verticalAlign: 'top' }}>
-                                {renderField(field)}
-                              </td>
+                              <td key={`${field.field_id}-label`} className={labelClass} style={{ whiteSpace: 'nowrap' }}>{field.label ?? ''}</td>,
+                              <td key={`${field.field_id}-value`} className={valueClass} style={{ verticalAlign: 'top' }}>{renderField(field)}</td>
                             ];
                           })}
                         </tr>
                       );
                     })}
 
-                    {rowOrders.length === 0 && (
-                      <tr>
-                        <td colSpan={2} className="text-muted small">No fields</td>
-                      </tr>
-                    )}
+                    {rowOrders.length === 0 && (<tr><td colSpan={2} className="text-muted small">No fields</td></tr>)}
                   </tbody>
                 </table>
               </div>
@@ -172,6 +157,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
       </div>
     );
   };
+  // ...existing code...
 
   const renderGridSection = (section: SectionDefinition) => {
     const sectionFields = getFieldsForSection(section).sort((a,b) => (a.position?.order||0) - (b.position?.order||0));
@@ -203,12 +189,10 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
 
   const renderFlexSection = (section: SectionDefinition) => {
     // get fields from section (new schema) or fallback to top-level fields
-    const sectionFields = getFieldsForSection(section)
-      .slice()
-      .sort((a, b) => (a.position?.order ?? 0) - (b.position?.order ?? 0));
+    const sectionFields = getFieldsForSection(section).slice().sort((a, b) => (a.position?.order ?? 0) - (b.position?.order ?? 0));
 
     return (
-      <div className={`p-3 ${section.styling || ''}`}>
+      <div className={`${section.styling || ''}`}>
         {section.title && <h6 className="fw-semibold mb-2">{section.title}</h6>}
         <div className="d-flex flex-wrap gap-4">
           {sectionFields.map((field) => (
@@ -240,60 +224,15 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({config, data:
     }
   };
 
-  // Check if sections should be rendered in 3-column layout
-  const isThreeColumnLayout = () => {
-    const columnSections = config.sections.filter(s => 
-      s.section_id.includes('column') || 
-      (s.section_id === 'left_column' || s.section_id === 'middle_column' || s.section_id === 'right_column')
-    );
-    return columnSections.length === 3;
-  };
-
-  const renderThreeColumnLayout = () => {
-    const leftColumn = config.sections.find(s => s.section_id === 'left_column');
-    const middleColumn = config.sections.find(s => s.section_id === 'middle_column');
-    const rightColumn = config.sections.find(s => s.section_id === 'right_column');
-
-    return (
-      <div className="row">
-        {leftColumn && (
-          <div className="col-md-4">
-            {renderSection(leftColumn)}
-          </div>
-        )}
-        {middleColumn && (
-          <div className="col-md-4">
-            {renderSection(middleColumn)}
-          </div>
-        )}
-        {rightColumn && (
-          <div className="col-md-4">
-            {renderSection(rightColumn)}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="">
       <div className="">
-        {config.sections.sort((a, b) => a.order - b.order).map((section) => {
-            // Skip column sections if we're rendering them in 3-column layout
-            if (isThreeColumnLayout() && (section.section_id === 'left_column' || section.section_id === 'middle_column' || section.section_id === 'right_column')) {
-              // Only render the three-column layout once when we hit the first column
-              if (section.section_id === 'left_column') {
-                return (<div key="three-column-layout" className="">{renderThreeColumnLayout()}</div>);
-              }
-              return null;
-            }
-          
+        { config.sections.sort((a, b) => a.order - b.order).map((section) => {
             return (<div key={section.section_id} className="">{renderSection(section)}</div>);
-          })}
+        })}
       </div>
     </div>
   );
 };
 
 export default TemplateRenderer;
-// ...existing code...
