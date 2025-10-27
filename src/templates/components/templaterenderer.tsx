@@ -2,7 +2,6 @@
 // Dynamically renders paystub templates based on their JSON configuration and maps the redux store data to the template fields.
 // Supports various layout types (table, grid, flex, stack) and includes print-specific styles for accurate printing.
 // Handles computed fields using the calculation engine and formats field values based on their data types.
-// ...existing code...
 import React, { useEffect, useState } from 'react';
 import { TemplateConfiguration, SectionDefinition, FieldDefinition } from '../types/templatetypes';
 import { calculationEngine } from '../utils/calculationengine';
@@ -92,6 +91,53 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ config, data
     return parsed !== undefined ? parsed : defaultVal;
   };
 
+  // New helper: compute className and inline style for a column based on ColumnDefinition.width
+  const getColumnProps = (colDef: any, totalColumns: number) => {
+    const result: { className?: string; style?: React.CSSProperties } = {};
+    const rawWidth = colDef?.width;
+
+    if (rawWidth !== undefined && rawWidth !== null) {
+      const w = String(rawWidth).trim();
+
+      // numeric bootstrap column (1-12)
+      if (/^[1-9]$|^1[0-2]$/.test(w)) {
+        result.className = `col-md-${w}`;
+        return result;
+      }
+
+      // percentage or px or other CSS units -> use inline width and let bootstrap .col handle flex
+      if (/^\d+%$/.test(w) || /^\d+px$/.test(w) || /rem|em|vw|vh|fr/.test(w)) {
+        result.className = 'col';
+        result.style = { width: w };
+        return result;
+      }
+
+      // fractional e.g. "1fr" or "0.3" -> use flex-basis if numeric fraction provided as decimal
+      if (/^[0-9]*\.?[0-9]+$/.test(w)) {
+        // interpret as fraction of available columns
+        const fraction = parseFloat(w);
+        if (fraction > 0) {
+          result.className = 'col';
+          result.style = { flex: `${fraction} 1 auto` };
+          return result;
+        }
+      }
+
+      // fallback: treat as CSS width
+      result.className = 'col';
+      result.style = { width: w };
+      return result;
+    }
+
+    // fallback: equal distribution using bootstrap columns when divisible, else 'col'
+    if (totalColumns > 0 && 12 % totalColumns === 0) {
+      result.className = `col-md-${12 / totalColumns}`;
+    } else {
+      result.className = 'col';
+    }
+    return result;
+  };
+
   const renderTableSection = (section: SectionDefinition) => {
     const cols = (section as any).columns as Array<any> | undefined;
     if (!Array.isArray(cols) || cols.length === 0) {
@@ -104,13 +150,13 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ config, data
     }
 
     const columns = cols.length;
-    const colClass = (12 % columns === 0) ? `col-md-${12 / columns}` : 'col';
 
     return (
       <div className={`${section.styling || ''} `}>
         {section.title && (<div className="py-2 bg-light border-bottom fw-semibold small">{section.title}</div>)}
         <div className="row">
           {cols.map((colDef, colIdx) => {
+            const colProps = getColumnProps(colDef, columns);
             const fieldsForCol: FieldDefinition[] = Array.isArray(colDef.fields) ? (colDef.fields as FieldDefinition[]).slice() : [];
             // use getFieldOrder to obtain numeric order safely
             fieldsForCol.sort((a, b) => getFieldOrder(a, 0) - getFieldOrder(b, 0));
@@ -125,7 +171,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ config, data
             const rowOrders = Array.from(rowMap.keys()).sort((a, b) => a - b);
 
             return (
-              <div key={colIdx} className={colClass}>
+              <div key={colIdx} className={colProps.className} style={colProps.style}>
                 <table role="table" className="">
                   <tbody>
                     {rowOrders.map(order => {
@@ -162,22 +208,24 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ config, data
     if (!Array.isArray(cols) || cols.length === 0) return null;
 
     const columns = cols.length;
-    const colClass = (12 % columns === 0) ? `col-md-${12 / columns}` : 'col';
 
     return (
       <div className={`${section.styling || ''}`}>
         {section.title && (<h6 className="">{section.title}</h6>)}
         <div className="row">
-          {cols.map((col, colIndex) => (
-            <div key={colIndex} className={colClass}>
-              {(Array.isArray(col.fields) ? col.fields : []).map((field: FieldDefinition) => (
-                <div key={field.field_id} className="">
-                  {field.label && (<span className={`${field.styling || ''}`}>{field.label}: </span>)}
-                  <span className={`${field.styling || ''}`}>{renderField(field)}</span>
-                </div>
-              ))}
-            </div>
-          ))}
+          {cols.map((col, colIndex) => {
+            const colProps = getColumnProps(col, columns);
+            return (
+              <div key={colIndex} className={colProps.className} style={colProps.style}>
+                {(Array.isArray(col.fields) ? col.fields : []).map((field: FieldDefinition) => (
+                  <div key={field.field_id} className="">
+                    {field.label && (<span className={`${field.styling || ''}`}>{field.label}: </span>)}
+                    <span className={`${field.styling || ''}`}>{renderField(field)}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -186,20 +234,30 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ config, data
   const renderFlexSection = (section: SectionDefinition) => {
     const cols = (section as any).columns as Array<any> | undefined;
     if (!Array.isArray(cols) || cols.length === 0) return null;
-    const sectionFields: FieldDefinition[] = cols.flatMap(c => Array.isArray(c.fields) ? c.fields : []).slice();
-    sectionFields.sort((a, b) => getFieldOrder(a, 0) - getFieldOrder(b, 0));
+    const columns = cols.length;
 
     return (
       <div className={`${section.styling || ''}`}>
         {section.title && <h6 className="fw-semibold mb-2">{section.title}</h6>}
-        <div className="d-flex flex-wrap gap-4">
-          {sectionFields.map((field) => (
-            <div key={field.field_id} className="d-flex flex-column" style={{ minWidth: 160 }}>
-              <span className={`small text-muted ${field.styling || ''}`}>{field.label}</span>
-              <span className={`fw-semibold ${field.styling || ''}`}>{renderField(field)}</span>
-            </div>
-          ))}
-          {sectionFields.length === 0 && <div className="text-muted small">No fields</div>}
+        <div className="row"> {/* use row to respect column width config even for flex-like layout */}
+          {cols.map((col, colIndex) => {
+            const colProps = getColumnProps(col, columns);
+            const sectionFields: FieldDefinition[] = Array.isArray(col.fields) ? col.fields.slice() : [];
+            sectionFields.sort((a, b) => getFieldOrder(a, 0) - getFieldOrder(b, 0));
+
+            return (
+              <div key={colIndex} className={colProps.className} style={colProps.style}>
+                <div className="d-flex flex-column gap-2">
+                  {sectionFields.map((field) => (
+                    <div key={field.field_id} className="d-flex flex-column" style={{ minWidth: 160 }}>
+                      <span className={`small text-muted ${field.styling || ''}`}>{field.label}</span>
+                      <span className={`fw-semibold ${field.styling || ''}`}>{renderField(field)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );

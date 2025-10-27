@@ -169,6 +169,7 @@
       "columns": [
         {
           "id": 1,
+          "width": 4,
           "layout_type": "grid",
           "styling": "border border-primary",
           "fields": [
@@ -180,6 +181,7 @@
         },
         {
           "id": 2,
+          "width": 4,
           "layout_type": "grid",
           "fields": [
             { "field_id": "employeeFullAddress", "data_type": "string", "source": "employee_address", "position": { "section": "employee_details", "order": 1 }, "defaultValue": "456 Elm Street, Brooklyn, NY 11201", "styling": "label_fontsize" },
@@ -190,6 +192,7 @@
         },
         {
           "id": 3,
+          "width": 4,
           "layout_type": "grid",
           "fields": [
             { "field_id": "employmentType", "label": "Employment Type", "data_type": "string", "source": "employment_type", "position": { "section": "employee_details", "order": 1 }, "defaultValue": "Full-Time", "styling": "label_fontsize" },
@@ -209,6 +212,7 @@
       "columns": [
         {
           "id": 1,
+          "width": 5,
           "layout_type": "table",
           "fields": [
             { "field_id": "hourlyRate", "label": "Hourly Rate", "data_type": "currency", "format": "$0.00", "source": "hourly_rate", "position": { "section": "pay_details", "order": 1 }, "defaultValue": 25.0, "styling": "border border-primary label_fontsize" },
@@ -222,6 +226,7 @@
         },
         {
           "id": 2,
+          "width": 2,
           "layout_type": "table",
           "fields": [
             { "field_id": "deduction401k", "label": "401(k) Contribution", "data_type": "currency", "format": "$0.00", "source": "deduction_401k", "position": { "section": "pay_details", "order": 5 }, "defaultValue": 100.0, "styling": "label_fontsize" },
@@ -234,6 +239,7 @@
         },
         {
           "id": 3,
+          "width": 5,
           "layout_type": "table",
           "fields": [
             { "field_id": "federal_income_tax", "label": "Federal Income Tax", "data_type": "currency", "format": "$0.00", "position": { "section": "pay_details", "order": 1 }, "defaultValue": 350.0, "styling": "label_fontsize" },
