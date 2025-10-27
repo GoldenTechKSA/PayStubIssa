@@ -87,6 +87,7 @@ export interface IncomeDetails {
   periodEndDate: string;
   periodPayDate: string;
   periodType: string;
+  unionDues: number;
 }
 
 // General Info

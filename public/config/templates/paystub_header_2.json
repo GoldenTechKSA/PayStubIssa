@@ -213,30 +213,37 @@
           "fields": [
             { "field_id": "hourlyRate", "label": "Hourly Rate", "data_type": "currency", "format": "$0.00", "source": "hourly_rate", "position": { "section": "pay_details", "order": 1 }, "defaultValue": 25.0, "styling": "border border-primary label_fontsize" },
             { "field_id": "hoursWorked", "label": "Hours Worked", "data_type": "number", "format": "0.00", "source": "hours_worked", "position": { "section": "pay_details", "order": 1 }, "defaultValue": 80, "styling": "border border-primary label_fontsize" },
-            { "field_id": "regular_pay", "label": "Regular Pay", "data_type": "currency", "format": "$0.00", "source": "regular_pay", "position": { "section": "pay_details", "order": 1 }, "calculation": "hourlyRate * hoursWorked", "defaultValue": 2000.0, "editable": false, "styling": "border border-primary label_fontsize" }
+            { "field_id": "regular_pay", "label": "Regular Pay", "data_type": "currency", "format": "$0.00", "source": "regular_pay", "position": { "section": "pay_details", "order": 1 }, "calculation": "hourlyRate * hoursWorked", "defaultValue": 2000.0, "editable": false, "styling": "label_fontsize" },
+            { "field_id": "overtimeRate", "label": "Overtime Rate", "data_type": "currency", "format": "$0.00", "source": "overtime_rate", "position": { "section": "pay_details", "order": 2}, "defaultValue": 37.5, "styling": "label_fontsize" },
+            { "field_id": "overtimeHours", "label": "Overtime Hours", "data_type": "number", "format": "0.00", "source": "overtime_hours", "position": { "section": "pay_details", "order": 2}, "defaultValue": 5, "styling": "label_fontsize" },
+            { "field_id": "overtime_pay", "label": "Overtime Pay", "data_type": "currency", "format": "$0.00", "source": "overtime_pay", "position": { "section": "pay_details", "order": 2 }, "calculation": "overtimeRate * overtimeHours", "defaultValue": 187.5, "editable": false, "styling": "label_fontsize" },
+            { "field_id": "bonusAmount", "label": "Bonus", "data_type": "currency", "format": "$0.00", "source": "bonus_amount", "position": { "section": "pay_details", "order": 3}, "defaultValue": 0.0, "styling": "label_fontsize" }
           ]
         },
         {
           "id": 2,
           "layout_type": "table",
           "fields": [
-            { "field_id": "deduction401k", "label": "401(k) Contribution", "data_type": "currency", "format": "$0.00", "position": { "section": "pay_details", "order": 5 }, "defaultValue": 100.0, "styling": "label_fontsize" },
-            { "field_id": "medicalDeduction", "label": "Medical Insurance", "data_type": "currency", "format": "$0.00", "source": "deductions.medicalDeduction", "position": { "section": "pay_details", "order": 6 }, "defaultValue": 150.0, "styling": "label_fontsize" },
-            { "field_id": "dentalDeduction", "label": "Dental Insurance", "data_type": "currency", "format": "$0.00", "source": "deductions.dentalDeduction", "position": { "section": "pay_details", "order": 7 }, "defaultValue": 25.0, "styling": "label_fontsize" },
-            { "field_id": "visionDeduction", "label": "Vision Insurance", "data_type": "currency", "format": "$0.00", "source": "deductions.visionDeduction", "position": { "section": "pay_details", "order": 8 }, "defaultValue": 15.0, "styling": "label_fontsize" },
-            { "field_id": "otherDeduction", "label": "Other Deductions", "data_type": "currency", "format": "$0.00", "source": "deductions.otherDeduction", "position": { "section": "pay_details", "order": 9 }, "defaultValue": 0.0, "styling": "label_fontsize" },
-            { "field_id": "ytd_medicare", "label": "YTD Medicare", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 5 }, "defaultValue": 380.5, "styling": "label_fontsize" }
+            { "field_id": "deduction401k", "label": "401(k) Contribution", "data_type": "currency", "format": "$0.00", "source": "deduction_401k", "position": { "section": "pay_details", "order": 5 }, "defaultValue": 100.0, "styling": "label_fontsize" },
+            { "field_id": "medicalDeduction", "label": "Medical Insurance", "data_type": "currency", "format": "$0.00", "source": "medical_deduction", "position": { "section": "pay_details", "order": 6 }, "defaultValue": 150.0, "styling": "label_fontsize" },
+            { "field_id": "dentalDeduction", "label": "Dental Insurance", "data_type": "currency", "format": "$0.00", "source": "dental_deduction", "position": { "section": "pay_details", "order": 7 }, "defaultValue": 25.0, "styling": "label_fontsize" },
+            { "field_id": "visionDeduction", "label": "Vision Insurance", "data_type": "currency", "format": "$0.00", "source": "vision_deduction", "position": { "section": "pay_details", "order": 8 }, "defaultValue": 15.0, "styling": "label_fontsize" },
+            { "field_id": "otherDeduction", "label": "Other Deductions", "data_type": "currency", "format": "$0.00", "source": "other_deduction", "position": { "section": "pay_details", "order": 9 }, "defaultValue": 0.0, "styling": "label_fontsize" },
+            { "field_id": "unionDues", "label": "Union Dues", "data_type": "currency", "format": "$0.00", "source": "union_dues", "position": { "section": "pay_details", "order": 10 }, "defaultValue": 0.0, "styling": "label_fontsize" }
           ]
         },
         {
           "id": 3,
           "layout_type": "table",
           "fields": [
-            { "field_id": "ytd_federal_tax", "label": "YTD Federal Tax", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 2 }, "defaultValue": 4200.0, "styling": "label_fontsize" },
-            { "field_id": "ytd_state_tax", "label": "YTD State Tax", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 3 }, "defaultValue": 1440.0, "styling": "label_fontsize" },
-            { "field_id": "ytd_social_security", "label": "YTD Social Security", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 4 }, "defaultValue": 1627.5, "styling": "label_fontsize" },
             { "field_id": "federal_income_tax", "label": "Federal Income Tax", "data_type": "currency", "format": "$0.00", "position": { "section": "pay_details", "order": 1 }, "defaultValue": 350.0, "styling": "label_fontsize" },
-            { "field_id": "state_income_tax", "label": "State Income Tax", "data_type": "currency", "format": "$0.00", "position": { "section": "pay_details", "order": 1 }, "defaultValue": 120.0, "styling": "label_fontsize" }
+            { "field_id": "ytd_federal_tax", "label": "YTD Federal Tax", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 1 }, "defaultValue": 4200.0, "styling": "label_fontsize" },
+            { "field_id": "social_security_tax", "label": "Social Security Tax", "data_type": "currency", "format": "$0.00", "position": { "section": "pay_details", "order": 2}, "defaultValue": 135.63, "styling": "label_fontsize" },
+            { "field_id": "ytd_social_security", "label": "YTD Social Security", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 2}, "defaultValue": 1627.5, "styling": "label_fontsize" },
+            { "field_id": "state_income_tax", "label": "State Income Tax", "data_type": "currency", "format": "$0.00", "position": { "section": "pay_details", "order": 3}, "defaultValue": 120.0, "styling": "label_fontsize" },
+            { "field_id": "ytd_state_tax", "label": "YTD State Tax", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 3}, "defaultValue": 1440.0, "styling": "label_fontsize" },
+            { "field_id": "medicare_tax", "label": "Medicare Tax", "data_type": "currency", "format": "$0.00", "position": { "section": "pay_details", "order": 4}, "defaultValue": 31.71, "styling": "label_fontsize" },
+            { "field_id": "ytd_medicare", "label": "YTD Medicare", "data_type": "currency", "format": "$0,000.00", "position": { "section": "pay_details", "order": 4}, "defaultValue": 380.5, "styling": "label_fontsize" }
           ]
         }
       ]

@@ -232,11 +232,26 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
 
     employment_type: generalInfo.employmentType,
     payment_method: generalInfo.paymentMethod, // "Direct Deposit" or "Check"
-    payment_frequency: generalInfo.paymentFrequency,
+    payment_frequency: incomeDetails.periodType,
     paystub_count: generalInfo.payStubCount,
     extra_notes: generalInfo.extraNotes,
 
-    
+    annual_salary: incomeDetails.annualSalary,
+    hourly_rate: incomeDetails.hourlyRate, // Example hourly rate
+    hours_worked: incomeDetails.hoursWorked, // Example hours worked per week
+    overtime_rate: incomeDetails.overtimeRate, // Example overtime hourly rate
+    overtime_hours: incomeDetails.overtimeHours, // Example overtime hours worked per week
+    bonus_amount: incomeDetails.bonusAmount, // Example extrea bonus amount
+    deduction_401k: incomeDetails.deduction401k, // Optional 401K amount
+    medical_deduction: incomeDetails.medicalDeduction, // Optional medical deduction amount
+    dental_deduction: incomeDetails.dentalDeduction, // Optional dental deduction amount
+    vision_deduction: incomeDetails.visionDeduction, // Optional vision deduction amount
+    other_deduction: incomeDetails.otherDeduction, // Optional other deduction amount
+    union_dues: incomeDetails.unionDues, // Optional union dues percentage (e.g., 0.01 for 1%)
+
+// calculated   regular_pay: grossPayAsString(incomeDetails.hourlyRate, incomeDetails.hoursWorked),
+// calculated   overtime_pay: overtimeAsStringCurrent(incomeDetails.overtimeRate, incomeDetails.overtimeHours),
+
     // Body data - Earnings (as arrays)
     earnings_items: earnings,
     deductions_items: deductions,

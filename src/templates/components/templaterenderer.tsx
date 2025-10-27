@@ -107,9 +107,9 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ config, data
     const colClass = (12 % columns === 0) ? `col-md-${12 / columns}` : 'col';
 
     return (
-      <div className={`${section.styling || ''} mb-3`}>
-        {section.title && (<div className="py-2 bg-light border-bottom fw-semibold small px-3">{section.title}</div>)}
-        <div className="row g-3 p-3">
+      <div className={`${section.styling || ''} `}>
+        {section.title && (<div className="py-2 bg-light border-bottom fw-semibold small">{section.title}</div>)}
+        <div className="row">
           {cols.map((colDef, colIdx) => {
             const fieldsForCol: FieldDefinition[] = Array.isArray(colDef.fields) ? (colDef.fields as FieldDefinition[]).slice() : [];
             // use getFieldOrder to obtain numeric order safely
@@ -126,7 +126,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({ config, data
 
             return (
               <div key={colIdx} className={colClass}>
-                <table role="table" className="table table-borderless mb-0">
+                <table role="table" className="">
                   <tbody>
                     {rowOrders.map(order => {
                       const fieldsInRow = rowMap.get(order) || [];
