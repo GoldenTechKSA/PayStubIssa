@@ -1,82 +1,54 @@
-/**
- * Template System Type Definitions
- * Defines the structure for dynamic paystub templates
- */
-
+// Template System Type Definitions
+// Defines the structure for dynamic paystub templates
 export interface TemplateMetadata {
   template_id: string;
-  title: string;
-  version: string;
-  description: string;
-  category: string;
-  thumbnail?: string;
-  created_date?: string;
-  last_updated?: string;
-  author?: string;
+  title?: string;
+  version?: string;
+  description?: string;
+  category?: string;
 }
 
 export interface FieldDefinition {
   field_id: string;
-  source: string; // path to data source, e.g. "employee.name"
-  label: string;
-  data_type: 'image' | 'string' | 'number' | 'currency' | 'date' | 'percentage' | 'email' | 'phone';
+  source?: string;
+  label?: string;
+  data_type?: 'image' | 'string' | 'number' | 'currency' | 'date' | 'percentage' | 'email' | 'phone';
   format?: string;
-  position: {
-    section: string;
-    order: number;
-    column?: number;
-    row?: number;
-  };
+  order?: number;        // order within the column
+  row?: number;          // optional row group inside the column
   styling?: string;
-  visibility?: boolean | string; // boolean or conditional expression
-  calculation?: string; // formula for computed fields
+  calculation?: string;
   defaultValue?: any;
-  width?: string;
   required?: boolean;
   editable?: boolean;
-  validation?: {
-    min?: number;
-    max?: number;
-    pattern?: string;
-    custom?: string;
-  };
+  validation?: { min?: number; max?: number; pattern?: string; };
+}
+
+export interface ColumnDefinition {
+  id?: string | number;
+  layout_type?: 'grid' | 'table' | 'flex' | 'stack';
+  styling?: string;
+  width?: string;
+  bgColor?: string;
+  tableClass?: string;
+  fields: FieldDefinition[];
 }
 
 export interface SectionDefinition {
   section_id: string;
-  title: string;
+  title?: string;
   order: number;
   layout_type: 'grid' | 'table' | 'flex' | 'stack';
-  columns?: number;
+  columns: ColumnDefinition[];    // required now
   styling?: string;
   visible?: boolean;
-  collapsible?: boolean;
-  defaultCollapsed?: boolean;
-  fields: FieldDefinition[];
 }
 
 export interface TemplateConfiguration {
   metadata: TemplateMetadata;
   sections: SectionDefinition[];
-  styling: {
-    primaryColor?: string;
-    secondaryColor?: string;
-    backgroundColor?: string;
-    fontFamily?: string;
-    borderColor?: string;
-    headerBackground?: string;
-    accentColor?: string;
-  };
-  layout?: {
-    maxWidth?: string;
-    padding?: string;
-    margin?: string;
-  };
-  branding?: {
-    logo?: string;
-    companyColors?: string[];
-    watermark?: string;
-  };
+  styling?: { primaryColor?: string; backgroundColor?: string; fontFamily?: string; headerBackground?: string; };
+  layout?: { maxWidth?: string; padding?: string; margin?: string; };
 }
 
 export interface TemplateRegistry {

@@ -1,6 +1,6 @@
 /**
  * Template System Test Suite
- * Comprehensive tests for the dynamic paystub template system
+ * Updated to new schema: sections[].columns[].fields
  */
 
 import { describe, it, expect, beforeEach } from '@jest/globals';
@@ -34,18 +34,18 @@ describe('TemplateLoader', () => {
 
   describe('loadTemplate', () => {
     it('should load valid template configuration', async () => {
-      const config = await loader.loadTemplate('classic_blue');
+      const config = await loader.loadTemplate('paystub_header_2');
       expect(config).toBeDefined();
-      expect(config?.metadata.template_id).toBe('classic_blue');
+      expect(config?.metadata.template_id).toBe('paystub_header_2');
       expect(config?.sections).toBeInstanceOf(Array);
-      // ensure sections contain fields array (compatibility with new schema)
-      const allFields = config?.sections.flatMap(s => (s.fields || [])) || [];
+      // ensure columns/fields exist
+      const allFields = config?.sections.flatMap(s => (s.columns || []).flatMap((c: any) => c.fields || [])) || [];
       expect(allFields).toBeInstanceOf(Array);
     });
 
     it('should cache loaded templates', async () => {
-      const config1 = await loader.loadTemplate('classic_blue');
-      const config2 = await loader.loadTemplate('classic_blue');
+      const config1 = await loader.loadTemplate('paystub_header_2');
+      const config2 = await loader.loadTemplate('paystub_header_2');
       expect(config1).toBe(config2);
     });
 
@@ -57,7 +57,7 @@ describe('TemplateLoader', () => {
 
   describe('validateTemplate', () => {
     it('should validate correct template configuration', async () => {
-      const config = await loader.loadTemplate('classic_blue');
+      const config = await loader.loadTemplate('paystub_header_2');
       if (config) {
         const validation = loader.validateTemplate(config);
         expect(validation.valid).toBe(true);
@@ -68,12 +68,20 @@ describe('TemplateLoader', () => {
     it('should detect missing template_id', () => {
       const invalidConfig: any = {
         metadata: {},
-        sections: [{ section_id: 'test', title: 'Test', order: 1, layout_type: 'grid', fields: [] }],
+        sections: [
+          {
+            section_id: 'test',
+            title: 'Test',
+            order: 1,
+            layout_type: 'grid',
+            columns: [{ id: 1, fields: [] }]
+          }
+        ],
         styling: {}
       };
       const validation = loader.validateTemplate(invalidConfig);
       expect(validation.valid).toBe(false);
-      expect(validation.errors).toContain('Template must have a valid template_id');
+      expect(validation.errors).toContain('Template must have a valid metadata.template_id');
     });
 
     it('should detect missing sections', () => {
@@ -87,7 +95,7 @@ describe('TemplateLoader', () => {
       expect(validation.errors).toContain('Template must have at least one section');
     });
 
-    it('should detect invalid section references in fields', () => {
+    it('should detect invalid section references in fields (mismatched position.section)', () => {
       const invalidConfig: TemplateConfiguration = {
         metadata: { template_id: 'test', title: 'Test', version: '1.0', description: 'Test', category: 'test' },
         sections: [
@@ -96,15 +104,20 @@ describe('TemplateLoader', () => {
             title: 'Header',
             order: 1,
             layout_type: 'grid',
-            columns: 1,
-            fields: [
+            columns: [
               {
-                field_id: 'test_field',
-                source: 'test_field',
-                label: 'Test',
-                data_type: 'string',
-                position: { section: 'invalid_section', order: 1 },
-              } as unknown as FieldDefinition
+                id: 1,
+                layout_type: 'grid',
+                fields: [
+                  {
+                    field_id: 'test_field',
+                    source: 'test_field',
+                    label: 'Test',
+                    data_type: 'string',
+                    position: { section: 'invalid_section', order: 1 },
+                  } as unknown as FieldDefinition
+                ]
+              }
             ]
           }
         ],
@@ -112,7 +125,27 @@ describe('TemplateLoader', () => {
       };
       const validation = loader.validateTemplate(invalidConfig);
       expect(validation.valid).toBe(false);
-      expect(validation.errors.some(e => e.includes('non-existent section') || e.includes('invalid section'))).toBe(true);
+      expect(validation.errors.some(e => e.includes('does not match parent section'))).toBe(true);
+    });
+
+    it('should detect duplicate field ids', () => {
+      const invalidConfig: any = {
+        metadata: { template_id: 'dup_test' },
+        sections: [
+          {
+            section_id: 's1',
+            order: 1,
+            layout_type: 'grid',
+            columns: [
+              { id: 1, fields: [{ field_id: 'f1' }] },
+              { id: 2, fields: [{ field_id: 'f1' }] }
+            ]
+          }
+        ]
+      };
+      const validation = loader.validateTemplate(invalidConfig);
+      expect(validation.valid).toBe(false);
+      expect(validation.errors.some(e => e.includes('Duplicate field_id'))).toBe(true);
     });
   });
 
@@ -476,19 +509,19 @@ describe('Integration Tests', () => {
     const loader = TemplateLoader.getInstance();
     const engine = CalculationEngine.getInstance();
     
-    const config = await loader.loadTemplate('classic_blue');
+    const config = await loader.loadTemplate('paystub_header_2');
     if (config) {
-      // gather all fields from sections (new schema)
-      const allFields = config.sections.flatMap(s => (s.fields || []));
+      // gather all fields from sections.columns.fields (new schema)
+      const allFields = config.sections.flatMap(s => (s.columns || []).flatMap((c: any) => c.fields || []));
       const initialData: Record<string, any> = {};
-      allFields.forEach(field => {
+      allFields.forEach((field: any) => {
         initialData[field.field_id] = field.defaultValue;
       });
       
-      const calculatedData = engine.calculateDependentFields(allFields, initialData);
+      const calculatedData = engine.calculateDependentFields(allFields as FieldDefinition[], initialData);
       
       // Verify all calculated fields have values
-      allFields.forEach(field => {
+      allFields.forEach((field: any) => {
         if (field.calculation) {
           expect(calculatedData[field.field_id]).toBeDefined();
           expect(typeof calculatedData[field.field_id]).toBe('number');
@@ -593,11 +626,11 @@ describe('Performance Tests', () => {
     loader.clearCache();
 
     const startTime1 = Date.now();
-    await loader.loadTemplate('classic_blue');
+    await loader.loadTemplate('paystub_header_2');
     const firstLoadTime = Date.now() - startTime1;
 
     const startTime2 = Date.now();
-    await loader.loadTemplate('classic_blue');
+    await loader.loadTemplate('paystub_header_2');
     const cachedLoadTime = Date.now() - startTime2;
 
     // Cached load should be significantly faster

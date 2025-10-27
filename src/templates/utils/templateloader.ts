@@ -15,22 +15,19 @@ export class TemplateLoader {
     return TemplateLoader.instance;
   }
 
-  //Load the template registry
+  // Load the template registry
   async loadRegistry(): Promise<TemplateRegistry> {
     if (this.registry) {
       return this.registry;
     }
 
     try {
-      // In a real application, this would fetch from an API or file system
-      // For demo purposes, we'll return a mock registry
       const response = await fetch('/config/template-registry.json');
       this.registry = await response.json();
       if (!this.registry) { throw new Error('Invalid registry format');}
       return this.registry;
     } catch (error) {
       console.error('Failed to load template registry:', error);
-      // Return fallback registry
       return {
         version: '1.0.0',
         last_updated: new Date().toISOString(),
@@ -41,19 +38,14 @@ export class TemplateLoader {
 
   // Load a specific template configuration
   async loadTemplate(templateId: string): Promise<TemplateConfiguration | null> {
-    // Check cache first
     if (this.templateCache.has(templateId)) {
       return this.templateCache.get(templateId)!;
     }
 
     try {
-      // In a real application, this would fetch from an API or file system
       const response = await fetch(`/config/templates/${templateId}.json`);
       const config: TemplateConfiguration = await response.json();
-      
-      // Cache the configuration
       this.templateCache.set(templateId, config);
-      
       return config;
     } catch (error) {
       console.error(`Failed to load template ${templateId}:`, error);
@@ -78,60 +70,92 @@ export class TemplateLoader {
     this.templateCache.clear();
   }
 
-  // Validate template configuration
-  // Supports both legacy top-level `fields: []` and the new schema where each section
-  // contains its own `fields: []` array. Validation will flatten fields as necessary.
+  // Validate template configuration (strict new schema)
   validateTemplate(config: TemplateConfiguration): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    // Check metadata
-    if (!config.metadata?.template_id) {
-      errors.push('Template must have a valid template_id');
+    // Metadata checks
+    if (!config || typeof config !== 'object') {
+      errors.push('Invalid template configuration object');
+      return { valid: false, errors };
+    }
+    if (!config.metadata || !config.metadata.template_id) {
+      errors.push('Template must have a valid metadata.template_id');
     }
 
-    // Check sections
-    if (!config.sections || !Array.isArray(config.sections) || config.sections.length === 0) {
+    // Sections checks
+    if (!Array.isArray(config.sections) || config.sections.length === 0) {
       errors.push('Template must have at least one section');
+      return { valid: false, errors };
     }
 
-    // Gather all fields (support legacy top-level config.fields or nested section.fields)
-    let allFields: any[] = [];
-    if (Array.isArray((config as any).fields) && (config as any).fields.length > 0) {
-      allFields = (config as any).fields;
-    } else if (Array.isArray(config.sections)) {
-      allFields = config.sections.flatMap((s: any) => Array.isArray(s.fields) ? s.fields : []);
+    // Enforce no legacy top-level fields property
+    if (Object.prototype.hasOwnProperty.call(config as any, 'fields')) {
+      errors.push('Top-level "fields" is not allowed in the new schema. Move fields under sections[].columns[].fields');
     }
 
-    if (!allFields || allFields.length === 0) {
-      errors.push('Template must have at least one field');
-    }
-
-    // Validate field.section references against actual section ids
-    const sectionIds = new Set((config.sections || []).map(s => s.section_id));
-    allFields.forEach(field => {
-      const sectionRef = field?.position?.section;
-      if (!sectionRef || !sectionIds.has(sectionRef)) {
-        errors.push(`Field ${field.field_id} references non-existent section ${sectionRef}`);
+    // Collect all fields and validate columns/fields structure
+    const allFields: any[] = [];
+    config.sections.forEach((sec, si) => {
+      if (!sec.section_id) {
+        errors.push(`Section[${si}] is missing section_id`);
       }
-    });
-
-    // Validate calculations: referenced fields must exist in the flattened list
-    const fieldIds = new Set(allFields.map(f => f.field_id));
-    allFields.forEach(field => {
-      if (field.calculation && typeof field.calculation === 'string') {
-        const referenced = (field.calculation.match(/\b[a-zA-Z_]\w*\b/g) || []).filter(tok => isNaN(Number(tok)));
-        referenced.forEach(ref => {
-          if (!fieldIds.has(ref)) {
-            errors.push(`Field ${field.field_id} calculation references non-existent field ${ref}`);
+      if (!Array.isArray((sec as any).columns) || (sec as any).columns.length === 0) {
+        errors.push(`Section "${sec.section_id || `index ${si}`}" must have a non-empty columns array`);
+        return;
+      }
+      (sec as any).columns.forEach((col: any, ci: number) => {
+        if (!Array.isArray(col.fields) || col.fields.length === 0) {
+          errors.push(`Section "${sec.section_id}" column[${ci}] must have a non-empty fields array`);
+          return;
+        }
+        col.fields.forEach((f: any, fi: number) => {
+          if (!f || typeof f !== 'object') {
+            errors.push(`Section "${sec.section_id}" column[${ci}] field[${fi}] is invalid`);
+            return;
           }
+          if (!f.field_id) {
+            errors.push(`Field in section "${sec.section_id}" column[${ci}] missing field_id`);
+          }
+          // If position.section is present, it must match parent section_id
+          if (f.position && f.position.section && f.position.section !== sec.section_id) {
+            errors.push(`Field "${f.field_id}" position.section "${f.position.section}" does not match parent section "${sec.section_id}"`);
+          }
+          allFields.push(f);
         });
+      });
+    });
+
+    if (allFields.length === 0) {
+      errors.push('Template must contain at least one field under sections[].columns[].fields');
+      return { valid: false, errors };
+    }
+
+    // Unique field_id check
+    const seen = new Set<string>();
+    allFields.forEach(f => {
+      if (f.field_id) {
+        if (seen.has(f.field_id)) {
+          errors.push(`Duplicate field_id detected: ${f.field_id}`);
+        } else {
+          seen.add(f.field_id);
+        }
       }
     });
 
-    return {
-      valid: errors.length === 0,
-      errors
-    };
+    // Validate calculations reference existing field ids
+    const fieldIds = new Set(allFields.map(f => f.field_id));
+    allFields.forEach(f => {
+      if (f.calculation && typeof f.calculation === 'string') {
+        const referenced = (f.calculation.match(/\b[a-zA-Z_]\w*\b/g) || []).filter(tok => isNaN(Number(tok)));
+        const invalid = referenced.filter(ref => !fieldIds.has(ref));
+        if (invalid.length) {
+          errors.push(`Field ${f.field_id} calculation references non-existent fields: ${invalid.join(', ')}`);
+        }
+      }
+    });
+
+    return { valid: errors.length === 0, errors };
   }
 }
 
