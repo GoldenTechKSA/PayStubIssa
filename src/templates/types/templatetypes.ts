@@ -14,8 +14,15 @@ export interface FieldDefinition {
   label?: string;
   data_type?: 'image' | 'string' | 'number' | 'currency' | 'date' | 'percentage' | 'email' | 'phone';
   format?: string;
-  order?: number;        // order within the column
-  row?: number;          // optional row group inside the column
+  // position block added so renderer and templates can use order/row/column
+  position?: {
+    section?: string;
+    order?: number | string;
+    row?: number | string;     // used to map a field under a column header
+    column?: number | string;
+  };
+  order?: number;        // legacy convenience (not required)
+  row?: number;          // legacy convenience
   styling?: string;
   calculation?: string;
   defaultValue?: any;
@@ -28,7 +35,8 @@ export interface ColumnDefinition {
   id?: string | number;
   layout_type?: 'grid' | 'table' | 'flex' | 'stack';
   styling?: string;
-  width?: string;
+  width?: string | number;
+  headers?: string[];                // new: column-specific table headers
   bgColor?: string;
   tableClass?: string;
   fields: FieldDefinition[];

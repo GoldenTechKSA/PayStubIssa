@@ -3,82 +3,38 @@
   "last_updated": "2025-10-23",
   "templates": [
     {
-      "template_id": "paystub_header_2",
+      "template_id": "paystub_with_out_logo",
       "title": "Standard Employee Paystub",
-      "version": "4.0",
+      "version": "1.4",
       "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
-      "category": "standard",
+      "category": "standard_with_logo",
       "thumbnail": "/images/templates/default-logo.png",
       "created_date": "2025-01-01",
       "last_updated": "2025-10-07",
       "author": "System"
     },
     {
-      "template_id": "paystub_regular",
+      "template_id": "paystub_with_out_logo",
       "title": "Standard Employee Paystub",
-      "version": "3.0",
+      "version": "1.4",
       "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
-      "category": "standard",
+      "category": "standard_with_out_logo",
       "thumbnail": "/images/templates/default-logo.png",
       "created_date": "2025-01-01",
-      "last_updated": "2025-10-23",
-      "author": "System"
-    },
-    {
-      "template_id": "paystub_header_1",
-      "title": "Standard Employee Paystub",
-      "version": "3.0",
-      "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
-      "category": "standard",
-      "thumbnail": "/images/templates/default-logo.png",
-      "created_date": "2025-01-01",
-      "last_updated": "2025-10-07",
-      "author": "System"
-    },
-    {
-      "template_id": "paystub_header_2",
-      "title": "Standard Employee Paystub",
-      "version": "3.0",
-      "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
-      "category": "standard",
-      "thumbnail": "/images/templates/default-logo.png",
-      "created_date": "2025-01-01",
-      "last_updated": "2025-10-07",
-      "author": "System"
-    },
-    {
-      "template_id": "paystub_header_3",
-      "title": "Standard Employee Paystub",
-      "version": "3.0",
-      "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule.",
-      "category": "standard",
-      "thumbnail": "/images/templates/default-logo.png",
-      "created_date": "2025-01-01",
-      "last_updated": "2025-10-07",
-      "author": "System"
-    },
-    {
-      "template_id": "paystub_contractor",
-      "title": "Independent Contractor Invoice & Earnings Statement",
-      "version": "1.0",
-      "description": "Designed for 1099 contractors, this template functions as both an invoice for services rendered and an earnings summary. It highlights gross pay without traditional employee tax withholdings, emphasizing it is not a W-2 wage statement.",
-      "category": "modern",
-      "thumbnail": "/images/templates/default-logo.png",
-      "created_date": "2025-01-15",
       "last_updated": "2025-10-07",
       "author": "System"
     }
   ],
   "categories": [
     {
-      "id": "standard",
-      "name": "Standard",
-      "description": "Traditional paystub layouts"
+      "id": "standard_with_logo",
+      "name": "Standard with Logo",
+      "description": "Traditional paystub layouts with company logo"
     },
     {
-      "id": "modern",
-      "name": "Modern",
-      "description": "Contemporary designs with clean aesthetics"
+      "id": "standard_with_out_logo",
+      "name": "Standard No Logo",
+      "description": "Traditional paystub layouts without company logo"
     },
     {
       "id": "professional",
