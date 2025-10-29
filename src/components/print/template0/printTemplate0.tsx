@@ -19,11 +19,10 @@ type Deductions = { description: string; current: string | number; ytd: string |
 type Taxes = { description: string; current: string | number; ytd: string | number; }; 
 
 interface PrintTemplate0Props {
-  store: PayStubDetails;
   canPrintStub: Boolean;
 }
 
-const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ store, canPrintStub } ) => {
+const PrintTemplate0: React.FC<PrintTemplate0Props> = ({ canPrintStub } ) => {
   // Destructure store properties using types
   const companyInfo: CompanyInfo = useSelector<PayStubDetails, CompanyInfo>(state => state.companyInfo);   // Company Info
   const employeeInfo: EmployeeInfo = useSelector<PayStubDetails, EmployeeInfo>(state => state.employeeInfo);   // Employee Info

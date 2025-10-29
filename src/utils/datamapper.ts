@@ -80,12 +80,9 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
   const { companyInfo, employeeInfo, incomeDetails, generalInfo } = store;
   
   // Format addresses
-  const employeeFullName = [employeeInfo.employeeFirstName, employeeInfo.employeeMiddleInitial, employeeInfo.employeeLastName]
-    .filter(Boolean).join(" ");
-  const employeeFullAddress = [employeeInfo.employeeAddress1, employeeInfo.employeeAddress2, employeeInfo.employeeCity, employeeInfo.employeeState, employeeInfo.employeeZipCode]
-    .filter(Boolean).join(", ");
-  const companyFullAddress = [companyInfo.companyAddress1, companyInfo.companyAddress2, companyInfo.companyCity, companyInfo.companyState, companyInfo.companyZipCode]
-    .filter(Boolean).join(", ");
+  const employeeFullName = [employeeInfo.employeeFirstName, employeeInfo.employeeMiddleInitial, employeeInfo.employeeLastName].filter(Boolean).join(" ");
+  const employeeFullAddress = [employeeInfo.employeeAddress1, employeeInfo.employeeAddress2].filter(Boolean).join(", ");
+  const companyFullAddress = [companyInfo.companyAddress1, companyInfo.companyAddress2].filter(Boolean).join(", ");
   
   // Format pay period
   const formatDate = (dateString: string): string => {
@@ -201,27 +198,60 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
   
   return {
     // Header data
+    paystub_title: "Pay Stub",
+
     company_name: companyInfo.companyName,
-    company_address: companyFullAddress,
+    company_address: `${companyFullAddress}, ${companyInfo.companyCity}, ${companyInfo.companyState} ${companyInfo.companyZipCode}`,
     company_city_state_zip: `${companyInfo.companyCity}, ${companyInfo.companyState} ${companyInfo.companyZipCode}`,
     company_phone: companyInfo.companyPhone,
     company_tax_id: companyInfo.companyEIN,
+    company_email: companyInfo.companyEmail,
     company_logo: "/images/default-logo.png",
-    paystub_title: "Pay Stub",
+
     paystub_id: generalInfo.payStubNumber,
+    check_number: generalInfo.checkNumber,
     pay_period: { start: incomeDetails.periodStartDate, end: incomeDetails.periodEndDate },
+    pay_period_start: incomeDetails.periodStartDate,
+    pay_period_end: incomeDetails.periodEndDate,
     pay_date: incomeDetails.periodPayDate,
     
     // Body data - Employee
     employee_name: employeeFullName,
-    employee_id: employeeInfo.employeeID,
     employee_address: employeeFullAddress,
     employee_city_state_zip: `${employeeInfo.employeeCity}, ${employeeInfo.employeeState} ${employeeInfo.employeeZipCode}`,
     employee_ssn: employeeInfo.employeeSSN,
-    department: "Engineering", // This would come from your data
-    position: "Developer", // This would come from your data
-    hire_date: "2020-03-15", // This would come from your data
-    
+    employee_id: employeeInfo.employeeID,
+    employee_phone: employeeInfo.employeePhone,
+    employee_email: employeeInfo.employeeEmail,
+    employee_status: employeeInfo.employeeMarriedStatus,
+    employee_hire_date: employeeInfo.employeeHireDate,
+
+    employee_department: "Engineering",
+    employee_position: "Developer",
+    employee_wage_type: incomeDetails.wageType,
+
+    employment_type: generalInfo.employmentType,
+    payment_method: generalInfo.paymentMethod, // "Direct Deposit" or "Check"
+    payment_frequency: incomeDetails.periodType,
+    paystub_count: generalInfo.payStubCount,
+    extra_notes: generalInfo.extraNotes,
+
+    annual_salary: incomeDetails.annualSalary,
+    hourly_rate: incomeDetails.hourlyRate, // Example hourly rate
+    hours_worked: incomeDetails.hoursWorked, // Example hours worked per week
+    overtime_rate: incomeDetails.overtimeRate, // Example overtime hourly rate
+    overtime_hours: incomeDetails.overtimeHours, // Example overtime hours worked per week
+    bonus_amount: incomeDetails.bonusAmount, // Example extrea bonus amount
+    deduction_401k: incomeDetails.deduction401k, // Optional 401K amount
+    medical_deduction: incomeDetails.medicalDeduction, // Optional medical deduction amount
+    dental_deduction: incomeDetails.dentalDeduction, // Optional dental deduction amount
+    vision_deduction: incomeDetails.visionDeduction, // Optional vision deduction amount
+    other_deduction: incomeDetails.otherDeduction, // Optional other deduction amount
+    union_dues: incomeDetails.unionDues, // Optional union dues percentage (e.g., 0.01 for 1%)
+
+// calculated   regular_pay: grossPayAsString(incomeDetails.hourlyRate, incomeDetails.hoursWorked),
+// calculated   overtime_pay: overtimeAsStringCurrent(incomeDetails.overtimeRate, incomeDetails.overtimeHours),
+
     // Body data - Earnings (as arrays)
     earnings_items: earnings,
     deductions_items: deductions,
@@ -233,8 +263,6 @@ export const mapStoreToTemplateData = (store: PayStubDetails): TemplateData => {
     net_pay: `$${netPayCurrent.toFixed(2)}`,
     ytd_gross: `$${(totalEarningsCurrent * 12).toFixed(2)}`,
     ytd_deductions: `$${((totalDeductionsCurrent + totalTaxesCurrent) * 12).toFixed(2)}`,
-    ytd_net: `$${(netPayCurrent * 12).toFixed(2)}`,
-    payment_method: generalInfo.paymentMethod,
-    check_number: generalInfo.checkNumber
+    ytd_net: `$${(netPayCurrent * 12).toFixed(2)}`
   };
 };

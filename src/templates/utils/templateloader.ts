@@ -1,8 +1,4 @@
-/**
- * Template Loader Utility
- * Handles loading and caching of template configurations
- */
-
+// Template Loader Utility:  * Handles loading and caching of template configurations
 import { TemplateConfiguration, TemplateMetadata, TemplateRegistry } from '../types/templatetypes';
 
 export class TemplateLoader {
@@ -19,24 +15,19 @@ export class TemplateLoader {
     return TemplateLoader.instance;
   }
 
-  /**
-   * Load the template registry
-   */
+  // Load the template registry
   async loadRegistry(): Promise<TemplateRegistry> {
     if (this.registry) {
       return this.registry;
     }
 
     try {
-      // In a real application, this would fetch from an API or file system
-      // For demo purposes, we'll return a mock registry
       const response = await fetch('/config/template-registry.json');
       this.registry = await response.json();
       if (!this.registry) { throw new Error('Invalid registry format');}
       return this.registry;
     } catch (error) {
       console.error('Failed to load template registry:', error);
-      // Return fallback registry
       return {
         version: '1.0.0',
         last_updated: new Date().toISOString(),
@@ -45,23 +36,16 @@ export class TemplateLoader {
     }
   }
 
-  /**
-   * Load a specific template configuration
-   */
+  // Load a specific template configuration
   async loadTemplate(templateId: string): Promise<TemplateConfiguration | null> {
-    // Check cache first
     if (this.templateCache.has(templateId)) {
       return this.templateCache.get(templateId)!;
     }
 
     try {
-      // In a real application, this would fetch from an API or file system
       const response = await fetch(`/config/templates/${templateId}.json`);
       const config: TemplateConfiguration = await response.json();
-      
-      // Cache the configuration
       this.templateCache.set(templateId, config);
-      
       return config;
     } catch (error) {
       console.error(`Failed to load template ${templateId}:`, error);
@@ -69,83 +53,109 @@ export class TemplateLoader {
     }
   }
 
-  /**
-   * Get all available template metadata
-   */
+  // Get all available template metadata
   async getAvailableTemplates(): Promise<TemplateMetadata[]> {
     const registry = await this.loadRegistry();
     return registry.templates;
   }
 
-  /**
-   * Search templates by category
-   */
+  // Search templates by category
   async getTemplatesByCategory(category: string): Promise<TemplateMetadata[]> {
     const templates = await this.getAvailableTemplates();
     return templates.filter(t => t.category === category);
   }
 
-  /**
-   * Clear template cache
-   */
+  // Clear template cache
   clearCache(): void {
     this.templateCache.clear();
   }
 
-  /**
-   * Validate template configuration
-   */
+  // Validate template configuration (strict new schema)
   validateTemplate(config: TemplateConfiguration): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    // Check metadata
-    if (!config.metadata?.template_id) {
-      errors.push('Template must have a valid template_id');
+    // Metadata checks
+    if (!config || typeof config !== 'object') {
+      errors.push('Invalid template configuration object');
+      return { valid: false, errors };
+    }
+    if (!config.metadata || !config.metadata.template_id) {
+      errors.push('Template must have a valid metadata.template_id');
     }
 
-    // Check sections
-    if (!config.sections || config.sections.length === 0) {
+    // Sections checks
+    if (!Array.isArray(config.sections) || config.sections.length === 0) {
       errors.push('Template must have at least one section');
+      return { valid: false, errors };
     }
 
-    // Check fields
-    if (!config.fields || config.fields.length === 0) {
-      errors.push('Template must have at least one field');
+    // Enforce no legacy top-level fields property
+    if (Object.prototype.hasOwnProperty.call(config as any, 'fields')) {
+      errors.push('Top-level "fields" is not allowed in the new schema. Move fields under sections[].columns[].fields');
     }
 
-    // Validate field references in sections
-    const sectionIds = new Set(config.sections.map(s => s.section_id));
-    config.fields.forEach(field => {
-      if (!sectionIds.has(field.position.section)) {
-        errors.push(`Field ${field.field_id} references non-existent section ${field.position.section}`);
+    // Collect all fields and validate columns/fields structure
+    const allFields: any[] = [];
+    config.sections.forEach((sec, si) => {
+      if (!sec.section_id) {
+        errors.push(`Section[${si}] is missing section_id`);
       }
-    });
-
-    // Validate calculations
-    config.fields.forEach(field => {
-      if (field.calculation) {
-        const fieldIds = new Set(config.fields.map(f => f.field_id));
-        const referencedFields = field.calculation.match(/\w+/g) || [];
-        referencedFields.forEach(ref => {
-          if (!fieldIds.has(ref) && isNaN(Number(ref))) {
-            errors.push(`Field ${field.field_id} calculation references non-existent field ${ref}`);
+      if (!Array.isArray((sec as any).columns) || (sec as any).columns.length === 0) {
+        errors.push(`Section "${sec.section_id || `index ${si}`}" must have a non-empty columns array`);
+        return;
+      }
+      (sec as any).columns.forEach((col: any, ci: number) => {
+        if (!Array.isArray(col.fields) || col.fields.length === 0) {
+          errors.push(`Section "${sec.section_id}" column[${ci}] must have a non-empty fields array`);
+          return;
+        }
+        col.fields.forEach((f: any, fi: number) => {
+          if (!f || typeof f !== 'object') {
+            errors.push(`Section "${sec.section_id}" column[${ci}] field[${fi}] is invalid`);
+            return;
           }
+          if (!f.field_id) {
+            errors.push(`Field in section "${sec.section_id}" column[${ci}] missing field_id`);
+          }
+          // If position.section is present, it must match parent section_id
+          if (f.position && f.position.section && f.position.section !== sec.section_id) {
+            errors.push(`Field "${f.field_id}" position.section "${f.position.section}" does not match parent section "${sec.section_id}"`);
+          }
+          allFields.push(f);
         });
+      });
+    });
+
+    if (allFields.length === 0) {
+      errors.push('Template must contain at least one field under sections[].columns[].fields');
+      return { valid: false, errors };
+    }
+
+    // Unique field_id check
+    const seen = new Set<string>();
+    allFields.forEach(f => {
+      if (f.field_id) {
+        if (seen.has(f.field_id)) {
+          errors.push(`Duplicate field_id detected: ${f.field_id}`);
+        } else {
+          seen.add(f.field_id);
+        }
       }
     });
 
-    return {
-      valid: errors.length === 0,
-      errors
-    };
-  }
+    // Validate calculations reference existing field ids
+    const fieldIds = new Set(allFields.map(f => f.field_id));
+    allFields.forEach(f => {
+      if (f.calculation && typeof f.calculation === 'string') {
+        const referenced = (f.calculation.match(/\b[a-zA-Z_]\w*\b/g) || []).filter(tok => isNaN(Number(tok)));
+        const invalid = referenced.filter(ref => !fieldIds.has(ref));
+        if (invalid.length) {
+          errors.push(`Field ${f.field_id} calculation references non-existent fields: ${invalid.join(', ')}`);
+        }
+      }
+    });
 
-  /**
-   * Preload multiple templates
-   */
-  async preloadTemplates(templateIds: string[]): Promise<void> {
-    const promises = templateIds.map(id => this.loadTemplate(id));
-    await Promise.all(promises);
+    return { valid: errors.length === 0, errors };
   }
 }
 

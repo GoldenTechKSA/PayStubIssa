@@ -8,7 +8,7 @@ interface Advanced3ColumnTemplateProps extends TemplateProps {
   template: TemplateConfig;
 }
 
-const Advanced3ColumnTemplate: React.FC<Advanced3ColumnTemplateProps> = ({ template, store, styling, canPrintStub = true }) => {
+const Advanced3ColumnTemplate: React.FC<Advanced3ColumnTemplateProps> = ({ template, store, styling, canPrintStub = false }) => {
   if (!canPrintStub) {
     return <div className="text-center p-4">Paystub not available for printing</div>;
   }

@@ -14,10 +14,9 @@ const PaystubPreview = () => {
     const templateId = state.appSettings.templateId;
 
     const devMode = (process.env.NODE_ENV === "production" ? false : true)
-    console.log("store.getState() - State:", state);
 
     const printPaystub = async () => {
-        console.log("Printing paystub with template type:", templateId);
+        // console.log("store.getState() - State:", state);
         navigate(`/printTemplate/${templateId}`);
     };
 

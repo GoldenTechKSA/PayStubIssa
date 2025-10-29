@@ -15,6 +15,7 @@ export const fetchTemplateRegistry = async (): Promise<TemplateRegistryItem[]> =
 };
 
 export const fetchTemplateConfig = async (configPath: string): Promise<any> => {
+  console.log("Fetching template config from path:", configPath);
   try {
     const response = await fetch(configPath);
     if (!response.ok) {

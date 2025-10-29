@@ -66,6 +66,7 @@ export interface EmployeeInfo {
   employeeSSN: string;
   employeeID: string;
   employeeMarriedStatus: string;
+  employeeHireDate: Date;
 }
 
 // Income Details
@@ -86,6 +87,7 @@ export interface IncomeDetails {
   periodEndDate: string;
   periodPayDate: string;
   periodType: string;
+  unionDues: number;
 }
 
 // General Info

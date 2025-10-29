@@ -7,6 +7,14 @@
       "thumbnail": "/images/thumb0.png",
       "category": "Basic",
       "description": "A clean, professional paystub layout with all essential fields"
+    },
+    {
+      "template_id": "prof-2column-paystub",
+      "title": "Professional 2-Column Paystub",
+      "config_path": "/templates/paystub1.json",
+      "thumbnail": "/images/thumb0.png",
+      "category": "Basic",
+      "description": "A clean, professional 2 column paystub layout with all essential fields"
     }
   ]
 }

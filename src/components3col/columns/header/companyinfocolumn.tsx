@@ -17,8 +17,9 @@ const CompanyInfoColumn: React.FC<ColumnProps> = ({ fields, store, styling }) =>
         
         return (
           <div key={field.field_id} className={styling.field}>
-            <span className={styling.field_label}>{field.label}</span>
-            <span className={styling.field_value}>{formattedValue}</span>
+            <span className={field.field_id === "company_name" ? styling.company_name_field : styling.field_content}>
+              {field.label} {formattedValue}
+            </span>
           </div>
         );
       })}

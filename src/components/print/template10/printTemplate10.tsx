@@ -1,5 +1,6 @@
 import React from "react";
 import { PayStubDetails } from "../../../assets/data/pay-stub-details";
+import store from "../../../redux/store";
 
 const formatDate = (date: Date | string | undefined | null) => {
   if (!date) return "";
@@ -9,11 +10,11 @@ const formatDate = (date: Date | string | undefined | null) => {
 };
 
 interface PrintTemplate10Props {
-  store: PayStubDetails;
+  canPrintStub?: boolean;
 }
 
-const PrintTemplate10: React.FC<PrintTemplate10Props> = ({ store }) => {
-  const { companyInfo, employeeInfo, incomeDetails, generalInfo } = store;
+const PrintTemplate10: React.FC<PrintTemplate10Props> = () => {
+  const { companyInfo, employeeInfo, incomeDetails, generalInfo } = store.getState();
   const companyFullAddress = [companyInfo.companyAddress1, companyInfo.companyAddress2, companyInfo.companyCity, companyInfo.companyState, companyInfo.companyZipCode].filter(Boolean).join(", ");
   const employeeFullName = [employeeInfo.employeeFirstName, employeeInfo.employeeMiddleInitial, employeeInfo.employeeLastName].filter(Boolean).join(" ");
   const employeeFullAddress = [employeeInfo.employeeAddress1, employeeInfo.employeeAddress2, employeeInfo.employeeCity, employeeInfo.employeeState, employeeInfo.employeeZipCode].filter(Boolean).join(", ");

@@ -9,15 +9,12 @@ const CalculatedField: React.FC<FieldProps> = ({ field, store, styling }) => {
   const calculatedValue = calculateField(field.calculation!, templateData);
   const formattedValue = formatValue(calculatedValue, field);
   
-  const fieldClass = styling.field || 'flex justify-between py-1';
-
+  const fieldClass = styling.field;
+  const contentClass = field.calculation ? styling.calculated_field : styling.field_content;
   return (
     <div className={fieldClass}>
-      <span className={styling.field_label || 'font-medium text-gray-700'}>
-        {field.label}
-      </span>
-      <span className={styling.field_value || 'text-right font-semibold'}>
-        {formattedValue}
+      <span className={contentClass}>
+        {field.label}: {formattedValue}
       </span>
     </div>
   );

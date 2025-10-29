@@ -10,28 +10,19 @@ interface BodySectionProps extends TemplateProps {
 }
 
 const BodySection: React.FC<BodySectionProps> = ({ body, store, styling }) => {
-  const [employeeColumn, earningsColumn, deductionsColumn] = body.columns;
+  const layoutType = body.columns.length === 2 ? 'col-md-6' : 'col-md-4';
   
   return (
     <div className={styling.body_container}>
-      <EmployeeDetailsColumn 
-        title={employeeColumn.title}
-        fields={employeeColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
-      <EarningsColumn 
-        title={earningsColumn.title}
-        fields={earningsColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
-      <DeductionsTaxesColumn 
-        title={deductionsColumn.title}
-        fields={deductionsColumn.fields} 
-        store={store} 
-        styling={styling} 
-      />
+      {body.columns.map((column, index) => (
+        <div key={column.column_id} className={layoutType}>
+          {column.column_id === 'employee_info' && (<EmployeeDetailsColumn title={column.title} fields={column.fields} store={store} styling={styling} />)}
+          {column.column_id === 'earnings' && (<EarningsColumn title={column.title} fields={column.fields} store={store} styling={styling} />)}
+          {column.column_id === 'deductions_taxes' && (<DeductionsTaxesColumn title={column.title} fields={column.fields} store={store} styling={styling} />)}
+          {column.column_id === 'employee_earnings' && ( <EmployeeDetailsColumn fields={column.fields} store={store} styling={styling} />)}
+          {column.column_id === 'deductions_taxes_summary' && (<DeductionsTaxesColumn  fields={column.fields} store={store} styling={styling} />)}
+        </div>
+      ))}
     </div>
   );
 };
