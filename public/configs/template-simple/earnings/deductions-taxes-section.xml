@@ -1,0 +1,3 @@
+<section id="deductions-taxes-section">
+    <include href="deductions-taxes-section-taxes-column.xml" />
+</section>

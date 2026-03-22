@@ -1,0 +1,29 @@
+<table id="company-table">
+    <cells>
+        <rowcells>
+            <cell id="company-name" type="substitute">
+                <style>
+                    <backgroundColor>transparent</backgroundColor>
+                    <fontWeight>bold</fontWeight>
+                    <fontSize>18px</fontSize>
+                </style>
+                <value>{company.name}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="company-address" type="substitute">
+                <value>{company.address}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="company-phone" type="substitute">
+                <value>{company.phone}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="company-ein" type="substitute">
+                <value>{company.ein}</value>
+            </cell>
+        </rowcells>
+    </cells>
+</table>

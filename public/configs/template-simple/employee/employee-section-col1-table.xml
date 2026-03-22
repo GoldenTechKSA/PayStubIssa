@@ -1,0 +1,13 @@
+<table id="employee-table">
+    <cells>
+    <rowcells>
+        <cell id="employee-name" type="substitute"><value>{employee.name}</value></cell>
+    </rowcells>
+    <rowcells>
+        <cell id="employee-id" type="substitute"><value>{employee.id}</value></cell>
+    </rowcells>
+    <rowcells>
+        <cell id="employee-dept" type="substitute"><value>{employee.department}</value></cell>
+    </rowcells>
+    </cells>
+</table>

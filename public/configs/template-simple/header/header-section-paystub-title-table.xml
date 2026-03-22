@@ -1,0 +1,13 @@
+<table id="title-table">
+    <header title="Earnings Statement">
+        <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>32px</fontSize>
+        </style>
+    </header>
+    <cells>
+        <rowcells>
+            <cell id="title-name" type="static"><value></value></cell>
+        </rowcells>
+    </cells>
+</table>

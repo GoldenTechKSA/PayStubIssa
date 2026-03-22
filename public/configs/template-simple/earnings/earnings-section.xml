@@ -1,0 +1,7 @@
+<section id="earnings-section">
+    <style>
+        <marginTop>40px</marginTop>
+    </style>
+    <include href="earnings-section-earnings-column.xml" />
+    <include href="deductions-taxes-section-taxes-column.xml" />
+</section>
