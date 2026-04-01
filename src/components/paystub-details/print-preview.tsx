@@ -4,12 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PayPal from "../common/paypal-payment";
 import PDFDownloadButton from "../pdf/pdf-button-comp";
-import * as templateIds from "../../constants/template-ids";
 import { AppSettings, PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings } from "../../redux/actions";
 import { telemetryService } from "../../services/telemetry-service";
 import TemplateManager from "templates/components/templatemanager";
-import TemplateRegistry from "components3col/templateregistry";
 import store from "../../redux/store";
 
 const PrintPreview = () => {
