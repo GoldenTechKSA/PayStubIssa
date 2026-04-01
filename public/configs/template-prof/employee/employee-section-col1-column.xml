@@ -1,0 +1,3 @@
+<column id="employee-basic" width="35%">
+    <include href="employee-section-col1-table.xml" />
+</column>

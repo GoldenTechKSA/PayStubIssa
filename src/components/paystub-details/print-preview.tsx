@@ -12,7 +12,7 @@ import TemplateManager from "templates/components/templatemanager";
 import TemplateRegistry from "components3col/templateregistry";
 import store from "../../redux/store";
 
-const Preview = () => {
+const PrintPreview = () => {
     const state: PayStubDetails = store.getState();
     const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [canPrintStub, setCanPrintStub] = useState(canPrint);
@@ -76,15 +76,11 @@ const Preview = () => {
     return (
         < div className= "" >
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
+                {/* Display the selected PAYSTUB template in a print preview format with watermark behind it */}
                 <Col md={7}>
                     <TemplateManager id={templateId} store={state}/>
-                    {/* { canPrint && (
-                        <div>
-                            { templateId === templateIds.PAYSTUB_TEMPLATE_0 && <TemplateRegistry store={state} id={templateId} canPrintStub={canPrintStub}/> }
-                            { templateId === templateIds.PAYSTUB_TEMPLATE_1 && <TemplateRegistry store={state} id={templateId} canPrintStub={canPrintStub}/> }
-                        </div>
-                    )} */}
                 </Col>
+                {/* Display PAYPAL payment component and the print pdf option */}
                 <Col md={{span: 2, offset:1 }}>
                     <Row className="mb-3">
                         <PayPal onPaymentSuccess={handlePaymentSuccess} onPaymentError={handlePaymentError}/>
@@ -102,4 +98,4 @@ const Preview = () => {
     );
 }
 
-export default Preview;
+export default PrintPreview;

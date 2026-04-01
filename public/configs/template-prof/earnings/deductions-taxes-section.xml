@@ -1,0 +1,16 @@
+<!-- 
+    This is the deductions and taxes section of the paystub, it contains the deductions and taxes information for the employee, this section will usually contain 3 columns: 
+    - one for the regular deductions, which will contain the regular deductions like health insurance, retirement contributions, and other relevant information,
+    - the second column will contain the taxes, which will contain the federal taxes, state taxes, and other relevant information,
+    - the third column will contain any other deductions or taxes, like garnishments, child support, and other relevant information. 
+    If this is a minimal paystub, this section will only contain one column that will contain all the deductions and taxes information for the employee.
+    or 2 columns, one for the deductions and the other for the taxes.
+    <style>
+        <backgroundColor>#f9fafb</backgroundColor>
+        <borderTop>2px solid #d1d5db</borderTop>
+        <marginTop>20px</marginTop>
+    </style>
+-->
+<section id="deductions-taxes-section">
+    <include href="deductions-taxes-section-taxes-column.xml" />
+</section>

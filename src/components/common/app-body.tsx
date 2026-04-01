@@ -10,11 +10,11 @@ const AppBody = () => {
     const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [gridCells, setGridCells] = useState<ImageFileData[]>([]);
     const [index, setIndex] = useState<number>(templateId);
-    const imageDataPath = `${process.env.PUBLIC_URL}/image-names.json`; 
+    const configsPath = `${process.env.PUBLIC_URL}/configs/template-configs.json`; 
 
     // Fetch image names from the images folder
     useEffect(() => {
-        fetch(imageDataPath)   /* Use this line for local testing: `${process.env.PUBLIC_URL}/images/image-names.json` */
+        fetch(configsPath)   /* Use this line for local testing: `${process.env.PUBLIC_URL}/images/image-names.json` */
             .then(res => res.json())
             .then((imageData: ImageFileData[]) => {
                 setGridCells(
@@ -24,6 +24,7 @@ const AppBody = () => {
                         imageName: data.imageName,
                         title: data.title,
                         description: data.description,
+                        configFile: data.configFile
                     }))
                 )})
             .catch(err => {console.error("Error fetching image names:", err);

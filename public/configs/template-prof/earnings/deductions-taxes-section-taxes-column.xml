@@ -1,0 +1,3 @@
+<column id="taxes-col" width="50%">
+    <include href="deductions-taxes-section-taxes-table.xml" />
+</column>

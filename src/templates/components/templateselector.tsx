@@ -17,7 +17,7 @@ interface TemplateSelectorProps {
   onSelect: (templateId: string) => void;
 }
 
-export const TemplateSelector: React.FC<TemplateSelectorProps> = ({id, templateId, templates, onSelect}) => {
+export const TemplateSelector: React.FC<TemplateSelectorProps> = ({templates, onSelect, id, templateId}) => {
   useEffect(() => {
     if (templates.length > 0) {
       const index = Math.min(id, templates.length - 1);

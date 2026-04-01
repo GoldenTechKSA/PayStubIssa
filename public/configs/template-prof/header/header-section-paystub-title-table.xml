@@ -1,0 +1,17 @@
+<table id="title-table">
+    <header title="Earnings Statement">
+        <style>
+            <backgroundColor>transparent</backgroundColor>
+            <fontWeight>bold</fontWeight>
+            <fontSize>32px</fontSize>
+            <textAlign>right</textAlign>
+        </style>
+    </header>
+    <cells>
+        <rowcells>
+            <cell id="title-name" type="static">
+                <value></value>
+            </cell>
+        </rowcells>
+    </cells>
+</table>

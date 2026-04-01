@@ -1,0 +1,14 @@
+<table id="title-table">
+    <style> <textAlign>right</textAlign> </style>
+    <cells>
+        <cell id="period-dates" type="static">
+            <value>Period: {payPeriod.start} - {payPeriod.end}</value>
+        </cell>
+        <cell id="period-paydate" type="static">
+            <value>Pay Date: {payPeriod.payDate}</value>
+        </cell>
+        <cell id="period-subno" type="static">
+            <value>Paystub No.: {payPeriod.stubNo}</value>
+        </cell>
+    </cells>
+</table>
