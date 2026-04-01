@@ -1,0 +1,49 @@
+<table id="file-codes-table">
+    <header>
+        <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>10px</fontSize>
+        </style>
+        <hdata>
+            <hd id="period-co" colspan="1"><label>CO.</label></hd>
+            <hd id="period-file" colspan="1"><label>FILE.</label></hd>
+            <hd id="period-dept" colspan="1"><label>DEPT.</label></hd>
+            <hd id="period-clock-vchr" colspan="1"><label>CLOCK VCHR.</label></hd>
+            <hd id="period-number" colspan="1"><label>NUMBER.</label></hd>
+        </hdata>
+    </header>
+    <cells>
+        <rowcells>
+            <cell id="co" colspan="1" type="static">
+                <style>
+                    <fontSize>10px</fontSize>
+                </style>
+                <value>MP9</value>
+            </cell>
+            <cell id="file" colspan="1" type="static">
+                <style>
+                    <fontSize>10px</fontSize>
+                </style>
+                <value>001753</value>
+            </cell>
+            <cell id="dept" colspan="1" type="static">
+                <style>
+                    <fontSize>10px</fontSize>
+                </style>
+                <value>20109</value>
+            </cell>
+            <cell id="clock-vchr" colspan="1" type="static">
+                <style>
+                    <fontSize>10px</fontSize>
+                </style>
+                <value>NO. 000042298</value>
+            </cell>
+            <cell id="number" colspan="1" type="static">
+                <style>
+                    <fontSize>10px</fontSize>
+                </style>
+                <value>004</value>
+            </cell>
+        </rowcells>
+    </cells>
+</table>

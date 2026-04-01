@@ -1,0 +1,7 @@
+<table id="net-table">
+    <style><backgroundColor>transparent</backgroundColor></style>
+    <cells>
+        <cell id="net-amount" type="calculated"><formula>{payment.grossPay}</formula><value>0</value><style><fontWeight>bold</fontWeight><fontSize>12px</fontSize><color>#065f46</color><textAlign>left</textAlign></style></cell>
+        <cell id="final-net-pay" type="calculated"><formula>{payment.netPay}</formula><value>0</value><style><fontWeight>bold</fontWeight><fontSize>12px</fontSize><color>#064e3b</color><textAlign>left</textAlign></style></cell>
+    </cells>
+</table>

@@ -10,6 +10,7 @@ export interface ImageFileData {
     imageName: string;
     title: string;
     description: string;
+    configFile: string;
 }
 
 type HorizontalGridProps = {

@@ -3,7 +3,8 @@ import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, Pay
 const appSettings: AppSettings = {
     templateId: 0,
     nextTabStep: "template",
-    canPrint: false
+    canPrint: false,
+    configPath: ""
 };
 
 const companyInfo: CompanyInfo = {

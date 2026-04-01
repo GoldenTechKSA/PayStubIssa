@@ -1,7 +1,9 @@
+import { ImageFileData } from "components/common/horizontal-grid";
 export interface AppSettings {
     templateId: number;
     nextTabStep: string;
     canPrint: boolean;
+    configPath: string;
 }
 export interface CompanyInfo {
     companyName: string;

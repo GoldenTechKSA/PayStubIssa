@@ -1,0 +1,34 @@
+<table id="earnings-table">
+    <header title="Earnings Section">
+        <hdata>
+            <hd id="description"><label>Description</label></hd>
+            <hd id="reg-rate"><label>Rate</label></hd>
+            <hd id="hours"><label>Hours</label></hd>
+            <hd id="current"><label>Total</label></hd>
+            <hd id="ytd"><label>YTD</label></hd>
+        </hdata>
+    </header>
+    <cells>
+        <rowcells>
+            <cell id="description-value" type="static"><value>Regular Pay</value></cell>
+            <cell id="rate-value" type="static"><value>{company.address}</value></cell>
+            <cell id="hours-value" type="static"><value>{company.phone}</value></cell>
+            <cell id="current-value" type="static"><value>{company.ein}</value></cell>
+            <cell id="ytd-value" type="static"><value>{company.ein}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static"><value>Overtime Pay</value></cell>
+            <cell id="rate-value" type="static"><value>{company.address}</value></cell>
+            <cell id="hours-value" type="static"><value>{company.phone}</value></cell>
+            <cell id="current-value" type="static"><value>{company.ein}</value></cell>
+            <cell id="ytd-value" type="static"><value>{company.ein}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static"><value>Other Earnings</value></cell>
+            <cell id="rate-value" type="static"><value>{company.address}</value></cell>
+            <cell id="hours-value" type="static"><value>{company.phone}</value></cell>
+            <cell id="current-value" type="static"><value>{company.ein}</value></cell>
+            <cell id="ytd-value" type="static"><value>{company.ein}</value></cell>
+        </rowcells>
+    </cells>
+</table>

@@ -1,0 +1,3 @@
+<column id="regular-earnings" width="50%">
+    <include href="earnings-section-earnings-table.xml" />
+</column>

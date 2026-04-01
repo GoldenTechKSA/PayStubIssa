@@ -1,0 +1,19 @@
+<table id="title-table">
+    <cells>
+        <rowcells>
+            <cell id="period-dates" type="substitute">
+                <value>Period: {payPeriod.start} - {payPeriod.end}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="period-paydate" type="substitute">
+                <value>Pay Date: {payPeriod.payDate}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="period-subno" type="substitute">
+                <value>Paystub No.: {payPeriod.stubNo}</value>
+            </cell>
+        </rowcells>
+    </cells>
+</table>

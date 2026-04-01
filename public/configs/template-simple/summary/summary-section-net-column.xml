@@ -1,0 +1,3 @@
+<column id="net-column" width="50%">
+    <include href="summary-section-net-table.xml" />
+</column>

@@ -1,0 +1,5 @@
+<section id="summary-section">
+    <include href="summary-section-net-column.xml" />
+    <include href="summary-section-gross-column.xml" />
+    <include href="summary-section-net-pay-column.xml" />
+</section>

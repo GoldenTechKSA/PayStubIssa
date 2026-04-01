@@ -1,0 +1,7 @@
+<table id="employee-table">
+    <cells>
+        <cell id="employee-name" type="static"><value>{employee.name}</value></cell>
+        <cell id="employee-id" type="static"><value>{employee.id}</value></cell>
+        <cell id="employee-dept" type="static"><value>{employee.department}</value></cell>
+    </cells>
+</table>

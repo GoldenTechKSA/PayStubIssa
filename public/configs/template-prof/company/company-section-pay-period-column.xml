@@ -1,0 +1,3 @@
+<column id="pay-period-column" width="70%">
+    <include href="company-section-pay-period-table.xml" />
+</column>
