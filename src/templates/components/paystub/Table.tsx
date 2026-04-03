@@ -1,6 +1,6 @@
 import React from 'react';
 import { PayStubDetails } from 'assets/data/pay-stub-details';
-import type { TableConfig, PaystubData } from './types';
+import type { TableConfig } from './types';
 import { TableCell } from './TableCell';
 
 interface TableProps {

@@ -11,8 +11,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { TemplateMetadata } from '../types/templatetypes';
-import TemplateSelector from './templateselector';
 import { PayStubDetails } from 'assets/data/pay-stub-details';
 
 import { PaystubRenderer } from './PaystubRenderer';
@@ -21,15 +19,16 @@ import type { PaystubConfig } from './paystub/types';
 
 interface TemplateManagerProps {
   id: number;
+  configPath: string;
   store: PayStubDetails;
 }
 
-export const TemplateManager: React.FC<TemplateManagerProps> = ({id, store}) => {
+export const TemplateManager: React.FC<TemplateManagerProps> = ({id, configPath, store}) => {
   const [config, setConfig] = useState<PaystubConfig | null>(null);
-  const [data, setData] = useState<PayStubDetails | null>(null);
+  const [data, setData] = useState<PayStubDetails>(store);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const paystubConfigPath = configPath;
 
   // Load XML configuration from file using fetch
   useEffect(() => {
@@ -37,16 +36,13 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({id, store}) => 
       try {
         setLoading(true);
         setError(null);
-        const fileIndex = id; // Change index to load different sample files
-        const filesUrls = [ 
-          "/configs/template-simple/paystub-config.xml",
-          "/configs/template-prof/paystub-config.xml"
-        ];
-        const response = await fetch(filesUrls[fileIndex]);
+        const response = await fetch(paystubConfigPath);
+
         if (!response.ok) {
           throw new Error(`Failed to load XML file: ${response.statusText}`);
         }
-        const parsedConfig = await loadPaystubConfig(filesUrls[fileIndex]);
+
+        const parsedConfig = await loadPaystubConfig(paystubConfigPath);
         const validation = validateConfig(parsedConfig);
         if (!validation.valid) {
           setError(`Configuration errors: ${validation.errors.join(', ')}`);
@@ -65,31 +61,14 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({id, store}) => 
       setData(store);
     };
 
-    loadConfigFromFile();
     loadDataFromStore();
-  });
-
-  // Process data when it changes
-  useEffect(() => {
-    if (config && data) {
-      try {
-        const processedConfig = processDynamicValues(config, data);
-        setConfig(processedConfig);
-      } catch (err) {
-        setError(`Error processing data: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      }
-    }
-  }, [config, data]);
-
-  const handleTemplateSelect = (templateId: string) => {
-    setSelectedTemplate(templateId);
-  };
+    loadConfigFromFile();
+  }, []);
 
   return (
     <div className="">
       {error && (<div style={{maxWidth: '1200px',margin: '0 auto 20px',padding: '15px',backgroundColor: '#fee2e2',color: '#991b1b',borderRadius: '8px',border: '1px solid #fecaca'}}><strong>Error:</strong> {error}</div>)}
-      <TemplateSelector templates={{} as TemplateMetadata[]} onSelect={handleTemplateSelect} id={id} templateId={selectedTemplate}/>
-      {config && !loading && (<div> <PaystubRenderer config={config} data={store}/></div>)}
+      {config && !loading && (<div> <PaystubRenderer config={config} data={data}/></div>)}
     </div>
   );
 };

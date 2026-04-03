@@ -5,14 +5,14 @@
 // textAlign is right by default for value, overridable via style prop in xml config
 import React from 'react';
 import { PayStubDetails } from 'assets/data/pay-stub-details';
-import type { TableCellConfig, PaystubData } from './types';
+import type { TableCellConfig } from './types';
 
 interface TableCellProps {
   config: TableCellConfig;
   data: PayStubDetails;
 }
 
-// Helper: Safely get nested property value from PaystubData
+// Helper: Safely get nested property value from data object using a path like "payment.grossPay"
 const getNestedValue = (obj: PayStubDetails, path: string): string => {
   const keys = path.split('.');
   let value: unknown = obj;

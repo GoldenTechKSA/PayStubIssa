@@ -9,7 +9,6 @@ interface PaystubRendererProps {
 }
 
 /**
- * PaystubRenderer Component
  * Main component that renders the complete paystub. Applies global styling and renders all sections
  */
 export const PaystubRenderer: React.FC<PaystubRendererProps> = ({ config, data }) => {

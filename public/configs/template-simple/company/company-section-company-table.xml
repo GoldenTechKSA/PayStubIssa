@@ -7,22 +7,22 @@
                     <fontWeight>bold</fontWeight>
                     <fontSize>18px</fontSize>
                 </style>
-                <value>{company.name}</value>
+                <value>{companyInfo.companyName}</value>
             </cell>
         </rowcells>
         <rowcells>
             <cell id="company-address" type="substitute">
-                <value>{company.address}</value>
+                <value>{companyInfo.companyAddress1}</value>
             </cell>
         </rowcells>
         <rowcells>
             <cell id="company-phone" type="substitute">
-                <value>{company.phone}</value>
+                <value>{companyInfo.companyPhone}</value>
             </cell>
         </rowcells>
         <rowcells>
             <cell id="company-ein" type="substitute">
-                <value>{company.ein}</value>
+                <value>{companyInfo.companyEIN}</value>
             </cell>
         </rowcells>
     </cells>
