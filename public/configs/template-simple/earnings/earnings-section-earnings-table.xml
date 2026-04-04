@@ -51,28 +51,28 @@
     <cells>
         <rowcells>
             <cell id="description-value" type="static"><value>Regular Pay</value></cell>
-            <cell id="rate-value" type="substitute"><value>{payment.hourlyRate}</value></cell>
-            <cell id="hours-value" type="substitute"><value>{payment.regularHours}</value></cell>
+            <cell id="rate-value" type="substitute"><value>{incomeDetails.hourlyRate}</value></cell>
+            <cell id="hours-value" type="substitute"><value>{incomeDetails.hoursWorked}</value></cell>
             <cell id="current-value1" type="calculated">
-                <formula>{payment.hourlyRate} * {payment.regularHours}</formula>
+                <formula>{incomeDetails.hourlyRate} * {incomeDetails.hoursWorked}</formula>
             </cell>
             <cell id="ytd-value" type="substitute"><value>{yearToDate.grossPay}</value></cell>
         </rowcells>
         <rowcells>
             <cell id="description-value" type="static"><value>Overtime Pay</value></cell>
-            <cell id="rate-value" type="substitute"><value>{payment.overtimeRate}</value></cell>
-            <cell id="hours-value" type="substitute"><value>{payment.overtimeHours}</value></cell>
+            <cell id="rate-value" type="substitute"><value>{incomeDetails.overtimeRate}</value></cell>
+            <cell id="hours-value" type="substitute"><value>{incomeDetails.overtimeHours}</value></cell>
             <cell id="current-value2" type="calculated">
-                <formula>{payment.overtimeRate} * {payment.overtimeHours}</formula>
+                <formula>{incomeDetails.overtimeRate} * {incomeDetails.overtimeHours}</formula>
             </cell>
             <cell id="ytd-value" type="substitute"><value>{yearToDate.grossPay}</value></cell>
         </rowcells>
         <rowcells>
             <cell id="description-value" type="static"><value>Other Earnings</value></cell>
-            <cell id="rate-value" type="substitute"><value>{payment.bonus}</value></cell>
-            <cell id="hours-value" type="substitute"><value>{payment.commission}</value></cell>
+            <cell id="rate-value" type="substitute"><value>{incomeDetails.bonusAmount}</value></cell>
+            <cell id="hours-value" type="substitute"><value>{incomeDetails.commission}</value></cell>
             <cell id="current-value3" type="calculated">
-                <formula>{payment.bonus} + {payment.commission} + {payment.shiftDifferential} + {payment.reimbursement}</formula>
+                <formula>{incomeDetails.bonusAmount} + {incomeDetails.commission} + {incomeDetails.shiftDifferential} + {incomeDetails.reimbursement}</formula>
             </cell>
             <cell id="ytd-value" type="substitute"><value>{yearToDate.grossPay}</value></cell>
         </rowcells>
