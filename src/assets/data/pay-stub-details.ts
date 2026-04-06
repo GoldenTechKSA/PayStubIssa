@@ -60,6 +60,35 @@ export interface GeneralInfo {
     checkNumber: number;
     extraNotes: string;
 }
+
+export interface YearToDateTotals {
+    grossPay: number;
+    netPay: number;
+    federalTax: number;
+    stateTax: number;
+    localTax: number;
+    sdi: number;
+    socialSecurity: number;
+    medicare: number;
+    additionalMedicare: number;
+    totalTaxes: number;
+    retirement401k: number;
+    healthInsurance: number;
+    dentalInsurance: number;
+    visionInsurance: number;
+    hsa: number;
+    fsa: number;
+    lifeInsurance: number;
+    stdInsurance: number;
+    ltdInsurance: number;
+    unionDues: number;
+    parking: number;
+    totalDeductions: number;
+    effectiveTaxRate: number;
+    deductionRate: number;
+    netPayRate: number;
+}
+
 export interface PayStubDetails {
     appSettings: AppSettings;
     companyInfo: CompanyInfo;
