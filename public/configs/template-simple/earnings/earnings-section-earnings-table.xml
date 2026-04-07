@@ -56,7 +56,7 @@
             <cell id="current-value1" type="calculated">
                 <formula>{incomeDetails.hourlyRate} * {incomeDetails.hoursWorked}</formula>
             </cell>
-            <cell id="ytd-value" type="substitute"><value>{yearToDate.grossPay}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{grossPay}</value></cell>
         </rowcells>
         <rowcells>
             <cell id="description-value" type="static"><value>Overtime Pay</value></cell>
@@ -65,7 +65,7 @@
             <cell id="current-value2" type="calculated">
                 <formula>{incomeDetails.overtimeRate} * {incomeDetails.overtimeHours}</formula>
             </cell>
-            <cell id="ytd-value" type="substitute"><value>{yearToDate.grossPay}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{grossPay}</value></cell>
         </rowcells>
         <rowcells>
             <cell id="description-value" type="static"><value>Other Earnings</value></cell>
@@ -74,7 +74,7 @@
             <cell id="current-value3" type="calculated">
                 <formula>{incomeDetails.bonusAmount} + {incomeDetails.commission} + {incomeDetails.shiftDifferential} + {incomeDetails.reimbursement}</formula>
             </cell>
-            <cell id="ytd-value" type="substitute"><value>{yearToDate.grossPay}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{grossPay}</value></cell>
         </rowcells>
     </cells>
 </table>

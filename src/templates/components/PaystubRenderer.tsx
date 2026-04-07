@@ -1,11 +1,11 @@
 import React from 'react';
-import type { PaystubConfig, PaystubData } from './paystub/types';
-import { PayStubDetails } from 'assets/data/pay-stub-details';
+import type { PaystubConfig } from './paystub/types';
+import { FlatPayStubData } from 'assets/data/pay-stub-details';
 import { Section } from './paystub/Section';
 
 interface PaystubRendererProps {
   config: PaystubConfig;
-  data: PayStubDetails;
+  data: FlatPayStubData;
 }
 
 /**

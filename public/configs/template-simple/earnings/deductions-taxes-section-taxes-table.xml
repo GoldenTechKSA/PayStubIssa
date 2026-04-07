@@ -33,23 +33,23 @@
     <cells>
         <rowcells>
             <cell id="fed-current" type="static"><value>Federal Income Tax</value></cell>
-            <cell id="fed-ytd" type="substitute"><value>{payment.federalTax}</value></cell>
-            <cell id="fed-current-ytd" type="substitute"><value>{yearToDate.federalTax}</value></cell>
+            <cell id="fed-ytd" type="substitute"><value>{federalTax}</value></cell>
+            <cell id="fed-current-ytd" type="substitute"><value>{federalTax}</value></cell>
         </rowcells>
         <rowcells>
             <cell id="description-value" type="static"><value>Social Security Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{payment.socialSecurityTax}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{yearToDate.socialSecurityTax}</value></cell>
+            <cell id="rate-value" type="substitute"><value>{socialSecurity}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{socialSecurity}</value></cell>
         </rowcells>
         <rowcells>
             <cell id="description-value" type="static"><value>Medicare Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{payment.medicareTax}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{yearToDate.medicareTax}</value></cell>
+            <cell id="rate-value" type="substitute"><value>{medicare}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{medicare}</value></cell>
         </rowcells>
         <rowcells>
             <cell id="description-value" type="static"><value>State Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{payment.stateTax}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{yearToDate.stateTax}</value></cell>
+            <cell id="rate-value" type="substitute"><value>{stateTax}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{stateTax}</value></cell>
         </rowcells>
     </cells>
 </table>

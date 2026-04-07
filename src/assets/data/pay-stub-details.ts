@@ -96,3 +96,6 @@ export interface PayStubDetails {
     incomeDetails: IncomeDetails;
     generalInfo: GeneralInfo;
 }
+
+export type FlatPayStubData = PayStubDetails & YearToDateTotals;
+
