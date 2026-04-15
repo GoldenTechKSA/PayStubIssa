@@ -12,7 +12,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { PayStubDetails, YearToDateTotals, FlatPayStubData } from 'assets/data/pay-stub-details';
-
+import { taxCalculator } from '../../utils/tax-calculator';
+import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../../types/tax-rate-types";
 import { PaystubRenderer } from './PaystubRenderer';
 import { loadPaystubConfig, processDynamicValues, validateConfig } from './paystub/xmlParser';
 import type { PaystubConfig } from './paystub/types';
@@ -58,6 +59,24 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({id, configPath,
   const [loading, setLoading] = useState<boolean>(true);
   const paystubConfigPath = configPath;
 
+  const [results, setResults] = useState<TaxCalculationResult>({
+    federalIncomeTax: 0,
+    stateIncomeTax: 0,
+    socialSecurityTax: 0,
+    medicareTax: 0,
+    totalTaxes: 0,
+    netIncome: 0,
+    effectiveTaxRate: 0
+  });
+  
+  const convertFormData = () => {
+    const grossIncome = store.incomeDetails.hourlyRate * store.incomeDetails.hoursWorked || 0;
+    const filingStatus = store.employeeInfo.employeeMarriedStatus === 'Married' ? 'married' : 'single';
+    const stateCode = store.employeeInfo.employeeState;
+    const additionalDeductions = 0;
+    return { grossIncome, filingStatus, stateCode, additionalDeductions} as TaxCalculationInput;
+  };
+  
   // Load XML configuration from file using fetch
   useEffect(() => {
     const loadConfigFromFile = async () => {
@@ -86,6 +105,13 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({id, configPath,
     };
 
     const loadDataFromStore = async () => {
+      const result: TaxCalculationResult = taxCalculator.calculateTaxes(convertFormData()); ;
+
+      console.log(`Total taxes: $${result.totalTaxes}`);
+      console.log(`Net income: $${result.netIncome}`);
+      console.log(`Effective rate: ${result.effectiveTaxRate}%`);    
+
+      setResults(result);
       setData({...store,...yearToDate});
     };
 
