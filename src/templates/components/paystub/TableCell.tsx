@@ -4,16 +4,17 @@
 // fontWeight is 500 by default for label, normal for value, overridable via style prop in xml config
 // textAlign is right by default for value, overridable via style prop in xml config
 import React from 'react';
-import { PayStubDetails } from 'assets/data/pay-stub-details';
-import type { TableCellConfig, PaystubData } from './types';
+
+import { FlatPayStubData } from 'assets/data/pay-stub-details';
+import type { TableCellConfig } from './types';
 
 interface TableCellProps {
   config: TableCellConfig;
-  data: PayStubDetails;
+  data: FlatPayStubData;
 }
 
-// Helper: Safely get nested property value from PaystubData
-const getNestedValue = (obj: PayStubDetails, path: string): string => {
+// Helper: Safely get nested property value from data object using a path like "payment.grossPay"
+const getNestedValue = (obj: FlatPayStubData, path: string): string => {
   const keys = path.split('.');
   let value: unknown = obj;
 

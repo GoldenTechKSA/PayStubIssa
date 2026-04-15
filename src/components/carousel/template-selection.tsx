@@ -19,7 +19,7 @@ const TemplateSelection = ({index, carouselImages}) => {
   
     const handleSubmit = (event) => {
         event.preventDefault();
-        dispatch(updateAppSettings({ configPath: carouselImages.configFile, templateId: currentIndex, canPrint: enableCanPrint, nextTabStep: "company" }));
+        dispatch(updateAppSettings({ configPath: carouselImages[currentIndex].configFile, templateId: currentIndex, canPrint: enableCanPrint, nextTabStep: "company" }));
     };
 
     return (

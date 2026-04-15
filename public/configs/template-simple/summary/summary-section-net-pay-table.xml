@@ -19,7 +19,7 @@
                     <borderTop>1px solid #686868</borderTop>
                     <textAlign>right</textAlign>
                 </style>
-                <formula>{payment.grossPay}</formula>
+                <formula>{grossPay}</formula>
             </cell>
         </rowcells>
         <rowcells>
@@ -38,7 +38,7 @@
                     <borderTop>1px solid #686868</borderTop>
                     <textAlign>right</textAlign>
                 </style>
-                <formula>{yearToDate.totalTaxes}</formula>
+                <formula>{totalTaxes}</formula>
             </cell>
         </rowcells>
         <rowcells>
@@ -59,7 +59,7 @@
                     <borderBottom>1px solid #686868</borderBottom>
                     <textAlign>right</textAlign>
                 </style>
-                <formula>{payment.netPay}</formula>
+                <formula>{netPay}</formula>
             </cell>
          </rowcells>
     </cells>

@@ -11,42 +11,85 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { TemplateMetadata } from '../types/templatetypes';
-import TemplateSelector from './templateselector';
-import { PayStubDetails } from 'assets/data/pay-stub-details';
-
+import { PayStubDetails, YearToDateTotals, FlatPayStubData } from 'assets/data/pay-stub-details';
+import { taxCalculator } from '../../utils/tax-calculator';
+import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../../types/tax-rate-types";
 import { PaystubRenderer } from './PaystubRenderer';
 import { loadPaystubConfig, processDynamicValues, validateConfig } from './paystub/xmlParser';
 import type { PaystubConfig } from './paystub/types';
 
 interface TemplateManagerProps {
   id: number;
+  configPath: string;
   store: PayStubDetails;
 }
 
-export const TemplateManager: React.FC<TemplateManagerProps> = ({id, store}) => {
+const yearToDate: YearToDateTotals = { 
+    grossPay: 118750.00,
+    netPay: 67303.47,
+    federalTax: 17812.60,
+    stateTax: 5937.50,
+    localTax: 2375.00,
+    sdi: 1187.50,
+    socialSecurity: 7362.63,
+    medicare: 1721.80,
+    additionalMedicare: 0.00,
+    totalTaxes: 35221.53,
+    retirement401k: 7125.00,
+    healthInsurance: 3000.00,
+    dentalInsurance: 500.00,
+    visionInsurance: 300.00,
+    hsa: 2000.00,
+    fsa: 1000.00,
+    lifeInsurance: 200.00,
+    stdInsurance: 300.00,
+    ltdInsurance: 500.00,
+    unionDues: 900.00,
+    parking: 400.00,
+    totalDeductions: 16225.00,
+    effectiveTaxRate: 29.65,
+    deductionRate: 13.67,
+    netPayRate: 56.68
+};
+
+export const TemplateManager: React.FC<TemplateManagerProps> = ({id, configPath, store}) => {
   const [config, setConfig] = useState<PaystubConfig | null>(null);
-  const [data, setData] = useState<PayStubDetails | null>(null);
+  const [data, setData] = useState<FlatPayStubData>({} as FlatPayStubData);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const paystubConfigPath = configPath;
 
+  const [results, setResults] = useState<TaxCalculationResult>({
+    federalIncomeTax: 0,
+    stateIncomeTax: 0,
+    socialSecurityTax: 0,
+    medicareTax: 0,
+    totalTaxes: 0,
+    netIncome: 0,
+    effectiveTaxRate: 0
+  });
+  
+  const convertFormData = () => {
+    const grossIncome = store.incomeDetails.hourlyRate * store.incomeDetails.hoursWorked || 0;
+    const filingStatus = store.employeeInfo.employeeMarriedStatus === 'Married' ? 'married' : 'single';
+    const stateCode = store.employeeInfo.employeeState;
+    const additionalDeductions = 0;
+    return { grossIncome, filingStatus, stateCode, additionalDeductions} as TaxCalculationInput;
+  };
+  
   // Load XML configuration from file using fetch
   useEffect(() => {
     const loadConfigFromFile = async () => {
       try {
         setLoading(true);
         setError(null);
-        const fileIndex = id; // Change index to load different sample files
-        const filesUrls = [ 
-          "/configs/template-simple/paystub-config.xml",
-          "/configs/template-prof/paystub-config.xml"
-        ];
-        const response = await fetch(filesUrls[fileIndex]);
+        const response = await fetch(paystubConfigPath);
+
         if (!response.ok) {
           throw new Error(`Failed to load XML file: ${response.statusText}`);
         }
-        const parsedConfig = await loadPaystubConfig(filesUrls[fileIndex]);
+
+        const parsedConfig = await loadPaystubConfig(paystubConfigPath);
         const validation = validateConfig(parsedConfig);
         if (!validation.valid) {
           setError(`Configuration errors: ${validation.errors.join(', ')}`);
@@ -62,34 +105,25 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({id, store}) => 
     };
 
     const loadDataFromStore = async () => {
-      setData(store);
+      const result: TaxCalculationResult = taxCalculator.calculateTaxes(convertFormData()); ;
+
+      console.log(`Total taxes: $${result.totalTaxes}`);
+      console.log(`Net income: $${result.netIncome}`);
+      console.log(`Effective rate: ${result.effectiveTaxRate}%`);    
+
+      setResults(result);
+      setData({...store,...yearToDate});
     };
 
-    loadConfigFromFile();
     loadDataFromStore();
-  });
+    loadConfigFromFile();
+  }, []);
 
-  // Process data when it changes
-  useEffect(() => {
-    if (config && data) {
-      try {
-        const processedConfig = processDynamicValues(config, data);
-        setConfig(processedConfig);
-      } catch (err) {
-        setError(`Error processing data: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      }
-    }
-  }, [config, data]);
-
-  const handleTemplateSelect = (templateId: string) => {
-    setSelectedTemplate(templateId);
-  };
-
+  console.log('Loaded Data:', data);
   return (
     <div className="">
       {error && (<div style={{maxWidth: '1200px',margin: '0 auto 20px',padding: '15px',backgroundColor: '#fee2e2',color: '#991b1b',borderRadius: '8px',border: '1px solid #fecaca'}}><strong>Error:</strong> {error}</div>)}
-      <TemplateSelector templates={{} as TemplateMetadata[]} onSelect={handleTemplateSelect} id={id} templateId={selectedTemplate}/>
-      {config && !loading && (<div> <PaystubRenderer config={config} data={store}/></div>)}
+      {config && !loading && (<div> <PaystubRenderer config={config} data={data}/></div>)}
     </div>
   );
 };

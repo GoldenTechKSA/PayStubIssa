@@ -12,10 +12,11 @@ import store from "../../redux/store";
 
 const PrintPreview = () => {
     const state: PayStubDetails = store.getState();
-    const { templateId, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
+    const { templateId, configPath, canPrint } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [canPrintStub, setCanPrintStub] = useState(canPrint);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const paystubConfigPath = `${configPath}`;
 
     useEffect(() => {
         dispatch(updateAppSettings({ canPrint: canPrintStub }));
@@ -76,7 +77,7 @@ const PrintPreview = () => {
             <Row className={ canPrintStub ? "mt-5" : "no-print mt-5"}>
                 {/* Display the selected PAYSTUB template in a print preview format with watermark behind it */}
                 <Col md={7}>
-                    <TemplateManager id={templateId} store={state}/>
+                    <TemplateManager id={templateId} configPath={paystubConfigPath} store={state}/>
                 </Col>
                 {/* Display PAYPAL payment component and the print pdf option */}
                 <Col md={{span: 2, offset:1 }}>

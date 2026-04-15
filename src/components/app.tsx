@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { useLocation, Route, Routes } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AppHeader from "./common/app-header";
 import AppFooter from "./common/app-footer";
@@ -22,6 +22,7 @@ import TelemetryErrorBoundary from './common/telemetry-error-boundary';
 import PrintComplete from "./paystub-details/print-complete";
 
 const App: React.FC= () => {
+    const isPrintPreview = useLocation().pathname.startsWith("/printTemplate/");
     const telemetryConfig: TelemetryConfig = {
         endpoint: '/api/telemetry', // Replace with your actual endpoint
         batchSize: 5,
@@ -36,9 +37,7 @@ const App: React.FC= () => {
     <TelemetryProvider config={telemetryConfig}>
         <TelemetryErrorBoundary componentName="App">
             <div className="app-root">
-                <section>
-                    <AppHeader />
-                </section>
+                { !isPrintPreview && (<section><AppHeader /></section>)}
                 <main className="app-main">
                     <Routes>
                         <Route path="/" element={<HeroPage />} />
@@ -57,9 +56,7 @@ const App: React.FC= () => {
                         <Route element={<div><h1>Page Not Found!</h1></div>} />
                     </Routes>
                 </main>
-                <footer>
-                    <AppFooter />
-                </footer>
+                { !isPrintPreview && ( <footer><AppFooter /></footer> )}
             </div>
         </TelemetryErrorBoundary>
     </TelemetryProvider>

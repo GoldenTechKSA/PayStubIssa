@@ -2,17 +2,17 @@
     <cells>
         <rowcells>
             <cell id="period-dates" type="substitute">
-                <value>Period: {payPeriod.start} - {payPeriod.end}</value>
+                <value>Period: {incomeDetails.periodStartDate} - {incomeDetails.periodEndDate}</value>
             </cell>
         </rowcells>
         <rowcells>
             <cell id="period-paydate" type="substitute">
-                <value>Pay Date: {payPeriod.payDate}</value>
+                <value>Pay Date: {incomeDetails.periodPayDate}</value>
             </cell>
         </rowcells>
         <rowcells>
             <cell id="period-subno" type="substitute">
-                <value>Paystub No.: {payPeriod.stubNo}</value>
+                <value>Paystub No.: {generalInfo.payStubNumber}</value>
             </cell>
         </rowcells>
     </cells>

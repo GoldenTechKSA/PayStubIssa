@@ -10,11 +10,11 @@ const AppBody = () => {
     const { nextTabStep, templateId } = useSelector<PayStubDetails, AppSettings>(state => state.appSettings);
     const [gridCells, setGridCells] = useState<ImageFileData[]>([]);
     const [index, setIndex] = useState<number>(templateId);
-    const configsPath = `${process.env.PUBLIC_URL}/configs/template-configs.json`; 
+    const configs = `${process.env.PUBLIC_URL}/configs/template-configs.json`; 
 
     // Fetch image names from the images folder
     useEffect(() => {
-        fetch(configsPath)   /* Use this line for local testing: `${process.env.PUBLIC_URL}/images/image-names.json` */
+        fetch(configs)   /* Use this line for local testing: `${process.env.PUBLIC_URL}/images/image-names.json` */
             .then(res => res.json())
             .then((imageData: ImageFileData[]) => {
                 setGridCells(

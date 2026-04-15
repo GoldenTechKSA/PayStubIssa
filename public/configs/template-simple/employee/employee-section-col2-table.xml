@@ -1,16 +1,16 @@
 <table id="company-table">
     <cells>
     <rowcells>
-        <cell id="company-name" type="substitute"><value>{company.name}</value></cell>
+        <cell id="company-name" type="substitute"><value>{employeeInfo.employeeFirstName} {employeeInfo.employeeLastName}</value></cell>
     </rowcells>
     <rowcells>
-        <cell id="company-address" type="substitute"><value>{company.address}</value></cell>
+        <cell id="company-address" type="substitute"><value>{employeeInfo.employeeAddress1}</value></cell>
     </rowcells>
     <rowcells>
-        <cell id="company-phone" type="substitute"><value>{company.phone}</value></cell>
+        <cell id="company-phone" type="substitute"><value>{employeeInfo.phone}</value></cell>
     </rowcells>
     <rowcells>
-        <cell id="company-ein" type="substitute"><value>{company.ein}</value></cell>
+        <cell id="company-ein" type="substitute"><value>{employeeInfo.employeeSSN}</value></cell>
     </rowcells>
     </cells>
 </table>

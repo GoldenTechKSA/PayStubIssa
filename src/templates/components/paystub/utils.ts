@@ -1,5 +1,3 @@
-import type { PaystubData } from './types';
-
 /**
  * Formats a number as currency
  */
@@ -21,78 +19,6 @@ export const formatDate = (dateString: string): string => {
   });
 };
 
-/**
- * Calculates total deductions from payment data
- */
-export const calculateTotalDeductions = (payment: PaystubData['payment']): number => {
-  return (
-    payment.federalTax +
-    payment.stateTax +
-    payment.socialSecurity +
-    payment.medicare +
-    payment.deductions
-  );
-};
-
-/**
- * Validates that net pay equals gross pay minus deductions
- */
-export const validateNetPay = (payment: PaystubData['payment']): boolean => {
-  const calculatedNet = payment.grossPay - calculateTotalDeductions(payment);
-  const difference = Math.abs(calculatedNet - payment.netPay);
-  
-  // Allow for small floating point differences (< $0.01)
-  return difference < 0.01;
-};
-
-/**
- * Calculates tax rate as percentage
- */
-export const calculateTaxRate = (tax: number, grossPay: number): number => {
-  if (grossPay === 0) return 0;
-  return (tax / grossPay) * 100;
-};
-
-/**
- * Sample data generator for testing
- */
-export const generateSamplePaystubData = (overrides?: Partial<PaystubData>): PaystubData => {
-  const defaultData: PaystubData = {
-    company: {
-      name: "Acme Corporation",
-      address: "123 Business Street, New York, NY 10001",
-      phone: "(555) 123-4567"
-    },
-    employee: {
-      name: "John Doe",
-      id: "EMP-12345",
-      department: "Engineering"
-    },
-    payment: {
-      grossPay: 5937.50,
-      netPay: 3850.50,
-      federalTax: 890.63,
-      stateTax: 296.88,
-      socialSecurity: 368.13,
-      medicare: 86.09,
-      deductions: 445.27
-    },
-    payPeriod: {
-      start: "10/01/2025",
-      end: "10/15/2025",
-      payDate: "10/20/2025"
-    }
-  };
-
-  return {
-    ...defaultData,
-    ...overrides,
-    company: { ...defaultData.company, ...overrides?.company },
-    employee: { ...defaultData.employee, ...overrides?.employee },
-    payment: { ...defaultData.payment, ...overrides?.payment },
-    payPeriod: { ...defaultData.payPeriod, ...overrides?.payPeriod }
-  };
-};
 
 /**
  * Loads XML from a file or URL
@@ -115,64 +41,6 @@ export const loadXMLFromFile = async (file: File): Promise<string> => {
     
     reader.readAsText(file);
   });
-};
-
-/**
- * Exports paystub data to JSON
- */
-export const exportToJSON = (data: PaystubData): string => {
-  return JSON.stringify(data, null, 2);
-};
-
-/**
- * Imports paystub data from JSON string
- */
-export const importFromJSON = (jsonString: string): PaystubData => {
-  try {
-    const data = JSON.parse(jsonString);
-    
-    // Validate required fields
-    if (!data.company || !data.employee || !data.payment || !data.payPeriod) {
-      throw new Error('Invalid JSON structure: missing required fields');
-    }
-    
-    return data as PaystubData;
-  } catch (error) {
-    throw new Error(`Failed to parse JSON: ${error}`);
-  }
-};
-
-/**
- * Downloads XML configuration as a file
- */
-export const downloadXML = (xmlString: string, filename: string = 'paystub-config.xml'): void => {
-  const blob = new Blob([xmlString], { type: 'application/xml' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
-
-/**
- * Downloads paystub data as JSON file
- */
-export const downloadJSON = (data: PaystubData, filename: string = 'paystub-data.json'): void => {
-  const jsonString = exportToJSON(data);
-  const blob = new Blob([jsonString], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 };
 
 /**
@@ -269,11 +137,4 @@ export const generateUniqueId = (prefix: string = 'id'): string => {
  */
 export const deepClone = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj));
-};
-
-/**
- * Checks if two paystub data objects are equal
- */
-export const arePaystubsEqual = (data1: PaystubData, data2: PaystubData): boolean => {
-  return JSON.stringify(data1) === JSON.stringify(data2);
 };
