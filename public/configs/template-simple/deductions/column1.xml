@@ -1,0 +1,3 @@
+<column id="deductions-info" width="70%">
+    <include href="deductions-table.xml" />
+</column>

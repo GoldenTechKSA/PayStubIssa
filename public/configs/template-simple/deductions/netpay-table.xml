@@ -1,0 +1,29 @@
+<table id="netpay-table">
+    <style>
+        <background>#f0f0f0</background>
+        <marginTop>40px</marginTop>
+        <borderTop>2px solid #888b91</borderTop>
+        <borderBottom>1px solid #888b91</borderBottom>
+        <fontWeight>bold</fontWeight>
+    </style>
+    <cells>
+        <rowcells>
+            <cell id="fed-current" type="static">
+                <style>
+                    <paddingRight>40px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                    <fontSize>24px</fontSize>
+                </style>
+                <value>NET PAY</value>
+            </cell>
+            <cell id="fed-ytd" type="substitute">
+                <style>
+                    <paddingRight>10px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                    <fontSize>24px</fontSize>
+                </style>
+                <value>{federalTax}</value>
+            </cell>
+        </rowcells>
+    </cells>
+</table>

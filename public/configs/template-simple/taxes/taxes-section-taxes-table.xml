@@ -1,0 +1,62 @@
+<table id="Taxes-table">
+    <header title="Taxes Details">
+        <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>20px</fontSize>
+        </style>
+        <hdata>
+            <hd id="description">
+                <style>
+                    <borderTop>2px solid #6b7280</borderTop>
+                    <borderBottom>1px solid #6b7280</borderBottom>
+                    <fontWeight>bold</fontWeight>
+                    <fontSize>14px</fontSize>
+                    <width>30%</width>
+                </style>
+                <label>Deductions</label>
+            </hd>
+            <hd id="current">
+                <style>
+                    <borderTop>2px solid #6b7280</borderTop>
+                    <borderBottom>1px solid #6b7280</borderBottom>
+                    <fontWeight>bold</fontWeight>
+                    <fontSize>14px</fontSize>
+                    <width>20%</width>
+                </style>
+                <label>This Period</label>
+            </hd>
+            <hd id="ytd">
+                <style>
+                    <borderTop>2px solid #6b7280</borderTop>
+                    <borderBottom>1px solid #6b7280</borderBottom>
+                    <fontWeight>bold</fontWeight>
+                    <fontSize>14px</fontSize>
+                    <width>20%</width>
+                </style>
+                <label>YTD</label>
+            </hd>
+        </hdata>
+    </header>
+    <cells>
+        <rowcells>
+            <cell id="fed-current" type="static"><value>Federal Income Tax</value></cell>
+            <cell id="fed-ytd" type="substitute"><value>{federalTax}</value></cell>
+            <cell id="fed-current-ytd" type="substitute"><value>{federalTax}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static"><value>Social Security Tax</value></cell>
+            <cell id="rate-value" type="substitute"><value>{socialSecurity}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{socialSecurity}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static"><value>Medicare Tax</value></cell>
+            <cell id="rate-value" type="substitute"><value>{medicare}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{medicare}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static"><value>State Tax</value></cell>
+            <cell id="rate-value" type="substitute"><value>{stateTax}</value></cell>
+            <cell id="ytd-value" type="substitute"><value>{stateTax}</value></cell>
+        </rowcells>
+    </cells>
+</table>

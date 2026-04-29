@@ -1,0 +1,80 @@
+<table id="summary-table">
+    <style>
+        <background>#f0f0f0</background>
+        <borderTop>2px solid #888b91</borderTop>
+        <borderBottom>1px solid #888b91</borderBottom>
+        <fontWeight>bold</fontWeight>
+    </style>
+    <header title="Summary">
+        <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>20px</fontSize>
+        </style>
+    </header>
+    <cells>
+        <rowcells>
+            <cell id="fed-current" type="static">
+                <style>
+                    <paddingRight>40px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>Gross Pay</value>
+            </cell>
+            <cell id="fed-ytd" type="substitute">
+                <style>
+                    <paddingRight>10px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>{federalTax}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static">
+                <style>
+                    <paddingRight>40px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>Deductions</value>
+            </cell>
+            <cell id="rate-value" type="substitute">
+                <style>
+                    <paddingRight>10px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>{federalTax}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static">
+                <style>
+                    <paddingRight>40px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>Taxes</value>
+            </cell>
+            <cell id="rate-value" type="substitute">
+                <style>
+                    <paddingRight>10px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>{medicare}</value>
+            </cell>
+        </rowcells>
+        <rowcells>
+            <cell id="description-value" type="static">
+                <style>
+                    <paddingRight>40px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>Net Pay</value>
+            </cell>
+            <cell id="rate-value" type="substitute">
+                <style>
+                    <paddingRight>10px</paddingRight>
+                    <fontWeight>bold</fontWeight>
+                </style>
+                <value>{stateTax}</value>
+            </cell>
+        </rowcells>
+    </cells>
+</table>
