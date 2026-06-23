@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { FlatPayStubData } from 'assets/data/pay-stub-details';
+import { PaystubModel } from 'assets/data/pay-stub-details';
 import type { SectionConfig } from './types';
 import { Column } from './Column';
 
 interface SectionProps {
   config: SectionConfig;
-  data: FlatPayStubData;
+  data: PaystubModel;
 }
 
 /**

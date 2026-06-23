@@ -1,5 +1,5 @@
-import { FlatPayStubData } from 'assets/data/pay-stub-details';
-import type { PaystubConfig, SectionConfig, ColumnConfig, TableConfig, TableCellConfig, StyleConfig, TableHeaderConfig, TableHeaderDataConfig} from './types';
+import { PaystubModel } from 'assets/data/pay-stub-details';
+import type { PaystubConfig, SectionConfig, ColumnConfig, TableConfig, TableCellConfig, CellFormat, StyleConfig, TableHeaderConfig, TableHeaderDataConfig} from './types';
 
 /**
  * Parses a style element from XML and converts it to a StyleConfig object
@@ -25,12 +25,14 @@ const parseStyle = (element: Element | null): StyleConfig | undefined => {
  */
 const parseTableCell = (cellElement: Element): TableCellConfig => {
   const colspanAttr = cellElement.getAttribute('colspan');
+  const formatAttr = cellElement.getAttribute('format');
   return {
     id: cellElement.getAttribute('id') || '',
     colspan: colspanAttr ? Number(colspanAttr) : undefined,
     value: cellElement.querySelector('value')?.textContent || '',
     type: (cellElement.getAttribute('type') as 'static' | 'calculated' | 'substitute') || 'static',
     formula: cellElement.querySelector('formula')?.textContent || undefined,
+    format: (formatAttr as CellFormat) || undefined,
     style: parseStyle(cellElement)
   };
 };
@@ -211,7 +213,7 @@ export const loadPaystubConfig = async (configUrl: string): Promise<PaystubConfi
  * Processes dynamic values in the configuration
  * Replaces {path.to.value} placeholders with actual data
  */
-export const processDynamicValues = (config: PaystubConfig, data: FlatPayStubData): PaystubConfig => {
+export const processDynamicValues = (config: PaystubConfig, data: PaystubModel): PaystubConfig => {
   const processedConfig = JSON.parse(JSON.stringify(config)); // Deep clone
 
   processedConfig.sections.forEach((section: SectionConfig) => {

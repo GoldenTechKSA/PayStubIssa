@@ -39,24 +39,34 @@
     </header>
     <cells>
         <rowcells>
-            <cell id="fed-current" type="static"><value>Federal Income Tax</value></cell>
-            <cell id="fed-ytd" type="substitute"><value>{federalTax}</value></cell>
-            <cell id="fed-current-ytd" type="substitute"><value>{federalTax}</value></cell>
+            <cell id="medical-desc" type="static"><value>Medical</value></cell>
+            <cell id="medical-current" type="substitute" format="currency"><value>{medical}</value></cell>
+            <cell id="medical-ytd" type="substitute" format="currency"><value>{medicalYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>Social Security Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{socialSecurity}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{socialSecurity}</value></cell>
+            <cell id="dental-desc" type="static"><value>Dental</value></cell>
+            <cell id="dental-current" type="substitute" format="currency"><value>{dental}</value></cell>
+            <cell id="dental-ytd" type="substitute" format="currency"><value>{dentalYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>Medicare Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{medicare}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{medicare}</value></cell>
+            <cell id="vision-desc" type="static"><value>Vision</value></cell>
+            <cell id="vision-current" type="substitute" format="currency"><value>{vision}</value></cell>
+            <cell id="vision-ytd" type="substitute" format="currency"><value>{visionYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>State Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{stateTax}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{stateTax}</value></cell>
+            <cell id="retirement-desc" type="static"><value>401(k)</value></cell>
+            <cell id="retirement-current" type="substitute" format="currency"><value>{retirement401k}</value></cell>
+            <cell id="retirement-ytd" type="substitute" format="currency"><value>{retirement401kYTD}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="other-desc" type="static"><value>Other</value></cell>
+            <cell id="other-current" type="substitute" format="currency"><value>{otherDeductions}</value></cell>
+            <cell id="other-ytd" type="substitute" format="currency"><value>{otherDeductionsYTD}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="total-desc" type="static"><value>Total Deductions</value></cell>
+            <cell id="total-current" type="substitute" format="currency"><value>{totalDeductions}</value></cell>
+            <cell id="total-ytd" type="substitute" format="currency"><value>{totalDeductionsYTD}</value></cell>
         </rowcells>
     </cells>
 </table>

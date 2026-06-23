@@ -8,7 +8,7 @@
     </style>
     <cells>
         <rowcells>
-            <cell id="fed-current" type="static">
+            <cell id="netpay-label" type="static">
                 <style>
                     <paddingRight>40px</paddingRight>
                     <fontWeight>bold</fontWeight>
@@ -16,13 +16,13 @@
                 </style>
                 <value>NET PAY</value>
             </cell>
-            <cell id="fed-ytd" type="substitute">
+            <cell id="netpay-value" type="substitute" format="currency">
                 <style>
                     <paddingRight>10px</paddingRight>
                     <fontWeight>bold</fontWeight>
                     <fontSize>24px</fontSize>
                 </style>
-                <value>{federalTax}</value>
+                <value>{netPay}</value>
             </cell>
         </rowcells>
     </cells>

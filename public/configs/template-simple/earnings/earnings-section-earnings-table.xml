@@ -59,31 +59,25 @@
     </header>
     <cells>
         <rowcells>
-            <cell id="description-value" type="static"><value>Regular Pay</value></cell>
-            <cell id="rate-value" type="substitute"><value>{incomeDetails.hourlyRate}</value></cell>
-            <cell id="hours-value" type="substitute"><value>{incomeDetails.hoursWorked}</value></cell>
-            <cell id="current-value1" type="calculated">
-                <formula>{incomeDetails.hourlyRate} * {incomeDetails.hoursWorked}</formula>
-            </cell>
-            <cell id="ytd-value" type="substitute"><value>{grossPay}</value></cell>
+            <cell id="reg-desc" type="static"><value>Regular Pay</value></cell>
+            <cell id="reg-rate" type="substitute" format="currency"><value>{incomeDetails.hourlyRate}</value></cell>
+            <cell id="reg-hours" type="substitute" format="number"><value>{incomeDetails.hoursWorked}</value></cell>
+            <cell id="reg-current" type="substitute" format="currency"><value>{regularPay}</value></cell>
+            <cell id="reg-ytd" type="substitute" format="currency"><value>{regularPayYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>Overtime Pay</value></cell>
-            <cell id="rate-value" type="substitute"><value>{incomeDetails.overtimeRate}</value></cell>
-            <cell id="hours-value" type="substitute"><value>{incomeDetails.overtimeHours}</value></cell>
-            <cell id="current-value2" type="calculated">
-                <formula>{incomeDetails.overtimeRate} * {incomeDetails.overtimeHours}</formula>
-            </cell>
-            <cell id="ytd-value" type="substitute"><value>{grossPay}</value></cell>
+            <cell id="ot-desc" type="static"><value>Overtime Pay</value></cell>
+            <cell id="ot-rate" type="substitute" format="currency"><value>{incomeDetails.overtimeRate}</value></cell>
+            <cell id="ot-hours" type="substitute" format="number"><value>{incomeDetails.overtimeHours}</value></cell>
+            <cell id="ot-current" type="substitute" format="currency"><value>{overtimePay}</value></cell>
+            <cell id="ot-ytd" type="substitute" format="currency"><value>{overtimePayYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>Other Earnings</value></cell>
-            <cell id="rate-value" type="substitute"><value>{incomeDetails.bonusAmount}</value></cell>
-            <cell id="hours-value" type="substitute"><value>{incomeDetails.commission}</value></cell>
-            <cell id="current-value3" type="calculated">
-                <formula>{incomeDetails.bonusAmount} + {incomeDetails.commission} + {incomeDetails.shiftDifferential} + {incomeDetails.reimbursement}</formula>
-            </cell>
-            <cell id="ytd-value" type="substitute"><value>{grossPay}</value></cell>
+            <cell id="other-desc" type="static"><value>Other Earnings</value></cell>
+            <cell id="other-rate" type="static"><value> </value></cell>
+            <cell id="other-hours" type="static"><value> </value></cell>
+            <cell id="other-current" type="substitute" format="currency"><value>{otherEarnings}</value></cell>
+            <cell id="other-ytd" type="substitute" format="currency"><value>{otherEarningsYTD}</value></cell>
         </rowcells>
     </cells>
 </table>
