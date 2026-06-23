@@ -13,6 +13,7 @@ export interface StyleConfig {
   width?: string;
   fontFamily?: string;
   boxShadow?: string;
+  float?: 'left' | 'none' | 'right';
   [key: string]: string | undefined;
 }
 export interface TableCellConfig {

@@ -1,0 +1,6 @@
+<section id="taxes-section">
+    <style>
+        <marginTop>40px</marginTop>
+    </style>
+    <include href="taxes-section-taxes-column.xml" />
+</section>

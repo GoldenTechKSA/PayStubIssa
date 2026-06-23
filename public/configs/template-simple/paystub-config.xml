@@ -2,10 +2,8 @@
 <paystub>
     <include href="header/header-section.xml"/>
     <include href="company/company-section.xml"/>
-    <include href="employee/employee-section.xml"/>
     <include href="earnings/earnings-section.xml"/>
-    <include href="summary/summary-section.xml"/>
+    <include href="deductions/deductions-section.xml"/>
+    <include href="taxes/taxes-section.xml"/>
     <include href="footer/footer-section.xml"/>
-<!--
--->
 </paystub>

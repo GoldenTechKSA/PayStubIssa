@@ -1,6 +1,6 @@
 <section id="footer-section">
     <style>
-        <marginTop>100px</marginTop>
+        <marginTop>80px</marginTop>
     </style>
     <include href="footer-section-footer-column.xml" />
 </section>

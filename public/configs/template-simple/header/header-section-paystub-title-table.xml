@@ -1,6 +1,10 @@
 <table id="title-table">
+    <style>
+        <float>right</float>
+    </style>
     <header title="Earnings Statement">
         <style>
+            <textAlign>right</textAlign>
             <fontWeight>bold</fontWeight>
             <fontSize>32px</fontSize>
         </style>

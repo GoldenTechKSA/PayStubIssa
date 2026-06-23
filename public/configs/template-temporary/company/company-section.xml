@@ -1,0 +1,7 @@
+<section id="company-section">
+    <style>
+        <marginTop>40px</marginTop>
+    </style>
+    <include href="company-section-company-column.xml" />
+    <include href="company-section-pay-period-column.xml" />
+</section>

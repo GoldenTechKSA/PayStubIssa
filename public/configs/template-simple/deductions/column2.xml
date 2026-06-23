@@ -1,0 +1,4 @@
+<column id="summary-misc" width="30%">
+    <include href="summary-table.xml" />
+    <include href="netpay-table.xml" />
+</column>

@@ -1,5 +1,8 @@
 <table id="disclaimer-table">
-    <style><backgroundColor>transparent</backgroundColor></style>
+    <style>
+        <float>float</float>
+        <backgroundColor>#f900fb</backgroundColor>
+    </style>
     <cells>
         <rowcells>
             <cell id="disclaimer-text" type="static">
@@ -12,7 +15,7 @@
             </cell>
         </rowcells>
         <rowcells>
-            <cell id="disclaimer-text" type="static">
+            <cell id="record-text" type="static">
                 <style>
                     <fontSize>10px</fontSize>
                     <color>#6b7280</color>
@@ -22,7 +25,7 @@
             </cell>
         </rowcells>
         <rowcells>
-            <cell id="disclaimer-text" type="static">
+            <cell id="contact-text" type="static">
                 <style>
                     <fontSize>10px</fontSize>
                     <color>#6b7280</color>
