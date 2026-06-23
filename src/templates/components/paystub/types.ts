@@ -16,12 +16,18 @@ export interface StyleConfig {
   float?: 'left' | 'none' | 'right';
   [key: string]: string | undefined;
 }
+export type CellFormat = 'currency' | 'number' | 'date' | 'text';
+
 export interface TableCellConfig {
   id: string;
   colspan?: number;
   value?: string;
   type: 'static' | 'calculated' | 'substitute';
   formula?: string; // Formula for calculated values, e.g., "{payment.grossPay}"
+  // Presentation applied to the resolved value by the renderer.
+  // 'currency' -> $1,234.56, 'number' -> 1,234.56, 'date' -> MM/DD/YYYY, 'text'/undefined -> raw.
+  // 'calculated' cells default to 'currency' when format is omitted (back-compat).
+  format?: CellFormat;
   style?: StyleConfig;
 }
 export interface TableHeaderDataConfig {

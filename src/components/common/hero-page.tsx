@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import "../../index.css";
 import { useNavigate } from "react-router-dom";
-import HeroImage from "../../assets/images/heroimage.png";
+import HeroImage from "../../assets/images/heroImage.png";
 import SpecialPriceBanner from "./special-price-banner"; // <-- Import the banner
 
 const HeroPage = () => {

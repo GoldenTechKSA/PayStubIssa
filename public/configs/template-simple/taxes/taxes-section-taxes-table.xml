@@ -13,7 +13,7 @@
                     <fontSize>14px</fontSize>
                     <width>30%</width>
                 </style>
-                <label>Deductions</label>
+                <label>Taxes</label>
             </hd>
             <hd id="current">
                 <style>
@@ -39,24 +39,29 @@
     </header>
     <cells>
         <rowcells>
-            <cell id="fed-current" type="static"><value>Federal Income Tax</value></cell>
-            <cell id="fed-ytd" type="substitute"><value>{federalTax}</value></cell>
-            <cell id="fed-current-ytd" type="substitute"><value>{federalTax}</value></cell>
+            <cell id="fed-desc" type="static"><value>Federal Income Tax</value></cell>
+            <cell id="fed-current" type="substitute" format="currency"><value>{federalTax}</value></cell>
+            <cell id="fed-ytd" type="substitute" format="currency"><value>{federalTaxYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>Social Security Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{socialSecurity}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{socialSecurity}</value></cell>
+            <cell id="ss-desc" type="static"><value>Social Security Tax</value></cell>
+            <cell id="ss-current" type="substitute" format="currency"><value>{socialSecurity}</value></cell>
+            <cell id="ss-ytd" type="substitute" format="currency"><value>{socialSecurityYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>Medicare Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{medicare}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{medicare}</value></cell>
+            <cell id="med-desc" type="static"><value>Medicare Tax</value></cell>
+            <cell id="med-current" type="substitute" format="currency"><value>{medicare}</value></cell>
+            <cell id="med-ytd" type="substitute" format="currency"><value>{medicareYTD}</value></cell>
         </rowcells>
         <rowcells>
-            <cell id="description-value" type="static"><value>State Tax</value></cell>
-            <cell id="rate-value" type="substitute"><value>{stateTax}</value></cell>
-            <cell id="ytd-value" type="substitute"><value>{stateTax}</value></cell>
+            <cell id="state-desc" type="static"><value>State Tax</value></cell>
+            <cell id="state-current" type="substitute" format="currency"><value>{stateTax}</value></cell>
+            <cell id="state-ytd" type="substitute" format="currency"><value>{stateTaxYTD}</value></cell>
+        </rowcells>
+        <rowcells>
+            <cell id="total-desc" type="static"><value>Total Taxes</value></cell>
+            <cell id="total-current" type="substitute" format="currency"><value>{totalTaxes}</value></cell>
+            <cell id="total-ytd" type="substitute" format="currency"><value>{totalTaxesYTD}</value></cell>
         </rowcells>
     </cells>
 </table>

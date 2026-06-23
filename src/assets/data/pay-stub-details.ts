@@ -61,34 +61,6 @@ export interface GeneralInfo {
     extraNotes: string;
 }
 
-export interface YearToDateTotals {
-    grossPay: number;
-    netPay: number;
-    federalTax: number;
-    stateTax: number;
-    localTax: number;
-    sdi: number;
-    socialSecurity: number;
-    medicare: number;
-    additionalMedicare: number;
-    totalTaxes: number;
-    retirement401k: number;
-    healthInsurance: number;
-    dentalInsurance: number;
-    visionInsurance: number;
-    hsa: number;
-    fsa: number;
-    lifeInsurance: number;
-    stdInsurance: number;
-    ltdInsurance: number;
-    unionDues: number;
-    parking: number;
-    totalDeductions: number;
-    effectiveTaxRate: number;
-    deductionRate: number;
-    netPayRate: number;
-}
-
 export interface PayStubDetails {
     appSettings: AppSettings;
     companyInfo: CompanyInfo;
@@ -97,5 +69,54 @@ export interface PayStubDetails {
     generalInfo: GeneralInfo;
 }
 
-export type FlatPayStubData = PayStubDetails & YearToDateTotals;
+/**
+ * PaystubModel is the single, computed data contract consumed by the XML renderer.
+ * It extends the raw store (so templates can still bind to e.g. {incomeDetails.hourlyRate})
+ * and adds the derived, period-current numbers plus a year-to-date (`*YTD`) sibling for each.
+ *
+ * All values are RAW NUMBERS — presentation (currency/number/date) is applied in the
+ * renderer via the cell `format` attribute, not here. See buildPaystubModel().
+ */
+export interface PaystubModel extends PayStubDetails {
+    // Earnings (current period)
+    regularPay: number;
+    overtimePay: number;
+    otherEarnings: number;
+    grossPay: number;
+    // Taxes (current period)
+    federalTax: number;
+    stateTax: number;
+    socialSecurity: number;
+    medicare: number;
+    totalTaxes: number;
+    // Deductions (current period)
+    medical: number;
+    dental: number;
+    vision: number;
+    retirement401k: number;
+    otherDeductions: number;
+    unionDues: number;
+    totalDeductions: number;
+    // Net (current period)
+    netPay: number;
+
+    // Year-to-date siblings
+    regularPayYTD: number;
+    overtimePayYTD: number;
+    otherEarningsYTD: number;
+    grossPayYTD: number;
+    federalTaxYTD: number;
+    stateTaxYTD: number;
+    socialSecurityYTD: number;
+    medicareYTD: number;
+    totalTaxesYTD: number;
+    medicalYTD: number;
+    dentalYTD: number;
+    visionYTD: number;
+    retirement401kYTD: number;
+    otherDeductionsYTD: number;
+    unionDuesYTD: number;
+    totalDeductionsYTD: number;
+    netPayYTD: number;
+}
 

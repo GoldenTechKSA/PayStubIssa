@@ -52,8 +52,35 @@ export const calculateEndDate = (startDate, payPeriodType) => {
 // Function to calculate pay date (end date + 1 day)
 export const calculatePayDate = (endDate) => {
     if (!endDate) return "";
-    
+
     const end = new Date(endDate);
     end.setDate(end.getDate() + 1);
     return end.toISOString().split('T')[0];
+};
+
+// Number of pay periods in a full year for a given period type.
+// Keys match the periodType values used by calculateEndDate above.
+export const periodsPerYear = (periodType: string): number => {
+    switch (periodType) {
+        case "Weekly": return 52;
+        case "Bi-Weekly": return 26;
+        case "Semi-Monthly": return 24;
+        case "Monthly": return 12;
+        case "Quarterly": return 4;
+        case "Semiannually": return 2;
+        case "Annually": return 1;
+        default: return 52;
+    }
+};
+
+// Number of pay periods elapsed so far this calendar year, used as the YTD multiplier
+// (current-period amount * periodsToDateThisYear). Always at least 1, capped at a full year.
+// This is a simple proportional estimate, not a true payroll-history accumulation.
+export const periodsToDateThisYear = (periodType: string): number => {
+    const perYear = periodsPerYear(periodType);
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+    const fractionElapsed = (days + 1) / 365;
+    return Math.min(perYear, Math.max(1, Math.ceil(fractionElapsed * perYear)));
 };

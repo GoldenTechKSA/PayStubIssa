@@ -5,16 +5,38 @@
 // textAlign is right by default for value, overridable via style prop in xml config
 import React from 'react';
 
-import { FlatPayStubData } from 'assets/data/pay-stub-details';
-import type { TableCellConfig } from './types';
+import { PaystubModel } from 'assets/data/pay-stub-details';
+import type { TableCellConfig, CellFormat } from './types';
+import { formatCurrency, formatNumber, formatDate } from './utils';
 
 interface TableCellProps {
   config: TableCellConfig;
-  data: FlatPayStubData;
+  data: PaystubModel;
 }
 
+// Helper: Apply a presentation format to an already-resolved value.
+// Numbers are formatted; non-numeric input is passed through unchanged so labels survive.
+const applyFormat = (raw: string, format: CellFormat | undefined): string => {
+  switch (format) {
+    case 'currency': {
+      const num = Number(raw);
+      return isNaN(num) ? raw : formatCurrency(num);
+    }
+    case 'number': {
+      const num = Number(raw);
+      return isNaN(num) ? raw : formatNumber(num);
+    }
+    case 'date':
+      return formatDate(raw);
+    case 'text':
+    case undefined:
+    default:
+      return raw;
+  }
+};
+
 // Helper: Safely get nested property value from data object using a path like "payment.grossPay"
-const getNestedValue = (obj: FlatPayStubData, path: string): string => {
+const getNestedValue = (obj: PaystubModel, path: string): string => {
   const keys = path.split('.');
   let value: unknown = obj;
 
@@ -66,17 +88,18 @@ const safeEvaluate = (expression: string): number => {
 // TableCell Component
 export const TableCell: React.FC<TableCellProps> = ({ config, data }) => {
   const getValue = (): string => {
-    // Static values: return as-is
+    // Static values: literal label, returned as-is (no formatting)
     if (config.type === 'static') {
       return config.value ?? '';
     }
-    // Substitute values: replace {path.to.property} with data values (no arithmetic)
+    // Substitute values: replace {path.to.property} with data values, then apply format
     if (config.type === 'substitute' && config.value) {
-      return config.value.replace(/\{([^}]+)\}/g, (_, path) => {
+      const resolved = config.value.replace(/\{([^}]+)\}/g, (_, path) => {
         return getNestedValue(data, path.trim());
       });
+      return applyFormat(resolved, config.format);
     }
-    // Calculated values: parse placeholders, then evaluate arithmetic
+    // Calculated values: parse placeholders, evaluate arithmetic, then format
     if (config.type === 'calculated' && config.formula) {
       try {
         // Step 1: Replace all {path.to.property} placeholders with numeric values
@@ -86,8 +109,8 @@ export const TableCell: React.FC<TableCellProps> = ({ config, data }) => {
         });
         // Step 2: Safely evaluate the resulting arithmetic expression
         const result = safeEvaluate(evaluatedFormula);
-        // Step 3: Format as currency
-        return `$${result.toFixed(2)}`;
+        // Step 3: Format. Calculated cells default to currency for back-compat.
+        return applyFormat(String(result), config.format ?? 'currency');
       } catch (error) {
         console.error(`Error evaluating formula for cell ${config.id}:`, error);
         return 'Error';
