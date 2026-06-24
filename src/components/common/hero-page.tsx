@@ -5,7 +5,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LockIcon from "@mui/icons-material/Lock";
 import BoltIcon from "@mui/icons-material/Bolt";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import HeroImage from "../../assets/images/heroImage.png";
+import HeroImage from "../../assets/images/heroimage.png";
 import SpecialPriceBanner from "./special-price-banner";
 
 const TRUST = [
