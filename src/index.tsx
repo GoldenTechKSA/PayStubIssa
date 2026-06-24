@@ -1,6 +1,8 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 import App from "./components/app";
+import theme from "./theme/theme";
 import "./index.css";
 import store from "./redux/store";
 import { Provider } from "react-redux";
@@ -11,8 +13,11 @@ const root = createRoot(container!);
 
 root.render(
   <BrowserRouter>
-    <Provider store={store}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Provider store={store}>
         <App />
-    </Provider>
+      </Provider>
+    </ThemeProvider>
   </BrowserRouter>,
 );

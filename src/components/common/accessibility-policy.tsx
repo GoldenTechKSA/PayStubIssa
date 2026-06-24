@@ -1,8 +1,8 @@
 import React from "react";
-import { Container } from "react-bootstrap";
+import LegalPageShell from "./LegalPageShell";
 
 const AccessibilityPolicy = () => (
-  <Container className="my-5">
+  <LegalPageShell>
     <h2>Accessibility Policy</h2>
     <p><strong>Last Updated:</strong> May 31, 2025</p>
     <p>
@@ -186,7 +186,7 @@ const AccessibilityPolicy = () => (
       <strong>Effective Date:</strong> This Accessibility Policy is effective as of May 31, 2025.<br />
       For the most current version of this Accessibility Policy, please visit <a href="https://paystubissa.com/accessibility" target="_blank" rel="noopener noreferrer">paystubissa.com/accessibility</a>
     </p>
-  </Container>
+  </LegalPageShell>
 );
 
 export default AccessibilityPolicy;

@@ -1,8 +1,8 @@
 import React from "react";
-import { Container } from "react-bootstrap";
+import LegalPageShell from "./LegalPageShell";
 
 const TermsOfUse = () => (
-  <Container className="my-5">
+  <LegalPageShell>
     <h2>Terms of Use</h2>
     <p><strong>Last Updated:</strong> May 31, 2025</p>
     <p>
@@ -190,7 +190,7 @@ const TermsOfUse = () => (
       <strong>Effective Date:</strong> These Terms of Use are effective as of May 31, 2025.<br />
       For the most current version of these Terms of Use, please visit <a href="https://paystubissa.com/terms" target="_blank" rel="noopener noreferrer">paystubissa.com/terms</a>
     </p>
-  </Container>
+  </LegalPageShell>
 );
 
 export default TermsOfUse;
