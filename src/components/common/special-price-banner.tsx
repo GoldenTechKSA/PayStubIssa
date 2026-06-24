@@ -102,7 +102,7 @@ const SpecialPriceBanner: React.FC = () => {
           fontSize="20px"
           buttonText="Get Started & Save"
           buttonColor="#16a34a"
-          onButtonClick={() => navigate("/appBody")}
+          onButtonClick={() => navigate("/create")}
         />
       </div>
     </div>

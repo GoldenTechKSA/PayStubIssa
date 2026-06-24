@@ -25,17 +25,16 @@ State lives in a plain Redux store (`redux/store.tsx`, classic `createStore` + `
 
 - The store is **seeded with different initial state per environment**: `production-initial-state` in production, `initial-state` (pre-filled dev data) otherwise — selected in [store.tsx](src/redux/store.tsx) via `NODE_ENV`.
 - Each reducer responds to a single `SAVE_*` / `UPDATE_APP_SETTINGS` action ([action-types.tsx](src/constants/action-types.tsx), [actions.tsx](src/redux/actions.tsx)) and merges its payload (`{...state, ...payload}`). Actions are untyped (`data` is `any`).
-- The wizard is a tab flow ([input-tabs.tsx](src/components/input-tabs/input-tabs.tsx)) driven by `appSettings.nextTabStep` (`template → company → employee → income → general`). Each step dispatches its save action and advances `nextTabStep`; tabs are disabled unless they are the current step.
-- Routing is in [app.tsx](src/components/app.tsx). The `/printTemplate/:templateId` route hides the header/footer (detected via `useLocation().pathname.startsWith("/printTemplate/")`).
-
-**Gotcha:** several components (e.g. [details.tsx](src/components/paystub-details/details.tsx), [print-preview.tsx](src/components/paystub-details/print-preview.tsx)) read state via `store.getState()` at render time instead of `useSelector`, so they capture a snapshot and do **not** re-render on store changes. Mixing in `useSelector` for the fields that must stay live is the existing pattern. Prefer `useSelector` for new code.
+- The user flow is a **6-step MUI stepper wizard** at `/create` ([PaystubWizard.tsx](src/components/wizard/PaystubWizard.tsx)): Company → Employee → Pay period → Earnings → Template → Review. Each step ([src/components/wizard/steps/](src/components/wizard/steps/)) reads its slice with `useSelector`, validates locally (inline on blur), and dispatches its `SAVE_*` action on Next. The wizard autosaves a draft to `localStorage` (key `paystubissa.draft.v1`) and rehydrates it on return; it also defaults `appSettings.configPath` to `template-simple` so the preview renders.
+- Routing is in [app.tsx](src/components/app.tsx): `/` (hero), `/create` (wizard), `/aboutUsPage`, `/FAQPage`, `/contactUsPage`, `/privacy`, `/accessibility`, `/terms`, and a `*` not-found. The header/footer use a `no-print` class; the Review step's print path isolates the pay stub (see PDF/print below).
+- Use `useSelector`/`useDispatch` for state access. (The old tabbed `/appBody` flow and the Bootstrap screens that read `store.getState()` at render time have been removed.)
 
 ## Paystub rendering — XML config system
 
 The rendered pay stub is **data-driven from XML**, not hard-coded React. This is the single rendering path:
 
-1. Template selection ([template-selection.tsx](src/components/carousel/template-selection.tsx)) reads [public/configs/template-configs.json](public/configs/template-configs.json) — an array where each entry has a `configFile` path (e.g. `/configs/template-simple/paystub-config.xml`) plus image/title/description. Selecting a template dispatches `{ configPath, templateId }` into `appSettings`.
-2. [print-preview.tsx](src/components/paystub-details/print-preview.tsx) renders `<TemplateManager configPath={configPath} store={state} />`.
+1. The wizard's **Template step** ([TemplateStep.tsx](src/components/wizard/steps/TemplateStep.tsx)) reads [public/configs/template-configs.json](public/configs/template-configs.json) — an array where each entry has a `configFile` path (e.g. `/configs/template-simple/paystub-config.xml`) plus image/title/description. Selecting a template dispatches `{ configPath, templateId }` into `appSettings`. (Only configs in its `AVAILABLE_CONFIGS` set are selectable/previewable today — currently just `template-simple`.)
+2. The Template step and the **Review step** ([ReviewStep.tsx](src/components/wizard/steps/ReviewStep.tsx)) render `<TemplateManager configPath={configPath} store={fullState} />` for the live preview.
 3. [templatemanager.tsx](src/templates/components/templatemanager.tsx) builds the data model via `buildPaystubModel(store)` (see Tax & data model below), fetches the XML via `loadPaystubConfig`, validates it, and renders `<PaystubRenderer config data />`.
 4. [xmlParser.ts](src/templates/components/paystub/xmlParser.ts) parses XML → `PaystubConfig` (`sections → columns → tables → cells`). It resolves `<include href="...">` elements recursively (depth-limited, cycle-guarded) so a `paystub-config.xml` composes many partial XML files under the same template folder.
 5. [PaystubRenderer.tsx](src/templates/components/PaystubRenderer.tsx) → `Section` → `Column` → `Table` → `TableCell` ([src/templates/components/paystub/](src/templates/components/paystub/)) render the parsed config; per-element inline `<style>` from the XML becomes React inline styles.
@@ -62,15 +61,21 @@ Key model behaviors:
 - **Filing status**: `employeeMarriedStatus` is passed through as the IRS `FilingStatus` (`single | marriedFilingJointly | marriedFilingSeparately | headOfHousehold`, matching [filing-status.json](src/assets/data/filing-status.json)), with legacy "Married" normalized. `FilingStatus` is **not** `'single' | 'married'` — using `'married'` produces `NaN`.
 - **YTD** is a simple proportional estimate: `current × periodsToDateThisYear`, not a real payroll-history accumulation.
 
-## PDF, payment, telemetry
+## Review, payment, PDF/print, telemetry
 
-- **PDF export**: [src/components/pdf/](src/components/pdf/) + [use-pdf-download.ts](src/hooks/use-pdf-download.ts) use `html2canvas` + `jspdf` to snapshot a DOM node by id (`targetId="pdf-content"`).
-- **Payment gating**: printing/PDF buttons in `print-preview.tsx` are gated by `appSettings.canPrint`, flipped to `true` on PayPal success (`handlePaymentSuccess`). The "Enable Defaults for Company" checkbox in template selection can pre-set `canPrint`.
-- **Telemetry**: `TelemetryProvider` wraps the whole app ([app.tsx](src/components/app.tsx)); `telemetryService` ([telemetry-service.ts](src/services/telemetry-service.ts)) batches events to a `POST /api/telemetry` endpoint that is **not yet implemented** server-side. Config (batch size, flush interval, console logging) is set inline in `app.tsx`.
+The wizard's **Review step** ([ReviewStep.tsx](src/components/wizard/steps/ReviewStep.tsx)) is the finalize screen: a read-only summary (with Edit buttons that jump back to a step), the computed pay totals from `buildPaystubModel`, a live preview, the payment gate, and print/PDF.
+
+- **Payment gating**: print/PDF are gated by `appSettings.canPrint`, flipped to `true` on PayPal success. The preview shows a "PREVIEW" watermark until paid. The reusable `<PayPal>` ([paypal-payment.tsx](src/components/common/paypal-payment.tsx)) renders PayPal buttons via the `window.paypal` SDK loaded in [public/index.html](public/index.html). Unlock is client-side only (no server verification).
+- **PDF / print**: `<PDFDownloadButton>` ([pdf-button-comp.tsx](src/components/pdf/pdf-button-comp.tsx)) snapshots the `#pdf-content` node with `html2canvas` + `jspdf`. Print uses `window.print()` after adding a `print-paystub` body class; [print.css](src/components/wizard/print.css) then isolates `#pdf-content` so only the pay stub prints.
+- **Telemetry**: `TelemetryProvider` wraps the whole app ([app.tsx](src/components/app.tsx)); `telemetryService` ([telemetry-service.ts](src/services/telemetry-service.ts)) batches events to a `POST /api/telemetry` endpoint that is **not yet implemented** server-side. Config is set inline in `app.tsx`.
+
+## UI / design system (MUI)
+
+The UI is **Material UI (MUI 7)** end-to-end — React-Bootstrap has been removed. A single theme ([src/theme/theme.ts](src/theme/theme.ts)) defines the design tokens (Trust Blue `#2563EB` primary, Profit Green `#059669` success, slate text, IBM Plex Sans/Mono) and is applied via `ThemeProvider` + `CssBaseline` in [index.tsx](src/index.tsx). Style with `sx`/theme values, not raw hex or CSS classes. [index.css](src/index.css) is intentionally minimal (app shell + `.no-print` only); fonts load from Google Fonts in `public/index.html`. The wizard's shared building blocks are [WizardStepLayout.tsx](src/components/wizard/WizardStepLayout.tsx) and [MaskedIdInput.tsx](src/components/wizard/MaskedIdInput.tsx) (EIN/SSN). The design plan lives in [docs/REDESIGN-PLAN.md](docs/REDESIGN-PLAN.md).
 
 ## Conventions
 
-- TypeScript `strict` is on, but `noImplicitAny: false` — Redux actions/reducers and many event handlers are intentionally untyped `any`. `baseUrl: "src"` enables absolute imports like `import { ... } from 'assets/data/pay-stub-details'`.
-- File naming is **kebab-case** for most code (`tax-calculator.ts`, `print-preview.tsx`), but the `src/templates/` tree uses lowercase-no-separator (`templatemanager.tsx`, `buildPaystubModel.ts`).
-- `process.env.NODE_ENV` is used directly to branch dev vs prod behavior (initial state, dev-mode flags). There is no committed `.env` (`.env.development` / `.env.production` are gitignored).
+- TypeScript `strict` is on, but `noImplicitAny: false` — Redux actions/reducers and some event handlers are intentionally untyped `any`. `baseUrl: "src"` enables absolute imports like `import { ... } from 'assets/data/pay-stub-details'`.
+- File naming is **kebab-case** for most code (`tax-calculator.ts`, `app-header.tsx`), but the `src/templates/` tree and some wizard files use other casings (`templatemanager.tsx`, `buildPaystubModel.ts`, `PaystubWizard.tsx`).
+- `process.env.NODE_ENV` is used directly to branch dev vs prod behavior (initial state). There is no committed `.env` (`.env.development` / `.env.production` are gitignored).
 - Reference data (states, filing statuses, pay-period/payment/employment types) lives in `src/assets/data/*.json` and is re-exported through [globals.tsx](src/constants/globals.tsx).

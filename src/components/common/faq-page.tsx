@@ -1,6 +1,10 @@
 import React from "react";
-import { Container, Accordion } from "react-bootstrap";
-import "../../index.css";
+import {
+  Container, Box, Typography, Accordion, AccordionSummary, AccordionDetails,
+  List, ListItem, ListItemIcon, ListItemText,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const faqData = [
   {
@@ -227,53 +231,62 @@ const faqData = [
 ];
 
 
-const FAQPage = () => {
-    return (
-  <Container style={{ padding: 0, maxWidth: 900 }} fluid>
-    <div className="highlight">
-      <h1>About Us</h1>
-    </div>
-    <div className="steps">
-      <div className="step-title">Who Are We?</div>
-      <p>
-        We are a trusted payroll solutions provider specializing in professional pay stub generation for small businesses, freelancers, and independent contractors. Our team consists of certified accountants and payroll experts with years of experience streamlining financial documentation.
-      </p>
+const WHY_US = [
+  "IRS & SBA-compliant — our pay stubs meet official standards for income verification.",
+  "Instant generation — create, customize, and download pay stubs in minutes.",
+  "Secure & reliable — bank-level encryption protects your sensitive data.",
+  "Accepted everywhere — valid for loans, rentals, mortgages, and employment verification.",
+];
 
-      <div className="step-title">Why Choose Us?</div>
-      <ul className="feature-list">
-        <li><span className="check">&#10004;</span>IRS &amp; SBA-Compliant – Our pay stubs meet official standards for income verification.</li>
-        <li><span className="check">&#10004;</span>Instant Generation – Create, customize, and download pay stubs in minutes.</li>
-        <li><span className="check">&#10004;</span>Secure &amp; Reliable – Bank-level encryption protects your sensitive data.</li>
-        <li><span className="check">&#10004;</span>Accepted Everywhere – Valid for loans, rentals, mortgages, and employment verification.</li>
-      </ul>
-      <p>
-        We’re committed to simplifying payroll for business owners while ensuring accuracy and professionalism in every document.
-      </p>
-    </div>
+const FAQPage = () => (
+  <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+    <Typography variant="h4" component="h1" gutterBottom>About us</Typography>
 
+    <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Who are we?</Typography>
+    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+      We are a trusted payroll solutions provider specializing in professional pay stub generation for small
+      businesses, freelancers, and independent contractors. Our team consists of certified accountants and payroll
+      experts with years of experience streamlining financial documentation.
+    </Typography>
 
-    <div className="highlight">
-      <h1>Frequently Asked Questions</h1>
-      <p>
-        If you don’t find the answer you need, our support team is always ready to assist you.
-      </p>
-    </div>
-
-    <Accordion defaultActiveKey="0" alwaysOpen>
-      {faqData.map((section, sectionIdx) => (
-        <div key={section.section}>
-          <h2 style={{ marginTop: "2rem", color: "#2a7ae2", fontSize: "1.3rem" }}>{section.section}</h2>
-          {section.qas.map((qa, qaIdx) => (
-            <Accordion.Item eventKey={`${sectionIdx}-${qaIdx}`} key={qa.question}>
-              <Accordion.Header>{qa.question}</Accordion.Header>
-              <Accordion.Body>{qa.answer}</Accordion.Body>
-            </Accordion.Item>
-          ))}
-        </div>
+    <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Why choose us?</Typography>
+    <List dense>
+      {WHY_US.map(item => (
+        <ListItem key={item} disableGutters alignItems="flex-start">
+          <ListItemIcon sx={{ minWidth: 32, mt: 0.5 }}><CheckCircleIcon color="success" fontSize="small" /></ListItemIcon>
+          <ListItemText primary={item} primaryTypographyProps={{ color: "text.secondary" }} />
+        </ListItem>
       ))}
-    </Accordion>
+    </List>
+    <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+      We’re committed to simplifying payroll for business owners while ensuring accuracy and professionalism in every document.
+    </Typography>
+
+    <Typography variant="h4" component="h2" gutterBottom>Frequently asked questions</Typography>
+    <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+      If you don’t find the answer you need, our support team is always ready to assist you.
+    </Typography>
+
+    {faqData.map((section, sectionIdx) => {
+      const qas = section.qas.filter(qa => qa.question);
+      if (qas.length === 0) return null;
+      return (
+        <Box key={section.section} sx={{ mb: 3 }}>
+          <Typography variant="h6" component="h3" color="primary.main" sx={{ mt: 3, mb: 1 }}>{section.section}</Typography>
+          {qas.map((qa, qaIdx) => (
+            <Accordion key={`${sectionIdx}-${qaIdx}`} disableGutters>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography fontWeight={500}>{qa.question}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography component="div" color="text.secondary" sx={{ lineHeight: 1.7 }}>{qa.answer}</Typography>
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </Box>
+      );
+    })}
   </Container>
-    )
-}
+);
 
 export default FAQPage;

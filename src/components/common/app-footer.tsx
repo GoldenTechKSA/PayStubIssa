@@ -1,24 +1,43 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Image } from "react-bootstrap";
+import { Link as RouterLink } from "react-router-dom";
+import { Box, Container, Stack, Link, Typography } from "@mui/material";
 import PayPalImg from "../../assets/images/paypal.png";
 
 const AppFooter = () => {
-    return (
-        <footer className="no-print footer d-flex align-items-center justify-content-between flex-wrap">
-            <span className="footer-copyright">
-                ©Copyright PayStubIssa(2020–2025). All rights reserved
-            </span>
-            <nav className="footer-links d-flex align-items-center">
-                <Link to="/accessibility" className="mx-2" style={{ textDecoration: "none", cursor: "pointer" }}>Accessibility</Link>
-                <Link to="/privacy" className="mx-2" style={{ textDecoration: "none", cursor: "pointer" }}>Privacy</Link>
-                <Link to="/terms" className="mx-2" style={{ textDecoration: "none", cursor: "pointer" }}>Terms of Use</Link>
-            </nav>
-            <span className="footer-paypal">
-                <Image rounded className="img-fluid" src={PayPalImg} alt="PayPal Acceptance Mark" />
-            </span>
-        </footer>
-    );
+  return (
+    <Box
+      component="footer"
+      className="no-print"
+      sx={{ bgcolor: "background.paper", borderTop: 1, borderColor: "divider", py: 3, mt: 6 }}
+    >
+      <Container maxWidth="lg">
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Typography variant="body2" color="text.secondary">
+            © PayStubIssa 2020–2025. All rights reserved.
+          </Typography>
+
+          <Stack direction="row" spacing={3} component="nav">
+            <Link component={RouterLink} to="/accessibility" underline="hover" color="text.secondary">
+              Accessibility
+            </Link>
+            <Link component={RouterLink} to="/privacy" underline="hover" color="text.secondary">
+              Privacy
+            </Link>
+            <Link component={RouterLink} to="/terms" underline="hover" color="text.secondary">
+              Terms of Use
+            </Link>
+          </Stack>
+
+          <Box component="img" src={PayPalImg} alt="PayPal Acceptance Mark" sx={{ height: 28, borderRadius: 1 }} />
+        </Stack>
+      </Container>
+    </Box>
+  );
 };
 
 export default AppFooter;

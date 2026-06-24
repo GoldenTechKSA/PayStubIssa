@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Spinner, Alert } from "react-bootstrap";
-import { Send, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Box, Container, Grid, Typography, TextField, MenuItem, Button, Alert, CircularProgress, Paper,
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-// Types
 interface FormData {
   firstName: string;
   lastName: string;
@@ -11,96 +13,51 @@ interface FormData {
   subject: string;
   message: string;
 }
+type FormErrors = Partial<Record<keyof FormData, string>>;
 
-interface FormErrors {
-  [key: string]: string;
-}
+const SUBJECTS = [
+  { value: "general", label: "General Inquiry" },
+  { value: "support", label: "Technical Support" },
+  { value: "sales", label: "Sales Question" },
+  { value: "partnership", label: "Partnership" },
+  { value: "other", label: "Other" },
+];
 
-// Contact Form Component
+const EMPTY: FormData = { firstName: "", lastName: "", email: "", phone: "", subject: "", message: "" };
+
 const ContactForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  });
-
+  const [formData, setFormData] = useState<FormData>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.subject.trim()) {
-      newErrors.subject = 'Subject is required';
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = 'Message is required';
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters long';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validate = (): boolean => {
+    const e: FormErrors = {};
+    if (!formData.firstName.trim()) e.firstName = "First name is required";
+    if (!formData.lastName.trim()) e.lastName = "Last name is required";
+    if (!formData.email.trim()) e.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = "Please enter a valid email address";
+    if (!formData.subject.trim()) e.subject = "Subject is required";
+    if (!formData.message.trim()) e.message = "Message is required";
+    else if (formData.message.trim().length < 10) e.message = "Message must be at least 10 characters long";
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+  const handleChange = (key: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [key]: e.target.value }));
+    if (errors[key]) setErrors(prev => ({ ...prev, [key]: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validate()) return;
     setIsSubmitting(true);
-
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulated submit — wire to a real endpoint when available.
+      await new Promise(resolve => setTimeout(resolve, 1200));
       setIsSubmitted(true);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
-    } catch (error) {
-      // Handle error
+      setFormData(EMPTY);
     } finally {
       setIsSubmitting(false);
     }
@@ -108,169 +65,74 @@ const ContactForm: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <Alert variant="success" className="text-center p-5 rounded-3">
-        <CheckCircle size={48} className="mb-3 text-success" />
-        <h3 className="mb-2">Message Sent Successfully!</h3>
-        <p>Thank you for contacting us. We'll get back to you within 24 hours.</p>
-        <Button variant="success" onClick={() => setIsSubmitted(false)}>
-          Send Another Message
-        </Button>
+      <Alert
+        icon={<CheckCircleIcon fontSize="inherit" />}
+        severity="success"
+        action={<Button color="inherit" size="small" onClick={() => setIsSubmitted(false)}>Send another</Button>}
+      >
+        <Typography fontWeight={600}>Message sent successfully!</Typography>
+        Thank you for contacting us. We’ll get back to you within 24 hours.
       </Alert>
     );
   }
 
   return (
-    <Form noValidate onSubmit={handleSubmit}>
-      <h2 className="mb-3">Send us a Message</h2>
-      <p className="mb-4 text-muted">Fill out the form below and we'll get back to you shortly.</p>
-      <Row>
-        <Col md={6} className="mb-3">
-          <Form.Group controlId="firstName">
-            <Form.Label>First Name *</Form.Label>
-            <Form.Control
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              isInvalid={!!errors.firstName}
-              placeholder="Enter your first name"
-            />
-            <Form.Control.Feedback type="invalid">
-              <AlertCircle size={16} className="me-1" />
-              {errors.firstName}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-        <Col md={6} className="mb-3">
-          <Form.Group controlId="lastName">
-            <Form.Label>Last Name *</Form.Label>
-            <Form.Control
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              isInvalid={!!errors.lastName}
-              placeholder="Enter your last name"
-            />
-            <Form.Control.Feedback type="invalid">
-              <AlertCircle size={16} className="me-1" />
-              {errors.lastName}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6} className="mb-3">
-          <Form.Group controlId="email">
-            <Form.Label>Email Address *</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              isInvalid={!!errors.email}
-              placeholder="Enter your email"
-            />
-            <Form.Control.Feedback type="invalid">
-              <AlertCircle size={16} className="me-1" />
-              {errors.email}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Col>
-        <Col md={6} className="mb-3">
-          <Form.Group controlId="phone">
-            <Form.Label>Phone Number</Form.Label>
-            <Form.Control
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              placeholder="Enter your phone number"
-            />
-          </Form.Group>
-        </Col>
-      </Row>
-      <Form.Group className="mb-3" controlId="subject">
-        <Form.Label>Subject *</Form.Label>
-        <Form.Select
-          name="subject"
-          value={formData.subject}
-          onChange={handleInputChange}
-          isInvalid={!!errors.subject}
-        >
-          <option value="">Select a subject</option>
-          <option value="general">General Inquiry</option>
-          <option value="support">Technical Support</option>
-          <option value="sales">Sales Question</option>
-          <option value="partnership">Partnership</option>
-          <option value="other">Other</option>
-        </Form.Select>
-        <Form.Control.Feedback type="invalid">
-          <AlertCircle size={16} className="me-1" />
-          {errors.subject}
-        </Form.Control.Feedback>
-      </Form.Group>
-      <Form.Group className="mb-4" controlId="message">
-        <Form.Label>Message *</Form.Label>
-        <Form.Control
-          as="textarea"
-          name="message"
-          rows={6}
-          value={formData.message}
-          onChange={handleInputChange}
-          isInvalid={!!errors.message}
-          placeholder="Tell us how we can help you..."
-        />
-        <Form.Control.Feedback type="invalid">
-          <AlertCircle size={16} className="me-1" />
-          {errors.message}
-        </Form.Control.Feedback>
-      </Form.Group>
+    <Box component="form" noValidate onSubmit={handleSubmit}>
+      <Typography variant="h6" component="h2" gutterBottom>Send us a message</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Fill out the form below and we’ll get back to you shortly.
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField fullWidth required label="First name" value={formData.firstName} onChange={handleChange("firstName")} error={!!errors.firstName} helperText={errors.firstName || " "} autoComplete="given-name" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField fullWidth required label="Last name" value={formData.lastName} onChange={handleChange("lastName")} error={!!errors.lastName} helperText={errors.lastName || " "} autoComplete="family-name" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField fullWidth required type="email" label="Email address" value={formData.email} onChange={handleChange("email")} error={!!errors.email} helperText={errors.email || " "} autoComplete="email" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField fullWidth type="tel" label="Phone number" value={formData.phone} onChange={handleChange("phone")} helperText=" " autoComplete="tel" />
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <TextField select fullWidth required label="Subject" value={formData.subject} onChange={handleChange("subject")} error={!!errors.subject} helperText={errors.subject || " "}>
+            {SUBJECTS.map(s => <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>)}
+          </TextField>
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <TextField fullWidth required multiline minRows={5} label="Message" placeholder="Tell us how we can help you…" value={formData.message} onChange={handleChange("message")} error={!!errors.message} helperText={errors.message || " "} />
+        </Grid>
+      </Grid>
       <Button
         type="submit"
-        variant="primary"
-        className="w-100 d-flex align-items-center justify-content-center"
+        variant="contained"
+        fullWidth
+        size="large"
         disabled={isSubmitting}
+        startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}
+        sx={{ mt: 1 }}
       >
-        {isSubmitting ? (
-          <>
-            <Spinner animation="border" size="sm" className="me-2" />
-            Sending Message...
-          </>
-        ) : (
-          <>
-            <Send size={18} className="me-2" />
-            Send Message
-          </>
-        )}
+        {isSubmitting ? "Sending message…" : "Send message"}
       </Button>
-    </Form>
+    </Box>
   );
 };
 
-// Main Contact Us Component
-const ContactUsPage: React.FC = () => {
-  return (
-    <section style={{ minHeight: "100vh", background: "linear-gradient(135deg, #f8fafc 0%, #e3f0fd 100%)", padding: "4rem 0" }}>
-      <Container>
-        <div className="text-center mb-5">
-          <h1 className="display-5 fw-bold mb-3 text-primary">
-            Contact Us
-          </h1>
-          <p className="lead text-secondary mx-auto" style={{ maxWidth: 600 }}>
-            Have a question or want to work together? We'd love to hear from you.
-          </p>
-        </div>
-        <Row className="justify-content-center">
-          <Col lg={8} xl={7}>
-            <div className="bg-white rounded-4 shadow-lg p-4 p-md-5">
-              <ContactForm />
-            </div>
-          </Col>
-        </Row>
-      </Container>
-    </section>
-  );
-};
+const ContactUsPage: React.FC = () => (
+  <Box sx={{ background: "linear-gradient(135deg, #F8FAFC 0%, #EAF1FE 100%)", py: { xs: 5, md: 8 } }}>
+    <Container maxWidth="md">
+      <Box sx={{ textAlign: "center", mb: 5 }}>
+        <Typography variant="h3" component="h1" color="primary" sx={{ fontWeight: 700, mb: 1 }}>Contact us</Typography>
+        <Typography variant="h6" component="p" color="text.secondary" sx={{ fontWeight: 400, maxWidth: 600, mx: "auto" }}>
+          Have a question or want to work together? We’d love to hear from you.
+        </Typography>
+      </Box>
+      <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, borderRadius: 3, maxWidth: 760, mx: "auto" }}>
+        <ContactForm />
+      </Paper>
+    </Container>
+  </Box>
+);
 
 export default ContactUsPage;

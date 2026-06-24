@@ -1,0 +1,20 @@
+/*
+ * Print isolation for the Review step. When the body has `print-paystub`
+ * (added just before window.print()), only the #pdf-content paystub is printed.
+ * Scoped to the body class so it never affects printing on other pages.
+ */
+@media print {
+  body.print-paystub * {
+    visibility: hidden !important;
+  }
+  body.print-paystub #pdf-content,
+  body.print-paystub #pdf-content * {
+    visibility: visible !important;
+  }
+  body.print-paystub #pdf-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

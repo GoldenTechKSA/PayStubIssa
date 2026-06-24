@@ -1,8 +1,8 @@
 import React from "react";
-import { Container } from "react-bootstrap";
+import LegalPageShell from "./LegalPageShell";
 
 const PrivacyPolicy = () => (
-  <Container className="my-5">
+  <LegalPageShell>
     <h2>Privacy Policy</h2>
     <p><strong>Last Updated:</strong> May 31, 2025</p>
     <p>
@@ -170,7 +170,7 @@ const PrivacyPolicy = () => (
       <strong>Effective Date:</strong> This Privacy Policy is effective as of May 31, 2025.<br />
       For the most current version of this Privacy Policy, please visit <a href="https://paystubissa.com/privacy" target="_blank" rel="noopener noreferrer">paystubissa.com/privacy</a>
     </p>
-  </Container>
+  </LegalPageShell>
 );
 
 export default PrivacyPolicy;
