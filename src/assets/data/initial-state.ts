@@ -3,7 +3,7 @@ import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, Pay
 const appSettings: AppSettings = {
     templateId: 0,
     nextTabStep: "template",
-    canPrint: true,
+    canPrint: false, // start locked so the payment gate (PayPal) shows, matching production
     configPath: ""
 };
 

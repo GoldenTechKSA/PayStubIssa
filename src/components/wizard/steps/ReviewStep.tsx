@@ -6,12 +6,15 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
 import LockIcon from "@mui/icons-material/Lock";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
 import { buildPaystubModel } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
 import { telemetryService } from "../../../services/telemetry-service";
 import TemplateManager from "../../../templates/components/templatemanager";
+import { FitPage } from "../FitPage";
+import { PreviewWatermark } from "../PreviewWatermark";
 import PayPal from "../../common/paypal-payment";
 import PDFDownloadButton from "../../pdf/pdf-button-comp";
 import "../print.css";
@@ -190,24 +193,30 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
           </Stack>
         </Grid>
 
-        {/* Right: live preview (watermarked until paid) */}
+        {/* Right: live preview rendered as a printable Letter sheet (watermarked until paid) */}
         <Grid size={{ xs: 12, md: 7 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-            <Typography variant="subtitle2" color="text.secondary">Preview</Typography>
-            {!canPrint && <Chip label="Watermarked until payment" size="small" variant="outlined" />}
+            <Typography variant="subtitle2" color="text.secondary">{canPrint ? "Final pay stub" : "Preview"}</Typography>
+            {canPrint
+              ? <Chip icon={<CheckCircleIcon />} color="success" variant="outlined" size="small" label="Ready to print" />
+              : <Chip label="Watermarked until payment" size="small" variant="outlined" />}
           </Stack>
-          <Box sx={{ position: "relative", border: 1, borderColor: "divider", borderRadius: 1, bgcolor: "#fff", p: 2, maxHeight: "75vh", overflow: "auto" }}>
-            <Box id="pdf-content">
-              <TemplateManager id={appSettings.templateId} configPath={appSettings.configPath} store={fullState} />
+          {/* "Desk" surface: gray backdrop that makes the white sheet read as a physical page */}
+          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "75vh", overflow: "auto", display: "flex", justifyContent: "center" }}>
+            {/* The sheet: white Letter page with margins + lift. #pdf-content stays the print/PDF surface.
+                Until paid, `paystub-locked-preview` blocks Ctrl+P from printing the unpaid stub. */}
+            <Box className={canPrint ? undefined : "paystub-locked-preview"} sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>
+              <FitPage>
+                <Box id="pdf-content">
+                  <TemplateManager id={appSettings.templateId} configPath={appSettings.configPath} store={fullState} />
+                </Box>
+              </FitPage>
+              {!canPrint && <PreviewWatermark />}
             </Box>
-            {!canPrint && (
-              <Box sx={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                <Typography variant="h3" sx={{ transform: "rotate(-25deg)", color: "rgba(37,99,235,0.12)", fontWeight: 800, letterSpacing: 4, userSelect: "none" }}>
-                  PREVIEW
-                </Typography>
-              </Box>
-            )}
           </Box>
+          <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1, textAlign: "center" }}>
+            This is exactly what will print.
+          </Typography>
         </Grid>
       </Grid>
 

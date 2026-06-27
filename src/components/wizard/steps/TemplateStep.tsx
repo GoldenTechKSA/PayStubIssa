@@ -7,7 +7,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { updateAppSettings } from "../../../redux/actions";
 import { PayStubDetails, AppSettings } from "assets/data/pay-stub-details";
 import { WizardStepLayout } from "../WizardStepLayout";
+import { FitPage } from "../FitPage";
+import { PreviewWatermark } from "../PreviewWatermark";
 import TemplateManager from "../../../templates/components/templatemanager";
+import "../print.css";
 
 interface TemplateMeta {
   imageFile: string;
@@ -109,14 +112,22 @@ const TemplateStep: React.FC<StepProps> = ({ onNext, onBack }) => {
           </Box>
         </Grid>
 
-        {/* Live preview */}
+        {/* Live preview rendered as a printable Letter sheet */}
         <Grid size={{ xs: 12, md: 7 }}>
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>Live preview</Typography>
-          <Box sx={{ border: 1, borderColor: "divider", borderRadius: 1, bgcolor: "#fff", p: 2, maxHeight: "68vh", overflow: "auto" }}>
+          {/* "Desk" surface: gray backdrop that makes the white sheet read as a physical page */}
+          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "68vh", overflow: "auto", display: "flex", justifyContent: "center" }}>
             {previewAvailable ? (
-              <TemplateManager id={templateId} configPath={configPath} store={fullState} />
+              // `paystub-locked-preview` hides this from printing so the unpaid
+              // preview can't be printed to bypass payment (see print.css).
+              <Box className="paystub-locked-preview" sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>
+                <FitPage>
+                  <TemplateManager id={templateId} configPath={configPath} store={fullState} />
+                </FitPage>
+                <PreviewWatermark />
+              </Box>
             ) : (
-              <Typography color="text.secondary" sx={{ p: 2 }}>
+              <Typography color="text.secondary" sx={{ p: 4, textAlign: "center", alignSelf: "center" }}>
                 A live preview for this template is coming soon. Your details are saved — choose an available template to preview it now.
               </Typography>
             )}

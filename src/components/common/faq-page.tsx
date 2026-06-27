@@ -1,10 +1,8 @@
 import React from "react";
 import {
   Container, Box, Typography, Accordion, AccordionSummary, AccordionDetails,
-  List, ListItem, ListItemIcon, ListItemText,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const faqData = [
   {
@@ -231,38 +229,9 @@ const faqData = [
 ];
 
 
-const WHY_US = [
-  "IRS & SBA-compliant — our pay stubs meet official standards for income verification.",
-  "Instant generation — create, customize, and download pay stubs in minutes.",
-  "Secure & reliable — bank-level encryption protects your sensitive data.",
-  "Accepted everywhere — valid for loans, rentals, mortgages, and employment verification.",
-];
-
 const FAQPage = () => (
   <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-    <Typography variant="h4" component="h1" gutterBottom>About us</Typography>
-
-    <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Who are we?</Typography>
-    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-      We are a trusted payroll solutions provider specializing in professional pay stub generation for small
-      businesses, freelancers, and independent contractors. Our team consists of certified accountants and payroll
-      experts with years of experience streamlining financial documentation.
-    </Typography>
-
-    <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Why choose us?</Typography>
-    <List dense>
-      {WHY_US.map(item => (
-        <ListItem key={item} disableGutters alignItems="flex-start">
-          <ListItemIcon sx={{ minWidth: 32, mt: 0.5 }}><CheckCircleIcon color="success" fontSize="small" /></ListItemIcon>
-          <ListItemText primary={item} primaryTypographyProps={{ color: "text.secondary" }} />
-        </ListItem>
-      ))}
-    </List>
-    <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-      We’re committed to simplifying payroll for business owners while ensuring accuracy and professionalism in every document.
-    </Typography>
-
-    <Typography variant="h4" component="h2" gutterBottom>Frequently asked questions</Typography>
+    <Typography variant="h4" component="h1" gutterBottom>Frequently asked questions</Typography>
     <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
       If you don’t find the answer you need, our support team is always ready to assist you.
     </Typography>
