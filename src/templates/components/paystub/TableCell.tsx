@@ -64,6 +64,27 @@ const getNestedValue = (obj: PaystubModel, path: string): string => {
   return String(value);
 };
 
+// Helper: Resolve a nested path to its RAW string value (no numeric coercion,
+// no '0' fallback). Used for image sources where '' must stay '' so a missing
+// logo renders nothing rather than a broken image.
+const getRawValue = (obj: PaystubModel, path: string): string => {
+  const keys = path.split('.');
+  let value: unknown = obj;
+  for (const key of keys) {
+    if (value == null || typeof value !== 'object') return '';
+    value = (value as Record<string, unknown>)[key];
+  }
+  return value == null ? '' : String(value);
+};
+
+// Helper: Only treat a resolved value as a real image source. Guards against
+// empty values and seed placeholders (e.g. "CompanyLogoHere") that would
+// otherwise render as a broken <img>.
+const isRenderableImage = (src: string): boolean =>
+  /^data:image\//i.test(src) ||
+  /^https?:\/\//i.test(src) ||
+  /\.(png|jpe?g|gif|svg|webp)$/i.test(src);
+
 // Helper: Safe arithmetic evaluator - only allows numbers, operators, parentheses
 const safeEvaluate = (expression: string): number => {
   // Remove whitespace for easier validation
@@ -120,9 +141,31 @@ export const TableCell: React.FC<TableCellProps> = ({ config, data }) => {
     return config.value ?? '';
   };
 
+  const colSpan = config.colspan && config.colspan > 1 ? config.colspan : undefined;
+
+  // Image cells (e.g. company logo): resolve {path} in `value` to an image src
+  // and render an <img>. textAlign is lifted to the <td> (so the logo can be
+  // centered/right-aligned); the remaining style sizes the image itself.
+  // A non-renderable/empty src yields an empty cell — never a broken image.
+  if (config.type === 'image') {
+    const src = config.value
+      ? config.value.replace(/\{([^}]+)\}/g, (_, path) => getRawValue(data, path.trim()))
+      : '';
+    const { textAlign, ...imgStyle } = config.style ?? {};
+    const tdStyle: React.CSSProperties = textAlign ? { textAlign } : {};
+    if (!isRenderableImage(src)) {
+      return <td style={tdStyle} colSpan={colSpan} />;
+    }
+    const finalImgStyle: React.CSSProperties = { maxHeight: '60px', maxWidth: '180px', objectFit: 'contain', ...imgStyle };
+    return (
+      <td style={tdStyle} colSpan={colSpan}>
+        <img src={src} alt={config.id || 'logo'} style={finalImgStyle} />
+      </td>
+    );
+  }
+
   const defaultValueStyle: React.CSSProperties = { whiteSpace: 'nowrap' };
   const valueStyle: React.CSSProperties = { ...defaultValueStyle, ...config.style };
-  const colSpan = config.colspan && config.colspan > 1 ? config.colspan : undefined;
 
   return <td style={valueStyle} colSpan={colSpan}>{getValue()}</td>;
 };

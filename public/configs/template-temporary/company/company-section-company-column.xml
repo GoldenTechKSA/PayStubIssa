@@ -1,3 +1,0 @@
-<column id="company-column" width="60%">
-    <include href="company-section-company-table.xml" />
-</column>

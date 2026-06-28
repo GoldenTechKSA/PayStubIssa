@@ -1,3 +1,0 @@
-<column id="net-pay-column" width="33%">
-    <include href="summary-section-net-pay-table.xml" />
-</column>

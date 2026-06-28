@@ -1,7 +1,0 @@
-<section id="summary-section">
-    <style>
-        <marginTop>40px</marginTop>
-    </style>
-    <include href="summary-section-net-column.xml" />
-    <include href="summary-section-net-pay-column.xml" />
-</section>

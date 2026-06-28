@@ -30,7 +30,7 @@ const parseTableCell = (cellElement: Element): TableCellConfig => {
     id: cellElement.getAttribute('id') || '',
     colspan: colspanAttr ? Number(colspanAttr) : undefined,
     value: cellElement.querySelector('value')?.textContent || '',
-    type: (cellElement.getAttribute('type') as 'static' | 'calculated' | 'substitute') || 'static',
+    type: (cellElement.getAttribute('type') as 'static' | 'calculated' | 'substitute' | 'image') || 'static',
     formula: cellElement.querySelector('formula')?.textContent || undefined,
     format: (formatAttr as CellFormat) || undefined,
     style: parseStyle(cellElement)

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Taxes (left) and Deductions (right) side by side, each a self-contained
+     table with a wash header, hairline rows, and a bold total. -->
+<section id="modern-breakdown-section">
+    <style><marginTop>20px</marginTop></style>
+    <column id="modern-taxes-col" width="50%">
+        <style><paddingRight>12px</paddingRight></style>
+        <table id="modern-taxes-table">
+            <style><width>100%</width></style>
+            <header title="TAXES">
+                <style><fontSize>13px</fontSize><fontWeight>bold</fontWeight><color>#374151</color><letterSpacing>1px</letterSpacing><marginBottom>4px</marginBottom></style>
+                <hdata>
+                    <hd id="t-desc"><style><textAlign>left</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>50%</width></style><label>Tax</label></hd>
+                    <hd id="t-current"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>25%</width></style><label>Current</label></hd>
+                    <hd id="t-ytd"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>25%</width></style><label>YTD</label></hd>
+                </hdata>
+            </header>
+            <cells>
+                <rowcells>
+                    <cell id="fed-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Federal Income Tax</value></cell>
+                    <cell id="fed-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{federalTax}</value></cell>
+                    <cell id="fed-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{federalTaxYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="ss-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Social Security</value></cell>
+                    <cell id="ss-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{socialSecurity}</value></cell>
+                    <cell id="ss-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{socialSecurityYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="med-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Medicare</value></cell>
+                    <cell id="med-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{medicare}</value></cell>
+                    <cell id="med-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{medicareYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="state-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>State Tax</value></cell>
+                    <cell id="state-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{stateTax}</value></cell>
+                    <cell id="state-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{stateTaxYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="t-total-desc" type="static"><style><textAlign>left</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>Total Taxes</value></cell>
+                    <cell id="t-total-current" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{totalTaxes}</value></cell>
+                    <cell id="t-total-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{totalTaxesYTD}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+    <column id="modern-deductions-col" width="50%">
+        <style><paddingLeft>12px</paddingLeft></style>
+        <table id="modern-deductions-table">
+            <style><width>100%</width></style>
+            <header title="DEDUCTIONS">
+                <style><fontSize>13px</fontSize><fontWeight>bold</fontWeight><color>#374151</color><letterSpacing>1px</letterSpacing><marginBottom>4px</marginBottom></style>
+                <hdata>
+                    <hd id="d-desc"><style><textAlign>left</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>50%</width></style><label>Deduction</label></hd>
+                    <hd id="d-current"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>25%</width></style><label>Current</label></hd>
+                    <hd id="d-ytd"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>25%</width></style><label>YTD</label></hd>
+                </hdata>
+            </header>
+            <cells>
+                <rowcells>
+                    <cell id="dmed-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Medical</value></cell>
+                    <cell id="dmed-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{medical}</value></cell>
+                    <cell id="dmed-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{medicalYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="ddent-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Dental</value></cell>
+                    <cell id="ddent-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{dental}</value></cell>
+                    <cell id="ddent-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{dentalYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="dvis-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Vision</value></cell>
+                    <cell id="dvis-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{vision}</value></cell>
+                    <cell id="dvis-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{visionYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="d401k-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>401(k)</value></cell>
+                    <cell id="d401k-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{retirement401k}</value></cell>
+                    <cell id="d401k-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{retirement401kYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="doth-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Other</value></cell>
+                    <cell id="doth-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{otherDeductions}</value></cell>
+                    <cell id="doth-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{otherDeductionsYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="d-total-desc" type="static"><style><textAlign>left</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>Total Deductions</value></cell>
+                    <cell id="d-total-current" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{totalDeductions}</value></cell>
+                    <cell id="d-total-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{totalDeductionsYTD}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

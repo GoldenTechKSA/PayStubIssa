@@ -22,7 +22,9 @@ export interface TableCellConfig {
   id: string;
   colspan?: number;
   value?: string;
-  type: 'static' | 'calculated' | 'substitute';
+  // 'image' renders an <img> (e.g. company logo) whose src comes from resolving
+  // the {path} in `value` against the data model (typically a base64 data URL).
+  type: 'static' | 'calculated' | 'substitute' | 'image';
   formula?: string; // Formula for calculated values, e.g., "{payment.grossPay}"
   // Presentation applied to the resolved value by the renderer.
   // 'currency' -> $1,234.56, 'number' -> 1,234.56, 'date' -> MM/DD/YYYY, 'text'/undefined -> raw.

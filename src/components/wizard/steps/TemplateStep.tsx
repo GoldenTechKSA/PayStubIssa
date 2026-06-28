@@ -27,7 +27,37 @@ interface StepProps {
 
 // Templates with authored + verified XML that render a live preview today.
 // Others are shown in the catalog as "coming soon" until their layouts are built.
-const AVAILABLE_CONFIGS = new Set<string>(["/configs/template-simple/paystub-config.xml"]);
+const AVAILABLE_CONFIGS = new Set<string>([
+  "/configs/template-simple/paystub-config.xml",
+  "/configs/template-modern/paystub-config.xml",
+  "/configs/template-exempt/paystub-config.xml",
+  "/configs/template-nonexempt/paystub-config.xml",
+  "/configs/template-fulltime/paystub-config.xml",
+  "/configs/template-parttime/paystub-config.xml",
+  "/configs/template-seasonal/paystub-config.xml",
+  "/configs/template-grant-funded/paystub-config.xml",
+  "/configs/template-temporary/paystub-config.xml",
+  "/configs/template-contract/paystub-config.xml",
+  "/configs/template-oncall/paystub-config.xml",
+  "/configs/template-contractor/paystub-config.xml",
+  "/configs/template-commission-only/paystub-config.xml",
+  "/configs/template-draw-commission/paystub-config.xml",
+  "/configs/template-salary-bonus/paystub-config.xml",
+  "/configs/template-milestone/paystub-config.xml",
+  "/configs/template-retainer/paystub-config.xml",
+  "/configs/template-day-rate/paystub-config.xml",
+  "/configs/template-per-diem/paystub-config.xml",
+  "/configs/template-freelance-creative/paystub-config.xml",
+  "/configs/template-volunteer/paystub-config.xml",
+  "/configs/template-hospitality-tips/paystub-config.xml",
+  "/configs/template-tip-credit/paystub-config.xml",
+  "/configs/template-construction-certified/paystub-config.xml",
+  "/configs/template-travel-nurse/paystub-config.xml",
+  "/configs/template-profit-sharing/paystub-config.xml",
+  "/configs/template-royalties/paystub-config.xml",
+  "/configs/template-stock-options/paystub-config.xml",
+  "/configs/template-rsu/paystub-config.xml",
+]);
 
 const FALLBACK_THUMB = `${process.env.PUBLIC_URL}/images/thumb0.png`;
 

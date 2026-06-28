@@ -1,8 +1,0 @@
-<table id="net-pay-table">
-    <style><backgroundColor>transparent</backgroundColor></style>
-    <cells>
-        <cell id="employee-dept" type="static"><value>-</value><style><fontWeight>bold</fontWeight><fontSize>12px</fontSize><color>#064e3b</color><textAlign>left</textAlign></style></cell>
-        <cell id="employee-dept-2" type="static"><value>-</value><style><fontWeight>bold</fontWeight><fontSize>12px</fontSize><color>#064e3b</color><textAlign>left</textAlign></style></cell>
-        <cell id="final-net-pay" type="calculated"><formula>{payment.netPay}</formula><value>0</value><style><fontWeight>bold</fontWeight><fontSize>12px</fontSize><color>#064e3b</color><textAlign>left</textAlign><borderBottom>2px solid #e0e0e0ff</borderBottom></style></cell>
-    </cells>
-</table>

@@ -1,3 +1,0 @@
-<column id="employee-info" width="40%">
-    <include href="employee-section-col2-table.xml" />
-</column>
