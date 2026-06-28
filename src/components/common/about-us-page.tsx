@@ -1,13 +1,19 @@
 import React from "react";
 import { Container, Box, Typography, Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Grid, Alert } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const CheckList: React.FC<{ items: string[] }> = ({ items }) => (
   <List dense disablePadding>
     {items.map(item => (
       <ListItem key={item} disableGutters alignItems="flex-start">
-        <ListItemIcon sx={{ minWidth: 32, mt: 0.5 }}>
-          <CheckCircleIcon color="success" fontSize="small" />
+        <ListItemIcon sx={{ minWidth: 24, mt: 1 }}>
+          <Box
+            sx={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              bgcolor: "primary.main",
+            }}
+          />
         </ListItemIcon>
         <ListItemText primary={item} primaryTypographyProps={{ color: "text.secondary" }} />
       </ListItem>
@@ -43,10 +49,34 @@ const STEPS = [
   },
 ];
 
+const WHY_US = [
+  "IRS & SBA-compliant — our pay stubs meet official standards for income verification.",
+  "Instant generation — create, customize, and download pay stubs in minutes.",
+  "Secure & reliable — bank-level encryption protects your sensitive data.",
+  "Accepted everywhere — valid for loans, rentals, mortgages, and employment verification.",
+];
+
 const AboutUsPage: React.FC = () => (
   <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>How our pay stub generator works</Typography>
+      <Typography variant="h4" component="h1" gutterBottom>About us</Typography>
+
+      <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Who are we?</Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+        We are a trusted payroll solutions provider specializing in professional pay stub generation for small
+        businesses, freelancers, and independent contractors. Our team consists of certified accountants and payroll
+        experts with years of experience streamlining financial documentation.
+      </Typography>
+
+      <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Why choose us?</Typography>
+      <CheckList items={WHY_US} />
+      <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
+        We’re committed to simplifying payroll for business owners while ensuring accuracy and professionalism in every document.
+      </Typography>
+    </Box>
+
+    <Box sx={{ mb: 4 }}>
+      <Typography variant="h4" component="h2" gutterBottom>How our pay stub generator works</Typography>
       <Typography variant="body1" color="text.secondary">
         Creating accurate, professional pay stubs is simple with our tool — just follow these three easy steps.
       </Typography>

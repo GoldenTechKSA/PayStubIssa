@@ -1,4 +1,0 @@
-<section id="paystub-header-section">
-    <include href="header-section-paystub-codes-column.xml"/>
-    <include href="header-section-paystub-title-column.xml"/>
-</section>

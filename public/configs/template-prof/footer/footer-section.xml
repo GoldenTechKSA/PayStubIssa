@@ -1,8 +1,0 @@
-<section id="footer-section">
-    <style>
-        <backgroundColor>#f9fafb</backgroundColor>
-        <borderTop>2px solid #d1d5db</borderTop>
-        <marginTop>20px</marginTop>
-    </style>
-    <include href="footer-section-footer-column.xml" />
-</section>

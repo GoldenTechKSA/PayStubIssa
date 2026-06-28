@@ -109,7 +109,13 @@ const HeroPage: React.FC = () => {
           <Typography variant="body1" sx={{ mb: 4, opacity: 0.9 }}>
             It only takes a few minutes. Pay once per stub — no subscription required.
           </Typography>
-          <Button size="large" variant="contained" color="success" endIcon={<ArrowForwardIcon />} onClick={() => navigate("/create")}>
+          <Button
+            size="large"
+            variant="contained"
+            endIcon={<ArrowForwardIcon />}
+            onClick={() => navigate("/create")}
+            sx={{ bgcolor: "common.white", color: "primary.main", "&:hover": { bgcolor: "grey.100" } }}
+          >
             Get started today
           </Button>
         </Container>

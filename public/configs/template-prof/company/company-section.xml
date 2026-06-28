@@ -1,9 +1,0 @@
-<section id="company-section">
-    <style>
-        <backgroundColor>#f9fafb</backgroundColor>
-        <borderTop>2px solid #d1d5db</borderTop>
-        <marginTop>20px</marginTop>
-    </style>
-    <include href="company-section-company-column.xml" />
-    <include href="company-section-pay-period-column.xml" />
-</section>

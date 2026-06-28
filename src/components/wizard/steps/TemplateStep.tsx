@@ -7,7 +7,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { updateAppSettings } from "../../../redux/actions";
 import { PayStubDetails, AppSettings } from "assets/data/pay-stub-details";
 import { WizardStepLayout } from "../WizardStepLayout";
+import { FitPage } from "../FitPage";
+import { PreviewWatermark } from "../PreviewWatermark";
 import TemplateManager from "../../../templates/components/templatemanager";
+import "../print.css";
 
 interface TemplateMeta {
   imageFile: string;
@@ -24,7 +27,37 @@ interface StepProps {
 
 // Templates with authored + verified XML that render a live preview today.
 // Others are shown in the catalog as "coming soon" until their layouts are built.
-const AVAILABLE_CONFIGS = new Set<string>(["/configs/template-simple/paystub-config.xml"]);
+const AVAILABLE_CONFIGS = new Set<string>([
+  "/configs/template-simple/paystub-config.xml",
+  "/configs/template-modern/paystub-config.xml",
+  "/configs/template-exempt/paystub-config.xml",
+  "/configs/template-nonexempt/paystub-config.xml",
+  "/configs/template-fulltime/paystub-config.xml",
+  "/configs/template-parttime/paystub-config.xml",
+  "/configs/template-seasonal/paystub-config.xml",
+  "/configs/template-grant-funded/paystub-config.xml",
+  "/configs/template-temporary/paystub-config.xml",
+  "/configs/template-contract/paystub-config.xml",
+  "/configs/template-oncall/paystub-config.xml",
+  "/configs/template-contractor/paystub-config.xml",
+  "/configs/template-commission-only/paystub-config.xml",
+  "/configs/template-draw-commission/paystub-config.xml",
+  "/configs/template-salary-bonus/paystub-config.xml",
+  "/configs/template-milestone/paystub-config.xml",
+  "/configs/template-retainer/paystub-config.xml",
+  "/configs/template-day-rate/paystub-config.xml",
+  "/configs/template-per-diem/paystub-config.xml",
+  "/configs/template-freelance-creative/paystub-config.xml",
+  "/configs/template-volunteer/paystub-config.xml",
+  "/configs/template-hospitality-tips/paystub-config.xml",
+  "/configs/template-tip-credit/paystub-config.xml",
+  "/configs/template-construction-certified/paystub-config.xml",
+  "/configs/template-travel-nurse/paystub-config.xml",
+  "/configs/template-profit-sharing/paystub-config.xml",
+  "/configs/template-royalties/paystub-config.xml",
+  "/configs/template-stock-options/paystub-config.xml",
+  "/configs/template-rsu/paystub-config.xml",
+]);
 
 const FALLBACK_THUMB = `${process.env.PUBLIC_URL}/images/thumb0.png`;
 
@@ -109,14 +142,22 @@ const TemplateStep: React.FC<StepProps> = ({ onNext, onBack }) => {
           </Box>
         </Grid>
 
-        {/* Live preview */}
+        {/* Live preview rendered as a printable Letter sheet */}
         <Grid size={{ xs: 12, md: 7 }}>
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>Live preview</Typography>
-          <Box sx={{ border: 1, borderColor: "divider", borderRadius: 1, bgcolor: "#fff", p: 2, maxHeight: "68vh", overflow: "auto" }}>
+          {/* "Desk" surface: gray backdrop that makes the white sheet read as a physical page */}
+          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "68vh", overflow: "auto", display: "flex", justifyContent: "center" }}>
             {previewAvailable ? (
-              <TemplateManager id={templateId} configPath={configPath} store={fullState} />
+              // `paystub-locked-preview` hides this from printing so the unpaid
+              // preview can't be printed to bypass payment (see print.css).
+              <Box className="paystub-locked-preview" sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>
+                <FitPage>
+                  <TemplateManager id={templateId} configPath={configPath} store={fullState} />
+                </FitPage>
+                <PreviewWatermark />
+              </Box>
             ) : (
-              <Typography color="text.secondary" sx={{ p: 2 }}>
+              <Typography color="text.secondary" sx={{ p: 4, textAlign: "center", alignSelf: "center" }}>
                 A live preview for this template is coming soon. Your details are saved — choose an available template to preview it now.
               </Typography>
             )}

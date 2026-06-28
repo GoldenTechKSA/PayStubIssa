@@ -37,6 +37,12 @@ const theme = createTheme({
     MuiAppBar: {
       defaultProps: { color: 'inherit', elevation: 0 },
     },
+    MuiFormLabel: {
+      styleOverrides: {
+        // Red required-field asterisk (instead of inheriting the label color).
+        asterisk: ({ theme }) => ({ color: theme.palette.error.main }),
+      },
+    },
   },
 });
 

@@ -1,3 +1,0 @@
-<column id="gross-column" width="33%">
-    <include href="summary-section-gross-table.xml" />
-</column>

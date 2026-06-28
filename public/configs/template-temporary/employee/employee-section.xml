@@ -1,8 +1,0 @@
-<section id="employee-section">
-    <style>
-        <marginTop>40px</marginTop>
-    </style>
-    <include href="employee-section-col1-column.xml" />
-    <include href="employee-section-col2-column.xml" />
-    <include href="employee-section-col3-column.xml" />
-</section>

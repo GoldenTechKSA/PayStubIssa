@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Full-width earnings table: wash header row, hairline row dividers, and a
+     bold Gross Pay total with a 2px ink top rule. -->
+<section id="modern-earnings-section">
+    <style><marginTop>20px</marginTop></style>
+    <column id="modern-earnings-col" width="100%">
+        <table id="modern-earnings-table">
+            <style><width>100%</width></style>
+            <header title="EARNINGS">
+                <style><fontSize>13px</fontSize><fontWeight>bold</fontWeight><color>#374151</color><letterSpacing>1px</letterSpacing><marginBottom>4px</marginBottom></style>
+                <hdata>
+                    <hd id="e-desc"><style><textAlign>left</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>40%</width></style><label>Description</label></hd>
+                    <hd id="e-rate"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>15%</width></style><label>Rate</label></hd>
+                    <hd id="e-hours"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>15%</width></style><label>Hours</label></hd>
+                    <hd id="e-current"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>15%</width></style><label>Current</label></hd>
+                    <hd id="e-ytd"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>15%</width></style><label>YTD</label></hd>
+                </hdata>
+            </header>
+            <cells>
+                <rowcells>
+                    <cell id="reg-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Regular Pay</value></cell>
+                    <cell id="reg-rate" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{incomeDetails.hourlyRate}</value></cell>
+                    <cell id="reg-hours" type="substitute" format="number"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{incomeDetails.hoursWorked}</value></cell>
+                    <cell id="reg-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{regularPay}</value></cell>
+                    <cell id="reg-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{regularPayYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="ot-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Overtime Pay</value></cell>
+                    <cell id="ot-rate" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{incomeDetails.overtimeRate}</value></cell>
+                    <cell id="ot-hours" type="substitute" format="number"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{incomeDetails.overtimeHours}</value></cell>
+                    <cell id="ot-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{overtimePay}</value></cell>
+                    <cell id="ot-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{overtimePayYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="oth-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Other Earnings</value></cell>
+                    <cell id="oth-rate" type="static"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value> </value></cell>
+                    <cell id="oth-hours" type="static"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value> </value></cell>
+                    <cell id="oth-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{otherEarnings}</value></cell>
+                    <cell id="oth-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{otherEarningsYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="gross-desc" colspan="3" type="static"><style><textAlign>left</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>Gross Pay</value></cell>
+                    <cell id="gross-current" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{grossPay}</value></cell>
+                    <cell id="gross-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{grossPayYTD}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

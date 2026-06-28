@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Centered NET PAY card: wash fill + 2px ink border, a small Gross/Taxes/
+     Deductions recap, then the large bold net figure. -->
+<section id="modern-netpay-section">
+    <style><marginTop>24px</marginTop><justifyContent>center</justifyContent></style>
+    <column id="modern-netpay-col" width="55%">
+        <!-- Inset lives on the cells, not the table: border-collapse (set by the
+             renderer) makes <table> padding a no-op. -->
+        <table id="modern-netpay-table">
+            <style><width>100%</width><backgroundColor>#f3f4f6</backgroundColor><border>2px solid #111827</border></style>
+            <cells>
+                <rowcells>
+                    <cell id="sum-gross-label" type="static"><style><textAlign>left</textAlign><fontSize>12px</fontSize><padding>6px 16px</padding></style><value>Gross Pay</value></cell>
+                    <cell id="sum-gross-value" type="substitute" format="currency"><style><textAlign>right</textAlign><fontSize>12px</fontSize><padding>6px 16px</padding></style><value>{grossPay}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sum-taxes-label" type="static"><style><textAlign>left</textAlign><fontSize>12px</fontSize><padding>6px 16px</padding></style><value>Total Taxes</value></cell>
+                    <cell id="sum-taxes-value" type="substitute" format="currency"><style><textAlign>right</textAlign><fontSize>12px</fontSize><padding>6px 16px</padding></style><value>{totalTaxes}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sum-deduct-label" type="static"><style><textAlign>left</textAlign><fontSize>12px</fontSize><padding>6px 16px</padding></style><value>Total Deductions</value></cell>
+                    <cell id="sum-deduct-value" type="substitute" format="currency"><style><textAlign>right</textAlign><fontSize>12px</fontSize><padding>6px 16px</padding></style><value>{totalDeductions}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sum-net-label" type="static"><style><textAlign>left</textAlign><fontSize>22px</fontSize><fontWeight>bold</fontWeight><borderTop>2px solid #111827</borderTop><padding>10px 16px</padding></style><value>NET PAY</value></cell>
+                    <cell id="sum-net-value" type="substitute" format="currency"><style><textAlign>right</textAlign><fontSize>22px</fontSize><fontWeight>bold</fontWeight><borderTop>2px solid #111827</borderTop><padding>10px 16px</padding></style><value>{netPay}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

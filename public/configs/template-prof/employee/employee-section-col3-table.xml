@@ -1,8 +1,0 @@
-<table id="company-table">
-    <cells>
-        <cell id="company-name" type="static"><value>{company.name}</value></cell>
-        <cell id="company-address" type="static"><value>{company.address}</value></cell>
-        <cell id="company-phone" type="static"><value>{company.phone}</value></cell>
-        <cell id="company-ein" type="static"><value>{company.ein}</value></cell>
-    </cells>
-</table>

@@ -17,4 +17,21 @@
     top: 0;
     width: 100%;
   }
+  /* The on-screen FitPage scaler shrinks the preview; print at full size. */
+  body.print-paystub .paystub-scale {
+    transform: none !important;
+    width: 100% !important;
+  }
+}
+
+/*
+ * Anti-bypass: never let an UNPAID paystub preview reach the printer. The
+ * template-step preview and the pre-payment Review preview carry
+ * `paystub-locked-preview`; the paid Review print path uses #pdf-content instead
+ * (which is never marked locked once `canPrint` is true), so it still prints.
+ */
+@media print {
+  .paystub-locked-preview {
+    display: none !important;
+  }
 }
