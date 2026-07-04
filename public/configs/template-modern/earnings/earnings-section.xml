@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!-- Full-width earnings table: wash header row, hairline row dividers, and a
-     bold Gross Pay total with a 2px ink top rule. -->
+<!-- Earnings (left) and Taxes (right) side by side. Each table has a wash header
+     row, hairline row dividers, and a bold total with a 2px ink top rule. -->
 <section id="modern-earnings-section">
     <style><marginTop>20px</marginTop></style>
-    <column id="modern-earnings-col" width="100%">
+    <column id="modern-earnings-col" width="60%">
+        <style><paddingRight>12px</paddingRight></style>
         <table id="modern-earnings-table">
             <style><width>100%</width></style>
             <header title="EARNINGS">
@@ -42,6 +43,47 @@
                     <cell id="gross-desc" colspan="3" type="static"><style><textAlign>left</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>Gross Pay</value></cell>
                     <cell id="gross-current" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{grossPay}</value></cell>
                     <cell id="gross-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{grossPayYTD}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+    <column id="modern-taxes-col" width="40%">
+        <style><paddingLeft>12px</paddingLeft></style>
+        <table id="modern-taxes-table">
+            <style><width>100%</width></style>
+            <header title="TAXES">
+                <style><fontSize>13px</fontSize><fontWeight>bold</fontWeight><color>#374151</color><letterSpacing>1px</letterSpacing><marginBottom>4px</marginBottom></style>
+                <hdata>
+                    <hd id="t-desc"><style><textAlign>left</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>50%</width></style><label>Tax</label></hd>
+                    <hd id="t-current"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>25%</width></style><label>Current</label></hd>
+                    <hd id="t-ytd"><style><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><backgroundColor>#f3f4f6</backgroundColor><borderTop>2px solid #111827</borderTop><borderBottom>1px solid #d1d5db</borderBottom><padding>6px</padding><width>25%</width></style><label>YTD</label></hd>
+                </hdata>
+            </header>
+            <cells>
+                <rowcells>
+                    <cell id="fed-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Federal Income Tax</value></cell>
+                    <cell id="fed-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{federalTax}</value></cell>
+                    <cell id="fed-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{federalTaxYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="ss-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Social Security</value></cell>
+                    <cell id="ss-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{socialSecurity}</value></cell>
+                    <cell id="ss-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{socialSecurityYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="med-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>Medicare</value></cell>
+                    <cell id="med-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{medicare}</value></cell>
+                    <cell id="med-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{medicareYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="state-desc" type="static"><style><textAlign>left</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>State Tax</value></cell>
+                    <cell id="state-current" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{stateTax}</value></cell>
+                    <cell id="state-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><padding>6px</padding><borderBottom>1px solid #d1d5db</borderBottom></style><value>{stateTaxYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="t-total-desc" type="static"><style><textAlign>left</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>Total Taxes</value></cell>
+                    <cell id="t-total-current" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{totalTaxes}</value></cell>
+                    <cell id="t-total-ytd" type="substitute" format="currency"><style><textAlign>right</textAlign><fontWeight>bold</fontWeight><padding>6px</padding><borderTop>2px solid #111827</borderTop></style><value>{totalTaxesYTD}</value></cell>
                 </rowcells>
             </cells>
         </table>

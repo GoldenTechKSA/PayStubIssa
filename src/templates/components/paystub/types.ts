@@ -43,22 +43,27 @@ export interface TableHeaderConfig {
   style?: StyleConfig;
   hdata?: TableHeaderDataConfig[];
 }
+// `renderIf` (optional) is a PaystubModel path; the element is skipped at render
+// time when that field is empty/zero. See evalRenderIf in conditions.ts.
 export interface TableConfig {
   id: string;
   header?: TableHeaderConfig;
   cells: TableCellConfig[][];
   style?: StyleConfig;
+  renderIf?: string;
 }
 export interface ColumnConfig {
   id: string;
   width: string; // e.g., "25%", "50%", "100%"
   tables: TableConfig[];
   style?: StyleConfig;
+  renderIf?: string;
 }
 export interface SectionConfig {
   id: string;
   columns: ColumnConfig[]; // Up to 4 columns per section
   style?: StyleConfig;
+  renderIf?: string;
 }
 export interface PaystubConfig {
   sections: SectionConfig[];

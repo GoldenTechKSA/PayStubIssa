@@ -75,7 +75,8 @@ const parseTable = (tableElement: Element): TableConfig => {
     id: tableElement.getAttribute('id') || '',
     header: headerElement ? parseTableHeader(headerElement) : undefined,
     cells: cellsByRow,
-    style: parseStyle(tableElement)
+    style: parseStyle(tableElement),
+    renderIf: tableElement.getAttribute('renderIf') || undefined
   };
 };
 
@@ -87,7 +88,8 @@ const parseColumn = (columnElement: Element): ColumnConfig => {
     id: columnElement.getAttribute('id') || '',
     width: columnElement.getAttribute('width') || '25%',
     tables: Array.from(columnElement.querySelectorAll(':scope > table')).map(parseTable),
-    style: parseStyle(columnElement)
+    style: parseStyle(columnElement),
+    renderIf: columnElement.getAttribute('renderIf') || undefined
   };
 };
 
@@ -98,7 +100,8 @@ const parseSection = (sectionElement: Element): SectionConfig => {
   return {
     id: sectionElement.getAttribute('id') || '',
     columns: Array.from(sectionElement.querySelectorAll(':scope > column')).map(parseColumn),
-    style: parseStyle(sectionElement)
+    style: parseStyle(sectionElement),
+    renderIf: sectionElement.getAttribute('renderIf') || undefined
   };
 };
 

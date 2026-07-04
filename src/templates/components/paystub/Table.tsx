@@ -2,6 +2,7 @@ import React from 'react';
 import { PaystubModel } from 'assets/data/pay-stub-details';
 import type { TableConfig } from './types';
 import { TableCell } from './TableCell';
+import { evalRenderIf } from './conditions';
 
 interface TableProps {
   config: TableConfig;
@@ -14,6 +15,7 @@ interface TableProps {
  * Each table can have independent styling
  */
 export const Table: React.FC<TableProps> = ({ config, data }) => {
+  if (!evalRenderIf(config.renderIf, data)) return null;
   const defaultTableStyle: React.CSSProperties = { borderCollapse: 'collapse'};
   const defaultHeaderStyle: React.CSSProperties = {textAlign: 'left'};
   const headerStyle: React.CSSProperties = {...defaultHeaderStyle, ...config.header?.style};
