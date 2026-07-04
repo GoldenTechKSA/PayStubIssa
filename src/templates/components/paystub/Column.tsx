@@ -2,6 +2,7 @@ import React from 'react';
 import { PaystubModel } from 'assets/data/pay-stub-details';
 import type { ColumnConfig } from './types';
 import { Table } from './Table';
+import { evalRenderIf } from './conditions';
 
 interface ColumnProps {
   config: ColumnConfig;
@@ -13,6 +14,7 @@ interface ColumnProps {
  * Renders a column within a section that can contain multiple tables. Each column has a configurable width (e.g., 25%, 50%, 100%)
  */
 export const Column: React.FC<ColumnProps> = ({ config, data }) => {
+  if (!evalRenderIf(config.renderIf, data)) return null;
   const defaultStyle: React.CSSProperties = {width: config.width};
   const columnStyle: React.CSSProperties = {...defaultStyle, ...config.style};
   return (
