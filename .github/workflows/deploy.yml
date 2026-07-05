@@ -51,6 +51,8 @@ jobs:
           CI: "false"
 
       - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
@@ -58,15 +60,11 @@ jobs:
           ssh-keyscan -p "${SSH_PORT:-22}" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Deploy build/ to Apache docroot
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT:-22}" \
             build/ \
-            "$SSH_USER@$SSH_HOST:/var/www/paystubissa.com/"
+            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
 
       - name: Smoke test
         run: |
