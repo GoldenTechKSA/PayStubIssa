@@ -127,13 +127,12 @@ fighting react-scripts. The few shared types we need in Phase 1 are trivial; we 
 `shared/` package only once duplication actually hurts (likely Phase 2, when the server needs
 `PaystubModel`).
 
-**Deployment (replaces FTP):**
-- Build client (`npm run build`) → rsync/`scp` `build/` to the paystubissa DocumentRoot
-  (path TBD from the existing vhost). Apache serves it; a `RewriteRule` provides the SPA
-  fallback to `index.html` so React Router deep links work.
+**Deployment:** the static client is already deployed by GitHub Actions (build →
+rsync `build/` to `/var/www/paystubissa.com`, Apache `FallbackResource` for the SPA) —
+see [deploy/DEPLOYMENT.md](deploy/DEPLOYMENT.md). Adding the backend means:
 - Build server (`tsc`) → `pm2 reload paystub-api` (Node bound to `127.0.0.1:4000`).
-- A single `deploy.sh` (pull, install, build both, reload) run over SSH. A GitHub Action that
-  SSH-deploys on push to `master` is a nice-to-have, added after the manual flow works.
+- Uncomment the `/api` `ProxyPass` block in the Apache vhost and `a2enmod proxy proxy_http`.
+- Extend the deploy flow (or a `deploy.sh`) to also build + reload the server over SSH.
 - Secrets via `server/.env` on the VPS only (already gitignored pattern in this repo).
 
 ### Migration & DNS cutover (old shared host → VPS)

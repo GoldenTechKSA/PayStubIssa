@@ -40,9 +40,7 @@ display back to form
 
 user for this repo should be GoldenTechKSA@hotmail.com
 
-Please be advised that now you can connect via FTP to your web hosting space for paystubissa.com. The credentials are:
-Hostname: 66.113.226.191
-User: *
-Pass: *
-Encryption: Only use plain FTP
-The files for your website are stored in webspace > httpdocs > paystubissa.com and that's your root directory.
+Deployment:
+-----------
+The site is deployed to a Hostinger VPS (Apache2) by a GitHub Actions workflow
+on push to master. Full setup and server steps are in docs/deploy/DEPLOYMENT.md.

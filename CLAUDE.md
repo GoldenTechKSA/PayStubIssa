@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-PayStubIssa (`pay-stub`) is a Create React App (react-scripts) + TypeScript single-page app for generating, previewing, and printing/PDF-exporting US pay stubs, gated behind a PayPal payment. It is deployed via plain FTP to paystubissa.com (`webspace > httpdocs > paystubissa.com`); `homepage: "."` in package.json makes the build use relative asset paths for that static hosting.
+PayStubIssa (`pay-stub`) is a Create React App (react-scripts) + TypeScript single-page app for generating, previewing, and printing/PDF-exporting US pay stubs, gated behind a PayPal payment. It is deployed to a Hostinger VPS (Apache2, docroot `/var/www/paystubissa.com`) by a GitHub Actions workflow that builds and rsyncs `build/` on push to `master` — see [docs/deploy/DEPLOYMENT.md](docs/deploy/DEPLOYMENT.md). (`homepage: "."` in package.json currently yields relative asset paths, a leftover from the old FTP hosting; `"/"` is the correct value for root VPS serving.)
 
 ## Commands
 
