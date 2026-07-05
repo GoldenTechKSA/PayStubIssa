@@ -53,18 +53,20 @@ jobs:
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+          ssh-keyscan -p "${SSH_PORT:-22}" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Deploy build/ to Apache docroot
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          rsync -rlvz --checksum --delete \
-            --chmod=D755,F644 \
-            --exclude='.well-known' \
-            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts" \
-            build/ "${SSH_USER}@${SSH_HOST}:${DEPLOY_PATH}/"
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT:-22}" \
+            build/ \
+            "$SSH_USER@$SSH_HOST:/var/www/nanocancerhunter.com/"
 
       - name: Smoke test
         run: |
