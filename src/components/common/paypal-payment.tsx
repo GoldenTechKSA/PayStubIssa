@@ -1,13 +1,28 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Typography } from "@mui/material";
+import { CURRENCY } from "constants/pricing";
 
-const PayPal = ({ onPaymentSuccess, onPaymentError }) => {
+interface PayPalProps {
+    onPaymentSuccess: (order: any) => void;
+    onPaymentError: (error: any) => void;
+    /** Total to charge. Callers compute this from the price per stub × the stub count. */
+    amount: number;
+    /** Line-item description shown to the buyer in the PayPal flow. */
+    description?: string;
+}
+
+const PayPal: React.FC<PayPalProps> = ({ onPaymentSuccess, onPaymentError, amount, description }) => {
     const paypalRef = useRef<HTMLDivElement | null>(null);
-    // Keep latest callbacks without re-running the (mount-once) render effect.
+    // Keep the latest callbacks and amount without re-running the (mount-once) render effect —
+    // createOrder reads these at click time, so changing the stub count is picked up for free.
     const successRef = useRef(onPaymentSuccess);
     const errorRef = useRef(onPaymentError);
+    const amountRef = useRef(amount);
+    const descriptionRef = useRef(description);
     successRef.current = onPaymentSuccess;
     errorRef.current = onPaymentError;
+    amountRef.current = amount;
+    descriptionRef.current = description;
 
     const [sdkFailed, setSdkFailed] = useState(false);
 
@@ -30,8 +45,12 @@ const PayPal = ({ onPaymentSuccess, onPaymentError }) => {
                     intent: "CAPTURE",
                     purchase_units: [
                         {
-                            description: "Purchasing Paystub",
-                            amount: { currency_code: "USD", value: 8.99 },
+                            description: descriptionRef.current || "Pay stub",
+                            amount: {
+                                currency_code: CURRENCY,
+                                // PayPal rejects amounts that aren't exactly 2dp.
+                                value: amountRef.current.toFixed(2),
+                            },
                         },
                     ],
                 }),

@@ -1,174 +1,310 @@
 import React from "react";
 import LegalPageShell from "./LegalPageShell";
+import {
+  BRAND_NAME,
+  LEGAL_ENTITY_NAME,
+  MAILING_ADDRESS,
+  POLICIES_LAST_UPDATED,
+  PRIVACY_EMAIL,
+  SITE_DOMAIN,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+  SUPPORT_PHONE_HREF,
+} from "constants/business-info";
+
+const DRAFT_KEY = "paystubissa.draft.v1";
 
 const PrivacyPolicy = () => (
   <LegalPageShell>
     <h2>Privacy Policy</h2>
-    <p><strong>Last Updated:</strong> May 31, 2025</p>
+    <p><strong>Last Updated:</strong> {POLICIES_LAST_UPDATED}</p>
     <p>
-      PayStubIssa.com ("we," "us," or "our") is committed to protecting your privacy and maintaining the confidentiality of your personal information. This Privacy Policy explains how we collect, use, protect, and share information when you use our website, software, or services (collectively, the "Application"). By accessing or using PayStubIssa.com, you agree to the terms of this Privacy Policy.
+      This Privacy Policy explains what {LEGAL_ENTITY_NAME} ("we," "us," or "our") does with information when
+      you use {SITE_DOMAIN} (the "Service"). It is short, because the honest answer is that we collect almost
+      nothing.
     </p>
-    <h4>1. Contact Information</h4>
+
+    <h4>1. The Short Version</h4>
     <p>
-      For questions, concerns, or requests regarding this Privacy Policy or your personal information, please contact us at:<br />
-      <strong>Email:</strong> privacy@paystubissa.com<br />
-      <strong>Mailing Address:</strong> [Your Business Address - Please Insert Actual Address]<br />
-      <strong>Phone:</strong> [Your Contact Number - Please Insert]
+      <strong>{BRAND_NAME} runs entirely in your browser.</strong> There is no account, no login, and no
+      server that receives your pay stub data. The company name, employee name, Social Security number,
+      Employer Identification number, wages, hours, and deductions you type in never leave your device. We
+      never see them. We could not produce them if we wanted to, because we do not have them.
     </p>
-    <h4>2. When We Collect Information</h4>
     <p>
-      We collect information from you in the following circumstances. We gather data when you register for an account on our platform or when you generate pay stubs and use our payroll tools. Information is also collected when you contact our customer support team for assistance or when you browse our Application through cookies and analytics tracking. Additionally, we collect data when you subscribe to newsletters or promotional materials and when you participate in surveys or feedback forms that help us improve our services.
+      Payment is handled by PayPal, not by us. We never receive your card number. Your finished pay stub is a
+      PDF download or a browser print — we do not email it, store it, or keep a copy.
     </p>
-    <h4>3. Types of Data We Collect</h4>
-    <table className="table table-bordered">
+
+    <h4>2. Contact Us</h4>
+    <p>
+      For questions about this policy or about your information:<br />
+      <strong>Email:</strong> <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a><br />
+      <strong>Support:</strong> <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a><br />
+      <strong>Mailing Address:</strong> {MAILING_ADDRESS}<br />
+      <strong>Phone:</strong> <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>
+    </p>
+
+    <h4>3. Your Pay Stub Data Never Reaches Us</h4>
+    <p>
+      <strong>Where it lives</strong><br />
+      Everything you enter in the pay stub wizard is held in your browser's memory while you work. So that you
+      do not lose your progress, the app also saves a draft to your browser's local storage on your own device,
+      under the key <code>{DRAFT_KEY}</code>. That draft is on your computer or phone. It is not a copy on our
+      systems. It is not synced anywhere.
+    </p>
+    <p>
+      <strong>How it is destroyed</strong><br />
+      Clearing the draft in the app, clearing your browser's site data for {SITE_DOMAIN}, or browsing in a
+      private window and closing it, deletes the data. Once it is gone from your device, it is gone completely.
+      There is no server-side copy for us to delete, and none for anyone to demand from us.
+    </p>
+    <p>
+      <strong>Nothing is retrievable later</strong><br />
+      We cannot re-send, re-issue, or look up a pay stub you made. Download or print it before you leave the
+      site.
+    </p>
+    <p>
+      <strong>What this means for you</strong><br />
+      Because your data lives on your device, the security of your device is what protects it. If you are using
+      a shared or public computer, clear the draft and your browser data when you are finished.
+    </p>
+
+    <h4>4. What We Actually Collect</h4>
+    <table>
       <thead>
         <tr>
           <th>Category</th>
           <th>Examples</th>
-          <th>Purpose</th>
+          <th>Do we receive it?</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>Personal Information</td>
-          <td>Name, email address, phone number, employer details, job title</td>
-          <td>Account creation, service delivery, pay stub generation</td>
+          <td>Pay stub data</td>
+          <td>Company, employee, SSN, EIN, wages, hours, deductions, the generated document</td>
+          <td>
+            <strong>No.</strong> Entered and kept in your browser only. Never transmitted to us.
+          </td>
         </tr>
         <tr>
-          <td>Financial Data</td>
-          <td>Wages, salary information, tax withholdings, pay periods, deductions, benefits</td>
-          <td>Generating accurate pay stubs and payroll documents</td>
+          <td>Payment data</td>
+          <td>Card number, PayPal login, billing address</td>
+          <td>
+            <strong>No.</strong> Handled entirely by PayPal. We only learn that a payment succeeded.
+          </td>
         </tr>
         <tr>
-          <td>Technical Data</td>
-          <td>IP address, browser type, device information, operating system, page views</td>
-          <td>Website analytics, security monitoring, service improvements</td>
+          <td>Correspondence</td>
+          <td>Your email address and whatever you write to us</td>
+          <td>
+            <strong>Yes</strong> — if you choose to email or call us for support.
+          </td>
         </tr>
         <tr>
-          <td>Usage Data</td>
-          <td>Pages visited, features used, time spent on site, click patterns</td>
-          <td>Understanding user behavior, improving user experience</td>
-        </tr>
-        <tr>
-          <td>Communication Data</td>
-          <td>Support tickets, emails, chat logs, feedback submissions</td>
-          <td>Providing customer support, resolving issues</td>
+          <td>Technical data</td>
+          <td>IP address, browser and device type, requested pages, timestamps</td>
+          <td>
+            <strong>Yes</strong> — in ordinary web server logs kept by our hosting provider.
+          </td>
         </tr>
       </tbody>
     </table>
-    <h4>4. How We Use Your Information</h4>
+
+    <h4>5. Payments and PayPal</h4>
     <p>
-      We use the collected information for several important purposes. We utilize your data for service delivery, which includes providing and personalizing our pay stub generation services to meet your specific needs. Your information helps us process transactions and maintain secure billing records for all payment-related activities. We also use collected data for customer support purposes, allowing us to respond to inquiries, troubleshoot technical issues, and provide comprehensive assistance to our users.
+      Payment is by PayPal only. When you pay, PayPal's own software handles the transaction. Your card number,
+      bank details, and PayPal credentials go to PayPal — never to us. We do not see them, receive them, or
+      store them.
     </p>
     <p>
-      Service improvement is another key use of your information, as we analyze usage patterns to enhance Application functionality and create a better user experience. Legal compliance requires us to use certain information to comply with applicable laws, regulations, and tax requirements that govern payroll services. Security measures utilize your data to protect against fraud, unauthorized access, and various security threats that could compromise your information. Finally, we use your information for communication purposes, sending service-related notifications, important updates, and promotional materials when you have provided consent to receive such communications.
-    </p>
-    <h4>5. Data Protection and Security</h4>
-    <p>
-      <strong>Security Measures</strong><br />
-      We implement comprehensive industry-standard security measures to protect your information. All data transmission is secured using SSL/TLS encryption protocols, ensuring that information traveling between your device and our servers remains protected from interception. We maintain strict employee access controls with role-based permissions for sensitive data, meaning only authorized personnel can access your information based on their job responsibilities.
-    </p>
-    <p>
-      Our security framework includes regular security audits with periodic vulnerability assessments and penetration testing to identify and address potential security weaknesses. We follow data minimization principles, collecting only the information that is necessary to provide our services effectively. Additionally, your data is stored on secure servers with appropriate backup procedures to ensure both security and availability of your information when needed.
+      What PayPal does with your information is governed by PayPal's own privacy policy, not this one. Read it
+      at{" "}
+      <a href="https://www.paypal.com/us/legalhub/privacy-full" target="_blank" rel="noopener noreferrer">
+        paypal.com/us/legalhub/privacy-full
+      </a>
+      .
     </p>
     <p>
-      <strong>Important Notice:</strong> While we employ robust security measures, no method of online transmission or electronic storage is 100% secure. We cannot guarantee absolute security of your information.
+      The Service is told only whether a payment succeeded, so that it can unlock the download and print
+      buttons in your browser.
     </p>
-    <h4>6. Cookies and Tracking Technologies</h4>
+
+    <h4>6. Contacting Support</h4>
     <p>
-      <strong>Cookies Usage</strong><br />
-      We use cookies and similar tracking technologies for several important functions. These technologies help us maintain user sessions and preserve your preferences so you don't have to re-enter information each time you visit our site. We analyze website traffic and user behavior patterns to better understand how our Application is being used and identify areas for improvement. Cookies also enable us to improve website functionality and enhance the overall user experience by remembering your settings and providing personalized features. Additionally, these technologies help us remember your login status and maintain your customized settings across different browsing sessions.
-    </p>
-    <p>
-      <strong>Your Cookie Choices</strong><br />
-      You have complete control over cookie settings through your browser preferences, allowing you to accept, reject, or selectively manage different types of cookies. However, please note that disabling cookies may limit certain features of our Application and could affect your user experience. We are committed to transparency and provide clear notice whenever cookies are being used on our platform, so you always know when this technology is active.
-    </p>
-    <p>
-      <strong>Third-Party Tracking</strong><br />
-      We maintain strict policies regarding third-party tracking and analytics. We do not permit third-party behavioral tracking or advertising networks to operate on our platform, ensuring that your browsing behavior is not monitored by external companies for advertising purposes. However, we may use third-party analytics tools such as Google Analytics, but these are configured with privacy-compliant settings to protect your personal information while still providing us with valuable usage insights.
+      If you email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> or{" "}
+      <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>, or call us on{" "}
+      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>, we receive whatever you choose to tell us — typically
+      your name, your email address, and a description of your problem. We use it only to answer you. We keep
+      support correspondence only as long as we need it to resolve the issue and to keep a basic record of the
+      request.
     </p>
     <p>
-      <strong>Do Not Track (DNT)</strong><br />
-      While we acknowledge Do Not Track signals, we do not currently respond to them due to the lack of industry-wide standards for DNT implementation.
+      <strong>Please do not send us pay stub data.</strong> We do not need your Social Security number, your
+      Employer Identification number, or a copy of your document in order to help you, and we would rather not
+      have them.
     </p>
-    <h4>7. Third-Party Links and Services</h4>
     <p>
-      Our Application may contain links to external websites, such as state tax resources or government portals. These third-party sites have independent privacy policies, and we are not responsible for their privacy practices. We encourage you to review the privacy policies of any external sites you visit.<br />
-      We do not endorse or include third-party products or services that may compromise your privacy.
+      The contact form on our site is not currently connected to a message-delivery service, so the reliable
+      way to reach us is email or phone.
     </p>
-    <h4>8. State-Specific Privacy Compliance</h4>
+
+    <h4>7. Cookies, Analytics, and Local Storage</h4>
     <p>
-      We comply with applicable state privacy laws, including:
+      <strong>Local storage</strong><br />
+      The Service uses your browser's local storage to hold your pay stub draft on your device. That is
+      functional storage that makes the app work; it is not tracking, and it is not sent to us.
     </p>
+    <p>
+      <strong>Analytics</strong><br />
+      The app contains a lightweight telemetry client that is capable of recording page views, JavaScript
+      errors, and performance timings (such as page load time). Whatever such data may be collected is limited
+      to those categories.
+    </p>
+    <p>
+      <strong>What analytics never contains:</strong> we do not send pay stub contents, Social Security
+      numbers, Employer Identification numbers, employer or employee names, wage figures, or any part of a
+      generated document in analytics or error reports. That data stays in your browser, full stop.
+    </p>
+    <p>
+      <strong>Advertising</strong><br />
+      We do not run advertising, and we do not allow third-party behavioral advertising or cross-site tracking
+      networks on the Service. We do not sell or share personal information.
+    </p>
+    <p>
+      <strong>Your controls</strong><br />
+      You can block or clear cookies and local storage in your browser settings. Clearing local storage for{" "}
+      {SITE_DOMAIN} will delete your saved draft, which is the point.
+    </p>
+    <p>
+      <strong>Do Not Track</strong><br />
+      There is no agreed industry standard for Do Not Track signals, so we do not respond to them. We do not
+      track you across sites in any case.
+    </p>
+
+    <h4>8. Hosting and Server Logs</h4>
+    <p>
+      The website files are served from a web server in the United States. Like any web server, it writes
+      ordinary access logs — IP address, time, requested page, browser type — which are used to keep the site
+      running and secure. These logs relate to page requests. They do not contain your pay stub data, because
+      your pay stub data is never sent to the server.
+    </p>
+
+    <h4>9. Third-Party Links</h4>
+    <p>
+      The Service may link to external sites, such as state tax resources or government portals. Those sites
+      have their own privacy policies and we are not responsible for their practices. Review their policies
+      before giving them information.
+    </p>
+
+    <h4>10. Your Privacy Rights</h4>
     <ul>
       <li>
-        <strong>California residents</strong> have specific privacy rights under state law. California users have the right to request access to their personal information and can obtain details about what data we have collected about them. You may also request deletion of your personal data, subject to certain legal exceptions and business requirements. We provide clear and comprehensive disclosure of our data collection practices to ensure California residents understand how their information is being used. For more detailed information about California privacy rights, please visit the official California Attorney General's website to learn more about the California Consumer Privacy Act.
+        <strong>Deletion — you can do it yourself, right now.</strong> Your pay stub data is on your device, not
+        ours. Clear the draft in the app or clear your browser storage for {SITE_DOMAIN} and it is gone. We do
+        not need to be involved, because we do not hold it.
       </li>
       <li>
-        We are committed to compliance with privacy laws across all states where we operate. We maintain adherence to privacy regulations in every state jurisdiction and ensure that our practices meet or exceed local requirements. Specific state privacy information and resources are made available on our dedicated state-specific resource pages, which provide tailored information relevant to users in different states. We honor state-specific privacy rights wherever they are applicable, ensuring that all users receive the privacy protections required by their local laws.
-      </li>
-    </ul>
-    <h4>9. Children's Privacy (COPPA Compliance)</h4>
-    <p>
-      PayStubIssa.com is not intended for use by children under 13 years of age. We do not knowingly collect personal information from children under 13. If we discover that we have inadvertently collected information from a child under 13, we will promptly delete such information from our systems.<br />
-      Parents or guardians who believe their child has provided personal information to us should contact us immediately at privacy@paystubissa.com.
-    </p>
-    <h4>10. Privacy Policy Updates</h4>
-    <p>
-      We may update this Privacy Policy periodically to reflect changes in our practices or applicable laws. When we make material changes, we will notify you through:
-    </p>
-    <ul>
-      <li>Email notifications to all registered users</li>
-      <li>A prominent banner or notice on our Application</li>
-      <li>Direct notification within the account dashboard for active users</li>
-    </ul>
-    <p>
-      Your continued use of our services after such notification constitutes acceptance of the updated Privacy Policy.
-    </p>
-    <h4>11. Your Privacy Rights</h4>
-    <ul>
-      <li>
-        <strong>Access and Portability:</strong> You can request copies of all personal data we have collected about you, and receive your data in a commonly used, machine-readable format.
+        <strong>Access and portability.</strong> You may ask us what information we hold about you. In practice
+        that is limited to any correspondence you have sent us and, for a short period, server logs. We will
+        provide it in a common, readable format.
       </li>
       <li>
-        <strong>Correction:</strong> You can request correction of any inaccurate or incomplete information, and update your account information at any time through your user account dashboard.
+        <strong>Correction.</strong> You may ask us to correct anything inaccurate in the information we hold
+        about you. Pay stub data you can correct yourself, in the app, at any time.
       </li>
       <li>
-        <strong>Deletion:</strong> You have the right to request deletion of your personal information, subject to legal retention requirements. You can also close your account, which will result in removal of associated personal data according to our data retention policies.
+        <strong>Deletion of correspondence.</strong> You may ask us to delete the support correspondence we hold
+        about you, subject to any record we are legally required to keep.
       </li>
       <li>
-        <strong>Communication Preferences:</strong> You can opt out of marketing communications at any time and manage your preferences through your account settings.
+        <strong>No sale, no marketing lists.</strong> We do not sell personal information and we do not send
+        marketing email. There is nothing to opt out of.
       </li>
     </ul>
     <p>
-      To exercise any of your privacy rights, contact us at <a href="mailto:privacy@paystubissa.com">privacy@paystubissa.com</a> with your specific request. We are committed to responding to all privacy-related requests within 30 days and may require identity verification before processing certain requests.
+      To exercise any of these rights, email <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>. We respond
+      within 30 days and may need to verify your identity first.
     </p>
-    <h4>12. Fair Information Practices and Data Breach Response</h4>
+
+    <h4>11. California Residents (CCPA/CPRA)</h4>
     <p>
-      In the event of a data breach that may compromise your personal information, we have established a comprehensive response protocol. Our immediate response involves containing the breach and conducting a thorough assessment of the scope and potential impact on affected users. We are committed to user notification and will notify all affected users via email within 72 hours of discovering any breach that could compromise personal information.
+      If you are a California resident, you have the right to know what personal information we collect about
+      you, to request access to it, to request that we delete it, to request correction of it, and not to be
+      discriminated against for exercising those rights.
     </p>
     <p>
-      We maintain full cooperation with authorities and will report any significant data breaches to relevant regulatory authorities as required by applicable laws. Our remediation process includes taking appropriate steps to prevent future breaches and implementing additional security measures to mitigate ongoing risks. Throughout this process, we maintain complete transparency by providing clear, honest information about the nature of the breach and the protective measures we have taken to address the situation and prevent future occurrences.
+      Applied to us, this is straightforward: we do not collect your pay stub data at all, we do not sell or
+      share personal information, and we do not use personal information for cross-context behavioral
+      advertising. The only personal information we may hold about you is correspondence you have sent us and
+      routine server logs. Submit a request to{" "}
+      <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>. More about California privacy rights is available
+      from the California Attorney General at{" "}
+      <a href="https://oag.ca.gov/privacy/ccpa" target="_blank" rel="noopener noreferrer">
+        oag.ca.gov/privacy/ccpa
+      </a>
+      .
     </p>
-    <h4>13. Data Retention</h4>
     <p>
-      We retain your personal information only for the time periods necessary to fulfill the purposes for which it was collected. This includes maintaining data for as long as needed to provide our services to you effectively and to comply with legal obligations that may require us to keep certain business records for specified periods. We also retain information as necessary to resolve disputes and enforce our agreements with users, as well as to maintain essential business records as required by applicable laws and regulations. When data is no longer needed for these purposes, we securely delete or anonymize it according to industry best practices and data protection standards.
+      We honor privacy rights granted by other state laws on the same basis. If your state gives you a right we
+      have not listed, write to us and we will honor it.
     </p>
-    <h4>14. International Data Transfers</h4>
+
+    <h4>12. Children's Privacy (COPPA)</h4>
     <p>
-      If you are accessing our services from outside the United States, please be aware that your information may be transferred to, stored, and processed in the United States where our servers are located and our central database is operated.
+      The Service is not intended for children. It is for adults 18 and over. We do not knowingly collect
+      personal information from anyone under 13. If we learn that we have received information from a child
+      under 13, we will delete it promptly.
     </p>
+    <p>
+      A parent or guardian who believes a child has sent us personal information should contact{" "}
+      <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.
+    </p>
+
+    <h4>13. Data Breach Response</h4>
+    <p>
+      Because your pay stub data is never transmitted to us, a compromise of our systems could not expose it.
+      That is by design, and it is the strongest protection we can give you.
+    </p>
+    <p>
+      Should a security incident nonetheless affect information we do hold — support correspondence or server
+      logs — we will contain it, assess what was affected, notify affected people without undue delay and in any
+      event within 72 hours of confirming the breach, report it to the relevant authorities where the law
+      requires, and tell you plainly what happened and what we are doing about it.
+    </p>
+
+    <h4>14. Data Retention</h4>
+    <p>
+      We keep support correspondence only as long as needed to resolve your issue and keep a basic record of it.
+      Server logs are kept for a short period for security and troubleshooting, then discarded. Your pay stub
+      data has no retention period on our side, because it never arrives.
+    </p>
+
     <h4>15. Business Transfers</h4>
     <p>
-      In the event of a merger, acquisition, or sale of all or part of our business, your personal information may be transferred as part of that transaction. We will notify you of any such change in ownership or control of your personal information.
+      If our business is merged, acquired, or sold, information we hold — which is correspondence and logs, not
+      your pay stub data — may transfer as part of that transaction. We will post notice on this page if that
+      happens.
     </p>
-    <h4>Acknowledgment and Consent</h4>
+
+    <h4>16. Changes to This Policy</h4>
     <p>
-      By using PayStubIssa.com, you acknowledge that you have read, understood, and agree to be bound by this Privacy Policy. Your use of our services constitutes your consent to the collection, use, and sharing of your information as described in this policy.
+      We may update this policy. When we do, we will change the "Last Updated" date above and post the new
+      version here. Material changes will be flagged on the site. We do not hold a mailing list, so we cannot
+      email you about it — please check back.
+    </p>
+
+    <h4>Acknowledgment</h4>
+    <p>
+      By using {SITE_DOMAIN}, you acknowledge that you have read and understood this Privacy Policy.
     </p>
     <p>
-      <strong>Effective Date:</strong> This Privacy Policy is effective as of May 31, 2025.<br />
-      For the most current version of this Privacy Policy, please visit <a href="https://paystubissa.com/privacy" target="_blank" rel="noopener noreferrer">paystubissa.com/privacy</a>
+      <strong>Effective Date:</strong> This Privacy Policy is effective as of {POLICIES_LAST_UPDATED}.<br />
+      The current version is always at{" "}
+      <a href={`https://${SITE_DOMAIN}/privacy`} target="_blank" rel="noopener noreferrer">
+        {SITE_DOMAIN}/privacy
+      </a>
+      .
     </p>
   </LegalPageShell>
 );

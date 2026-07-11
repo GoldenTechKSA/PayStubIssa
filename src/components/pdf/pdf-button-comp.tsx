@@ -19,71 +19,52 @@ const PDFDownloadButton: React.FC<PDFDownloadButtonProps> = ({
 
   const handleDownloadPDF = async () => {
     setIsLoading(true);
-    
+
     try {
-      // Get the target element
       const element = document.getElementById(targetId);
       if (!element) {
         console.error(`Element with id "${targetId}" not found`);
         return;
       }
 
-      // Capture the element as canvas
-      const canvas = await html2canvas(element, {
-        useCORS: true,
-        scale: 2, // Higher scale for better quality
-        logging: false
-      });
+      // The customer pays per stub and may buy up to 12, so the target holds one
+      // `.paystub-page` per stub. Each becomes its own PDF page. If the markup has no pages
+      // (older templates, or a single un-wrapped stub), fall back to the target itself.
+      const pageNodes = Array.from(element.querySelectorAll<HTMLElement>('.paystub-page'));
+      const pages: HTMLElement[] = pageNodes.length > 0 ? pageNodes : [element];
 
-      // Create PDF
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'in', // Changed to inches for easier margin calculation
-        format: 'a4'
-      });
+      // US Letter, matching the on-screen sheet and print.css. (This was A4, which silently
+      // cropped/letterboxed the paid PDF relative to the preview the customer approved.)
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' });
 
-      // Convert margin from inches to the PDF's unit (inches)
       const margin = marginInches;
-      
-      // A4 dimensions in inches: 8.27 x 11.69
-      const pageWidth = 8.27;
-      const pageHeight = 11.69;
-      
-      // Calculate available width and height with margins
-      const availableWidth = pageWidth - (2 * margin);
-      const availableHeight = pageHeight - (2 * margin);
-      
-      // Calculate image dimensions to fit within available space
-      const imgAspectRatio = canvas.width / canvas.height;
-      let imgWidth = availableWidth;
-      let imgHeight = imgWidth / imgAspectRatio;
-      
-      // If image is too tall for the page, scale by height instead
-      if (imgHeight > availableHeight) {
-        imgHeight = availableHeight;
-        imgWidth = imgHeight * imgAspectRatio;
+      const pageWidth = 8.5;
+      const pageHeight = 11;
+      const availableWidth = pageWidth - 2 * margin;
+      const availableHeight = pageHeight - 2 * margin;
+
+      for (let i = 0; i < pages.length; i++) {
+        const canvas = await html2canvas(pages[i], {
+          useCORS: true,
+          scale: 2, // Higher scale for better quality
+          logging: false,
+        });
+
+        // Scale each stub to fit inside one page's margins, preserving aspect ratio.
+        const aspectRatio = canvas.width / canvas.height;
+        let imgWidth = availableWidth;
+        let imgHeight = imgWidth / aspectRatio;
+        if (imgHeight > availableHeight) {
+          imgHeight = availableHeight;
+          imgWidth = imgHeight * aspectRatio;
+        }
+
+        if (i > 0) pdf.addPage();
+        // Center horizontally so a narrow stub doesn't hug the left margin.
+        const offsetX = margin + (availableWidth - imgWidth) / 2;
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', offsetX, margin, imgWidth, imgHeight);
       }
 
-      const imgData = canvas.toDataURL('image/png');
-      let positionX = margin;
-      let positionY = margin;
-      let heightLeft = imgHeight;
-      let currentPage = 1;
-
-      // Add first page
-      pdf.addImage(imgData, 'PNG', positionX, positionY, imgWidth, imgHeight);
-      heightLeft -= availableHeight;
-
-      // Add additional pages if content overflows
-      while (heightLeft > 0) {
-        pdf.addPage();
-        currentPage++;
-        positionY = margin - (currentPage - 1) * availableHeight;
-        pdf.addImage(imgData, 'PNG', positionX, positionY, imgWidth, imgHeight);
-        heightLeft -= availableHeight;
-      }
-
-      // Download the PDF
       pdf.save(`${fileName}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);

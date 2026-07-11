@@ -78,6 +78,14 @@ export interface PayStubDetails {
  * renderer via the cell `format` attribute, not here. See buildPaystubModel().
  */
 export interface PaystubModel extends PayStubDetails {
+    // Position of this stub within the purchased run (0-based), and the run's size.
+    // A run of N stubs covers N consecutive pay periods; each stub carries its own period
+    // dates (on incomeDetails), its own check/stub number, and its own YTD figures.
+    stubIndex: number;
+    stubCount: number;
+    stubNumber: number;
+    checkNumber: number;
+
     // Earnings (current period)
     regularPay: number;
     overtimePay: number;

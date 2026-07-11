@@ -1,194 +1,371 @@
 import React from "react";
 import LegalPageShell from "./LegalPageShell";
+import {
+  ATTESTATION_TEXT,
+  BRAND_NAME,
+  CORE_DISCLAIMER,
+  FRAUD_WARNING,
+  GOVERNING_STATE,
+  LEGAL_EMAIL,
+  LEGAL_ENTITY_NAME,
+  MAILING_ADDRESS,
+  POLICIES_LAST_UPDATED,
+  REFUND_WINDOW_DAYS,
+  SITE_DOMAIN,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+  SUPPORT_PHONE_HREF,
+} from "constants/business-info";
+import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
+
+const PRICE = `$${UNIT_PRICE.toFixed(2)}`;
 
 const TermsOfUse = () => (
   <LegalPageShell>
     <h2>Terms of Use</h2>
-    <p><strong>Last Updated:</strong> May 31, 2025</p>
+    <p><strong>Last Updated:</strong> {POLICIES_LAST_UPDATED}</p>
     <p>
-      Welcome to PayStubIssa.com ("we," "us," "our," or "the Service"). These Terms of Use ("Terms") govern your access to and use of our website, software, and payroll services (collectively, the "Platform"). By accessing or using PayStubIssa.com, you agree to be bound by these Terms. If you do not agree to these Terms, please do not use our Platform.
+      These Terms of Use ("Terms") govern your access to and use of {SITE_DOMAIN} and the software we
+      make available on it (the "Service"). The Service is operated by {LEGAL_ENTITY_NAME} ("we," "us,"
+      or "our"). By using the Service, you agree to these Terms. If you do not agree, do not use the
+      Service.
     </p>
-    <h4>1. About PayStubIssa.com</h4>
+
+    <h4>1. Nature of the Service and Your Responsibility</h4>
     <p>
-      <strong>Our Services</strong><br />
-      PayStubIssa.com is a trusted payroll solutions provider specializing in professional pay stub generation for small businesses, freelancers, and independent contractors. Our team consists of certified accountants and payroll experts with years of experience in streamlining financial documentation and ensuring compliance with federal and state regulations.
-      <br />
-      Our Platform provides users with the ability to create, customize, and download professional pay stubs that meet IRS and SBA compliance standards. We offer instant generation capabilities that allow users to produce accurate payroll documentation within minutes, utilizing bank-level encryption to protect sensitive financial data throughout the process.
+      <strong>Read this section before you use the Service.</strong> It is the most important part of
+      these Terms.
     </p>
     <p>
-      <strong>Service Features</strong><br />
-      Our pay stubs are designed to be accepted everywhere for various verification purposes, including loan applications, rental applications, mortgage processes, and employment verification procedures. We are committed to simplifying payroll management for business owners while ensuring accuracy, professionalism, and legal compliance in every document we help generate.
+      <strong>{CORE_DISCLAIMER}</strong>
     </p>
-    <h4>2. Acceptance of Terms</h4>
     <p>
-      <strong>Agreement to Terms</strong><br />
-      By creating an account, accessing our Platform, or using any of our services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use, as well as our Privacy Policy and any other policies referenced herein. These Terms constitute a legally binding agreement between you and PayStubIssa.com.
-      <br />
-      <strong>Capacity to Enter Agreement</strong><br />
-      You represent and warrant that you are at least 18 years of age and have the legal capacity to enter into this agreement. If you are using our services on behalf of a business or organization, you represent and warrant that you have the authority to bind that entity to these Terms.
-      <br />
-      <strong>Modifications to Terms</strong><br />
-      We reserve the right to modify these Terms at any time without prior notice. When we make changes, we will update the "Last Updated" date at the top of this document and may notify users through email or platform notifications. Your continued use of the Platform after such modifications constitutes your acceptance of the updated Terms. We encourage you to review these Terms periodically to stay informed of any changes.
+      <strong>{FRAUD_WARNING}</strong>
     </p>
-    <h4>3. Account Registration and Security</h4>
     <p>
-      <strong>Account Creation</strong><br />
-      To use certain features of our Platform, you must create an account by providing accurate, complete, and current information. You are responsible for maintaining the accuracy of your account information and must promptly update any changes to ensure our records remain current and accurate.
-      <br />
-      <strong>Account Security</strong><br />
-      You are solely responsible for maintaining the confidentiality of your account credentials, including your username and password. You agree to notify us immediately of any unauthorized use of your account or any other breach of security. We will not be liable for any losses or damages arising from your failure to maintain account security or from unauthorized access to your account.
-      <br />
-      <strong>Account Termination</strong><br />
-      We reserve the right to suspend or terminate your account at any time for violation of these Terms, fraudulent activity, or any other reason we deem appropriate. You may also terminate your account at any time by contacting our customer support team. Upon termination, your right to use the Platform will cease immediately, though certain provisions of these Terms will survive termination.
+      You are the author of every document you create with the Service. You supply every figure. You
+      are the sole warrantor of the contents of the document. We are a formatting tool: we lay out the
+      numbers you type into a conventional pay stub format and run standard arithmetic on them. We are
+      not a payroll provider, an accountant, a bookkeeper, or a tax advisor, and nothing on the Service
+      is accounting, tax, or legal advice.
     </p>
-    <h4>4. Acceptable Use Policy</h4>
     <p>
-      <strong>Permitted Uses</strong><br />
-      You may use our Platform solely for legitimate business purposes related to payroll documentation and income verification. This includes generating pay stubs for your employees, contractors, or for your own income verification needs. You agree to use the Platform in compliance with all applicable federal, state, and local laws and regulations. You may use PayStubIssa.com only for lawful purposes, including: Generating pay stubs for your own business or personal income records. Creating IRS & SBA-compliant pay stubs for income verification. Downloading, printing, or sharing pay stubs where legally permissible.
-      <br />
-      <strong>Prohibited Activities</strong><br />
-      You agree not to use the Platform for any unlawful, harmful, or inappropriate purposes. Prohibited activities include but are not limited to creating fraudulent or misleading pay stubs, using false information in document generation, attempting to circumvent our security measures, or using our services to facilitate any illegal activities. You may not use our Platform to create documents for the purpose of deceiving lenders, landlords, employers, or government agencies. You may not: Use PayStubIssa.com to create fraudulent, deceptive, or misleading pay stubs. Submit false income, tax, or employer information. Resell, redistribute, or exploit pay stubs for illegal purposes (e.g., loan fraud, rental scams). Reverse-engineer, hack, or disrupt our website’s functionality. Violate local, state, or federal laws (e.g., tax evasion, identity theft).
-      <br />
+      We do not verify any figure you enter. We do not check that an employer exists, that an employment
+      relationship exists, that hours were worked, or that wages were paid. Every document you create must
+      reflect real wages actually earned and actually paid. If it does not, you must not create it, download
+      it, print it, or give it to anyone.
+    </p>
+
+    <h4>2. Accuracy Attestation</h4>
+    <p>
+      Before you can pay for and download a document, you must affirmatively attest to its accuracy. The
+      attestation reads:
+    </p>
+    <p>
+      <em>"{ATTESTATION_TEXT}"</em>
+    </p>
+    <p>
+      That attestation is a condition of the licence we grant you to use any document generated by the
+      Service. If the attestation is false when you make it, the licence is void, you have no right to use
+      or present the document for any purpose, and you are in breach of these Terms.
+    </p>
+
+    <h4>3. What the Service Is</h4>
+    <p>
+      <strong>The Service</strong><br />
+      {BRAND_NAME} is a self-serve document formatting tool for small businesses, freelancers, and
+      independent contractors who need to produce a pay stub from figures they already have. You enter
+      company details, employee details, a pay period, and earnings. The Service calculates withholding
+      using standard published federal and state rates, renders a pay stub, and lets you download it as a
+      PDF or print it.
+    </p>
+    <p>
+      <strong>Formatting, Not Certification</strong><br />
+      The documents produced by the Service follow conventional US pay stub formatting and include the line
+      items commonly found on wage records: gross pay, earnings breakdown, taxes withheld, deductions, net
+      pay, and year-to-date figures. <strong>We make no representation that any document produced by the
+      Service satisfies any specific federal, state, or local requirement</strong>, or that any third party
+      will accept it. Recordkeeping and pay stub rules vary by jurisdiction and change over time. You are
+      responsible for satisfying yourself that a document you create meets whatever requirement you are
+      trying to meet.
+    </p>
+    <p>
+      <strong>What the Service Is Not</strong><br />
+      The Service does not file anything with the IRS or any state agency. It does not remit taxes. It does
+      not produce W-2s, 1099s, or any other tax form. It does not run payroll, pay employees, or keep payroll
+      history. Year-to-date figures are estimates derived from the figures you enter, not a record of what was
+      actually paid across the year.
+    </p>
+
+    <h4>4. Acceptance of Terms</h4>
+    <p>
+      <strong>Agreement</strong><br />
+      By using the Service, you acknowledge that you have read, understood, and agree to be bound by these
+      Terms and by our Privacy Policy. These Terms are a legally binding agreement between you and{" "}
+      {LEGAL_ENTITY_NAME}.
+    </p>
+    <p>
+      <strong>Age and Capacity</strong><br />
+      You must be at least 18 years old and legally able to enter into a contract. If you use the Service on
+      behalf of a business or organization, you represent that you are authorized to bind that entity to these
+      Terms.
+    </p>
+    <p>
+      <strong>Changes to These Terms</strong><br />
+      We may change these Terms. When we do, we will update the "Last Updated" date above and post the revised
+      Terms on this page. Your continued use of the Service after we post a change means you accept it. We have
+      no way to email you about changes, because we do not hold your email address unless you have written to us
+      — so please check this page from time to time.
+    </p>
+
+    <h4>5. No Account Required</h4>
+    <p>
+      There are no accounts on {SITE_DOMAIN}. There is no registration, no login, no password, no dashboard,
+      and no order history. You do not create an account, so there is no account for you to secure, for us to
+      suspend, or for either of us to close.
+    </p>
+    <p>
+      Everything you type stays in your own browser. Nothing you enter is sent to us or stored by us. Because we
+      hold nothing, we cannot retrieve, re-send, or re-issue a document after you leave the site. Download or
+      print your document before you close the tab, and keep your own copy.
+    </p>
+
+    <h4>6. Acceptable Use</h4>
+    <p>
+      <strong>Permitted Use</strong><br />
+      You may use the Service only to create wage records that are true. That means: pay stubs for your own
+      business documenting wages you actually paid, or pay stubs documenting wages you were actually paid, or
+      pay stubs you are otherwise authorized to prepare as an employer, employee, or authorized representative.
+    </p>
+    <p>
+      <strong>Prohibited Use</strong><br />
+      You may not use the Service to:
+    </p>
+    <ul>
+      <li>Create a fraudulent, deceptive, forged, or misleading pay stub.</li>
+      <li>Enter false or inflated income, hours, tax, employer, or employee information.</li>
+      <li>
+        Misrepresent income to a lender, mortgage broker, landlord, employer, insurer, government agency, or
+        court — including loan fraud, rental application fraud, benefits fraud, and immigration fraud.
+      </li>
+      <li>Evade taxes or misstate wages to any tax authority.</li>
+      <li>Commit identity theft or create a document in the name of a person who has not authorized it.</li>
+      <li>Document an employment relationship that does not exist, or wages that were never paid.</li>
+      <li>Resell, redistribute, or offer documents produced by the Service as a service to third parties.</li>
+      <li>Reverse-engineer, scrape, overload, or otherwise interfere with the Service.</li>
+      <li>Break any applicable federal, state, or local law.</li>
+    </ul>
+    <p>
+      <strong>This is not a formality.</strong> Falsifying a pay stub to obtain money, credit, housing, or a
+      benefit is a serious offense and can be prosecuted as fraud. We will cooperate with law enforcement and
+      respond to valid legal process. We may block access to the Service by anyone we reasonably believe is
+      using it for a prohibited purpose.
+    </p>
+    <p>
       <strong>Content Standards</strong><br />
-      All information you input into our Platform must be accurate, truthful, and not misleading. You are responsible for ensuring that any pay stubs generated through our service reflect actual employment relationships, accurate wage information, and legitimate business transactions. Creating false or misleading documentation is strictly prohibited and may result in immediate account termination and potential legal consequences.
-      <br />
-      <strong>Compliance with Laws</strong><br />
-      You agree to comply with all applicable laws and regulations when using our Platform, including but not limited to employment laws, tax regulations, and financial reporting requirements. You acknowledge that you are responsible for ensuring that your use of our services complies with all relevant legal obligations in your jurisdiction.
+      Every value you enter must be accurate, truthful, and complete. You warrant that it is. You are responsible
+      for complying with all laws that apply to you, including wage and hour law, tax withholding rules, and
+      employer recordkeeping obligations.
     </p>
-    <h4>5. Intellectual Property Rights</h4>
+
+    <h4>7. Intellectual Property</h4>
     <p>
-      <strong>Our Intellectual Property</strong><br />
-      The Platform, including all content, features, functionality, software, text, graphics, logos, and design elements, is owned by PayStubIssa.com and is protected by United States and international copyright, trademark, and other intellectual property laws. Our trade names, trademarks, and service marks are proprietary to us and may not be used without our express written permission.
-      <br />
-      <strong>Your Content License</strong><br />
-      When you input information into our Platform to generate pay stubs or other documents, you retain ownership of the factual information you provide. However, by using our services, you grant us a limited, non-exclusive license to use this information solely for the purpose of providing our services to you, including document generation and customer support.
-      <br />
-      <strong>Generated Documents</strong><br />
-      Pay stubs and other documents generated through our Platform are created for your legitimate business use. While you may use these documents for their intended purposes, you may not modify our templates, remove our branding, or use our proprietary formatting for commercial distribution without our express written consent.
-      <br />
-      <strong>Respect for Third-Party Rights</strong><br />
-      You agree not to upload, input, or use any content that infringes upon the intellectual property rights of third parties. This includes copyrighted material, trademarked content, or proprietary information that you do not have the right to use.
+      <strong>Ours</strong><br />
+      The Service — including its software, templates, layout, text, graphics, and logos — is owned by{" "}
+      {LEGAL_ENTITY_NAME} and protected by copyright, trademark, and other intellectual property laws. Our name
+      and marks may not be used without our written permission.
     </p>
-    <h4>6. Payment Terms and Billing</h4>
     <p>
-      <strong>Service Fees</strong><br />
-      Our Platform operates on a fee-for-service basis, with charges applied for pay stub generation and premium features. All fees are clearly displayed before you complete any transaction, and you agree to pay all applicable charges associated with your use of our services.
-      <br />
-      <strong>Payment Processing</strong><br />
-      Payments are processed securely through third-party payment processors, and we do not store your complete payment card information on our servers. By providing payment information, you authorize us to charge the applicable fees to your designated payment method.
-      <br />
-      <strong>Refund Policy</strong><br />
-      Due to the digital nature of our services and the immediate delivery of generated documents, we generally do not offer refunds for completed transactions. However, we may consider refund requests on a case-by-case basis for technical errors or service failures that prevent document delivery.
-      <br />
+      <strong>Yours</strong><br />
+      The information you enter is yours. It never reaches us, so we acquire no rights in it and take no licence
+      to it.
+    </p>
+    <p>
+      <strong>Documents You Generate</strong><br />
+      Subject to your accuracy attestation and to these Terms, we grant you a licence to use, print, and share
+      the documents you generate for their legitimate purpose. You may not use our templates or formatting to
+      build a competing document generation product or to produce documents commercially for third parties.
+    </p>
+
+    <h4>8. Pricing, Payment, and Refunds</h4>
+    <p>
+      <strong>Price</strong><br />
+      The Service is charged per pay stub. The price is {PRICE} for each pay stub you generate. You may generate
+      between {MIN_STUBS} and {MAX_STUBS} pay stubs in a single order, and you are charged {PRICE} for each one.
+      The total is shown to you before you pay. There is no subscription and no recurring charge.
+    </p>
+    <p>
+      <strong>Payment</strong><br />
+      Payment is by PayPal only. PayPal processes the transaction and is the only party that receives your payment
+      details. We never see, receive, or store your card number or PayPal credentials. Your payment is governed by
+      PayPal's own terms and privacy policy.
+    </p>
+    <p>
+      <strong>Delivery</strong><br />
+      Once payment succeeds, the Service unlocks the download and print functions in your browser. The document is
+      delivered as a PDF download or a browser print. Nothing is emailed to you and nothing is stored for later
+      retrieval. Save your file before you close the tab.
+    </p>
+    <p>
+      <strong>{REFUND_WINDOW_DAYS}-Day Satisfaction Guarantee</strong><br />
+      We offer a {REFUND_WINDOW_DAYS}-day satisfaction guarantee. If, within {REFUND_WINDOW_DAYS} days of your
+      purchase, the document is defective — it will not download or print, it is corrupted, or our calculations are
+      wrong — email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we will refund you in full. You do
+      not have to argue with us about it.
+    </p>
+    <p>
+      If the problem is an error in the data you entered, a refund is at our discretion — but we will always give
+      you a free corrected document. Just tell us what was wrong.
+    </p>
+    <p>
       <strong>Billing Disputes</strong><br />
-      If you believe there has been an error in billing, please contact our customer support team within 30 days of the charge. We will investigate all billing disputes promptly and work to resolve any legitimate errors in a timely manner.
+      If you believe you have been charged in error, contact us at{" "}
+      <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> within 30 days of the charge. We will investigate
+      promptly and correct any genuine error.
     </p>
-    <h4>7. Data Security and Privacy</h4>
+
+    <h4>9. Your Data Stays in Your Browser</h4>
     <p>
-      <strong>Data Protection</strong><br />
-      We implement bank-level encryption and industry-standard security measures to protect your sensitive financial information. Our security protocols are designed to safeguard your data during transmission, processing, and storage on our secure servers.
-      <br />
-      <strong>Privacy Compliance</strong><br />
-      Your privacy is important to us, and our data handling practices are governed by our Privacy Policy, which is incorporated into these Terms by reference. We are committed to protecting your personal information and complying with applicable privacy laws and regulations.
-      <br />
-      <strong>Data Retention</strong><br />
-      We retain your account information and generated document records in accordance with our data retention policies and applicable legal requirements. You may request deletion of your personal information, subject to certain legal and business record-keeping obligations.
+      The Service runs entirely in your browser. The company details, employee details, Social Security or
+      Employer Identification numbers, and wage figures you enter are held in your browser's memory and in a local
+      draft saved on your own device. <strong>They are never transmitted to us.</strong> We have no server that
+      receives them, no database that stores them, and no copy of your document.
     </p>
-    <h4>8. Service Availability and Performance</h4>
     <p>
-      <strong>Service Uptime</strong><br />
-      While we strive to maintain continuous service availability, we cannot guarantee that our Platform will be available at all times without interruption. We may experience occasional downtime for maintenance, updates, or technical issues, and we will make reasonable efforts to minimize service disruptions.
-      <br />
-      <strong>Performance Standards</strong><br />
-      We are committed to providing fast, reliable pay stub generation services, with most documents processed and available for download within minutes of completion. However, processing times may vary based on system load, document complexity, and other factors beyond our control.
-      <br />
-      <strong>Technical Support</strong><br />
-      We provide technical support to help users navigate our Platform and resolve any issues they may encounter. Support is available through multiple channels, including email and our online help resources, and we strive to respond to all inquiries promptly during business hours.
+      The site is served over HTTPS, which encrypts traffic between your browser and our web host in transit. That
+      is the only encryption we claim, and it protects the delivery of the website itself — not data we hold,
+      because we do not hold any.
     </p>
-    <h4>9. Limitation of Liability</h4>
     <p>
-      <strong>Service Limitations</strong><br />
-      While we strive to provide accurate and compliant pay stub generation services, you acknowledge that our Platform is a tool to assist with document creation and that you remain responsible for ensuring the accuracy and appropriateness of all information included in generated documents.
-      <br />
-      <strong>Disclaimer of Warranties</strong><br />
-      Our Platform is provided "as is" and "as available" without warranties of any kind, either express or implied. We disclaim all warranties, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement.
-      <br />
-      <strong>Limitation of Damages</strong><br />
-      To the fullest extent permitted by law, PayStubIssa.com shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, or business opportunities, arising from your use of or inability to use our Platform.
-      <br />
-      <strong>Maximum Liability</strong><br />
-      Our total liability to you for all claims arising from or relating to your use of our Platform shall not exceed the total amount you have paid to us in the twelve months preceding the claim.
+      Because your data lives on your device, protecting the device is your responsibility. Clearing the draft or
+      your browser storage deletes it. Our{" "}
+      <a href={`https://${SITE_DOMAIN}/privacy`} target="_blank" rel="noopener noreferrer">Privacy Policy</a>{" "}
+      explains this in full and is incorporated into these Terms.
     </p>
-    <h4>10. Indemnification</h4>
+
+    <h4>10. Service Availability</h4>
     <p>
-      <strong>Your Indemnification Obligations</strong><br />
-      You agree to indemnify, defend, and hold harmless PayStubIssa.com, its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, costs, or expenses arising from your use of the Platform, your violation of these Terms, or your violation of any rights of a third party.
-      <br />
-      <strong>Defense of Claims</strong><br />
-      We reserve the right to assume the exclusive defense and control of any matter subject to indemnification by you, and you agree to cooperate with our defense of such claims. Your indemnification obligations will survive termination of these Terms and your use of our Platform.
+      We aim to keep the Service available, but we do not guarantee uninterrupted access. The Service may be
+      unavailable for maintenance, updates, or reasons outside our control. We may change, suspend, or discontinue
+      any part of the Service at any time.
     </p>
-    <h4>11. Compliance and Legal Use</h4>
     <p>
-      <strong>Regulatory Compliance</strong><br />
-      Our pay stubs are designed to meet IRS and SBA compliance standards for income verification and documentation. However, you remain responsible for ensuring that your use of generated documents complies with all applicable federal, state, and local regulations in your jurisdiction.
-      <br />
-      <strong>Accurate Information</strong><br />
-      You warrant that all information provided for pay stub generation is accurate, truthful, and reflects legitimate employment relationships and compensation arrangements. Creating false or misleading documentation may violate federal and state laws and is strictly prohibited.
-      <br />
-      <strong>Employment Law Compliance</strong><br />
-      You agree to use our services in compliance with all applicable employment laws, including wage and hour regulations, tax withholding requirements, and recordkeeping obligations. We provide tools to help ensure compliance, but you remain responsible for meeting all legal obligations as an employer.
+      Support is available by email at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and by phone at{" "}
+      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>. We respond during business hours.
     </p>
-    <h4>12. Dispute Resolution</h4>
+
+    <h4>11. Disclaimer of Warranties</h4>
     <p>
-      <strong>Informal Resolution</strong><br />
-      Before pursuing formal dispute resolution, we encourage you to contact our customer support team to attempt to resolve any issues informally. Many concerns can be addressed quickly and effectively through direct communication with our support staff.
-      <br />
+      The Service is provided "as is" and "as available," without warranty of any kind, express or implied. To the
+      fullest extent permitted by law, we disclaim all warranties, including the implied warranties of
+      merchantability, fitness for a particular purpose, and non-infringement.
+    </p>
+    <p>
+      We do not warrant that any document you produce will be accepted by any lender, landlord, employer, agency,
+      or court, or that it will satisfy any legal or regulatory requirement. Tax calculations are based on
+      published rates and standard formulas and are an aid, not a substitute for professional advice. You are
+      responsible for the accuracy and appropriateness of everything in your document.
+    </p>
+
+    <h4>12. Limitation of Liability</h4>
+    <p>
+      To the fullest extent permitted by law, {LEGAL_ENTITY_NAME} will not be liable for any indirect, incidental,
+      special, consequential, or punitive damages, including lost profits, lost data, or lost business
+      opportunities, arising out of or relating to the Service.
+    </p>
+    <p>
+      Our total liability for all claims arising out of or relating to the Service will not exceed the total
+      amount you paid us in the twelve months before the claim arose.
+    </p>
+    <p>
+      We are not liable for any consequence of a document that contains information you entered incorrectly, or
+      for any use you make of a document in breach of these Terms.
+    </p>
+
+    <h4>13. Indemnification</h4>
+    <p>
+      You agree to indemnify, defend, and hold harmless {LEGAL_ENTITY_NAME} and its officers, directors,
+      employees, and agents from any claim, liability, damage, loss, cost, or expense (including reasonable legal
+      fees) arising out of your use of the Service, the contents of any document you create, your breach of these
+      Terms, or your violation of any law or third-party right. We may assume the exclusive defense of any matter
+      subject to indemnification by you, and you agree to cooperate. This obligation survives your use of the
+      Service.
+    </p>
+
+    <h4>14. Dispute Resolution</h4>
+    <p>
+      <strong>Talk to Us First</strong><br />
+      Before starting any formal proceeding, contact us at{" "}
+      <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Most problems can be fixed quickly.
+    </p>
+    <p>
       <strong>Governing Law</strong><br />
-      These Terms and any disputes arising from or relating to your use of our Platform shall be governed by and construed in accordance with the laws of the state in which our business is incorporated, without regard to conflict of law principles.
-      <br />
-      <strong>Arbitration Agreement</strong><br />
-      Any disputes that cannot be resolved informally shall be resolved through binding arbitration rather than in court, except that you may assert claims in small claims court if your claims qualify. The arbitration will be conducted by a neutral arbitrator in accordance with the rules of the American Arbitration Association.
-      <br />
-      <strong>Class Action Waiver</strong><br />
-      You agree that any arbitration or legal proceeding shall be limited to the dispute between you and PayStubIssa.com individually. You waive any right to participate in class action lawsuits or class-wide arbitration against us.
+      These Terms and any dispute arising out of or relating to them or to the Service are governed by the laws of
+      the State of {GOVERNING_STATE}, without regard to its conflict of law rules.
     </p>
-    <h4>13. Termination</h4>
     <p>
-      <strong>Termination by You</strong><br />
-      You may terminate your account and discontinue use of our Platform at any time by contacting our customer support team or using account closure features available through your user dashboard. Upon termination, you will lose access to your account and any stored information.
-      <br />
-      <strong>Termination by Us</strong><br />
-      We may suspend or terminate your access to our Platform immediately, without prior notice, for any violation of these Terms, fraudulent activity, or any other conduct that we determine to be harmful to our business or other users.
-      <br />
-      <strong>Effect of Termination</strong><br />
-      Upon termination of your account, your right to use our Platform will cease immediately. However, certain provisions of these Terms that by their nature should survive termination will remain in effect, including provisions related to intellectual property, limitation of liability, and dispute resolution.
+      <strong>Arbitration</strong><br />
+      Any dispute that is not resolved informally will be settled by binding arbitration administered by the
+      American Arbitration Association under its Consumer Arbitration Rules, before a single neutral arbitrator,
+      seated in the State of {GOVERNING_STATE}. Either of us may instead bring an individual claim in small claims
+      court if it qualifies.
     </p>
-    <h4>14. Miscellaneous Provisions</h4>
+    <p>
+      <strong>Class Action Waiver</strong><br />
+      Any arbitration or proceeding will be limited to the dispute between you and {LEGAL_ENTITY_NAME}
+      individually. You waive any right to participate in a class action or class-wide arbitration against us.
+    </p>
+
+    <h4>15. Suspension of Access</h4>
+    <p>
+      There are no accounts to terminate. We may, however, block or restrict your access to the Service at any
+      time, without notice, if we reasonably believe you are using it for a prohibited purpose or in breach of
+      these Terms. The sections that by their nature should survive — including Nature of the Service, Accuracy
+      Attestation, Acceptable Use, Intellectual Property, Disclaimer of Warranties, Limitation of Liability,
+      Indemnification, and Dispute Resolution — survive any end of your use of the Service.
+    </p>
+
+    <h4>16. General</h4>
     <p>
       <strong>Entire Agreement</strong><br />
-      These Terms, together with our Privacy Policy and any other policies referenced herein, constitute the entire agreement between you and PayStubIssa.com regarding your use of our Platform and supersede all prior agreements and understandings.
-      <br />
-      <strong>Severability</strong><br />
-      If any provision of these Terms is found to be invalid, illegal, or unenforceable, the remaining provisions will continue in full force and effect. The invalid provision will be modified to the minimum extent necessary to make it valid and enforceable.
-      <br />
-      <strong>Assignment</strong><br />
-      You may not assign or transfer your rights under these Terms without our prior written consent. We may assign our rights and obligations under these Terms to any party at any time without restriction.
-      <br />
-      <strong>Force Majeure</strong><br />
-      We shall not be liable for any failure or delay in performance under these Terms due to circumstances beyond our reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, or government actions.
-      <br />
-      <strong>Contact Information</strong><br />
-      For questions about these Terms of Use, please contact us at:<br />
-      Email: legal@paystubissa.com<br />
-      Mailing Address: [Your Business Address - Please Insert Actual Address]<br />
-      Phone: [Your Contact Number - Please Insert]
+      These Terms, together with our Privacy Policy, are the entire agreement between you and{" "}
+      {LEGAL_ENTITY_NAME} about the Service, and supersede any prior understanding.
     </p>
+    <p>
+      <strong>Severability</strong><br />
+      If any provision of these Terms is held invalid or unenforceable, the rest remain in force, and the invalid
+      provision will be narrowed only as far as needed to make it enforceable.
+    </p>
+    <p>
+      <strong>Assignment</strong><br />
+      You may not assign your rights under these Terms without our written consent. We may assign ours.
+    </p>
+    <p>
+      <strong>Force Majeure</strong><br />
+      We are not liable for any failure or delay caused by circumstances beyond our reasonable control.
+    </p>
+    <p>
+      <strong>Contact</strong><br />
+      Questions about these Terms:<br />
+      Email: <a href={`mailto:${LEGAL_EMAIL}`}>{LEGAL_EMAIL}</a><br />
+      Support: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a><br />
+      Mailing Address: {MAILING_ADDRESS}<br />
+      Phone: <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>
+    </p>
+
     <h4>Acknowledgment</h4>
     <p>
-      By using PayStubIssa.com, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use. These Terms represent a legally binding agreement between you and our company, and your continued use of our Platform constitutes ongoing acceptance of these terms and conditions.
-      <br />
-      <strong>Effective Date:</strong> These Terms of Use are effective as of May 31, 2025.<br />
-      For the most current version of these Terms of Use, please visit <a href="https://paystubissa.com/terms" target="_blank" rel="noopener noreferrer">paystubissa.com/terms</a>
+      By using {SITE_DOMAIN}, you acknowledge that you have read and understood these Terms, that you are solely
+      responsible for the accuracy of every figure you enter, and that documents you create must reflect wages
+      genuinely earned and paid.
+    </p>
+    <p>
+      <strong>Effective Date:</strong> These Terms are effective as of {POLICIES_LAST_UPDATED}.<br />
+      The current version is always at{" "}
+      <a href={`https://${SITE_DOMAIN}/terms`} target="_blank" rel="noopener noreferrer">
+        {SITE_DOMAIN}/terms
+      </a>
+      .
     </p>
   </LegalPageShell>
 );

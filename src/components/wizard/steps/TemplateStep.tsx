@@ -152,7 +152,8 @@ const TemplateStep: React.FC<StepProps> = ({ onNext, onBack }) => {
               // preview can't be printed to bypass payment (see print.css).
               <Box className="paystub-locked-preview" sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>
                 <FitPage>
-                  <TemplateManager id={templateId} configPath={configPath} store={fullState} />
+                  {/* Gallery preview: show the first stub only, however many were purchased. */}
+                  <TemplateManager id={templateId} configPath={configPath} store={fullState} maxStubs={1} />
                 </FitPage>
                 <PreviewWatermark />
               </Box>

@@ -22,6 +22,30 @@
     transform: none !important;
     width: 100% !important;
   }
+
+  /* One purchased stub per sheet. A run of N stubs prints as N pages. */
+  body.print-paystub .paystub-page {
+    break-after: page;
+    page-break-after: always;
+  }
+  body.print-paystub .paystub-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}
+
+/* On screen, separate the stubs in a multi-stub run so the run reads as distinct sheets. */
+.paystub-page + .paystub-page {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px dashed #cbd5e1;
+}
+@media print {
+  body.print-paystub .paystub-page + .paystub-page {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
 }
 
 /*
