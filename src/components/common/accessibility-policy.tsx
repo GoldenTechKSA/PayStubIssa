@@ -1,190 +1,189 @@
 import React from "react";
 import LegalPageShell from "./LegalPageShell";
+import {
+  ACCESSIBILITY_EMAIL,
+  BRAND_NAME,
+  MAILING_ADDRESS,
+  POLICIES_LAST_UPDATED,
+  SITE_DOMAIN,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+  SUPPORT_PHONE_HREF,
+} from "constants/business-info";
 
 const AccessibilityPolicy = () => (
   <LegalPageShell>
     <h2>Accessibility Policy</h2>
-    <p><strong>Last Updated:</strong> May 31, 2025</p>
+    <p><strong>Last Updated:</strong> {POLICIES_LAST_UPDATED}</p>
     <p>
-      PayStubIssa.com ("we," "us," or "our") is committed to ensuring digital accessibility for all users, including individuals with disabilities. We strive to provide an inclusive online experience that allows everyone to access our payroll and pay stub generation services with ease and independence. This Accessibility Policy outlines our ongoing efforts to improve accessibility and our commitment to meeting established accessibility standards.
+      {BRAND_NAME} is committed to making {SITE_DOMAIN} usable by everyone, including people with
+      disabilities. This policy states what we are aiming for, what we have done, what we have not yet
+      verified, and how to tell us when we have got it wrong.
     </p>
-    <h4>1. Our Accessibility Commitment</h4>
+
+    <h4>1. Our Commitment</h4>
     <p>
-      We believe that everyone deserves equal access to digital services, regardless of their abilities or disabilities. Our commitment extends beyond legal compliance to creating a genuinely inclusive experience for all users. We recognize that accessibility is an ongoing process that requires continuous improvement, user feedback, and adaptation to emerging technologies and standards.
-      <br />
-      Our accessibility efforts are guided by the principle that effective design benefits everyone. Features that improve accessibility for users with disabilities often enhance the overall user experience for all visitors to our platform. We are dedicated to implementing design practices that are inclusive from the ground up rather than treating accessibility as an afterthought.
-    </p>
-    <h4>2. Contact Information</h4>
-    <p>
-      For accessibility-related questions, feedback, or to request assistance, please contact us through the following channels:
-      <br />
-      <strong>Email:</strong> accessibility@paystubissa.com<br />
-      <strong>Mailing Address:</strong> [Your Business Address - Please Insert Actual Address]<br />
-      <strong>Phone:</strong> [Your Contact Number - Please Insert]<br />
-      <strong>Alternative Contact:</strong> For urgent accessibility issues, you may also reach us at support@paystubissa.com
+      Everyone should be able to produce a pay stub without help they did not ask for. We build with
+      accessibility in mind rather than bolting it on afterwards, and we treat accessibility barriers as
+      defects — the same as any other bug.
     </p>
     <p>
-      We are committed to responding to accessibility inquiries within 48 hours during business days and will work with you to resolve any accessibility barriers you may encounter.
+      We are a small team and we are honest about where we are: accessibility is an ongoing effort, not a
+      finished project. If something on this site blocks you, tell us. We will fix it.
     </p>
-    <h4>3. Accessibility Standards and Guidelines</h4>
+
+    <h4>2. Contact Us About Accessibility</h4>
     <p>
-      <strong>Web Content Accessibility Guidelines (WCAG)</strong><br />
-      Our website aims to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards, which are internationally recognized guidelines for web accessibility. These guidelines are organized around four main principles that ensure content is perceivable, operable, understandable, and robust for all users.
-      <br />
-      We implement WCAG guidelines through careful attention to color contrast ratios, keyboard navigation support, alternative text for images, clear heading structures, and descriptive link text. Our development team regularly reviews and updates our implementation to ensure ongoing compliance with these standards.
+      <strong>Email:</strong> <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a><br />
+      <strong>Phone:</strong> <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a><br />
+      <strong>Mailing Address:</strong> {MAILING_ADDRESS}<br />
+      <strong>General support:</strong> <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
     </p>
+
+    <h4>3. Standards We Aim For</h4>
     <p>
-      <strong>Americans with Disabilities Act (ADA) Compliance</strong><br />
-      We are committed to compliance with the Americans with Disabilities Act and strive to ensure that our digital services are accessible to individuals with disabilities. Our accessibility efforts support the ADA's goal of providing equal access to services and removing barriers that might prevent individuals with disabilities from accessing our platform.
-    </p>
-    <p>
-      <strong>Section 508 Considerations</strong><br />
-      While Section 508 primarily applies to federal agencies, we use these standards as additional guidance to ensure our platform meets high accessibility benchmarks. This includes ensuring compatibility with assistive technologies and providing accessible alternatives for multimedia content.
-    </p>
-    <h4>4. Accessibility Features and Implementation</h4>
-    <p>
-      <strong>Keyboard Navigation</strong><br />
-      Our website is designed to be fully navigable using only a keyboard, ensuring that users who cannot use a mouse or pointing device can still access all features and functions. We implement logical tab order throughout our interface, provide visible focus indicators, and ensure that all interactive elements can be activated using standard keyboard commands.
-      <br />
-      Users can navigate through our pay stub generation process, access account settings, and use customer support features entirely through keyboard input. We regularly test our keyboard navigation to ensure it remains intuitive and efficient for users who rely on this input method.
+      <strong>WCAG 2.1 Level AA</strong><br />
+      We <strong>aim</strong> to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 at Level AA
+      and are actively working toward it. We have not completed a formal third-party accessibility audit, so
+      we do not claim audited conformance. Parts of the site may not yet meet the standard. Where you find a
+      gap, we want to hear about it.
     </p>
     <p>
-      <strong>Screen Reader Compatibility</strong><br />
-      We design our website to work seamlessly with popular screen reading software, including JAWS, NVDA, and VoiceOver. Our implementation includes proper semantic markup, descriptive headings, and alternative text for images and graphics. We ensure that dynamic content updates are properly announced to screen readers and that form labels are clearly associated with their corresponding input fields.
-      <br />
-      All critical information, including pay rates, tax calculations, and deduction details, is presented in a format that screen readers can interpret and convey to users effectively. We test our platform regularly with multiple screen reading technologies to ensure consistent performance across different assistive devices.
+      <strong>Americans with Disabilities Act (ADA)</strong><br />
+      We are committed to the ADA's goal of equal access, and we treat removing barriers to our service as an
+      obligation, not a courtesy.
     </p>
     <p>
-      <strong>Visual Design and Color Accessibility</strong><br />
-      Our visual design meets WCAG color contrast requirements, ensuring that text remains readable against background colors for users with low vision or color vision differences. We never rely solely on color to convey important information, instead using multiple visual cues such as icons, text labels, and patterns to communicate meaning.
-      <br />
-      Font sizes are designed to be easily readable, and users can increase text size through their browser settings without losing functionality or readability. Our layout remains functional and usable even when text is enlarged up to 200% of its original size.
+      <strong>Section 508</strong><br />
+      Section 508 applies to federal agencies rather than to us, but we use it as additional guidance on
+      compatibility with assistive technology.
+    </p>
+
+    <h4>4. What We Have Built For</h4>
+    <p>
+      <strong>Keyboard navigation</strong><br />
+      The site is designed to be operable with a keyboard alone. We use logical tab order, visible focus
+      indicators, and standard interactive controls, so the whole pay stub wizard — every step, every field,
+      the preview, and checkout — can be reached and activated without a mouse.
     </p>
     <p>
-      <strong>Forms and Input Accessibility</strong><br />
-      Our pay stub generation forms and account management interfaces are designed with accessibility in mind. Every form field includes clear, descriptive labels that remain visible when fields are in focus. We provide helpful instructions and error messages that are clearly associated with relevant form elements and can be easily understood by all users.
-      <br />
-      Error messages are presented in a clear, non-technical language and include specific guidance on how to correct any issues. Required fields are clearly marked, and users receive confirmation when forms are successfully submitted.
-    </p>
-    <h4>5. Assistive Technology Support</h4>
-    <p>
-      <strong>Screen Readers</strong><br />
-      We actively ensure compatibility with major screen reading software across different operating systems and browsers. Our platform works effectively with JAWS for Windows, NVDA for Windows, VoiceOver for macOS and iOS, and TalkBack for Android devices. We regularly update our implementation to maintain compatibility as these technologies evolve.
+      <strong>Screen readers</strong><br />
+      We build with semantic HTML, labelled form fields, descriptive headings, and alternative text, so the
+      site works with screen readers such as NVDA, JAWS, and VoiceOver. Form errors are written in plain
+      language and associated with the field they belong to. Wage figures, tax lines, and deduction totals are
+      rendered as real text on screen — not as images — so a screen reader can read them.
     </p>
     <p>
-      <strong>Voice Recognition Software</strong><br />
-      Our website is designed to work with voice recognition software such as Dragon NaturallySpeaking and built-in voice control features. Users can navigate our interface, fill out forms, and complete pay stub generation tasks using voice commands. We implement proper markup and interaction patterns that support voice-controlled navigation.
+      <strong>Contrast and text size</strong><br />
+      Our color palette is chosen to meet WCAG contrast ratios, and we never use color alone to carry meaning.
+      The layout is built to stay usable when text is enlarged, including at 200%.
     </p>
     <p>
-      <strong>Switch Navigation</strong><br />
-      For users who navigate using switch devices or similar assistive technologies, our website provides predictable navigation patterns and clear focus management. Interactive elements are designed to be easily selectable, and users can move through our interface systematically without encountering navigation dead ends or confusing interaction patterns.
-    </p>
-    <h4>6. Content Accessibility</h4>
-    <p>
-      <strong>Document Accessibility</strong><br />
-      Pay stubs and other documents generated through our platform are created with accessibility in mind. PDF documents include proper structure, alternative text for images, and tagged content that can be read by screen readers. We ensure that printed and downloaded documents maintain their accessibility features across different formats and devices.
-      <br />
-      When we provide downloadable resources or instructional materials, these documents are also designed to meet accessibility standards. This includes providing alternative formats when requested and ensuring that essential information is available in multiple accessible formats.
+      <strong>Forms</strong><br />
+      Every field has a visible label. Required fields are marked. Validation messages say what is wrong and
+      how to fix it.
     </p>
     <p>
-      <strong>Multimedia Content</strong><br />
-      Any video content on our platform includes captions for users who are deaf or hard of hearing. Audio content is accompanied by transcripts when possible, and we provide alternative text descriptions for complex graphics or charts that convey important information about payroll calculations or tax withholdings.
-      <br />
-      Interactive elements within multimedia content are designed to be accessible through keyboard navigation and compatible with assistive technologies.
+      <strong>Mobile and touch</strong><br />
+      The site is responsive and is built to work with the accessibility features built into mobile operating
+      systems, such as VoiceOver on iOS and TalkBack on Android, with the same functionality available as on
+      desktop.
     </p>
-    <h4>7. Mobile Accessibility</h4>
+
+    <h4>5. Known Limitation: The Downloaded PDF</h4>
     <p>
-      <strong>Responsive Design</strong><br />
-      Our mobile website and any mobile applications are designed with accessibility in mind. Touch targets are appropriately sized for users with motor impairments, and the interface remains navigable using assistive technologies on mobile devices. We ensure that all functionality available on desktop versions is also accessible through mobile interfaces.
-    </p>
-    <p>
-      <strong>Mobile Assistive Technology</strong><br />
-      Our mobile implementation works effectively with built-in accessibility features such as VoiceOver on iOS devices and TalkBack on Android devices. Users can complete pay stub generation tasks and access account features using mobile assistive technologies with the same level of functionality available on desktop platforms.
-    </p>
-    <h4>8. Ongoing Accessibility Efforts</h4>
-    <p>
-      <strong>Regular Accessibility Audits</strong><br />
-      We conduct regular accessibility audits of our platform using both automated testing tools and manual evaluation methods. These assessments help us identify potential barriers and implement improvements before they affect user experience. We engage with accessibility experts and conduct user testing with individuals who use assistive technologies to ensure our solutions are effective in real-world scenarios.
+      We want to be straightforward about this one. The pay stub you see on screen is accessible HTML text. The
+      PDF you download is generated as a visual snapshot of that pay stub, which means{" "}
+      <strong>the PDF file itself is not tagged for screen readers</strong> and its text may not be selectable
+      or machine-readable.
     </p>
     <p>
-      <strong>User Feedback and Continuous Improvement</strong><br />
-      We actively seek feedback from users with disabilities about their experience using our platform. This feedback is invaluable in identifying areas for improvement and guiding our accessibility enhancement efforts. We maintain an ongoing dialogue with our accessibility-focused user community to ensure that our improvements address real user needs and preferences.
+      If you need the contents of your pay stub in an accessible form: the on-screen version is fully readable
+      by assistive technology, and printing from your browser preserves the text. If you need the figures in
+      another format, contact us at{" "}
+      <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a> and we will work with you. Improving
+      the accessibility of the generated PDF is on our roadmap.
+    </p>
+
+    <h4>6. Reporting an Accessibility Barrier</h4>
+    <p>
+      <strong>How to report</strong><br />
+      If anything on {SITE_DOMAIN} is difficult or impossible for you to use, email{" "}
+      <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a> or call{" "}
+      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>. It helps if you can tell us the page or step, the
+      assistive technology and browser you were using, and what happened.
     </p>
     <p>
-      <strong>Staff Training and Awareness</strong><br />
-      Our development team receives regular training on accessibility best practices and emerging standards. We maintain awareness of new assistive technologies and accessibility guidelines to ensure that our platform continues to evolve in an inclusive direction. All team members involved in content creation and website maintenance understand their role in maintaining accessibility standards.
-    </p>
-    <h4>9. Accessibility Feedback and Reporting</h4>
-    <p>
-      <strong>How to Report Accessibility Issues</strong><br />
-      If you encounter any accessibility barriers while using our website, please contact us immediately at accessibility@paystubissa.com. When reporting accessibility issues, please provide as much detail as possible, including the specific page or feature where you encountered the problem, the assistive technology you were using, and a description of the difficulty you experienced.
-      <br />
-      We take all accessibility feedback seriously and will work promptly to address any barriers you identify. Our goal is to resolve accessibility issues within five business days of receiving a report, though complex issues may require additional time for proper resolution.
+      <strong>What we will do</strong><br />
+      We will acknowledge your report within <strong>five business days</strong>. We will not promise you a fix
+      by a date we cannot keep: instead we will tell you honestly what the problem is, work with you on a
+      realistic timeline, and keep you updated as we work on it.
     </p>
     <p>
-      <strong>Feedback Response Process</strong><br />
-      Upon receiving accessibility feedback, we will acknowledge your report within 48 hours and provide you with information about our planned response timeline. We will keep you informed of our progress and may request additional information or clarification to ensure we fully understand and address the issue you encountered.
-      <br />
-      We view accessibility feedback as an opportunity to improve our platform for all users and appreciate the time and effort required to report accessibility concerns. Your feedback helps us create a more inclusive experience for everyone who uses our services.
+      <strong>In the meantime</strong><br />
+      While a barrier is unresolved, we will give you the information or the assistance you need by another
+      route — by phone, by email, or in an alternative accessible format — so that the barrier does not leave
+      you without the service.
     </p>
-    <h4>10. Alternative Access Methods</h4>
+
+    <h4>7. Alternative Ways to Get Help</h4>
     <p>
-      <strong>Phone Support</strong><br />
-      For users who are unable to access our online platform due to accessibility barriers, we provide phone support to assist with pay stub generation and account management. Our customer service representatives are trained to provide the same level of service and functionality available through our website via telephone assistance.
-    </p>
-    <p>
-      <strong>Alternative Formats</strong><br />
-      Upon request, we can provide information about our services in alternative formats such as large print, electronic text, or other accessible formats. We are committed to ensuring that essential information about our payroll services is available in the format that works best for each individual user.
+      <strong>Phone</strong><br />
+      You can call us at <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a> during business hours. If you cannot
+      complete something on the site, we will talk you through it.
     </p>
     <p>
-      <strong>Assisted Service Options</strong><br />
-      We offer personalized assistance for users who need help navigating our platform or completing pay stub generation tasks. This may include guided phone support, screen sharing sessions, or other accommodations that help ensure equal access to our services.
-    </p>
-    <h4>11. Third-Party Content and Services</h4>
-    <p>
-      <strong>External Links and Resources</strong><br />
-      When we link to external resources or third-party websites, we make reasonable efforts to ensure that these destinations are accessible. However, we cannot guarantee the accessibility of external sites and encourage users to contact us if they encounter accessibility barriers when following links from our platform.
-      <br />
-      We provide clear indication when links lead to external sites and, when possible, include information about the accessibility features or potential barriers of destination websites.
+      <strong>Email</strong><br />
+      Write to <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a> and a person will read it and
+      reply.
     </p>
     <p>
-      <strong>Integrated Services</strong><br />
-      Any third-party services integrated into our platform are evaluated for accessibility compliance before implementation. We work with vendors and service providers to ensure that integrated features maintain the same level of accessibility as our primary platform.
+      <strong>Alternative formats</strong><br />
+      On request, we will provide information about our service — pricing, how it works, our policies — in an
+      alternative accessible format such as large print or plain electronic text.
     </p>
-    <h4>12. Legal Compliance and Standards</h4>
+
+    <h4>8. Third-Party Components</h4>
     <p>
-      <strong>Regulatory Compliance</strong><br />
-      We strive to exceed minimum legal requirements for digital accessibility and maintain compliance with applicable federal, state, and local accessibility regulations. Our accessibility efforts are designed to meet or exceed ADA requirements and align with established accessibility standards and best practices.
-    </p>
-    <p>
-      <strong>Industry Standards</strong><br />
-      Beyond legal compliance, we aim to meet industry best practices for accessibility in financial and business services. We stay informed about emerging standards and guidelines specific to payroll and financial technology platforms to ensure our accessibility efforts remain current and effective.
-    </p>
-    <h4>13. Accessibility Policy Updates</h4>
-    <p>
-      <strong>Policy Review and Updates</strong><br />
-      This Accessibility Policy is reviewed regularly and updated as needed to reflect changes in our accessibility practices, emerging standards, or new regulatory requirements. We will notify users of significant changes to this policy through our website and direct communication channels.
+      <strong>Payment</strong><br />
+      Checkout uses PayPal's own payment buttons, which are provided and controlled by PayPal. Their
+      accessibility is PayPal's responsibility, not ours. If you hit a barrier at the payment step, tell us
+      anyway — we will help you and we will raise it with PayPal.
     </p>
     <p>
-      <strong>Communication of Changes</strong><br />
-      When we make improvements to our accessibility features or update our accessibility practices, we will communicate these changes through our website announcements and direct notification to users who have expressed interest in accessibility updates.
+      <strong>External links</strong><br />
+      Where we link to outside resources, such as government or state tax pages, we cannot guarantee their
+      accessibility. Let us know if a link we published leads to a barrier and we will look for a better
+      source.
     </p>
-    <h4>14. Commitment to Continuous Improvement</h4>
+
+    <h4>9. How We Test</h4>
     <p>
-      <strong>Future Accessibility Goals</strong><br />
-      We are committed to continuously improving the accessibility of our platform and services. Our ongoing efforts include staying current with emerging accessibility technologies, expanding our assistive technology support, and implementing user-requested accessibility enhancements.
+      We check accessibility during development using automated tooling and manual keyboard and screen-reader
+      testing. We have not yet commissioned an independent audit or formal user testing with people who use
+      assistive technology. We say so plainly rather than imply a level of assurance we have not earned. User
+      reports are, today, our most valuable source of information — which is why we take them seriously.
     </p>
+
+    <h4>10. Updates to This Policy</h4>
     <p>
-      <strong>Innovation and Accessibility</strong><br />
-      As we develop new features and services, accessibility considerations are integrated into the design and development process from the beginning. We believe that innovative design and accessibility are complementary goals that result in better experiences for all users.
+      We review this policy as our accessibility work progresses and update it to reflect what is actually true
+      at the time. Changes are posted on this page with a new "Last Updated" date.
     </p>
+
     <h4>Acknowledgment</h4>
     <p>
-      We recognize that accessibility is an ongoing journey rather than a destination. We are committed to learning, improving, and adapting our approach based on user feedback, technological advances, and evolving accessibility standards. Our goal is to create an inclusive platform where everyone can access the payroll services they need with dignity and independence.
+      Accessibility is not a box we tick. It is work we keep doing. If we have made something harder for you
+      than it should be, we want to know — write to{" "}
+      <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a>.
     </p>
     <p>
-      <strong>Effective Date:</strong> This Accessibility Policy is effective as of May 31, 2025.<br />
-      For the most current version of this Accessibility Policy, please visit <a href="https://paystubissa.com/accessibility" target="_blank" rel="noopener noreferrer">paystubissa.com/accessibility</a>
+      <strong>Effective Date:</strong> This Accessibility Policy is effective as of {POLICIES_LAST_UPDATED}.<br />
+      The current version is always at{" "}
+      <a href={`https://${SITE_DOMAIN}/accessibility`} target="_blank" rel="noopener noreferrer">
+        {SITE_DOMAIN}/accessibility
+      </a>
+      .
     </p>
   </LegalPageShell>
 );

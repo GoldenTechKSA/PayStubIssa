@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, Link, Chip,
+  Checkbox, FormControlLabel,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
@@ -9,8 +10,10 @@ import LockIcon from "@mui/icons-material/Lock";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
-import { buildPaystubModel } from "../../../templates/utils/buildPaystubModel";
+import { buildPaystubModel, buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
+import { UNIT_PRICE, orderTotal, normalizeStubCount } from "constants/pricing";
+import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING } from "constants/business-info";
 import { telemetryService } from "../../../services/telemetry-service";
 import TemplateManager from "../../../templates/components/templatemanager";
 import { FitPage } from "../FitPage";
@@ -60,7 +63,26 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
 
   const [extraNotes, setExtraNotes] = useState(generalInfo.extraNotes || "");
 
+  // The customer must affirm the figures are real before we will take their money. This is the
+  // condition of the licence to use the document — see the Accuracy Attestation section of the
+  // Terms. `attestedAt` is recorded with the payment so the affirmation is timestamped.
+  const [attested, setAttested] = useState(false);
+  const [attestedAt, setAttestedAt] = useState<string | null>(null);
+
   const model = buildPaystubModel(fullState);
+  const models = buildPaystubModels(fullState);
+
+  const stubCount = normalizeStubCount(generalInfo.payStubCount);
+  const total = orderTotal(stubCount);
+
+  // The run spans from the first stub's period start to the last stub's period end.
+  const firstStub = models[0];
+  const lastStub = models[models.length - 1];
+
+  const handleAttestChange = (checked: boolean) => {
+    setAttested(checked);
+    setAttestedAt(checked ? new Date().toISOString() : null);
+  };
 
   const handlePaymentSuccess = (details: any) => {
     dispatch(updateAppSettings({ canPrint: true }));
@@ -70,6 +92,8 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
         amount: details?.purchase_units?.[0]?.amount?.value,
         currency: details?.purchase_units?.[0]?.amount?.currency_code,
         paystubTemplate: appSettings.templateId,
+        stubCount,
+        attestedAt,
       });
     } catch { /* telemetry best-effort */ }
   };
@@ -102,7 +126,8 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     <Box>
       <Typography variant="h5" component="h2" gutterBottom>Review &amp; finalize</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Check everything below. Your pay stub unlocks for printing and PDF download after payment.
+        Check everything below. Your pay stub{stubCount === 1 ? "" : "s"} unlock{stubCount === 1 ? "s" : ""} for
+        printing and PDF download after payment.
       </Typography>
 
       <Grid container spacing={3}>
@@ -124,9 +149,11 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
 
             <SummarySection title="Pay period" onEdit={() => onEdit(2)} rows={[
               ["Frequency", incomeDetails.periodType],
-              ["Period", `${String(incomeDetails.periodStartDate || "")} – ${String(incomeDetails.periodEndDate || "")}`],
-              ["Pay date", String(incomeDetails.periodPayDate || "")],
-              ["Pay stubs", generalInfo.payStubCount],
+              // With a run of stubs, show the span the whole run covers, not just the first period.
+              [stubCount === 1 ? "Period" : "Periods covered",
+                `${String(firstStub.incomeDetails.periodStartDate || "")} – ${String(lastStub.incomeDetails.periodEndDate || "")}`],
+              [stubCount === 1 ? "Pay date" : "First pay date", String(firstStub.incomeDetails.periodPayDate || "")],
+              ["Pay stubs", stubCount],
             ]} />
 
             <SummarySection title="Earnings" onEdit={() => onEdit(3)} rows={[
@@ -137,7 +164,9 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
             {/* Computed pay summary */}
             <Card variant="outlined" sx={{ borderColor: "divider", bgcolor: "background.default" }}>
               <CardContent>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>Pay summary (this period)</Typography>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  Pay summary ({stubCount === 1 ? "this period" : "per period"})
+                </Typography>
                 <Stack spacing={0.5}>
                   {([
                     ["Gross pay", model.grossPay],
@@ -169,23 +198,81 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
               <CardContent>
                 {canPrint ? (
                   <>
-                    <Alert severity="success" sx={{ mb: 2 }}>Payment complete — your pay stub is unlocked.</Alert>
+                    <Alert severity="success" sx={{ mb: 2 }}>
+                      Payment complete — your {stubCount === 1 ? "pay stub is" : `${stubCount} pay stubs are`} unlocked.
+                    </Alert>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                      <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint}>Print pay stub</Button>
+                      <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint}>
+                        {stubCount === 1 ? "Print pay stub" : `Print ${stubCount} pay stubs`}
+                      </Button>
                       <PDFDownloadButton targetId="pdf-content" fileName="paystub" buttonText="Download PDF" />
                     </Stack>
                   </>
                 ) : (
                   <>
-                    <Typography variant="subtitle1" fontWeight={600} gutterBottom>Pay to unlock — $8.99</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Secure checkout via PayPal. After payment you can print and download your pay stub as a PDF.
-                    </Typography>
-                    <PayPal onPaymentSuccess={handlePaymentSuccess} onPaymentError={handlePaymentError} />
+                    <Typography variant="subtitle1" fontWeight={600} gutterBottom>Pay to unlock</Typography>
+
+                    {/* Priced per stub. Show the arithmetic so the total is never a surprise. */}
+                    <Stack spacing={0.5} sx={{ mb: 2 }}>
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="body2" color="text.secondary">
+                          {stubCount} pay stub{stubCount === 1 ? "" : "s"} × {formatCurrency(UNIT_PRICE)}
+                        </Typography>
+                        <Typography variant="body2">{formatCurrency(total)}</Typography>
+                      </Stack>
+                      <Divider />
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="subtitle2" fontWeight={700}>Total</Typography>
+                        <Typography variant="subtitle2" fontWeight={700}>{formatCurrency(total)}</Typography>
+                      </Stack>
+                    </Stack>
+
+                    {/* Accuracy attestation — payment is not offered until this is affirmed. */}
+                    <Box sx={{ p: 1.5, mb: 2, bgcolor: "background.default", border: 1, borderColor: "divider", borderRadius: 1 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={attested}
+                            onChange={e => handleAttestChange(e.target.checked)}
+                            sx={{ alignSelf: "flex-start", pt: 0 }}
+                            inputProps={{ "aria-label": "Confirm the information entered is true and accurate" }}
+                          />
+                        }
+                        label={<Typography variant="body2">{ATTESTATION_TEXT}</Typography>}
+                        sx={{ alignItems: "flex-start", m: 0 }}
+                      />
+                      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+                        {FRAUD_WARNING}
+                      </Typography>
+                    </Box>
+
+                    {attested ? (
+                      <>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          Secure checkout via PayPal. After payment you can print and download your
+                          pay stub{stubCount === 1 ? "" : "s"} as a PDF.
+                        </Typography>
+                        <PayPal
+                          amount={total}
+                          description={`${stubCount} pay stub${stubCount === 1 ? "" : "s"}`}
+                          onPaymentSuccess={handlePaymentSuccess}
+                          onPaymentError={handlePaymentError}
+                        />
+                      </>
+                    ) : (
+                      <Alert severity="info" variant="outlined">
+                        Confirm the statement above to continue to payment.
+                      </Alert>
+                    )}
+
                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 2, color: "text.disabled" }}>
                       <LockIcon fontSize="small" />
                       <Typography variant="caption">Print &amp; PDF unlock after payment</Typography>
                     </Stack>
+
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
+                      {CORE_DISCLAIMER}
+                    </Typography>
                   </>
                 )}
               </CardContent>
@@ -215,7 +302,9 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
             </Box>
           </Box>
           <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1, textAlign: "center" }}>
-            This is exactly what will print.
+            {stubCount === 1
+              ? "This is exactly what will print."
+              : `This is exactly what will print — ${stubCount} pay stubs, one per page, covering ${stubCount} consecutive pay periods.`}
           </Typography>
         </Grid>
       </Grid>

@@ -15,7 +15,8 @@
 import { PayStubDetails, PaystubModel } from 'assets/data/pay-stub-details';
 import { taxCalculator } from '../../utils/tax-calculator';
 import { calculateOvertime } from '../../utils/overtime-calculator';
-import { periodsPerYear, periodsToDateThisYear } from '../../utils/date-calculator';
+import { periodsPerYear, periodsElapsedAt, buildPayPeriods, PayPeriod } from '../../utils/date-calculator';
+import { normalizeStubCount } from 'constants/pricing';
 import { FilingStatus, TaxCalculationResult } from '../../types/tax-rate-types';
 
 // Coerce possibly-stringy form values to a finite number.
@@ -40,11 +41,18 @@ const resolveFilingStatus = (raw: string | undefined): FilingStatus => {
   return (raw ?? '').toLowerCase() === 'married' ? 'marriedFilingJointly' : 'single';
 };
 
-export const buildPaystubModel = (store: PayStubDetails): PaystubModel => {
-  const { incomeDetails, employeeInfo } = store;
+/**
+ * Build the model for ONE pay period.
+ *
+ * `store` is expected to already carry that period's dates and check/stub numbers — see
+ * buildPaystubModels, which derives a per-stub store before calling this.
+ */
+const buildModelForPeriod = (store: PayStubDetails, stubIndex: number, stubCount: number): PaystubModel => {
+  const { incomeDetails, employeeInfo, generalInfo } = store;
 
   const perYear = periodsPerYear(incomeDetails.periodType);
-  const periodsToDate = periodsToDateThisYear(incomeDetails.periodType);
+  // YTD is measured against THIS stub's pay date, not today — so a run of stubs shows YTD growing.
+  const periodsToDate = periodsElapsedAt(incomeDetails.periodType, new Date(incomeDetails.periodPayDate));
 
   // --- Earnings (current period) ---
   const regularPay =
@@ -92,6 +100,12 @@ export const buildPaystubModel = (store: PayStubDetails): PaystubModel => {
   return {
     ...store,
 
+    // The per-stub store handed to us already carries this stub's own numbers — don't advance again.
+    stubIndex,
+    stubCount,
+    stubNumber: num(generalInfo.payStubNumber),
+    checkNumber: num(generalInfo.checkNumber),
+
     regularPay,
     overtimePay,
     otherEarnings,
@@ -132,5 +146,54 @@ export const buildPaystubModel = (store: PayStubDetails): PaystubModel => {
     netPayYTD: ytd(netPay),
   };
 };
+
+/**
+ * Build one model per purchased pay stub.
+ *
+ * The customer pays per stub (see constants/pricing) and picks a count of 1–12. The date they
+ * entered is period #1; each subsequent stub covers the next consecutive period, with its own
+ * period dates, its own incrementing check and stub numbers, and its own YTD figures.
+ *
+ * Always returns at least one model, so callers never have to guard against an empty array.
+ */
+export const buildPaystubModels = (store: PayStubDetails): PaystubModel[] => {
+  const { incomeDetails, generalInfo } = store;
+
+  const stubCount = normalizeStubCount(generalInfo.payStubCount);
+  const periods = buildPayPeriods(incomeDetails.periodStartDate, incomeDetails.periodType, stubCount);
+
+  // No usable start date / period type yet (the user is mid-wizard): fall back to whatever dates
+  // are already on the store so the preview still renders.
+  if (periods.length === 0) {
+    return [buildModelForPeriod(store, 0, 1)];
+  }
+
+  return periods.map((period: PayPeriod, index: number) =>
+    buildModelForPeriod(
+      {
+        ...store,
+        incomeDetails: {
+          ...incomeDetails,
+          periodStartDate: period.startDate as unknown as Date,
+          periodEndDate: period.endDate as unknown as Date,
+          periodPayDate: period.payDate as unknown as Date,
+        },
+        generalInfo: {
+          ...generalInfo,
+          checkNumber: Number(generalInfo.checkNumber) + index,
+          payStubNumber: Number(generalInfo.payStubNumber) + index,
+        },
+      },
+      index,
+      periods.length,
+    ),
+  );
+};
+
+/**
+ * The model for the FIRST pay stub. Convenience for callers that only ever show one — the
+ * template gallery preview and the Review step's pay summary.
+ */
+export const buildPaystubModel = (store: PayStubDetails): PaystubModel => buildPaystubModels(store)[0];
 
 export default buildPaystubModel;

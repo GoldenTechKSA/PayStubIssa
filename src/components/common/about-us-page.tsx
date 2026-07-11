@@ -1,5 +1,17 @@
 import React from "react";
 import { Container, Box, Typography, Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Grid, Alert } from "@mui/material";
+import {
+  BRAND_NAME,
+  CORE_DISCLAIMER,
+  FRAUD_WARNING,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+  SUPPORT_PHONE_HREF,
+  TEMPLATE_COUNT,
+} from "constants/business-info";
+import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
+
+const PRICE = `$${UNIT_PRICE.toFixed(2)}`;
 
 const CheckList: React.FC<{ items: string[] }> = ({ items }) => (
   <List dense disablePadding>
@@ -25,35 +37,37 @@ const STEPS = [
   {
     title: "Step 1: Enter your details",
     items: [
-      "Company name & details",
-      "Employee name, pay rate, and hours worked",
-      "Pay period dates and deductions (taxes, benefits, etc.)",
-      "Any additional earnings (bonuses, overtime, etc.)",
+      "Company name, address, and logo",
+      "Employee name, state, filing status, pay rate, and hours worked",
+      `Pay period dates — generate anywhere from ${MIN_STUBS} to ${MAX_STUBS} stubs for consecutive periods in one order`,
+      "Earnings and deductions (overtime, bonuses, benefits, retirement)",
     ],
   },
   {
-    title: "Step 2: Customize & preview",
+    title: "Step 2: Choose a template and preview",
     items: [
-      "Select a professional pay stub template that fits your needs",
-      "Instantly preview your pay stub with all entered details",
-      "Make adjustments if needed before finalizing",
+      `Choose from ${TEMPLATE_COUNT} templates built for specific worker types — independent contractor, commission-only, hospitality and tips, construction, travel nurse, day rate, per diem, seasonal, and more`,
+      "See a live preview of your pay stub as you go, before you pay",
+      "Go back and change anything — edits are free and unlimited",
     ],
   },
   {
-    title: "Step 3: Download & print",
+    title: "Step 3: Download and print",
     items: [
-      "Save your pay stub as a PDF (print-ready format)",
-      "Print or email it directly from your local machine",
-      "Your data stays on your device for privacy",
+      "Pay per stub, then print or download immediately",
+      "You get a US Letter PDF with one page per pay stub",
+      "Save your file before you close the tab — nothing is stored anywhere",
     ],
   },
 ];
 
 const WHY_US = [
-  "IRS & SBA-compliant — our pay stubs meet official standards for income verification.",
-  "Instant generation — create, customize, and download pay stubs in minutes.",
-  "Secure & reliable — bank-level encryption protects your sensitive data.",
-  "Accepted everywhere — valid for loans, rentals, mortgages, and employment verification.",
+  "Private by design — your data never leaves your browser. We have no server storing it, because we never receive it.",
+  "Real tax math — federal income tax, Social Security, Medicare, and state income tax are calculated automatically from the employee's state and IRS filing status.",
+  `Built for how people actually get paid — ${TEMPLATE_COUNT} templates covering contractors, tipped workers, commission earners, day-rate and per-diem workers, and more.`,
+  "A clear, professional wage record — gross pay, itemized earnings, taxes withheld, deductions, net pay, and year-to-date figures, laid out the way a pay stub should be.",
+  "Instant generation — create, preview, and download in minutes. No software to install.",
+  `Pay per stub, no subscription — ${PRICE} per pay stub, ${MIN_STUBS}–${MAX_STUBS} stubs per order.`,
 ];
 
 const AboutUsPage: React.FC = () => (
@@ -63,22 +77,25 @@ const AboutUsPage: React.FC = () => (
 
       <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Who are we?</Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-        We are a trusted payroll solutions provider specializing in professional pay stub generation for small
-        businesses, freelancers, and independent contractors. Our team consists of certified accountants and payroll
-        experts with years of experience streamlining financial documentation.
+        {BRAND_NAME} makes pay stub generation simple for small businesses, freelancers, and independent
+        contractors. Our team includes certified accountants and payroll experts, and we have built one thing and
+        built it well: a tool that takes the figures you already have and turns them into a clear, professional
+        wage record.
       </Typography>
 
       <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Why choose us?</Typography>
       <CheckList items={WHY_US} />
       <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-        We’re committed to simplifying payroll for business owners while ensuring accuracy and professionalism in every document.
+        We’re committed to making payroll documentation straightforward for business owners — accurate arithmetic,
+        professional presentation, and no surprises.
       </Typography>
     </Box>
 
     <Box sx={{ mb: 4 }}>
       <Typography variant="h4" component="h2" gutterBottom>How our pay stub generator works</Typography>
       <Typography variant="body1" color="text.secondary">
-        Creating accurate, professional pay stubs is simple with our tool — just follow these three easy steps.
+        Our six-step wizard walks you through company, employee, pay period, earnings, template, and review. It comes
+        down to three easy stages.
       </Typography>
     </Box>
 
@@ -96,22 +113,41 @@ const AboutUsPage: React.FC = () => (
     </Grid>
 
     <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-      That’s it! No software installs, no waiting — just instant, professional pay stubs.
+      That’s it! No software installs, no accounts, no waiting — just a professional pay stub in minutes.
     </Typography>
 
     <Card variant="outlined" sx={{ borderColor: "divider", bgcolor: "background.default", mb: 4 }}>
       <CardContent>
         <Typography variant="h6" component="h2" gutterBottom>Why use our generator?</Typography>
         <CheckList items={[
-          "IRS-compliant formats",
           "Automatic tax & deduction calculations",
-          "Secure & confidential (256-bit encryption)",
+          "Company logo upload and a template for your kind of work",
+          "Your data stays in your browser — we never receive it",
           "Mobile-friendly — create stubs on the go",
         ]} />
       </CardContent>
     </Card>
 
-    <Alert severity="info">Need help? Our support team is available 24/7.</Alert>
+    <Card variant="outlined" sx={{ borderColor: "divider", mb: 4 }}>
+      <CardContent>
+        <Typography variant="h6" component="h2" gutterBottom>What we are — and what we aren’t</Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          {CORE_DISCLAIMER}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          We make no promise that any third party — a lender, landlord, employer, or agency — will accept a document
+          you create here. That is always their decision. Year-to-date figures are a proportional estimate based on
+          what you enter, not a record of a real payroll history.
+        </Typography>
+        <Alert severity="warning">{FRAUD_WARNING}</Alert>
+      </CardContent>
+    </Card>
+
+    <Alert severity="info">
+      Need help? Our support team is available during business hours by phone at{" "}
+      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a> or by email at{" "}
+      <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+    </Alert>
   </Container>
 );
 

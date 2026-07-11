@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import {
-  Box, Container, Grid, Typography, TextField, MenuItem, Button, Alert, CircularProgress, Paper,
+  Box, Container, Grid, Typography, TextField, MenuItem, Button, Alert, CircularProgress, Paper, Link,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_HREF } from "constants/business-info";
 
 interface FormData {
   firstName: string;
@@ -54,10 +55,23 @@ const ContactForm: React.FC = () => {
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      // Simulated submit — wire to a real endpoint when available.
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      // There is no backend to POST to, so the form hands the message to the user's own mail
+      // client rather than pretending to send it. (It previously waited 1.2s and then claimed
+      // "Message sent successfully!" while silently discarding the message.)
+      const subjectLabel = SUBJECTS.find(s => s.value === formData.subject)?.label ?? "Enquiry";
+      const subject = `[${subjectLabel}] Message from ${formData.firstName} ${formData.lastName}`;
+      const body = [
+        `Name: ${formData.firstName} ${formData.lastName}`,
+        `Email: ${formData.email}`,
+        formData.phone ? `Phone: ${formData.phone}` : null,
+        "",
+        formData.message,
+      ].filter(Boolean).join("\n");
+
+      window.location.href =
+        `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
       setIsSubmitted(true);
-      setFormData(EMPTY);
     } finally {
       setIsSubmitting(false);
     }
@@ -67,11 +81,14 @@ const ContactForm: React.FC = () => {
     return (
       <Alert
         icon={<CheckCircleIcon fontSize="inherit" />}
-        severity="success"
-        action={<Button color="inherit" size="small" onClick={() => setIsSubmitted(false)}>Send another</Button>}
+        severity="info"
+        action={<Button color="inherit" size="small" onClick={() => setIsSubmitted(false)}>Back to the form</Button>}
       >
-        <Typography fontWeight={600}>Message sent successfully!</Typography>
-        Thank you for contacting us. We’ll get back to you within 24 hours.
+        <Typography fontWeight={600}>Your email app should now be open.</Typography>
+        We’ve composed the message for you — press send in your email app and it will reach us
+        at {SUPPORT_EMAIL}. If nothing opened, email us directly at{" "}
+        <Link href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</Link> or call{" "}
+        <Link href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</Link>.
       </Alert>
     );
   }
@@ -80,7 +97,9 @@ const ContactForm: React.FC = () => {
     <Box component="form" noValidate onSubmit={handleSubmit}>
       <Typography variant="h6" component="h2" gutterBottom>Send us a message</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Fill out the form below and we’ll get back to you shortly.
+        Fill this in and we’ll open a pre-written email in your mail app — just press send. You can
+        also reach us directly at <Link href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</Link> or{" "}
+        <Link href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</Link>.
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6 }}>
@@ -113,7 +132,7 @@ const ContactForm: React.FC = () => {
         startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}
         sx={{ mt: 1 }}
       >
-        {isSubmitting ? "Sending message…" : "Send message"}
+        {isSubmitting ? "Opening your email app…" : "Compose email"}
       </Button>
     </Box>
   );

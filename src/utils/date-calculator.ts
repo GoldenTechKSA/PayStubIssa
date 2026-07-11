@@ -73,14 +73,96 @@ export const periodsPerYear = (periodType: string): number => {
     }
 };
 
-// Number of pay periods elapsed so far this calendar year, used as the YTD multiplier
-// (current-period amount * periodsToDateThisYear). Always at least 1, capped at a full year.
+// Normalize a date value to a `YYYY-MM-DD` string, or '' if it isn't a usable date.
+//
+// The store types these fields as `Date`, but the wizard's date inputs actually put
+// `YYYY-MM-DD` strings there, and tests construct real Dates. Both have to work, and
+// `String(someDate).slice(0, 10)` does NOT — it yields "Wed Jan 01".
+export const toISODate = (value: unknown): string => {
+    if (!value) return '';
+
+    if (value instanceof Date) {
+        if (Number.isNaN(value.getTime())) return '';
+
+        // A Date sitting exactly on UTC midnight came from a date-only string
+        // (`new Date('2025-01-01')`), so it must be read back in UTC — reading it with local
+        // getters lands on the previous day everywhere west of Greenwich. Anything else was
+        // built from local parts (`new Date()`, `new Date(2025, 0, 1)`) and reads as local.
+        const isUtcMidnight = value.getUTCHours() === 0
+            && value.getUTCMinutes() === 0
+            && value.getUTCSeconds() === 0
+            && value.getUTCMilliseconds() === 0;
+
+        if (isUtcMidnight) return value.toISOString().slice(0, 10);
+
+        const year = value.getFullYear();
+        const month = String(value.getMonth() + 1).padStart(2, '0');
+        const day = String(value.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    const raw = String(value);
+    if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return raw.slice(0, 10);
+
+    const parsed = new Date(raw);
+    return Number.isNaN(parsed.getTime()) ? '' : toISODate(parsed);
+};
+
+// Number of pay periods elapsed in `asOf`'s calendar year, as of `asOf`. Used as the YTD
+// multiplier (current-period amount * periods elapsed). Always at least 1, capped at a full year.
 // This is a simple proportional estimate, not a true payroll-history accumulation.
-export const periodsToDateThisYear = (periodType: string): number => {
+//
+// Takes the date explicitly so that each stub in a multi-stub run computes YTD against its OWN
+// pay date — that is what makes YTD grow correctly from one stub to the next.
+export const periodsElapsedAt = (periodType: string, asOf: unknown): number => {
     const perYear = periodsPerYear(periodType);
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const days = Math.floor((now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+
+    const iso = toISODate(asOf);
+    // An unusable date (mid-wizard, nothing entered yet) falls back to today.
+    const date = iso ? new Date(`${iso}T00:00:00Z`) : new Date();
+
+    const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 1);
+    const days = Math.floor((date.getTime() - startOfYear) / (24 * 60 * 60 * 1000));
     const fractionElapsed = (days + 1) / 365;
     return Math.min(perYear, Math.max(1, Math.ceil(fractionElapsed * perYear)));
+};
+
+// Periods elapsed so far this year, as of today. Thin wrapper kept for existing callers.
+export const periodsToDateThisYear = (periodType: string): number =>
+    periodsElapsedAt(periodType, new Date());
+
+export interface PayPeriod {
+    startDate: string; // YYYY-MM-DD
+    endDate: string;
+    payDate: string;
+}
+
+// Expand a starting date into `count` CONSECUTIVE pay periods of the given frequency.
+// Each period begins the day after the previous one ended, so the run is gapless.
+//
+// The date the user enters is period #1; the run advances forward from there. That matches the
+// rest of the form, where the check number and pay stub number are both "starting" values that
+// increment across the run.
+export const buildPayPeriods = (startDate: unknown, periodType: string, count: number): PayPeriod[] => {
+    const periods: PayPeriod[] = [];
+
+    let currentStart = toISODate(startDate);
+    if (!currentStart || !periodType) return periods;
+
+    const total = Math.max(1, Math.floor(count) || 1);
+
+    for (let i = 0; i < total; i++) {
+        const endDate = calculateEndDate(currentStart, periodType);
+        if (!endDate) break;
+
+        periods.push({ startDate: currentStart, endDate, payDate: calculatePayDate(endDate) });
+
+        // The next period starts the day after this one ends. Step in UTC so the run can't
+        // drift a day in timezones behind GMT.
+        const nextStart = new Date(`${endDate}T00:00:00Z`);
+        nextStart.setUTCDate(nextStart.getUTCDate() + 1);
+        currentStart = nextStart.toISOString().slice(0, 10);
+    }
+
+    return periods;
 };

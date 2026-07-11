@@ -8,29 +8,35 @@
  * there is no hardcoded data here.
  */
 
-import React, { useState, useEffect } from 'react';
-import { PayStubDetails, PaystubModel } from 'assets/data/pay-stub-details';
+import React, { useState, useEffect, useMemo } from 'react';
+import { PayStubDetails } from 'assets/data/pay-stub-details';
 import { PaystubRenderer } from './PaystubRenderer';
 import { loadPaystubConfig, validateConfig } from './paystub/xmlParser';
-import { buildPaystubModel } from '../utils/buildPaystubModel';
+import { buildPaystubModels } from '../utils/buildPaystubModel';
 import type { PaystubConfig } from './paystub/types';
 
 interface TemplateManagerProps {
   id: number;
   configPath: string;
   store: PayStubDetails;
+  /**
+   * Cap how many stubs to render. The gallery preview passes 1 so that picking a template
+   * doesn't render a 12-page document; the Review step omits it and renders the whole run.
+   */
+  maxStubs?: number;
 }
 
-export const TemplateManager: React.FC<TemplateManagerProps> = ({ configPath, store }) => {
+export const TemplateManager: React.FC<TemplateManagerProps> = ({ configPath, store, maxStubs }) => {
   const [config, setConfig] = useState<PaystubConfig | null>(null);
-  const [data, setData] = useState<PaystubModel | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Build the computed data model from the store (taxes, earnings, deductions, net + YTD).
-  useEffect(() => {
-    setData(buildPaystubModel(store));
-  }, [store]);
+  // One computed model per purchased stub (taxes, earnings, deductions, net + YTD).
+  // The XML config is fetched once below and reused for every page in the run.
+  const models = useMemo(() => {
+    const all = buildPaystubModels(store);
+    return maxStubs && maxStubs > 0 ? all.slice(0, maxStubs) : all;
+  }, [store, maxStubs]);
 
   // Load and validate the XML configuration for the selected template.
   useEffect(() => {
@@ -63,7 +69,13 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({ configPath, st
           <strong>Error:</strong> {error}
         </div>
       )}
-      {config && data && !loading && (<div><PaystubRenderer config={config} data={data} /></div>)}
+      {config && !loading && models.map((model) => (
+        // Each stub is its own page: `paystub-page` is what the printer and the PDF exporter
+        // break on (see wizard/print.css and pdf/pdf-button-comp).
+        <div className="paystub-page" key={model.stubIndex}>
+          <PaystubRenderer config={config} data={model} />
+        </div>
+      ))}
     </div>
   );
 };

@@ -6,8 +6,9 @@
  */
 
 import { describe, it, expect } from '@jest/globals';
-import { buildPaystubModel } from '../templates/utils/buildPaystubModel';
-import { periodsToDateThisYear } from '../utils/date-calculator';
+import { buildPaystubModel, buildPaystubModels } from '../templates/utils/buildPaystubModel';
+import { periodsElapsedAt } from '../utils/date-calculator';
+import { orderTotal, UNIT_PRICE } from '../constants/pricing';
 import { PayStubDetails } from '../assets/data/pay-stub-details';
 
 const makeStore = (overrides: Partial<PayStubDetails['incomeDetails']> = {},
@@ -79,11 +80,80 @@ describe('buildPaystubModel', () => {
     expect(Number.isFinite(legacy.federalTax)).toBe(true);
   });
 
-  it('computes YTD as the current amount times periods elapsed this year', () => {
+  it('computes YTD from the periods elapsed as of THIS stub\'s pay date', () => {
     const m = buildPaystubModel(makeStore());
-    const multiplier = periodsToDateThisYear('Weekly');
+    // Not "as of today" — as of the stub's own pay date, so a run of stubs shows YTD growing.
+    const multiplier = periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
     expect(m.grossPayYTD).toBeCloseTo(m.grossPay * multiplier, 5);
     expect(m.netPayYTD).toBeCloseTo(m.netPay * multiplier, 5);
     expect(m.totalDeductionsYTD).toBeCloseTo(m.totalDeductions * multiplier, 5);
+  });
+});
+
+describe('buildPaystubModels — the purchased run of stubs', () => {
+  it('returns one model per purchased stub', () => {
+    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 4 } });
+    expect(models).toHaveLength(4);
+    expect(models.map(m => m.stubIndex)).toEqual([0, 1, 2, 3]);
+    expect(models.every(m => m.stubCount === 4)).toBe(true);
+  });
+
+  it('walks consecutive, gapless pay periods forward from the entered start date', () => {
+    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
+
+    // Weekly, starting 2025-01-01.
+    expect(models.map(m => String(m.incomeDetails.periodStartDate))).toEqual(['2025-01-01', '2025-01-08', '2025-01-15']);
+    expect(models.map(m => String(m.incomeDetails.periodEndDate))).toEqual(['2025-01-07', '2025-01-14', '2025-01-21']);
+    // Each period begins the day after the previous one ended — no gaps, no overlaps.
+    expect(String(models[1].incomeDetails.periodStartDate)).toBe('2025-01-08');
+  });
+
+  it('increments the check and stub numbers across the run', () => {
+    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
+    expect(models.map(m => m.checkNumber)).toEqual([5001, 5002, 5003]);
+    expect(models.map(m => m.stubNumber)).toEqual([1, 2, 3]);
+  });
+
+  it('grows YTD across the run while per-period pay stays constant', () => {
+    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 6 } });
+
+    // Same wages every period...
+    expect(new Set(models.map(m => m.grossPay)).size).toBe(1);
+    // ...but YTD is non-decreasing, and the last stub's YTD is strictly greater than the first's.
+    for (let i = 1; i < models.length; i++) {
+      expect(models[i].grossPayYTD).toBeGreaterThanOrEqual(models[i - 1].grossPayYTD);
+    }
+    expect(models[models.length - 1].grossPayYTD).toBeGreaterThan(models[0].grossPayYTD);
+  });
+
+  it('clamps the stub count to the supported 1–12 range', () => {
+    const base = makeStore();
+    expect(buildPaystubModels({ ...base, generalInfo: { ...base.generalInfo, payStubCount: 0 } })).toHaveLength(1);
+    expect(buildPaystubModels({ ...base, generalInfo: { ...base.generalInfo, payStubCount: 99 } })).toHaveLength(12);
+  });
+
+  it('always yields at least one model even with no start date entered yet', () => {
+    const base = makeStore();
+    const models = buildPaystubModels({
+      ...base,
+      incomeDetails: { ...base.incomeDetails, periodStartDate: '' as unknown as Date },
+    });
+    expect(models).toHaveLength(1);
+    expect(Number.isFinite(models[0].grossPay)).toBe(true);
+  });
+});
+
+describe('pricing — charged per pay stub', () => {
+  it('multiplies the unit price by the stub count', () => {
+    expect(orderTotal(1)).toBe(UNIT_PRICE);
+    expect(orderTotal(4)).toBe(35.96); // 4 x 8.99
+    expect(orderTotal(12)).toBe(107.88);
+  });
+
+  it('clamps out-of-range and junk counts rather than charging a nonsense total', () => {
+    expect(orderTotal(0)).toBe(UNIT_PRICE);
+    expect(orderTotal(-5)).toBe(UNIT_PRICE);
+    expect(orderTotal(99)).toBe(orderTotal(12));
+    expect(orderTotal('abc')).toBe(UNIT_PRICE);
   });
 });
