@@ -1,5 +1,6 @@
 import { STATE_TAX_DATA } from "../assets/data/state-tax-data";
 import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../types/tax-rate-types";
+import { getPaidLeaveProgram } from "../assets/data/paid-leave-data";
 
 export class TaxCalculator {
   // Calculate federal income tax using progressive brackets
@@ -109,6 +110,18 @@ export class TaxCalculator {
     return standardDeduction ? standardDeduction[filingStatus] : 0;
   }
 
+  // Employee contribution to a state paid family/medical leave fund, on ANNUAL wages.
+  // Returns 0 for the majority of states, which run no such program.
+  private calculatePaidLeave(annualGross: number, stateCode: string): number {
+    const program = getPaidLeaveProgram(stateCode);
+    if (!program || annualGross <= 0) return 0;
+
+    const contributoryWages =
+      program.wageBase === null ? annualGross : Math.min(annualGross, program.wageBase);
+    const contribution = contributoryWages * program.employeeRate;
+    return program.annualMax === null ? contribution : Math.min(contribution, program.annualMax);
+  }
+
   // Main calculation method
   public calculateTaxes(input: TaxCalculationInput): TaxCalculationResult {
     const {
@@ -134,9 +147,11 @@ export class TaxCalculator {
     const socialSecurityTax = this.calculateSocialSecurityTax(grossIncome);
     const medicareTax = this.calculateMedicareTax(grossIncome, filingStatus);
     const stateIncomeTax = this.calculateStateIncomeTax(stateTaxableIncome, stateCode, filingStatus);
+    const paidLeave = this.calculatePaidLeave(grossIncome, stateCode);
 
     // Calculate totals
-    const totalTaxes = federalIncomeTax + socialSecurityTax + medicareTax + stateIncomeTax;
+    const totalTaxes =
+      federalIncomeTax + socialSecurityTax + medicareTax + stateIncomeTax + paidLeave;
     const netIncome = grossIncome - totalTaxes;
     const effectiveTaxRate = grossIncome > 0 ? (totalTaxes / grossIncome) * 100 : 0;
 
@@ -145,6 +160,8 @@ export class TaxCalculator {
       socialSecurityTax,
       medicareTax,
       stateIncomeTax,
+      paidLeave,
+      paidLeaveLabel: getPaidLeaveProgram(stateCode)?.label ?? '',
       totalTaxes,
       netIncome,
       effectiveTaxRate: Math.round(effectiveTaxRate * 100) / 100

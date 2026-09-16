@@ -1,8 +1,12 @@
 import React, { useRef, useState, useLayoutEffect } from "react";
 
-/** US Letter width at 96dpi (8.5in). The paystub templates are authored to look
- *  right at roughly this width, so we render at this size and scale to fit. */
-const PAGE_WIDTH = 816;
+/** The PRINTABLE width of a US Letter sheet at 96dpi: 8.5in less the 0.5in @page
+ *  margins print.css sets, so 7.5in = 720px. Templates are authored to this width
+ *  (see CLAUDE.md, one stub one sheet) and the preview renders at exactly the size
+ *  the printer will use — which is what lets the Review step promise the preview is
+ *  what prints. Using the full 8.5in paper width here would preview 13% wider than
+ *  reality. */
+const PAGE_WIDTH = 720;
 
 /**
  * Renders its children at a fixed Letter-page width and scales them down (never up)
@@ -35,9 +39,12 @@ export const FitPage: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return () => ro.disconnect();
   }, []);
 
+  // The wrappers carry inline sizes computed for the SCALED preview. print.css resets
+  // them via these class names — without that, printing at full size overflows a box
+  // still sized for the shrunken one.
   return (
-    <div ref={outerRef} style={{ width: "100%" }}>
-      <div style={{ width: PAGE_WIDTH * scale, height, margin: "0 auto" }}>
+    <div ref={outerRef} className="paystub-fit-outer" style={{ width: "100%" }}>
+      <div className="paystub-fit-box" style={{ width: PAGE_WIDTH * scale, height, margin: "0 auto" }}>
         <div
           ref={innerRef}
           className="paystub-scale"

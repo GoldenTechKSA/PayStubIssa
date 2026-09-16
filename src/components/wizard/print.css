@@ -17,10 +17,49 @@
     top: 0;
     width: 100%;
   }
-  /* The on-screen FitPage scaler shrinks the preview; print at full size. */
+  /*
+   * #pdf-content is absolutely positioned so the stub prints from the top-left of the
+   * PAGE. That only holds while nothing between it and the page is positioned — the
+   * preview sheet is `position: relative` (it backs the watermark), which would make the
+   * stub start wherever the sheet sits on the review page and run off the bottom. Reset
+   * the sheet to static in print so the page is the containing block again, and strip the
+   * on-screen chrome that would otherwise inset or shrink the printed stub.
+   */
+  body.print-paystub .paystub-sheet {
+    position: static !important;
+    max-width: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * The FitPage scaler shrinks the preview with a transform and writes inline width and
+   * height sized for that shrunken copy. Printing restores full size, so those inline
+   * sizes have to go with it or the stub overflows a box still measured for the preview.
+   */
+  body.print-paystub .paystub-fit-outer,
+  body.print-paystub .paystub-fit-box {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+  }
   body.print-paystub .paystub-scale {
     transform: none !important;
     width: 100% !important;
+  }
+
+  /*
+   * A single stub is centred vertically on its sheet. #pdf-content is positioned against
+   * the page area, so 100% here is the height between the @page margins. Only ever applied
+   * to a one-stub order — clamping a run of N to one page height would break pagination.
+   * If a browser resolves the height to auto the rule is simply inert and the stub stays
+   * top-aligned, which is the previous behaviour.
+   */
+  body.print-paystub.print-paystub-single #pdf-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   /* One purchased stub per sheet. A run of N stubs prints as N pages. */

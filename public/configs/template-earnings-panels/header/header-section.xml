@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Masthead: the company block sits in its own outlined box on the left, the statement
+     title runs flush right. Both hug the page border, as in the reference. -->
+<section id="es2-header-section">
+    <style>
+        <padding>18px 6px 0</padding>
+        <alignItems>center</alignItems>
+    </style>
+    <column id="es2-header-company" width="44%">
+        <table id="es2-company-table">
+            <style><width>100%</width><border>1px solid #cfcfcf</border></style>
+            <cells>
+                <rowcells>
+                    <cell id="es2-company-name" type="substitute">
+                        <style>
+                            <fontSize>13px</fontSize>
+                            <fontWeight>bold</fontWeight>
+                            <textAlign>left</textAlign>
+                            <padding>9px 11px 0 11px</padding>
+                        </style>
+                        <value>{companyInfo.companyName}</value>
+                    </cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="es2-company-address" type="substitute">
+                        <style>
+                            <fontSize>11px</fontSize>
+                            <textAlign>left</textAlign>
+                            <padding>2px 11px 9px 11px</padding>
+                        </style>
+                        <value>{companyAddressLine}</value>
+                    </cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+    <column id="es2-header-title" width="56%">
+        <table id="es2-title-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="es2-statement-title" type="static">
+                        <style>
+                            <fontSize>15px</fontSize>
+                            <fontWeight>bold</fontWeight>
+                            <textAlign>right</textAlign>
+                            <padding>8px 10px</padding>
+                        </style>
+                        <value>Earnings Statement</value>
+                    </cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

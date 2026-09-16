@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Statement of Earnings and Deductions: a typewriter-set statement in IBM Plex Mono,
+     with italic section headings, two outlined identity boxes, a rule-bracketed ledger
+     and a fully gridded summary.
+
+     Type is deliberately uneven, as in the reference: the company block reads large, the
+     ledger is set several sizes down, and the summary sits between them. Monospace is wide
+     - roughly 0.6em per character - so column widths here are sized from character counts
+     ("FICA - Social Security" is 22 characters), not from eyeballed proportions.
+
+     Optional lines (salary vs hourly, overtime, bonus, state paid leave) are their own
+     renderIf tables repeating the same fixed widths, since renderIf drops a table but
+     cannot drop a row. The wage-type branch tests isSalaried / isHourly, because renderIf
+     tests one path and both wageType strings are truthy.
+
+     Sized for the printable page: 720 x 960 CSS px. See CLAUDE.md, one stub one sheet. -->
+<paystub>
+    <style>
+        <fontFamily>'IBM Plex Mono', 'Consolas', 'DejaVu Sans Mono', monospace</fontFamily>
+        <color>#000000</color>
+        <fontSize>11px</fontSize>
+        <backgroundColor>#ffffff</backgroundColor>
+        <padding>26px 26px 30px</padding>
+    </style>
+    <include href="header/title-section.xml"/>
+    <include href="header/company-section.xml"/>
+    <include href="employee/labels-section.xml"/>
+    <include href="employee/boxes-section.xml"/>
+    <include href="earnings/heading-section.xml"/>
+    <include href="earnings/ledger-head-section.xml"/>
+    <include href="earnings/ledger-body-section.xml"/>
+    <include href="summary/heading-section.xml"/>
+    <include href="summary/table-section.xml"/>
+    <include href="footer/footer-section.xml"/>
+</paystub>

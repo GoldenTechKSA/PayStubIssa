@@ -30,6 +30,10 @@ interface StepProps {
 const AVAILABLE_CONFIGS = new Set<string>([
   "/configs/template-simple/paystub-config.xml",
   "/configs/template-modern/paystub-config.xml",
+  "/configs/template-earnings-statement/paystub-config.xml",
+  "/configs/template-earnings-panels/paystub-config.xml",
+  "/configs/template-earnings-register/paystub-config.xml",
+  "/configs/template-statement-mono/paystub-config.xml",
   "/configs/template-exempt/paystub-config.xml",
   "/configs/template-nonexempt/paystub-config.xml",
   "/configs/template-fulltime/paystub-config.xml",

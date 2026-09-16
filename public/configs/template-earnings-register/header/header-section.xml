@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Identity block. The left side is indented well inside the page edge, as in the
+     reference, so it reads as a separate register head.
+
+     The code strip carries real data only: EIN, employee ID, and this stub-s own stub
+     and check numbers, which advance across a purchased run. -->
+<section id="er-header-section">
+    <style><padding>0 26px</padding></style>
+
+    <column id="er-header-left" width="57%">
+        <style><paddingLeft>100px</paddingLeft></style>
+        <table id="er-code-strip">
+            <style><backgroundColor>#e8e8e8</backgroundColor><tableLayout>fixed</tableLayout><width>92%</width></style>
+            <header>
+                <hdata>
+                    <hd id="er-h-ein"><style><width>34%</width><textAlign>left</textAlign><fontSize>8px</fontSize><fontWeight>normal</fontWeight><padding>3px 4px 0</padding><whiteSpace>nowrap</whiteSpace></style><label>EIN</label></hd>
+                    <hd id="er-h-empid"><style><width>26%</width><textAlign>left</textAlign><fontSize>8px</fontSize><fontWeight>normal</fontWeight><padding>3px 4px 0</padding><whiteSpace>nowrap</whiteSpace></style><label>EMPLOYEE ID</label></hd>
+                    <hd id="er-h-stub"><style><width>16%</width><textAlign>left</textAlign><fontSize>8px</fontSize><fontWeight>normal</fontWeight><padding>3px 4px 0</padding><whiteSpace>nowrap</whiteSpace></style><label>STUB</label></hd>
+                    <hd id="er-h-chk"><style><width>24%</width><textAlign>left</textAlign><fontSize>8px</fontSize><fontWeight>normal</fontWeight><padding>3px 4px 0</padding><whiteSpace>nowrap</whiteSpace></style><label>CHECK NO.</label></hd>
+                </hdata>
+            </header>
+            <cells>
+                <rowcells>
+                    <cell id="er-v-ein" type="substitute"><style><width>34%</width><textAlign>left</textAlign><fontSize>8px</fontSize><padding>0 4px 3px</padding></style><value>{companyInfo.companyEIN}</value></cell>
+                    <cell id="er-v-empid" type="substitute"><style><width>26%</width><textAlign>left</textAlign><fontSize>8px</fontSize><padding>0 4px 3px</padding></style><value>{employeeInfo.employeeID}</value></cell>
+                    <cell id="er-v-stub" type="substitute"><style><width>16%</width><textAlign>left</textAlign><fontSize>8px</fontSize><padding>0 4px 3px</padding></style><value>{stubNumber}</value></cell>
+                    <cell id="er-v-chk" type="substitute"><style><width>24%</width><textAlign>left</textAlign><fontSize>8px</fontSize><padding>0 4px 3px</padding></style><value>{checkNumber}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+        <table id="er-company-table">
+            <style><width>100%</width><marginTop>16px</marginTop></style>
+            <cells>
+                <rowcells>
+                    <cell id="er-company-name" type="substitute"><style><textAlign>left</textAlign><fontSize>14px</fontSize><fontWeight>bold</fontWeight><padding>0 0 1px</padding></style><value>{companyInfo.companyName}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="er-company-city" type="substitute"><style><textAlign>left</textAlign><fontSize>14px</fontSize><fontWeight>bold</fontWeight><padding>0</padding></style><value>{companyCityStateZip}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+        <table id="er-employee-detail">
+            <style><width>100%</width><marginTop>22px</marginTop></style>
+            <cells>
+                <rowcells>
+                    <cell id="er-ssn-label" type="static"><style><textAlign>left</textAlign><padding>1px 0</padding><whiteSpace>nowrap</whiteSpace></style><value>Social Security Number:</value></cell>
+                    <cell id="er-ssn-value" type="substitute"><style><textAlign>left</textAlign><padding>1px 0 1px 14px</padding><width>100%</width></style><value>{employeeSSNMasked}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="er-marital-label" type="static"><style><textAlign>left</textAlign><padding>1px 0</padding><whiteSpace>nowrap</whiteSpace></style><value>Taxable Marital Status:</value></cell>
+                    <cell id="er-marital-value" type="substitute"><style><textAlign>left</textAlign><padding>1px 0 1px 14px</padding></style><value>{filingStatusLabel}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="er-exempt-label" type="static"><style><textAlign>left</textAlign><padding>1px 0</padding><whiteSpace>nowrap</whiteSpace></style><value>Exemptions / Allowances:</value></cell>
+                    <cell id="er-exempt-value" type="substitute"><style><textAlign>left</textAlign><padding>1px 0 1px 14px</padding></style><value>{employeeInfo.employeeExemptions}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="er-empid-label" type="static"><style><textAlign>left</textAlign><padding>1px 0</padding><whiteSpace>nowrap</whiteSpace></style><value>Employee ID:</value></cell>
+                    <cell id="er-empid-value" type="substitute"><style><textAlign>left</textAlign><padding>1px 0 1px 14px</padding></style><value>{employeeInfo.employeeID}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+
+    <column id="er-header-right" width="43%">
+        <table id="er-title-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="er-title" type="static"><style><textAlign>left</textAlign><fontSize>18px</fontSize><fontWeight>bold</fontWeight><padding>0 0 10px</padding></style><value>Earnings Statement</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+        <table id="er-period-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="er-pb-label" type="static"><style><textAlign>left</textAlign><padding>3px 0</padding><whiteSpace>nowrap</whiteSpace></style><value>Period Beginning:</value></cell>
+                    <cell id="er-pb-value" type="substitute" format="date"><style><textAlign>left</textAlign><padding>3px 0 3px 22px</padding><width>100%</width></style><value>{incomeDetails.periodStartDate}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="er-pe-label" type="static"><style><textAlign>left</textAlign><padding>3px 0</padding><whiteSpace>nowrap</whiteSpace></style><value>Period Ending:</value></cell>
+                    <cell id="er-pe-value" type="substitute" format="date"><style><textAlign>left</textAlign><padding>3px 0 3px 22px</padding></style><value>{incomeDetails.periodEndDate}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="er-pd-label" type="static"><style><textAlign>left</textAlign><padding>3px 0</padding><whiteSpace>nowrap</whiteSpace></style><value>Pay Date:</value></cell>
+                    <cell id="er-pd-value" type="substitute" format="date"><style><textAlign>left</textAlign><padding>3px 0 3px 22px</padding></style><value>{incomeDetails.periodPayDate}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+        <table id="er-employee-table">
+            <style><width>100%</width><marginTop>20px</marginTop></style>
+            <cells>
+                <rowcells>
+                    <cell id="er-emp-name" type="substitute"><style><textAlign>left</textAlign><fontSize>13px</fontSize><fontWeight>bold</fontWeight><padding>0 0 1px</padding><whiteSpace>normal</whiteSpace></style><value>{employeeInfo.employeeFirstName} {employeeInfo.employeeLastName}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="er-emp-addr" type="substitute"><style><textAlign>left</textAlign><fontSize>13px</fontSize><fontWeight>bold</fontWeight><padding>0</padding><whiteSpace>normal</whiteSpace></style><value>{employeeInfo.employeeAddress1} {employeeAddressLine}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

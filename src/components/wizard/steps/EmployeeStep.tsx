@@ -39,6 +39,7 @@ const EmployeeStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const [employeeEmail, setEmail] = useState(employee.employeeEmail || "");
   const [employeeID, setEmployeeID] = useState(employee.employeeID || "");
   const [employeeMarriedStatus, setMarriedStatus] = useState(employee.employeeMarriedStatus || "single");
+  const [employeeExemptions, setExemptions] = useState(String(employee.employeeExemptions ?? 0));
   const [hireDate, setHireDate] = useState(toDateInput(employee.employeeHireDate) || toDateInput(new Date()));
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -58,6 +59,7 @@ const EmployeeStep: React.FC<StepProps> = ({ onNext, onBack }) => {
       employeeCity, employeeState, employeeZipCode, employeeID, employeeSSN, employeePhone, employeeEmail,
       employeeHireDate: hireDate ? new Date(hireDate) : new Date(),
       employeeMarriedStatus,
+      employeeExemptions: Math.max(0, parseInt(employeeExemptions, 10) || 0),
     }));
     onNext();
   };
@@ -150,6 +152,14 @@ const EmployeeStep: React.FC<StepProps> = ({ onNext, onBack }) => {
           <TextField select fullWidth label="Filing status" value={employeeMarriedStatus} onChange={e => setMarriedStatus(e.target.value)} helperText=" ">
             {FILINGSTATUS.map(f => <MenuItem key={f.id} value={f.id}>{f.name}</MenuItem>)}
           </TextField>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <TextField
+            fullWidth label="Exemptions / allowances" value={employeeExemptions}
+            onChange={e => setExemptions(e.target.value.replace(/\D/g, ""))}
+            helperText="Printed on the stub; does not change tax withheld."
+            inputProps={{ maxLength: 2, inputMode: "numeric" }}
+          />
         </Grid>
       </Grid>
     </WizardStepLayout>

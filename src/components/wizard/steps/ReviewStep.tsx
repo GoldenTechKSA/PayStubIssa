@@ -107,8 +107,12 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
 
   const handlePrint = () => {
     document.body.classList.add("print-paystub");
+    // A single stub is centred on its sheet; a run of N has to keep flowing one per page,
+    // so the centring is opt-in via this class rather than applied to every print.
+    if (stubCount === 1) document.body.classList.add("print-paystub-single");
     const cleanup = () => {
       document.body.classList.remove("print-paystub");
+      document.body.classList.remove("print-paystub-single");
       window.removeEventListener("afterprint", cleanup);
     };
     window.addEventListener("afterprint", cleanup);
@@ -292,7 +296,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
           <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "75vh", overflow: "auto", display: "flex", justifyContent: "center" }}>
             {/* The sheet: white Letter page with margins + lift. #pdf-content stays the print/PDF surface.
                 Until paid, `paystub-locked-preview` blocks Ctrl+P from printing the unpaid stub. */}
-            <Box className={canPrint ? undefined : "paystub-locked-preview"} sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>
+            <Box className={canPrint ? "paystub-sheet" : "paystub-sheet paystub-locked-preview"} sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>
               <FitPage>
                 <Box id="pdf-content">
                   <TemplateManager id={appSettings.templateId} configPath={appSettings.configPath} store={fullState} />

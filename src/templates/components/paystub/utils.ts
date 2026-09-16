@@ -2,14 +2,22 @@
  * Formats a number as currency
  */
 export const formatCurrency = (amount: number): string => {
-  return `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+  // The sign leads the symbol: -$1,022.11, never $-1,022.11.
+  const sign = amount < 0 ? '-' : '';
+  return `${sign}$${Math.abs(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
 
 /**
  * Formats a date string
  */
 export const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
+  // A bare 'YYYY-MM-DD' is parsed as UTC midnight by `new Date`, which renders as the
+  // PREVIOUS day west of Greenwich. Read date-only values as local calendar dates so a
+  // period printed on the stub matches the one the customer entered.
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateString ?? '').trim());
+  const date = dateOnly
+    ? new Date(Number(dateOnly[1]), Number(dateOnly[2]) - 1, Number(dateOnly[3]))
+    : new Date(dateString);
   if (isNaN(date.getTime())) return dateString;
   
   return date.toLocaleDateString('en-US', {

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<section id="sm-title-section">
+    <column id="sm-title-col" width="100%">
+        <table id="sm-title-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="sm-title" type="static">
+                        <style><textAlign>center</textAlign><fontSize>21px</fontSize><fontWeight>600</fontWeight><letterSpacing>1.5px</letterSpacing><padding>0 0 4px</padding></style>
+                        <value>STATEMENT OF EARNINGS AND DEDUCTIONS</value>
+                    </cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

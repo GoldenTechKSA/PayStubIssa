@@ -17,6 +17,9 @@ import { taxCalculator } from '../../utils/tax-calculator';
 import { calculateOvertime } from '../../utils/overtime-calculator';
 import { periodsPerYear, periodsElapsedAt, buildPayPeriods, PayPeriod } from '../../utils/date-calculator';
 import { normalizeStubCount } from 'constants/pricing';
+import states from 'assets/data/states.json';
+import filingStatuses from 'assets/data/filing-status.json';
+import { formatDate } from '../components/paystub/utils';
 import { FilingStatus, TaxCalculationResult } from '../../types/tax-rate-types';
 
 // Coerce possibly-stringy form values to a finite number.
@@ -41,6 +44,48 @@ const resolveFilingStatus = (raw: string | undefined): FilingStatus => {
   return (raw ?? '').toLowerCase() === 'married' ? 'marriedFilingJointly' : 'single';
 };
 
+// Renderer placeholders resolve a path and nothing more — they cannot slice, join or
+// reformat. Anything a template needs as *prose* is assembled here instead, and never
+// returns '' (getNestedValue coerces an empty string to '0', which would print as data).
+const EMPTY = '—';
+
+// The wizard stores full state NAMES ('Washington'); labels and addresses want 'WA'.
+const STATE_CODE_BY_NAME: Record<string, string> = states.states.reduce(
+  (acc: Record<string, string>, state: { code: string; name: string }) => {
+    acc[state.name.toLowerCase()] = state.code.toUpperCase();
+    return acc;
+  },
+  {},
+);
+
+const FILING_STATUS_NAME_BY_ID: Record<string, string> = filingStatuses.status.reduce(
+  (acc: Record<string, string>, status: { id: string; name: string }) => {
+    acc[status.id] = status.name;
+    return acc;
+  },
+  {},
+);
+
+const resolveStateCode = (raw: string | undefined): string => {
+  const value = (raw ?? '').trim();
+  if (!value) return '';
+  if (/^[A-Za-z]{2}$/.test(value)) return value.toUpperCase();
+  return STATE_CODE_BY_NAME[value.toLowerCase()] ?? '';
+};
+
+// "123-45-6789" -> "***-**-6789". A partial entry is masked to whatever is there.
+const maskSSN = (raw: string | undefined): string => {
+  const digits = (raw ?? '').replace(/\D/g, '');
+  if (!digits) return EMPTY;
+  return `***-**-${digits.slice(-4).padStart(4, '*')}`;
+};
+
+const formatPeriodDate = (value: unknown): string => {
+  if (value === null || value === undefined || value === '') return '';
+  const raw = String(value);
+  return Number.isNaN(new Date(raw).getTime()) ? '' : formatDate(raw);
+};
+
 /**
  * Build the model for ONE pay period.
  *
@@ -49,6 +94,11 @@ const resolveFilingStatus = (raw: string | undefined): FilingStatus => {
  */
 const buildModelForPeriod = (store: PayStubDetails, stubIndex: number, stubCount: number): PaystubModel => {
   const { incomeDetails, employeeInfo, generalInfo } = store;
+
+  // The wizard stores a full state NAME; STATE_TAX_DATA is keyed by postal code, so the
+  // engine must be handed the code — passing 'Virginia' misses the table and silently
+  // yields 0 state tax.
+  const stateCode = resolveStateCode(employeeInfo.employeeState);
 
   const perYear = periodsPerYear(incomeDetails.periodType);
   // YTD is measured against THIS stub's pay date, not today — so a run of stubs shows YTD growing.
@@ -71,7 +121,7 @@ const buildModelForPeriod = (store: PayStubDetails, stubIndex: number, stubCount
   const annualTaxes: TaxCalculationResult = taxCalculator.calculateTaxes({
     grossIncome: annualGross,
     filingStatus: resolveFilingStatus(employeeInfo.employeeMarriedStatus),
-    stateCode: employeeInfo.employeeState,
+    stateCode,
     additionalDeductions: 0,
   });
 
@@ -80,7 +130,9 @@ const buildModelForPeriod = (store: PayStubDetails, stubIndex: number, stubCount
   const stateTax = perPeriod(annualTaxes.stateIncomeTax);
   const socialSecurity = perPeriod(annualTaxes.socialSecurityTax);
   const medicare = perPeriod(annualTaxes.medicareTax);
-  const totalTaxes = federalTax + stateTax + socialSecurity + medicare;
+  // Employee share of a state paid-leave premium (0 in most states); part of totalTaxes.
+  const paidLeave = perPeriod(annualTaxes.paidLeave);
+  const totalTaxes = federalTax + stateTax + socialSecurity + medicare + paidLeave;
 
   // --- Deductions (current period) ---
   const medical = num(incomeDetails.medicalDeduction);
@@ -97,8 +149,40 @@ const buildModelForPeriod = (store: PayStubDetails, stubIndex: number, stubCount
   // --- Year-to-date: simple proportional estimate (current * periods elapsed) ---
   const ytd = (current: number) => current * periodsToDate;
 
+  // --- Presentation strings (see the helpers above) ---
+  const periodStart = formatPeriodDate(incomeDetails.periodStartDate);
+  const periodEnd = formatPeriodDate(incomeDetails.periodEndDate);
+  const { companyAddress1, companyCity, companyState, companyZipCode } = store.companyInfo;
+  const cityStateZip = [companyCity, resolveStateCode(companyState) || companyState]
+    .filter(Boolean)
+    .join(', ');
+  const employeeCityStateZip = [
+    employeeInfo.employeeCity,
+    resolveStateCode(employeeInfo.employeeState) || employeeInfo.employeeState,
+  ]
+    .filter(Boolean)
+    .join(', ');
+
   return {
     ...store,
+
+    employeeSSNMasked: maskSSN(employeeInfo.employeeSSN),
+    payPeriodLabel:
+      periodStart && periodEnd ? `${periodStart} - ${periodEnd}` : periodStart || periodEnd || EMPTY,
+    stateTaxLabel: stateCode ? `${stateCode} ST TAX` : 'ST TAX',
+    companyAddressLine:
+      [companyAddress1, [cityStateZip, companyZipCode].filter(Boolean).join(' ')]
+        .filter(Boolean)
+        .join(' ') || EMPTY,
+    companyCityStateZip: [cityStateZip, companyZipCode].filter(Boolean).join(' ') || EMPTY,
+    employeeAddressLine:
+      [employeeCityStateZip, employeeInfo.employeeZipCode].filter(Boolean).join(' ') || EMPTY,
+    filingStatusLabel:
+      FILING_STATUS_NAME_BY_ID[resolveFilingStatus(employeeInfo.employeeMarriedStatus)] || EMPTY,
+    paidLeaveLabel: annualTaxes.paidLeaveLabel,
+    employeeStateCode: stateCode,
+    isSalaried: incomeDetails.wageType === 'Salary',
+    isHourly: incomeDetails.wageType !== 'Salary',
 
     // The per-stub store handed to us already carries this stub's own numbers — don't advance again.
     stubIndex,
@@ -115,6 +199,7 @@ const buildModelForPeriod = (store: PayStubDetails, stubIndex: number, stubCount
     stateTax,
     socialSecurity,
     medicare,
+    paidLeave,
     totalTaxes,
 
     medical,
@@ -135,6 +220,7 @@ const buildModelForPeriod = (store: PayStubDetails, stubIndex: number, stubCount
     stateTaxYTD: ytd(stateTax),
     socialSecurityYTD: ytd(socialSecurity),
     medicareYTD: ytd(medicare),
+    paidLeaveYTD: ytd(paidLeave),
     totalTaxesYTD: ytd(totalTaxes),
     medicalYTD: ytd(medical),
     dentalYTD: ytd(dental),

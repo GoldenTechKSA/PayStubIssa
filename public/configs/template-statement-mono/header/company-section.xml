@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Company block, set large. The phone line drops out when the customer left it blank. -->
+<section id="sm-company-section">
+    <style><marginTop>44px</marginTop></style>
+    <column id="sm-company-col" width="100%">
+        <table id="sm-company-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="sm-company-name" type="substitute"><style><textAlign>left</textAlign><fontSize>14px</fontSize><fontWeight>600</fontWeight><padding>0 0 3px</padding></style><value>{companyInfo.companyName}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sm-company-street" type="substitute"><style><textAlign>left</textAlign><fontSize>14px</fontSize><padding>0 0 3px</padding></style><value>{companyInfo.companyAddress1}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sm-company-city" type="substitute"><style><textAlign>left</textAlign><fontSize>14px</fontSize><padding>0 0 3px</padding></style><value>{companyCityStateZip}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+        <table id="sm-company-phone-table" renderIf="companyInfo.companyPhone">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="sm-company-phone" type="substitute"><style><textAlign>left</textAlign><fontSize>14px</fontSize><padding>0</padding></style><value>{companyInfo.companyPhone}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

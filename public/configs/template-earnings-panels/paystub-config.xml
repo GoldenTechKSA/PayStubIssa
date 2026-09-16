@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Earnings Statement, banded-panel layout: grey full-bleed section bands separating
+     a boxed company block, a two-column employee detail grid, side-by-side payment and
+     deduction panels, and a right-aligned pair of total boxes.
+
+     Two structural devices carry this design:
+       - a panel box is a COLUMN with a border, so the tables stacked inside it compose
+         into one outlined card and flex stretch keeps both panels the same height;
+       - optional rows (overtime, bonus, state paid leave) are their own tables with
+         renderIf, since renderIf drops a table but cannot drop a single row. Every one
+         of those tables repeats the same fixed column widths so the stack stays aligned.
+
+     Figures use format="currency" — this form prints a dollar sign. -->
+<paystub>
+    <style>
+        <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+        <color>#000000</color>
+        <fontSize>11px</fontSize>
+        <border>1px solid #cfcfcf</border>
+        <backgroundColor>#ffffff</backgroundColor>
+        <paddingBottom>40px</paddingBottom>
+    </style>
+    <include href="header/header-section.xml"/>
+    <include href="employee/employee-band.xml"/>
+    <include href="employee/employee-details-section.xml"/>
+    <include href="earnings/earnings-band.xml"/>
+    <include href="earnings/earnings-panels-section.xml"/>
+    <include href="earnings/earnings-totals-section.xml"/>
+    <include href="total/total-band.xml"/>
+    <include href="total/total-summary-section.xml"/>
+</paystub>

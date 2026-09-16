@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Earnings Statement: a classic serif, hairline-ruled payroll form.
+     One outer box; every band is a full-width table whose cell borders draw the
+     rules edge to edge (cell padding supplies the inset). Money is rendered with
+     format="number" — this form prints figures without a currency symbol. -->
+<paystub>
+    <style>
+        <fontFamily>'Times New Roman', 'Liberation Serif', Georgia, serif</fontFamily>
+        <color>#000000</color>
+        <fontSize>12px</fontSize>
+        <border>1px solid #000000</border>
+        <backgroundColor>#ffffff</backgroundColor>
+    </style>
+    <include href="header/header-section.xml"/>
+    <include href="identity/identity-section.xml"/>
+    <include href="detail/detail-section.xml"/>
+    <include href="summary/summary-section.xml"/>
+</paystub>

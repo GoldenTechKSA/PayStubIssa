@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Earnings Statement, payroll-register layout: an indented identity block over a wide
+     ledger of earnings and statutory withholding, with employee-paid benefits carried in
+     the Other Benefits and Information panel on the right.
+
+     Column mechanics worth knowing before editing:
+       - Both ledgers run on a SIX-column grid with a narrow empty spacer column before
+         Year To Date. That spacer is what produces the two separate underscores in the
+         reference rather than one continuous rule; give every row its spacer cell.
+       - Header rules are borderBottom on the individual heading cells, so a rule spans
+         exactly the columns whose cells carry one. No colspan anywhere.
+       - Optional lines (overtime, bonus, state paid leave, each benefit) are their own
+         renderIf tables repeating the same fixed widths, since renderIf drops a table but
+         cannot drop a row.
+
+     Sized for the printable page: 720 x 960 CSS px. See CLAUDE.md, one stub one sheet. -->
+<paystub>
+    <style>
+        <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+        <color>#000000</color>
+        <fontSize>11px</fontSize>
+        <border>1px solid #d4d4d4</border>
+        <backgroundColor>#ffffff</backgroundColor>
+        <padding>18px 0 60px 0</padding>
+    </style>
+    <include href="header/header-section.xml"/>
+    <include href="body/ledger-section.xml"/>
+</paystub>

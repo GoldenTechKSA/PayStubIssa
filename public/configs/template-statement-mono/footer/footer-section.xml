@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<section id="sm-footer-section">
+    <style><marginTop>44px</marginTop></style>
+    <column id="sm-footer-col" width="100%">
+        <table id="sm-footer-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="sm-footer-text" type="substitute"><style><textAlign>center</textAlign><fontSize>11px</fontSize><padding>0</padding></style><value>{companyInfo.companyName} - {companyInfo.companyAddress1}, {companyCityStateZip}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

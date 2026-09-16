@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Closing band: the year to date trio sits under the income column, the current
+     period trio under the deductions column, and a border on the fourth cell
+     carries the hairline divider down through the band.
+
+     The itemised list above shows the four tax lines only, but these two totals
+     add the benefit deductions (medical, dental, vision, 401k, other) as well, so
+     that CURRENT TOTAL minus CURRENT DEDUCTIONS always equals NET PAY. -->
+<section id="es-summary-section">
+    <style><borderTop>1px solid #000000</borderTop></style>
+    <column id="es-summary-col" width="100%">
+        <table id="es-summary-table">
+            <style><width>100%</width></style>
+            <header>
+                <hdata>
+                    <hd id="es-h-ytd-gross">
+                        <style><width>15%</width><textAlign>left</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><padding>5px 10px</padding><borderBottom>1px solid #000000</borderBottom><whiteSpace>nowrap</whiteSpace></style>
+                        <label>YTD GROSS</label>
+                    </hd>
+                    <hd id="es-h-ytd-deductions">
+                        <style><width>18%</width><textAlign>center</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><padding>5px 10px</padding><borderBottom>1px solid #000000</borderBottom><whiteSpace>nowrap</whiteSpace></style>
+                        <label>YTD DEDUCTIONS</label>
+                    </hd>
+                    <hd id="es-h-ytd-net">
+                        <style><width>17%</width><textAlign>center</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><padding>5px 10px</padding><borderBottom>1px solid #000000</borderBottom><whiteSpace>nowrap</whiteSpace></style>
+                        <label>YTD NET PAY</label>
+                    </hd>
+                    <hd id="es-h-cur-total">
+                        <style><width>15%</width><textAlign>center</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><padding>5px 10px</padding><borderBottom>1px solid #000000</borderBottom><borderLeft>1px solid #000000</borderLeft><whiteSpace>nowrap</whiteSpace></style>
+                        <label>CURRENT TOTAL</label>
+                    </hd>
+                    <hd id="es-h-cur-deductions">
+                        <style><width>21%</width><textAlign>center</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><padding>5px 10px</padding><borderBottom>1px solid #000000</borderBottom><whiteSpace>nowrap</whiteSpace></style>
+                        <label>CURRENT DEDUCTIONS</label>
+                    </hd>
+                    <hd id="es-h-net">
+                        <style><width>14%</width><textAlign>right</textAlign><fontSize>11px</fontSize><fontWeight>bold</fontWeight><padding>5px 10px</padding><borderBottom>1px solid #000000</borderBottom><whiteSpace>nowrap</whiteSpace></style>
+                        <label>NET PAY</label>
+                    </hd>
+                </hdata>
+            </header>
+            <cells>
+                <rowcells>
+                    <cell id="es-v-ytd-gross" type="substitute" format="number">
+                        <style><textAlign>left</textAlign><padding>6px 10px</padding></style>
+                        <value>{grossPayYTD}</value>
+                    </cell>
+                    <cell id="es-v-ytd-deductions" type="calculated" format="number">
+                        <style><textAlign>center</textAlign><padding>6px 10px</padding></style>
+                        <formula>{totalTaxesYTD} + {totalDeductionsYTD}</formula>
+                    </cell>
+                    <cell id="es-v-ytd-net" type="substitute" format="number">
+                        <style><textAlign>center</textAlign><padding>6px 10px</padding></style>
+                        <value>{netPayYTD}</value>
+                    </cell>
+                    <cell id="es-v-cur-total" type="substitute" format="number">
+                        <style><textAlign>center</textAlign><padding>6px 10px</padding><borderLeft>1px solid #000000</borderLeft></style>
+                        <value>{grossPay}</value>
+                    </cell>
+                    <cell id="es-v-cur-deductions" type="calculated" format="number">
+                        <style><textAlign>center</textAlign><padding>6px 10px</padding></style>
+                        <formula>{totalTaxes} + {totalDeductions}</formula>
+                    </cell>
+                    <cell id="es-v-net" type="substitute" format="number">
+                        <style><textAlign>right</textAlign><padding>6px 10px</padding></style>
+                        <value>{netPay}</value>
+                    </cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

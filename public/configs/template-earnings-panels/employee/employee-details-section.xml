@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Label and value share one cell so the value follows the label rather than lining up
+     in a column, matching the reference. The pay-date row is the exception: a date has to
+     be its own cell to receive format="date", so the rows above it span both columns with
+     colspan and only the pay-date label sizes column one. -->
+<section id="es2-employee-details">
+    <style><padding>12px 6px 3px</padding></style>
+    <column id="es2-employee-left" width="60%">
+        <table id="es2-employee-left-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="es2-emp-name" type="substitute">
+                        <style><textAlign>left</textAlign><padding>5px 0 5px 18px</padding></style>
+                        <value>Name: {employeeInfo.employeeFirstName} {employeeInfo.employeeLastName}</value>
+                    </cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="es2-emp-address" type="substitute">
+                        <style><textAlign>left</textAlign><padding>5px 0 5px 18px</padding></style>
+                        <value>Address: {employeeAddressLine}</value>
+                    </cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="es2-emp-marital" type="substitute">
+                        <style><textAlign>left</textAlign><padding>5px 0 5px 18px</padding></style>
+                        <value>Taxable Marital Status: {filingStatusLabel}</value>
+                    </cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="es2-emp-period" type="substitute">
+                        <style><textAlign>left</textAlign><padding>5px 0 5px 18px</padding></style>
+                        <value>Reporting Period: {payPeriodLabel}</value>
+                    </cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+    <column id="es2-employee-right" width="40%">
+        <table id="es2-employee-right-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="es2-emp-ssn" colspan="2" type="substitute">
+                        <style><textAlign>left</textAlign><padding>5px 0</padding></style>
+                        <value>Social Sec. ID: {employeeSSNMasked}</value>
+                    </cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="es2-emp-id" colspan="2" type="substitute">
+                        <style><textAlign>left</textAlign><padding>5px 0</padding></style>
+                        <value>Employee ID: {employeeInfo.employeeID}</value>
+                    </cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="es2-emp-exemptions" colspan="2" type="substitute">
+                        <style><textAlign>left</textAlign><padding>5px 0</padding></style>
+                        <value>Exemptions/Allowances: {employeeInfo.employeeExemptions}</value>
+                    </cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="es2-emp-paydate-label" type="static">
+                        <style><textAlign>left</textAlign><padding>5px 0</padding><whiteSpace>nowrap</whiteSpace></style>
+                        <value>Pay Date:</value>
+                    </cell>
+                    <cell id="es2-emp-paydate-value" type="substitute" format="date">
+                        <style><textAlign>left</textAlign><padding>5px 0 5px 4px</padding><width>100%</width></style>
+                        <value>{incomeDetails.periodPayDate}</value>
+                    </cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

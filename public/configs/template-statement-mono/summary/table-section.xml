@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Fully gridded summary: every cell carries its own border, which border-collapse joins
+     into one ruled table.
+
+     The ledger above itemises withholding only. These totals also include the benefit
+     deductions (medical, dental, vision, 401k, other), so Gross Income minus Total
+     Deductions always equals Net Income; where a customer entered benefits, this total is
+     larger than the lines listed above it. -->
+<section id="sm-summary-table-section">
+    <column id="sm-summary-col" width="53%">
+        <table id="sm-summary-table">
+            <style><width>100%</width><tableLayout>fixed</tableLayout></style>
+            <cells>
+                <rowcells>
+                    <cell id="sm-sum-h-blank" type="static"><style><width>42%</width><padding>6px 10px</padding><border>1px solid #000000</border></style><value> </value></cell>
+                    <cell id="sm-sum-h-cur" type="static"><style><width>28%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border><whiteSpace>pre-line</whiteSpace></style><value>CURRENT
+AMOUNT</value></cell>
+                    <cell id="sm-sum-h-ytd" type="static"><style><width>30%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border><whiteSpace>pre-line</whiteSpace></style><value>YTD
+AMOUNT</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sm-sum-gross-label" type="static"><style><width>42%</width><textAlign>left</textAlign><fontSize>13px</fontSize><fontWeight>600</fontWeight><padding>6px 10px</padding><border>1px solid #000000</border><whiteSpace>nowrap</whiteSpace></style><value>Gross Income:</value></cell>
+                    <cell id="sm-sum-gross-cur" type="substitute" format="currency"><style><width>28%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border></style><value>{grossPay}</value></cell>
+                    <cell id="sm-sum-gross-ytd" type="substitute" format="currency"><style><width>30%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border></style><value>{grossPayYTD}</value></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sm-sum-ded-label" type="static"><style><width>42%</width><textAlign>left</textAlign><fontSize>13px</fontSize><fontWeight>600</fontWeight><padding>6px 10px</padding><border>1px solid #000000</border><whiteSpace>nowrap</whiteSpace></style><value>Total Deductions:</value></cell>
+                    <cell id="sm-sum-ded-cur" type="calculated" format="currency"><style><width>28%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border></style><formula>{totalTaxes} + {totalDeductions}</formula></cell>
+                    <cell id="sm-sum-ded-ytd" type="calculated" format="currency"><style><width>30%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border></style><formula>{totalTaxesYTD} + {totalDeductionsYTD}</formula></cell>
+                </rowcells>
+                <rowcells>
+                    <cell id="sm-sum-net-label" type="static"><style><width>42%</width><textAlign>left</textAlign><fontSize>13px</fontSize><fontWeight>600</fontWeight><padding>6px 10px</padding><border>1px solid #000000</border><whiteSpace>nowrap</whiteSpace></style><value>Net Income:</value></cell>
+                    <cell id="sm-sum-net-cur" type="substitute" format="currency"><style><width>28%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border></style><value>{netPay}</value></cell>
+                    <cell id="sm-sum-net-ytd" type="substitute" format="currency"><style><width>30%</width><textAlign>center</textAlign><fontSize>12px</fontSize><padding>6px 8px</padding><border>1px solid #000000</border></style><value>{netPayYTD}</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>

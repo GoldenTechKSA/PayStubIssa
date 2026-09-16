@@ -56,6 +56,11 @@ const getNestedValue = (obj: PaystubModel, path: string): string => {
     return value.toString();
   }
   if (typeof value === 'string') {
+    // An empty or blank field is absent, not zero: Number('') is 0, which would print a
+    // stray "0" wherever the customer left a text field (e.g. Employee ID) blank.
+    if (value.trim() === '') {
+      return '';
+    }
     // Try to parse string as number (for values that might be stored as strings)
     const num = Number(value);
     return isNaN(num) ? value : num.toString();

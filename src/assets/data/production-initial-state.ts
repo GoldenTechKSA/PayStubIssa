@@ -34,6 +34,7 @@ const employeeInfo: EmployeeInfo = {
     employeePhone: "",
     employeeEmail: "",
     employeeMarriedStatus: "single",
+    employeeExemptions: 0,
     employeeHireDate: new Date("2025-01-01")
 };
 

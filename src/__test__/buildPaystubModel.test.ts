@@ -23,7 +23,8 @@ const makeStore = (overrides: Partial<PayStubDetails['incomeDetails']> = {},
     employeeFirstName: 'John', employeeMiddleInitial: '', employeeLastName: 'Doe',
     employeeAddress1: '2 St', employeeAddress2: '', employeeCity: 'Redmond', employeeState: 'WA',
     employeeZipCode: '98000', employeeSSN: '000-11-2222', employeeID: '1', employeePhone: '555',
-    employeeEmail: 'e@c.com', employeeMarriedStatus: 'single', employeeHireDate: new Date('2020-01-01'),
+    employeeEmail: 'e@c.com', employeeMarriedStatus: 'single', employeeExemptions: 0,
+    employeeHireDate: new Date('2020-01-01'),
     ...employeeOverrides,
   },
   incomeDetails: {
@@ -58,8 +59,21 @@ describe('buildPaystubModel', () => {
   it('sums deductions and satisfies the net-pay identity', () => {
     const m = buildPaystubModel(makeStore());
     expect(m.totalDeductions).toBe(85);  // 50 + 10 + 5 + 20
-    expect(m.totalTaxes).toBeCloseTo(m.federalTax + m.stateTax + m.socialSecurity + m.medicare, 5);
+    // paidLeave is the fifth component of totalTaxes — a mandatory withholding in the
+    // dozen states running a paid family/medical leave fund (this store is WA, which does).
+    expect(m.totalTaxes).toBeCloseTo(
+      m.federalTax + m.stateTax + m.socialSecurity + m.medicare + m.paidLeave, 5);
     expect(m.netPay).toBeCloseTo(m.grossPay - m.totalTaxes - m.totalDeductions, 5);
+  });
+
+  it('withholds a state paid-leave premium only where the state runs a program', () => {
+    const wa = buildPaystubModel(makeStore({}, { employeeState: 'WA' }));
+    expect(wa.paidLeave).toBeGreaterThan(0);
+    expect(wa.paidLeaveLabel).toBe('WA PFML');
+
+    const tx = buildPaystubModel(makeStore({}, { employeeState: 'TX' }));
+    expect(tx.paidLeave).toBe(0);
+    expect(tx.paidLeaveLabel).toBe('');
   });
 
   it('produces real, finite tax numbers via the tax engine', () => {

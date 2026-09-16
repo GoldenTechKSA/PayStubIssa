@@ -1,18 +1,32 @@
+// 'YYYY-MM-DD' read as a LOCAL calendar date. `new Date('2021-06-16')` is UTC midnight,
+// which is the PREVIOUS day everywhere west of Greenwich — enough to shift every printed
+// period by a day and, for Semi-Monthly, to put the start in the wrong half of the month
+// and collapse the period to a single day.
+const parseLocalDate = (value: unknown): Date => {
+    const raw = String(value ?? '');
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
+    return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(raw);
+};
+
+// The matching serializer: local getters, so a date never crosses midnight on the way out.
+const formatLocalDate = (d: Date): string =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
 // Function to calculate end date based on period type and start date
 export const calculateEndDate = (startDate, payPeriodType) => {
     if (!startDate || !payPeriodType) return "";
 
-    const start = new Date(startDate);
+    const start = parseLocalDate(startDate);
 
     switch(payPeriodType) {
         case "Weekly":
             const weeklyEnd = new Date(start);
             weeklyEnd.setDate(start.getDate() + 6); // 7 days total (start date inclusive)
-            return weeklyEnd.toISOString().split('T')[0];
+            return formatLocalDate(weeklyEnd);
         case "Bi-Weekly":
             const biWeeklyEnd = new Date(start);
             biWeeklyEnd.setDate(start.getDate() + 13); // 14 days total (start date inclusive)
-            return biWeeklyEnd.toISOString().split('T')[0];
+            return formatLocalDate(biWeeklyEnd);
         case "Semi-Monthly":
             const semiMonthlyEnd = new Date(start);
             if (start.getDate() <= 15) {
@@ -23,27 +37,27 @@ export const calculateEndDate = (startDate, payPeriodType) => {
                 semiMonthlyEnd.setMonth(start.getMonth() + 1);
                 semiMonthlyEnd.setDate(0);
             }
-            return semiMonthlyEnd.toISOString().split('T')[0];
+            return formatLocalDate(semiMonthlyEnd);
         case "Monthly":
             const monthlyEnd = new Date(start);
             monthlyEnd.setMonth(start.getMonth() + 1);
             monthlyEnd.setDate(0); // Last day of the month
-            return monthlyEnd.toISOString().split('T')[0];
+            return formatLocalDate(monthlyEnd);
         case "Quarterly":
             const quarterlyEnd = new Date(start);
             quarterlyEnd.setMonth(start.getMonth() + 3);
             quarterlyEnd.setDate(0); // Last day of the quarter month
-            return quarterlyEnd.toISOString().split('T')[0];
+            return formatLocalDate(quarterlyEnd);
         case "Semiannually":
             const semiannualEnd = new Date(start);
             semiannualEnd.setMonth(start.getMonth() + 6);
             semiannualEnd.setDate(0); // Last day of the 6-month period
-            return semiannualEnd.toISOString().split('T')[0];
+            return formatLocalDate(semiannualEnd);
         case "Annually":
             const annualEnd = new Date(start);
             annualEnd.setFullYear(start.getFullYear() + 1);
             annualEnd.setDate(0); // Last day of the year
-            return annualEnd.toISOString().split('T')[0];
+            return formatLocalDate(annualEnd);
         default:
             return "";
     }
@@ -53,9 +67,9 @@ export const calculateEndDate = (startDate, payPeriodType) => {
 export const calculatePayDate = (endDate) => {
     if (!endDate) return "";
 
-    const end = new Date(endDate);
+    const end = parseLocalDate(endDate);
     end.setDate(end.getDate() + 1);
-    return end.toISOString().split('T')[0];
+    return formatLocalDate(end);
 };
 
 // Number of pay periods in a full year for a given period type.

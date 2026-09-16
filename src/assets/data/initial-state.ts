@@ -34,6 +34,7 @@ const employeeInfo: EmployeeInfo = {
     employeePhone: "(888) 555-1212",
     employeeEmail: "employee@company.com",
     employeeMarriedStatus: "single",
+    employeeExemptions: 0,
     employeeHireDate: new Date("1980-01-01")
 };
 

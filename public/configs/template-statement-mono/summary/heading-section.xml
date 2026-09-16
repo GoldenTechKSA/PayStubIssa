@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<section id="sm-summary-heading">
+    <style><marginTop>40px</marginTop></style>
+    <column id="sm-summary-heading-col" width="100%">
+        <table id="sm-summary-heading-table">
+            <style><width>100%</width></style>
+            <cells>
+                <rowcells>
+                    <cell id="sm-summary-heading-text" type="static"><style><textAlign>left</textAlign><fontSize>14px</fontSize><fontStyle>italic</fontStyle><padding>0 0 8px</padding></style><value>Summary</value></cell>
+                </rowcells>
+            </cells>
+        </table>
+    </column>
+</section>
