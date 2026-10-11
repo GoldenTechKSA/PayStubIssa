@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, Link, Chip,
@@ -13,6 +13,7 @@ import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
 import { buildPaystubModel, buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
 import { UNIT_PRICE, orderTotal, normalizeStubCount } from "constants/pricing";
+import { paymentsApi, unlockStorage, centsToDollars, PaymentsApiError, type CapturedOrder, type Quote } from "services/payments-api";
 import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING } from "constants/business-info";
 import { telemetryService } from "../../../services/telemetry-service";
 import TemplateManager from "../../../templates/components/templatemanager";
@@ -59,7 +60,9 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   const dispatch = useDispatch();
   const fullState = useSelector((s: PayStubDetails) => s);
   const { companyInfo, employeeInfo, incomeDetails, generalInfo, appSettings } = fullState;
-  const canPrint = appSettings.canPrint;
+  // Paid state. `canPrint` is set only after the server captured and verified the payment;
+  // the unlock records how many stubs were paid for so bumping the count re-locks the gate.
+  const unlock = appSettings.unlock;
 
   const [extraNotes, setExtraNotes] = useState(generalInfo.extraNotes || "");
 
@@ -73,7 +76,38 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   const models = buildPaystubModels(fullState);
 
   const stubCount = normalizeStubCount(generalInfo.payStubCount);
-  const total = orderTotal(stubCount);
+  const canPrint = !!appSettings.canPrint && (!unlock || unlock.qty >= stubCount);
+  const paidForFewer = !!appSettings.canPrint && !!unlock && unlock.qty < stubCount;
+
+  // Server-authoritative quote for the displayed total; the local constants are only a
+  // fallback for the moment before the API answers (or if it is unreachable).
+  const [quote, setQuote] = useState<Quote | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    paymentsApi.quote({ items: [{ type: "paystub", qty: stubCount }] })
+      .then(q => { if (!cancelled) setQuote(q); })
+      .catch(() => { if (!cancelled) setQuote(null); });
+    return () => { cancelled = true; };
+  }, [stubCount]);
+  const unitPrice = quote ? centsToDollars(quote.lines[0]?.unitCents ?? 0) : UNIT_PRICE;
+  const total = quote ? centsToDollars(quote.totalCents) : orderTotal(stubCount);
+
+  // A reload on this step should not lose a payment just made: restore the session unlock,
+  // but only after the server confirms the token is genuine and its order really completed.
+  useEffect(() => {
+    if (appSettings.canPrint) return;
+    const stored = unlockStorage.load();
+    if (!stored) return;
+    let cancelled = false;
+    paymentsApi.verifyUnlock(stored.token)
+      .then(v => {
+        if (cancelled) return;
+        dispatch(updateAppSettings({ canPrint: true, unlock: { ...stored, qty: v.qty, expiresAt: v.expiresAt } }));
+      })
+      .catch(() => { if (!cancelled) unlockStorage.clear(); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // The run spans from the first stub's period start to the last stub's period end.
   const firstStub = models[0];
@@ -84,25 +118,31 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     setAttestedAt(checked ? new Date().toISOString() : null);
   };
 
-  const handlePaymentSuccess = (details: any) => {
-    dispatch(updateAppSettings({ canPrint: true }));
+  const handlePaymentSuccess = (result: CapturedOrder) => {
+    const paidQty = result.quote.lines.reduce((sum, l) => sum + l.qty, 0);
+    const nextUnlock = { token: result.token, orderId: result.orderId, expiresAt: result.expiresAt, qty: paidQty };
+    unlockStorage.save(nextUnlock);
+    dispatch(updateAppSettings({ canPrint: true, unlock: nextUnlock }));
     try {
       telemetryService.track("PaymentSuccess", {
-        paymentId: details?.id,
-        amount: details?.purchase_units?.[0]?.amount?.value,
-        currency: details?.purchase_units?.[0]?.amount?.currency_code,
+        orderId: result.orderId,
+        amount: centsToDollars(result.quote.totalCents),
+        currency: result.quote.currency,
         paystubTemplate: appSettings.templateId,
-        stubCount,
+        stubCount: paidQty,
         attestedAt,
       });
     } catch { /* telemetry best-effort */ }
   };
 
-  const handlePaymentError = (error: any) => {
+  const handlePaymentError = (error: unknown) => {
+    const message = error instanceof PaymentsApiError
+      ? error.message
+      : (error as any)?.message || String(error);
     try {
-      telemetryService.track("PaymentError", { message: error?.message || String(error) });
+      telemetryService.track("PaymentError", { message, code: error instanceof PaymentsApiError ? error.code : undefined });
     } catch { /* telemetry best-effort */ }
-    alert("There was an error processing your payment. Please try again.");
+    alert(error instanceof PaymentsApiError ? message : "There was an error processing your payment. Please try again.");
   };
 
   const handlePrint = () => {
@@ -215,15 +255,27 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                 ) : (
                   <>
                     <Typography variant="subtitle1" fontWeight={600} gutterBottom>Pay to unlock</Typography>
+                    {paidForFewer && unlock && (
+                      <Alert severity="info" sx={{ mb: 2 }}>
+                        Your payment covered {unlock.qty} pay stub{unlock.qty === 1 ? "" : "s"}. Reduce the count on the
+                        Pay period step to print, or pay for {stubCount} below.
+                      </Alert>
+                    )}
 
                     {/* Priced per stub. Show the arithmetic so the total is never a surprise. */}
                     <Stack spacing={0.5} sx={{ mb: 2 }}>
                       <Stack direction="row" justifyContent="space-between">
                         <Typography variant="body2" color="text.secondary">
-                          {stubCount} pay stub{stubCount === 1 ? "" : "s"} × {formatCurrency(UNIT_PRICE)}
+                          {stubCount} pay stub{stubCount === 1 ? "" : "s"} × {formatCurrency(unitPrice)}
                         </Typography>
-                        <Typography variant="body2">{formatCurrency(total)}</Typography>
+                        <Typography variant="body2">{formatCurrency(quote ? centsToDollars(quote.subtotalCents) : total)}</Typography>
                       </Stack>
+                      {quote?.discounts.map(d => (
+                        <Stack key={d.code} direction="row" justifyContent="space-between">
+                          <Typography variant="body2" color="success.main">{d.description} ({d.code})</Typography>
+                          <Typography variant="body2" color="success.main">-{formatCurrency(centsToDollars(d.amountCents))}</Typography>
+                        </Stack>
+                      ))}
                       <Divider />
                       <Stack direction="row" justifyContent="space-between">
                         <Typography variant="subtitle2" fontWeight={700}>Total</Typography>
@@ -257,8 +309,8 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                           pay stub{stubCount === 1 ? "" : "s"} as a PDF.
                         </Typography>
                         <PayPal
-                          amount={total}
-                          description={`${stubCount} pay stub${stubCount === 1 ? "" : "s"}`}
+                          cart={{ items: [{ type: "paystub", qty: stubCount }] }}
+                          meta={{ attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId }}
                           onPaymentSuccess={handlePaymentSuccess}
                           onPaymentError={handlePaymentError}
                         />

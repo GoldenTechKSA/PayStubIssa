@@ -1,8 +1,17 @@
 export interface AppSettings {
     templateId: number;
     nextTabStep: string;
+    /** True only after the server captured and verified the PayPal payment. */
     canPrint: boolean;
     configPath: string;
+    /** The server-signed proof of payment; absent until paid. */
+    unlock?: {
+        token: string;
+        orderId: string;
+        expiresAt: string;
+        /** Number of pay stubs the payment covered. */
+        qty: number;
+    } | null;
 }
 export interface CompanyInfo {
     companyName: string;
