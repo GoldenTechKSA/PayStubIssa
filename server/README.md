@@ -81,10 +81,10 @@ Two PM2 processes, each its own checkout and `.env`:
 | staging | `paystub-api-staging` | 4001 | sandbox | `staging.paystubissa.com.conf` |
 | production | `paystub-api` | 4000 | live | `paystubissa.com.conf` |
 
-`ecosystem.config.cjs` defines both. On the VPS: `npm ci && npm run build`, then
-`pm2 start ecosystem.config.cjs --only <name>` and `pm2 save`. Uncomment the `/api`
-`ProxyPass` block in the matching vhost (`a2enmod proxy proxy_http headers` first),
-`apache2ctl configtest`, `systemctl reload apache2`.
+`ecosystem.config.cjs` defines both. The GitHub Actions workflows build here and ship
+`dist/` plus the manifests to the VPS, run `npm ci --omit=dev` there, and
+`pm2 startOrReload`. One-time VPS setup (Node, PM2, `.env`, Apache proxy include) is
+in [docs/deploy/BACKEND-DEPLOY.md](../docs/deploy/BACKEND-DEPLOY.md).
 
 Deploy order matters: the API must be proxied **before** a client build that calls it
 goes live, otherwise the SPA fallback answers `/api/*` with HTML and checkout shows

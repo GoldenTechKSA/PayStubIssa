@@ -1,0 +1,124 @@
+name: Deploy to staging
+
+# Staging = staging.paystubissa.com on the same VPS, sandbox PayPal.
+# Runs on push to the `staging` branch, or manually from the Actions tab on any
+# branch (workflow_dispatch). It never touches the production docroot or the
+# production PM2 process.
+#
+# One-time VPS setup (Node, PM2, docroot ownership, server/.env, Apache proxy)
+# is in docs/deploy/BACKEND-DEPLOY.md. Secrets reused from production:
+# SSH_PRIVATE_KEY (same deploy user/key as deploy.yml).
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+env:
+  SSH_HOST: "82.180.161.18"
+  SSH_USER: "paystubissa"
+  SSH_PORT: "22"
+  # Static client build → Apache docroot of the staging vhost.
+  WEB_PATH: "/var/www/staging.paystubissa.com"
+  # Node API → inside the deploy user's home, so no sudo is needed to deploy.
+  API_PATH: "/home/paystubissa/apps/staging/server"
+  PM2_APP: "paystub-api-staging"
+  SITE_URL: "https://staging.paystubissa.com"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
+
+      # ---- Client -----------------------------------------------------------
+      - name: Install client dependencies
+        run: npm ci
+
+      - name: Test client
+        run: npm test -- --watchAll=false --passWithNoTests
+        env:
+          CI: "true"
+
+      - name: Build client
+        # CI=false so ESLint warnings don't get promoted to errors and block a deploy.
+        run: npm run build
+        env:
+          CI: "false"
+
+      # ---- Server -----------------------------------------------------------
+      - name: Install server dependencies
+        run: npm ci
+        working-directory: server
+
+      - name: Test server
+        run: npm test
+        working-directory: server
+
+      - name: Build server
+        run: npm run build
+        working-directory: server
+
+      # ---- Ship -------------------------------------------------------------
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${SSH_PORT:-22}" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy API (compiled) and restart PM2
+        # Only what the runtime needs goes over: dist/, the manifests and the PM2
+        # file. `.env` and `data/` live on the VPS and are never touched (excluded
+        # from --delete). Production deps are installed on the VPS so the native
+        # better-sqlite3 binary matches the server's Node.
+        run: |
+          SSH="ssh -i ~/.ssh/deploy_key -p ${SSH_PORT:-22}"
+          $SSH "$SSH_USER@$SSH_HOST" "mkdir -p '$API_PATH'"
+          rsync -avz --delete \
+            --exclude '.env' --exclude 'data/' --exclude 'node_modules/' \
+            -e "$SSH" \
+            server/dist server/package.json server/package-lock.json server/ecosystem.config.cjs \
+            "$SSH_USER@$SSH_HOST:$API_PATH/"
+          $SSH "$SSH_USER@$SSH_HOST" bash -s <<EOF
+            set -euo pipefail
+            cd '$API_PATH'
+            test -f .env || { echo "::error::$API_PATH/.env is missing on the VPS (see docs/deploy/BACKEND-DEPLOY.md)"; exit 1; }
+            npm ci --omit=dev --no-audit --no-fund
+            pm2 startOrReload ecosystem.config.cjs --only '$PM2_APP' --update-env
+            pm2 save
+          EOF
+
+      - name: Deploy client build to staging docroot
+        # The API is proxied before the client goes live, so a build that calls
+        # /api never lands in front of a missing backend.
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT:-22}" \
+            build/ \
+            "$SSH_USER@$SSH_HOST:$WEB_PATH/"
+
+      - name: Smoke test
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/")
+          echo "Homepage returned HTTP $code"
+          test "$code" = "200"
+          health=$(curl -s "$SITE_URL/api/health")
+          echo "Health: $health"
+          echo "$health" | grep -q '"ok":true'
+          echo "$health" | grep -q '"paypalEnv":"sandbox"'
