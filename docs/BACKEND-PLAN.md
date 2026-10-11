@@ -1,6 +1,6 @@
 # Backend Implementation Plan
 
-Status: **Proposed** · Target host: **Hostinger VPS — KVM2** · Last updated: 2026-06-27
+Status: **Agreed — starting Phase 1** · Target host: **Hostinger VPS — KVM2** · Last updated: 2026-10-09
 
 > **Resume here:** Plan is agreed; VPS confirmed (Ubuntu 24.04, Apache 2.4, shared with 5
 > other sites, 2 vCPU/8 GB, IP `82.180.161.18`). This is a **migration** from the old shared
@@ -287,12 +287,18 @@ rest builds on.
 
 ---
 
-## 9. Open questions for you
-1. **Orders table in Phase 1?** I recommend yes (audit + idempotency). OK to include, or stay
-   strictly stateless for v1?
-2. **PayPal app:** do you already have REST credentials, or should the first task be creating
-   the sandbox app?
-3. **Domain cutover:** when do you want DNS pointed at the VPS? (We can stage on a subdomain
-   like `api.`/`staging.` first to de-risk.)
-4. **Price:** confirm the live price is **$8.99** (matches current client code) as the
-   server-side default.
+## 9. Open questions — RESOLVED 2026-10-09
+
+1. **Orders table in Phase 1?** **Yes.** SQLite on the VPS disk (`server/data/orders.sqlite`,
+   gitignored, included in backups). Buys idempotent capture, a sales audit trail, and a
+   lookup for refunds/support. Postgres only if traffic ever warrants it.
+2. **PayPal app:** REST apps (sandbox + live) still need to be created in the PayPal Developer
+   Dashboard. Server secrets go in `server/.env` only. Walkthrough given to owner 2026-10-09.
+3. **Domain cutover:** **done** — production already serves from the VPS over HTTPS (the deploy
+   workflow smoke-tests `https://paystubissa.com/`). A **`staging.paystubissa.com`** vhost is
+   being added so Phase 1 can be tested with PayPal sandbox before touching production.
+4. **Price:** **confirmed $8.99 per pay stub**, 1–12 stubs, USD. **Volume discounts and coupon
+   codes are coming soon**, so the Phase 1 pricing function must accept
+   `{ items: [{ type: 'paystub', qty }], couponCode? }` and return an itemized quote
+   (unit price, qty, discounts applied, total) from day one — even though only the flat
+   per-stub rule ships in Phase 1.
