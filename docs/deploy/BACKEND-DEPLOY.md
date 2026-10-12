@@ -155,6 +155,12 @@ node -e "const D=require('better-sqlite3');console.table(new D('data/orders.sqli
   `-le-ssl.conf` vhost (step 5), so the SPA fallback answered.
 - **Checkout says "temporarily unavailable"** — same cause as above, seen from
   the browser.
+- **Checkout shows "payment options could not be loaded"** — the PayPal SDK rejected the
+  client id. Usually a paste glitch in `.env`. Check the length without printing the value
+  (a PayPal client id is 80–82 characters):
+  `grep '^PAYPAL_CLIENT_ID=' .env | cut -d= -f2- | tr -d '
+' | wc -c`
+  Re-paste the id in `nano .env`, then `pm2 restart <app> --update-env`.
 - **PayPal popup asks for a real login / phone code** — the server is on the
   wrong credentials. `/api/health` must say `sandbox` on staging.
 - **`npm ci` fails on better-sqlite3** — `build-essential` missing (step 1), or

@@ -208,7 +208,8 @@ works — note the tradeoff that we then have no server record of sales.
 - [x] Wire client `PayPal` component to the new endpoints; SDK loaded with the server's client id; gate on token, re-verified after reload; unlock bound to paid stub count.
 - [x] Local sandbox end-to-end with real sandbox credentials — passed 2026-10-11 (order COMPLETED, captured 899 = quoted 899, print unlocked).
 - [x] VPS one-time setup done 2026-10-11: Node 22 + PM2 7 (boot hook for `paystubissa`), proxy modules, staging docroot ownership, `~/apps/staging/server/.env` (sandbox), proxy include in both staging vhosts (`/api/health` → 503 until first deploy).
-- [ ] First staging deploy via `deploy-staging.yml`, then a sandbox purchase on staging.
+- [x] First staging deploy via `deploy-staging.yml` succeeded 2026-10-11 (run 38184480480: API live under PM2 on :4001, client in staging docroot, /api/health = sandbox).
+- [x] Sandbox purchase on staging succeeded 2026-10-11 (after fixing a mangled PAYPAL_CLIENT_ID in the VPS .env; verify with the length check in BACKEND-DEPLOY.md troubleshooting).
 - [ ] Production: PM2 `paystub-api` on :4000 with live creds, uncomment `ProxyPass` in prod vhost, extend `deploy.yml` to build + reload the server, one live purchase.
 - [ ] Soon after: PayPal webhook (`PAYMENT.CAPTURE.COMPLETED`) as an independent source of truth.
 
