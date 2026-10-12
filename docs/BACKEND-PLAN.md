@@ -1,14 +1,14 @@
 # Backend Implementation Plan
 
-Status: **Proposed** · Target host: **Hostinger VPS — KVM2** · Last updated: 2026-06-27
+Status: **Phase 1 code complete — sandbox test next** · Target host: **Hostinger VPS — KVM2** · Last updated: 2026-10-10
 
-> **Resume here:** Plan is agreed; VPS confirmed (Ubuntu 24.04, Apache 2.4, shared with 5
-> other sites, 2 vCPU/8 GB, IP `82.180.161.18`). This is a **migration** from the old shared
-> host — build/test on `staging.paystubissa.com` first, then cut DNS over. **Next action:**
-> start the infra track — write the staging vhost + `deploy.sh` (build → rsync to VPS → reload
-> Apache), then scaffold the `server/` Node service (Phase 1 PayPal). **Open question:** which
-> DNS provider manages paystubissa.com (registrar vs old host panel) — needed for the staging
-> A record + TTL lowering.
+> **Resume here (2026-10-10):** `server/` is scaffolded and tested (28 vitest cases), the
+> client is wired to it, and `staging.paystubissa.com` + the PayPal sandbox/live apps exist.
+> **Next action:** local end-to-end sandbox test (`server/.env` with sandbox creds →
+> `npm run api` + `npm start` → pay with the sandbox buyer on the Review step), then deploy
+> `paystub-api-staging` to the VPS (see [server/README.md](../server/README.md) "Deploy")
+> and repeat on staging. Production cutover (live creds, prod vhost `ProxyPass`, extend
+> `deploy.yml` to build + reload the server) comes after staging passes.
 
 This plan introduces a server-side component to PayStubIssa, which has until now been a
 client-only static SPA. It is sequenced in phases so each phase ships independently and the
@@ -199,14 +199,19 @@ works — note the tradeoff that we then have no server record of sales.
   unlocked.
 
 ### Phase 1 task list
-- [ ] Provision: enable Apache mods (proxy/proxy_http/rewrite/headers/ssl), install Node LTS + PM2, certbot TLS for paystubissa.com. (Apache already present; no nginx, no ufw.)
-- [ ] Scaffold `server/` (Express + TS + zod + jsonwebtoken + PayPal SDK/REST client).
-- [ ] `config.ts` loads & validates env (PayPal id/secret/env, JWT secret, price).
-- [ ] `paypal.ts`: create-order + capture against sandbox.
-- [ ] Routes: create-order, capture, health. Issue/verify unlock JWT.
-- [ ] (Recommended) `orders` table + idempotent capture.
-- [ ] Wire client `PayPal` component to the new endpoints; gate on token.
-- [ ] Apache vhost: serve build (+ SPA fallback) + `mod_proxy` `/api` → :4000. Deploy script. Test end-to-end in sandbox, then go live.
+- [x] Provision: TLS for paystubissa.com done; `staging.paystubissa.com` vhost live (2026-10-10). Still to do on the VPS: `a2enmod proxy proxy_http headers`, install Node LTS + PM2.
+- [x] Scaffold `server/` (Express 5 + TS + zod + jsonwebtoken + plain-fetch PayPal REST client). See [server/README.md](../server/README.md).
+- [x] `config.ts` loads & validates env (PayPal id/secret/env, JWT secret, price, DB path).
+- [x] `paypal.ts`: OAuth + create-order + capture (+ `ORDER_ALREADY_CAPTURED` reconcile) against sandbox/live.
+- [x] Routes: config, quote, create-order, capture, unlock/verify, health. Issue/verify unlock JWT.
+- [x] `orders` table (SQLite) + idempotent, serialized capture + amount/currency verification.
+- [x] Wire client `PayPal` component to the new endpoints; SDK loaded with the server's client id; gate on token, re-verified after reload; unlock bound to paid stub count.
+- [x] Local sandbox end-to-end with real sandbox credentials — passed 2026-10-11 (order COMPLETED, captured 899 = quoted 899, print unlocked).
+- [x] VPS one-time setup done 2026-10-11: Node 22 + PM2 7 (boot hook for `paystubissa`), proxy modules, staging docroot ownership, `~/apps/staging/server/.env` (sandbox), proxy include in both staging vhosts (`/api/health` → 503 until first deploy).
+- [x] First staging deploy via `deploy-staging.yml` succeeded 2026-10-11 (run 38184480480: API live under PM2 on :4001, client in staging docroot, /api/health = sandbox).
+- [x] Sandbox purchase on staging succeeded 2026-10-11 (after fixing a mangled PAYPAL_CLIENT_ID in the VPS .env; verify with the length check in BACKEND-DEPLOY.md troubleshooting).
+- [ ] Production: PM2 `paystub-api` on :4000 with live creds, uncomment `ProxyPass` in prod vhost, extend `deploy.yml` to build + reload the server, one live purchase.
+- [ ] Soon after: PayPal webhook (`PAYMENT.CAPTURE.COMPLETED`) as an independent source of truth.
 
 ---
 
@@ -287,12 +292,18 @@ rest builds on.
 
 ---
 
-## 9. Open questions for you
-1. **Orders table in Phase 1?** I recommend yes (audit + idempotency). OK to include, or stay
-   strictly stateless for v1?
-2. **PayPal app:** do you already have REST credentials, or should the first task be creating
-   the sandbox app?
-3. **Domain cutover:** when do you want DNS pointed at the VPS? (We can stage on a subdomain
-   like `api.`/`staging.` first to de-risk.)
-4. **Price:** confirm the live price is **$8.99** (matches current client code) as the
-   server-side default.
+## 9. Open questions — RESOLVED 2026-10-09
+
+1. **Orders table in Phase 1?** **Yes.** SQLite on the VPS disk (`server/data/orders.sqlite`,
+   gitignored, included in backups). Buys idempotent capture, a sales audit trail, and a
+   lookup for refunds/support. Postgres only if traffic ever warrants it.
+2. **PayPal app:** REST apps (sandbox + live) still need to be created in the PayPal Developer
+   Dashboard. Server secrets go in `server/.env` only. Walkthrough given to owner 2026-10-09.
+3. **Domain cutover:** **done** — production already serves from the VPS over HTTPS (the deploy
+   workflow smoke-tests `https://paystubissa.com/`). A **`staging.paystubissa.com`** vhost is
+   being added so Phase 1 can be tested with PayPal sandbox before touching production.
+4. **Price:** **confirmed $8.99 per pay stub**, 1–12 stubs, USD. **Volume discounts and coupon
+   codes are coming soon**, so the Phase 1 pricing function must accept
+   `{ items: [{ type: 'paystub', qty }], couponCode? }` and return an itemized quote
+   (unit price, qty, discounts applied, total) from day one — even though only the flat
+   per-stub rule ships in Phase 1.

@@ -158,3 +158,15 @@ flip DNS.
 subfolder FTP hosting). Serving at the domain root on the VPS, `"/"` is the
 correct value and avoids asset 404s on deep routes. Consider changing it to `"/"`
 before the first production deploy.
+
+---
+
+## Backend (Node API)
+
+Phase 1 adds a Node service behind Apache `mod_proxy` on the same vhost. The
+static deploy above is unchanged; the API is an extra PM2 process per
+environment (`paystub-api-staging` on `127.0.0.1:4001`, `paystub-api` on
+`127.0.0.1:4000`). One-time VPS setup, the Apache proxy include, and the
+per-deploy flow are in [BACKEND-DEPLOY.md](BACKEND-DEPLOY.md). Enable the proxy
+**before** deploying a client build that calls `/api`, otherwise the SPA
+fallback answers API calls with `index.html`.

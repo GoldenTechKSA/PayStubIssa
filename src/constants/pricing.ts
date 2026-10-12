@@ -4,10 +4,10 @@
  * Pricing is PER PAY STUB. The customer chooses how many stubs to generate
  * (generalInfo.payStubCount, 1–12) and is charged UNIT_PRICE for each one.
  *
- * NOTE: this is client-side pricing. The PayPal order is still built in the
- * browser, so the amount is not yet authoritative — see docs/BACKEND-PLAN.md
- * Phase 1, which moves order creation server-side. Keep this module as the one
- * place the price is defined so that migration is a single swap.
+ * NOTE: the server (`server/`, PRICE_PER_STUB_CENTS) is the pricing authority:
+ * it quotes the cart and creates the PayPal order. These constants are only a
+ * display fallback for the moment before `POST /api/payments/quote` answers
+ * (see services/payments-api.ts). Keep them in sync with the server default.
  */
 
 export const CURRENCY = 'USD';

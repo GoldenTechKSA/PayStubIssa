@@ -42,3 +42,13 @@ db.json
 # Environment files
 .env.development
 .env.production
+
+# Backend (server/) - secrets, build output, SQLite ledger
+server/.env
+server/.env.*
+!server/.env.example
+server/dist
+server/data
+
+# Claude Code per-machine overrides (never committed)
+CLAUDE.local.md
