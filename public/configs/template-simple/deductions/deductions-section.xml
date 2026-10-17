@@ -1,7 +1,0 @@
-<section id="deductions-section">
-    <style>
-        <marginTop>40px</marginTop>
-    </style>
-    <include href="column1.xml" />
-    <include href="column2.xml" />
-</section>

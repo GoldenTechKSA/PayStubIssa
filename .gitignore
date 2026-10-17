@@ -52,3 +52,6 @@ server/data
 
 # Claude Code per-machine overrides (never committed)
 CLAUDE.local.md
+
+# Template snapshots from scripts/snapshot-templates.js
+.snapshots
