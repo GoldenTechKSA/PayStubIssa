@@ -25,6 +25,21 @@ const schema = z.object({
   MAX_STUBS_PER_ORDER: z.coerce.number().int().positive().default(12),
 
   DATABASE_PATH: z.string().min(1).default('./data/orders.sqlite'),
+
+  // z.coerce.boolean() would turn the string 'false' into true; parse the usual spellings
+  // explicitly so a kill-switch typo cannot stop the API (and payments) from booting.
+  TELEMETRY_ENABLED: z
+    .string()
+    .default('true')
+    .transform((v, ctx) => {
+      const s = v.trim().toLowerCase();
+      if (['true', '1', 'yes', 'on'].includes(s)) return true;
+      if (['false', '0', 'no', 'off'].includes(s)) return false;
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'TELEMETRY_ENABLED must be true/false (also 1/0, yes/no, on/off)' });
+      return z.NEVER;
+    }),
+  TELEMETRY_RETENTION_DAYS: z.coerce.number().int().positive().default(90),
+  TELEMETRY_MAX_ROWS: z.coerce.number().int().positive().default(2_000_000),
 });
 
 export type Config = z.infer<typeof schema> & { databasePath: string };

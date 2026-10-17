@@ -1,6 +1,6 @@
 # Backend Implementation Plan
 
-Status: **Phase 1 code complete — sandbox test next** · Target host: **Hostinger VPS — KVM2** · Last updated: 2026-10-10
+Status: **Phase 1 LIVE in production (2026-10-12); Phase 3 telemetry built 2026-10-17 (on branch, not yet deployed) — next: webhook, then Phase 2** · Target host: **Hostinger VPS — KVM2** · Last updated: 2026-10-17
 
 > **Resume here (2026-10-10):** `server/` is scaffolded and tested (28 vitest cases), the
 > client is wired to it, and `staging.paystubissa.com` + the PayPal sandbox/live apps exist.
@@ -210,7 +210,8 @@ works — note the tradeoff that we then have no server record of sales.
 - [x] VPS one-time setup done 2026-10-11: Node 22 + PM2 7 (boot hook for `paystubissa`), proxy modules, staging docroot ownership, `~/apps/staging/server/.env` (sandbox), proxy include in both staging vhosts (`/api/health` → 503 until first deploy).
 - [x] First staging deploy via `deploy-staging.yml` succeeded 2026-10-11 (run 38184480480: API live under PM2 on :4001, client in staging docroot, /api/health = sandbox).
 - [x] Sandbox purchase on staging succeeded 2026-10-11 (after fixing a mangled PAYPAL_CLIENT_ID in the VPS .env; verify with the length check in BACKEND-DEPLOY.md troubleshooting).
-- [ ] Production: PM2 `paystub-api` on :4000 with live creds, uncomment `ProxyPass` in prod vhost, extend `deploy.yml` to build + reload the server, one live purchase.
+- [x] Production deployed 2026-10-12 via PR #34 → master (run 38208016143): PM2 `paystub-api` on :4000 with live creds, proxy include in both prod vhosts, `deploy.yml` ships API then client.
+- [x] One live purchase by the owner on 2026-10-12 confirmed the live PayPal app end to end (print + PDF unlocked). **Phase 1 complete.**
 - [ ] Soon after: PayPal webhook (`PAYMENT.CAPTURE.COMPLETED`) as an independent source of truth.
 
 ---
@@ -244,6 +245,15 @@ future upgrade that doesn't change the UX.
 ---
 
 ## 6. Phase 3 — Telemetry endpoint
+
+> **Built 2026-10-17** on `backend-phase1` (not yet merged/deployed). Design and decisions:
+> [superpowers/specs/2026-10-17-telemetry-pipeline-design.md](superpowers/specs/2026-10-17-telemetry-pipeline-design.md);
+> plan: [superpowers/plans/2026-10-17-telemetry-pipeline.md](superpowers/plans/2026-10-17-telemetry-pipeline.md).
+> What shipped: `[NNNN]` site-code registries on both sides, `POST /api/telemetry` (zod + scrub +
+> rate limit + text/plain beacon), `telemetry_events` table + `telemetry_sessions` view (migration 2),
+> payment milestones `2101–2104` under the browser session id, 90-day prune, kill switch,
+> `server/scripts/query.js` + `server/sql/telemetry-queries.sql` for reading, privacy-policy update.
+> The section below is the original plan, kept for history.
 
 ### Goal
 Implement the missing `POST /api/telemetry` that
@@ -283,7 +293,7 @@ every flush fails and re-queues).
 | 0 | Apache vhost + TLS serving the existing build via the VPS (no behavior change) | 0.5 day |
 | 1 | Server-authoritative PayPal + tamper-proof unlock | 2–4 days |
 | 2 | Server-side gated PDF (Puppeteer) | 2–3 days |
-| 3 | Telemetry endpoint + privacy scrub | 1 day |
+| 3 | Telemetry endpoint + privacy scrub — **done 2026-10-17** | 1 day |
 | later | Dynamic pricing, coupons, multi-paystub quantity | scoped separately |
 
 Recommend shipping **Phase 0 + 1** first as one milestone — that closes the revenue leak and

@@ -14,6 +14,8 @@ import PayPeriodStep from "./steps/PayPeriodStep";
 import EarningsStep from "./steps/EarningsStep";
 import TemplateStep from "./steps/TemplateStep";
 import ReviewStep from "./steps/ReviewStep";
+import { telemetry } from "../../services/telemetry-service";
+import { T } from "../../telemetry/codes";
 
 const STEPS = ["Company", "Employee", "Pay period", "Earnings", "Template", "Review"];
 const DRAFT_KEY = "paystubissa.draft.v1";
@@ -35,12 +37,16 @@ const PaystubWizard = () => {
   const appSettings = useSelector((s: PayStubDetails) => s.appSettings);
 
   const hydrated = useRef(false);
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   // Hydrate any saved draft once, and default the template so the downstream preview renders.
   useEffect(() => {
+    let draftRestored = false;
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (raw) {
+        draftRestored = true;
         const d = JSON.parse(raw);
         if (d.companyInfo) dispatch(saveCompanyInfo(d.companyInfo));
         if (d.employeeInfo) dispatch(saveEmployeeInfo(d.employeeInfo));
@@ -54,6 +60,10 @@ const PaystubWizard = () => {
       dispatch(updateAppSettings({ configPath: DEFAULT_CONFIG, templateId: 0 }));
     }
     hydrated.current = true;
+    telemetry.emit(T.WIZARD_ENTERED, { draftRestored });
+    return () => {
+      telemetry.emit(T.WIZARD_EXITED, { lastStep: activeRef.current });
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
@@ -70,17 +80,26 @@ const PaystubWizard = () => {
     }
   }, [company, employee, income, general]);
 
-  // Scroll to top when changing step.
+  // Scroll to top when changing step, and report which step is now on screen.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    telemetry.emit(T.WIZARD_STEP_VIEWED, { step: active, name: STEPS[active] });
   }, [active]);
 
+  // Each step calls onNext only after its own validation passed, so "completed" is accurate.
   const goNext = () => {
+    telemetry.emit(T.WIZARD_STEP_COMPLETED, { step: active, name: STEPS[active] });
     if (active < STEPS.length - 1) setActive(a => a + 1);
   };
   const goBack = () => {
+    telemetry.emit(T.WIZARD_STEP_BACK, { step: active });
     if (active > 0) setActive(a => a - 1);
     else navigate("/");
+  };
+  // Stepper label click or a Review "Edit" button: a non-linear move.
+  const jumpTo = (to: number) => {
+    telemetry.emit(T.WIZARD_STEP_JUMPED, { from: active, to });
+    setActive(to);
   };
 
   const stepProps = { onNext: goNext, onBack: goBack };
@@ -103,7 +122,7 @@ const PaystubWizard = () => {
           {STEPS.map((label, i) => (
             <Step key={label} completed={i < active}>
               <StepLabel
-                onClick={() => { if (i < active) setActive(i); }}
+                onClick={() => { if (i < active) jumpTo(i); }}
                 sx={{ cursor: i < active ? "pointer" : "default" }}
               >
                 {label}
@@ -118,7 +137,7 @@ const PaystubWizard = () => {
       {active === 2 && <PayPeriodStep {...stepProps} />}
       {active === 3 && <EarningsStep {...stepProps} />}
       {active === 4 && <TemplateStep {...stepProps} />}
-      {active === 5 && <ReviewStep onBack={goBack} onEdit={setActive} />}
+      {active === 5 && <ReviewStep onBack={goBack} onEdit={jumpTo} />}
     </Container>
   );
 };

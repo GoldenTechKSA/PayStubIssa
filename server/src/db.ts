@@ -41,6 +41,42 @@ const MIGRATIONS: string[] = [
      updated_at       TEXT NOT NULL
    );
    CREATE INDEX IF NOT EXISTS orders_status_created ON orders (status, created_at);`,
+
+  // 2 — telemetry events (client journey + server payment milestones) and the funnel view.
+  `CREATE TABLE IF NOT EXISTS telemetry_events (
+     id          INTEGER PRIMARY KEY,
+     received_at TEXT    NOT NULL,
+     ts          TEXT    NOT NULL,
+     source      TEXT    NOT NULL CHECK (source IN ('client','server')),
+     visitor_id  TEXT,
+     session_id  TEXT,
+     code        INTEGER NOT NULL,
+     name        TEXT    NOT NULL,
+     level       TEXT    NOT NULL CHECK (level IN ('info','warn','error')),
+     props_json  TEXT,
+     user_agent  TEXT
+   );
+   CREATE INDEX IF NOT EXISTS telemetry_events_session ON telemetry_events (session_id, ts);
+   CREATE INDEX IF NOT EXISTS telemetry_events_code    ON telemetry_events (code, ts);
+   CREATE INDEX IF NOT EXISTS telemetry_events_time    ON telemetry_events (received_at);
+   CREATE VIEW IF NOT EXISTS telemetry_sessions AS
+   SELECT session_id,
+          MIN(visitor_id)                                                         AS visitor_id,
+          MIN(ts)                                                                 AS started_at,
+          MAX(ts)                                                                 AS last_seen_at,
+          COUNT(*)                                                                AS events,
+          MAX(CASE WHEN code = 1101 THEN 1 ELSE 0 END)                            AS entered_wizard,
+          MAX(CASE WHEN code = 1103 THEN json_extract(props_json, '$.step') END)  AS max_step_completed,
+          MAX(CASE WHEN code = 1201 THEN 1 ELSE 0 END)                            AS picked_template,
+          MAX(CASE WHEN code = 1302 THEN 1 ELSE 0 END)                            AS started_payment,
+          MAX(CASE WHEN code IN (1304, 2102) THEN 1 ELSE 0 END)                   AS paid,
+          COALESCE(MAX(CASE WHEN code = 2102 THEN json_extract(props_json, '$.orderId') END),
+                   MAX(CASE WHEN code = 1304 THEN json_extract(props_json, '$.orderId') END)) AS order_id,
+          MAX(CASE WHEN code IN (1401, 1403) THEN 1 ELSE 0 END)                   AS printed_or_downloaded,
+          SUM(CASE WHEN level = 'error' THEN 1 ELSE 0 END)                        AS errors
+   FROM telemetry_events
+   WHERE session_id IS NOT NULL
+   GROUP BY session_id;`,
 ];
 
 /** Open (creating if needed) the SQLite file and bring the schema up to date. */

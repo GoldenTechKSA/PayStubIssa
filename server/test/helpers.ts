@@ -4,6 +4,8 @@ import type { CaptureResult, CreatedOrder, CreateOrderInput, PayPalClient } from
 import { PayPalError } from '../src/services/paypal';
 import type { PricingRules } from '../src/services/pricing';
 import type { Config } from '../src/config';
+import type Database from 'better-sqlite3';
+import { TelemetryService } from '../src/services/telemetry';
 
 export const JWT_SECRET = 'test-secret-that-is-definitely-longer-than-32-chars';
 
@@ -30,6 +32,9 @@ export const testConfig: Config = {
   MAX_STUBS_PER_ORDER: 12,
   DATABASE_PATH: ':memory:',
   databasePath: ':memory:',
+  TELEMETRY_ENABLED: true,
+  TELEMETRY_RETENTION_DAYS: 90,
+  TELEMETRY_MAX_ROWS: 2_000_000,
 };
 
 /**
@@ -91,4 +96,11 @@ export function makeService(overrides: Partial<{ paypal: PayPalClient; now: () =
     now: overrides.now,
   });
   return { db, paypal: paypal as FakePayPal, service };
+}
+
+/** A TelemetryService on the given DB whose console lines are captured instead of printed. */
+export function makeTelemetry(db: Database.Database, overrides: Partial<{ enabled: boolean }> = {}) {
+  const lines: string[] = [];
+  const telemetry = new TelemetryService({ db, enabled: overrides.enabled ?? true, retentionDays: 90, out: l => lines.push(l) });
+  return { telemetry, lines };
 }

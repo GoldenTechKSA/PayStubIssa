@@ -98,7 +98,7 @@ jobs:
           rsync -avz --delete \
             --exclude '.env' --exclude 'data/' --exclude 'node_modules/' \
             -e "$SSH" \
-            server/dist server/package.json server/package-lock.json server/ecosystem.config.cjs \
+            server/dist server/scripts server/sql server/package.json server/package-lock.json server/ecosystem.config.cjs \
             "$SSH_USER@$SSH_HOST:$API_PATH/"
           $SSH "$SSH_USER@$SSH_HOST" bash -s <<EOF
             set -euo pipefail

@@ -9,6 +9,8 @@
  * production, and by the CRA dev proxy (`"proxy"` in package.json) locally.
  */
 
+import { telemetry } from './telemetry-service';
+
 export type ItemType = 'paystub';
 
 export interface CartItem {
@@ -97,7 +99,14 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   try {
     res = await fetch(`${BASE}${path}`, {
       ...init,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(init.headers || {}) },
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        // Lets the server file its payment milestones under this browser's telemetry session.
+        'X-Telemetry-Session': telemetry.ids().sessionId,
+        'X-Telemetry-Visitor': telemetry.ids().visitorId,
+        ...(init.headers || {}),
+      },
     });
   } catch {
     throw new PaymentsApiError('Could not reach the payment service. Check your connection and try again.', 'NETWORK', 0);

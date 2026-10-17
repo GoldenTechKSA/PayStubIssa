@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { telemetry } from '../../services/telemetry-service';
+import { T } from '../../telemetry/codes';
 
 interface PDFDownloadButtonProps {
   targetId: string;
@@ -19,6 +21,7 @@ const PDFDownloadButton: React.FC<PDFDownloadButtonProps> = ({
 
   const handleDownloadPDF = async () => {
     setIsLoading(true);
+    telemetry.emit(T.PDF_CLICKED);
 
     try {
       const element = document.getElementById(targetId);
@@ -66,8 +69,10 @@ const PDFDownloadButton: React.FC<PDFDownloadButtonProps> = ({
       }
 
       pdf.save(`${fileName}.pdf`);
+      telemetry.emit(T.PDF_GENERATED, { pages: pages.length });
     } catch (error) {
       console.error('Error generating PDF:', error);
+      telemetry.emit(T.PDF_FAILED, { message: (error as any)?.message || String(error) });
     } finally {
       setIsLoading(false);
     }

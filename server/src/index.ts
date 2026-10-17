@@ -2,6 +2,7 @@ import { loadConfig, ConfigError } from './config';
 import { openDatabase } from './db';
 import { createPayPalClient } from './services/paypal';
 import { OrderService } from './services/orders';
+import { TelemetryService } from './services/telemetry';
 import { createApp } from './app';
 
 function main(): void {
@@ -35,8 +36,16 @@ function main(): void {
     tokenTtlMinutes: config.UNLOCK_TOKEN_TTL_MINUTES,
   });
 
-  const app = createApp({ config, orders });
+  const telemetry = new TelemetryService({
+    db,
+    enabled: config.TELEMETRY_ENABLED,
+    retentionDays: config.TELEMETRY_RETENTION_DAYS,
+    maxRows: config.TELEMETRY_MAX_ROWS,
+  });
+
+  const app = createApp({ config, orders, telemetry });
   const server = app.listen(config.PORT, config.HOST, () => {
+    telemetry.startPruneTimer();
     console.log(
       `[api] listening on http://${config.HOST}:${config.PORT} ` +
         `(env=${config.NODE_ENV}, paypal=${config.PAYPAL_ENV}, db=${config.databasePath})`,
@@ -45,6 +54,7 @@ function main(): void {
 
   const shutdown = (signal: string) => {
     console.log(`[api] ${signal} received, shutting down`);
+    telemetry.stopPruneTimer();
     server.close(() => {
       db.close();
       process.exit(0);

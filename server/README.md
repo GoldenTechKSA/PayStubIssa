@@ -38,6 +38,7 @@ Other scripts: `npm test` (vitest, no network), `npm run typecheck`, `npm run bu
 | POST | `/api/payments/orders` | Quote the cart, create the PayPal order, record it. Returns `{ orderId, quote }` |
 | POST | `/api/payments/orders/:id/capture` | Capture at PayPal, verify status + amount, mark COMPLETED, return `{ token, expiresAt, quote }` |
 | POST | `/api/payments/unlock/verify` | Validate an unlock token and that its order completed |
+| POST | `/api/telemetry` | Store a batch of anonymous client events (`204`); see Telemetry below |
 
 Errors are JSON: `{ error: { code, message, details? } }`. Codes the client acts on:
 `VALIDATION`, `INVALID_QTY`, `INVALID_COUPON`, `ORDER_NOT_FOUND`, `INSTRUMENT_DECLINED`
@@ -71,6 +72,52 @@ Coupons are an empty registry in Phase 1; adding one is filling `coupons` in
 `DATABASE_PATH` (default `server/data/orders.sqlite`, gitignored). One table, `orders`,
 holding the quote, PayPal order/capture ids, captured amount, raw capture JSON and the
 client's attestation timestamp. Back this file up with the VPS; it is the sales ledger.
+
+A second table, `telemetry_events`, and the `telemetry_sessions` view hold the usage
+telemetry described next.
+
+## Telemetry
+
+The web app reports anonymous usage events (page views, wizard steps completed, template
+choice, payment outcome, print/PDF, JavaScript errors) to `POST /api/telemetry`. The
+payments router adds its own milestones (order created / captured / failed) under the same
+session id, which the browser sends as `X-Telemetry-Session` / `X-Telemetry-Visitor` headers.
+
+Every row carries a **site code** `[NNNN]` that identifies the one place in the code that
+emitted it: client codes `1000–1999` live in `src/telemetry/codes.ts` of the web app, server
+codes `2000–2999` in `src/telemetry/codes.ts` here. Console/PM2 lines use the same format,
+e.g. `[2102] payments.order.captured {"orderId":"…"}`.
+
+Privacy: the client never sends form values, and `src/telemetry/scrub.ts` drops or redacts
+anything that looks like a name, SSN/EIN, address or wage before insert. A `[2003]
+telemetry.scrubbed` line in the logs means the client leaked something — treat it as a bug.
+
+| Env var | Default | Meaning |
+| --- | --- | --- |
+| `TELEMETRY_ENABLED` | `true` | `false` accepts batches and discards them (kill switch) |
+| `TELEMETRY_RETENTION_DAYS` | `90` | Rows older than this are deleted at boot and daily |
+| `TELEMETRY_MAX_ROWS` | `2000000` | Hard ceiling on stored rows; the oldest are deleted beyond it (daily and every 1000 batches) |
+
+### Reading it
+
+`scripts/query.js` runs SQL through the already-installed `better-sqlite3`, so the VPS does
+not need the `sqlite3` CLI. The starter queries live in `sql/telemetry-queries.sql`.
+
+```bash
+ssh paystubissa@<vps>
+cd /home/paystubissa/apps/production/server     # or /home/paystubissa/apps/staging/server
+node scripts/query.js sessions                  # last 7 days, one row per visit with funnel flags
+node scripts/query.js timeline s_xxxxxxxx       # everything one session did, in order
+node scripts/query.js funnel                    # per day: sessions → wizard → review → payment → paid
+node scripts/query.js errors                    # error-level events in the last 24 h by code
+node scripts/query.js paid                      # paid sessions cross-checked against orders
+node scripts/query.js --sql "SELECT * FROM telemetry_sessions WHERE paid = 1"
+node scripts/query.js --json funnel             # JSON output
+```
+
+`telemetry_sessions` columns: `session_id, visitor_id, started_at, last_seen_at, events,
+entered_wizard, max_step_completed (0–5), picked_template, started_payment, paid, order_id,
+printed_or_downloaded, errors`.
 
 ## Deploy (per environment)
 
