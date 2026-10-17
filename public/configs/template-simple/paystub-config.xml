@@ -1,9 +1,1151 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <paystub>
-    <include href="header/header-section.xml"/>
-    <include href="company/company-section.xml"/>
-    <include href="earnings/earnings-section.xml"/>
-    <include href="deductions/deductions-section.xml"/>
-    <include href="taxes/taxes-section.xml"/>
-    <include href="footer/footer-section.xml"/>
+  <!--
+    Standard Employee Paystub. Designed for the 720 x 960 px printable area of a US Letter
+    sheet (see CLAUDE.md, "one stub, one sheet"). Base type is 11px; section titles 13px.
+    Every table is width 100% of its column so rules end at the column edge, and the left
+    column carries a 16px right padding as the gutter between the two columns.
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, sans-serif</fontFamily>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <color>#111827</color>
+    <!-- Keep the grey shading when printing from the browser (print backgrounds are off by default). -->
+    <WebkitPrintColorAdjust>exact</WebkitPrintColorAdjust>
+    <printColorAdjust>exact</printColorAdjust>
+  </style>
+  <!-- Section paystub-header-section: file codes strip (left) and the statement title (right) -->
+  <section id="paystub-header-section">
+    <style>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="paystub-codes-column" width="50%">
+      <table id="file-codes-table">
+        <header>
+          <style>
+            <background>#f0f0f0</background>
+            <fontSize>8px</fontSize>
+          </style>
+          <hdata>
+            <hd id="period-co">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>2px 8px 0</padding>
+              </style>
+              <label>CO.</label>
+            </hd>
+            <hd id="period-file">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>2px 8px 0</padding>
+              </style>
+              <label>FILE.</label>
+            </hd>
+            <hd id="period-dept">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>2px 8px 0</padding>
+              </style>
+              <label>DEPT.</label>
+            </hd>
+            <hd id="period-clock-vchr">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>2px 8px 0</padding>
+              </style>
+              <label>CLOCK VCHR.</label>
+            </hd>
+            <hd id="period-number">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>2px 8px 0</padding>
+              </style>
+              <label>NUMBER.</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="co" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <background>#f0f0f0</background>
+                <fontSize>8px</fontSize>
+                <padding>0 8px 2px</padding>
+              </style>
+              <value>MP9</value>
+            </cell>
+            <cell id="file" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <background>#f0f0f0</background>
+                <fontSize>8px</fontSize>
+                <padding>0 8px 2px</padding>
+              </style>
+              <value>001753</value>
+            </cell>
+            <cell id="dept" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <background>#f0f0f0</background>
+                <fontSize>8px</fontSize>
+                <padding>0 8px 2px</padding>
+              </style>
+              <value>20109</value>
+            </cell>
+            <cell id="clock-vchr" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <background>#f0f0f0</background>
+                <fontSize>8px</fontSize>
+                <padding>0 8px 2px</padding>
+              </style>
+              <value>NO. 00298</value>
+            </cell>
+            <cell id="number" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <background>#f0f0f0</background>
+                <fontSize>8px</fontSize>
+                <padding>0 8px 2px</padding>
+              </style>
+              <value>004</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="paystub-title" width="50%">
+      <table id="title-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <header title="Earnings Statement">
+          <style>
+            <textAlign>right</textAlign>
+            <fontWeight>bold</fontWeight>
+            <fontSize>22px</fontSize>
+            <lineHeight>1.1</lineHeight>
+          </style>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="title-name" type="static">
+              <style>
+                <padding>0</padding>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section company-section: employer identity -->
+  <section id="company-section">
+    <style>
+      <marginTop>16px</marginTop>
+    </style>
+    <column id="company-column" width="100%">
+      <table id="company-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="company-name" type="substitute">
+              <style>
+                <fontWeight>bold</fontWeight>
+                <fontSize>14px</fontSize>
+                <padding>0 0 2px</padding>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="company-address" type="substitute">
+              <style>
+                <padding>0</padding>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="company-phone" type="substitute">
+              <style>
+                <padding>0</padding>
+              </style>
+              <value>{companyInfo.companyPhone}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="company-ein" type="substitute">
+              <style>
+                <padding>0</padding>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section earnings-section: Earnings Details (left) / Pay Period Information + employee (right) -->
+  <section id="earnings-section">
+    <style>
+      <marginTop>16px</marginTop>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="regular-earnings" width="70%">
+      <style>
+        <paddingRight>16px</paddingRight>
+      </style>
+      <table id="earnings-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <header title="Earnings Details">
+          <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>13px</fontSize>
+            <paddingBottom>2px</paddingBottom>
+          </style>
+          <hdata>
+            <hd id="description">
+              <style>
+                <width>34%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <label>Description</label>
+            </hd>
+            <hd id="reg-rate">
+              <style>
+                <width>16%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>Rate</label>
+            </hd>
+            <hd id="hours">
+              <style>
+                <width>14%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>Hours</label>
+            </hd>
+            <hd id="current">
+              <style>
+                <width>18%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>This Period</label>
+            </hd>
+            <hd id="ytd">
+              <style>
+                <width>18%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="reg-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="reg-rate" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="reg-hours" type="substitute" format="number">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="reg-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="reg-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ot-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Overtime Pay</value>
+            </cell>
+            <cell id="ot-rate" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="ot-hours" type="substitute" format="number">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="ot-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="ot-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="other-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Other Earnings</value>
+            </cell>
+            <cell id="other-rate" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="other-hours" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="other-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="other-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gross-desc" type="static">
+              <style>
+                <padding>3px 4px</padding>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="gross-rate" type="static">
+              <style>
+                <padding>3px 4px</padding>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="gross-hours" type="static">
+              <style>
+                <padding>3px 4px</padding>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="gross-current" type="substitute" format="currency">
+              <style>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="gross-ytd" type="substitute" format="currency">
+              <style>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="pay-period-column" width="30%">
+      <table id="pay-period-table">
+        <style>
+          <width>100%</width>
+          <borderTop>2px solid #888b91</borderTop>
+        </style>
+        <header title="Pay Period Information">
+          <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>13px</fontSize>
+            <paddingBottom>2px</paddingBottom>
+          </style>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="period-label" type="static">
+              <style>
+                <width>38%</width>
+                <padding>3px 4px 2px</padding>
+              </style>
+              <value>Period</value>
+            </cell>
+            <cell id="period-dates" type="substitute">
+              <style>
+                <padding>3px 4px 2px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="paydate-label" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Pay Date</value>
+            </cell>
+            <cell id="period-paydate" type="substitute" format="date">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="subno-label" type="static">
+              <style>
+                <padding>2px 4px 3px</padding>
+              </style>
+              <value>Paystub No.</value>
+            </cell>
+            <cell id="period-subno" type="substitute">
+              <style>
+                <padding>2px 4px 3px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="employee-table">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+          <borderTop>2px solid #888b91</borderTop>
+          <borderBottom>1px solid #888b91</borderBottom>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="employee-name" type="substitute">
+              <style>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 4px 1px</padding>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="employee-id" type="substitute">
+              <style>
+                <padding>1px 4px</padding>
+              </style>
+              <value>Employee ID: {employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="employee-ssn" type="substitute">
+              <style>
+                <padding>1px 4px</padding>
+              </style>
+              <value>SSN: {employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="employee-address" type="substitute">
+              <style>
+                <padding>1px 4px</padding>
+              </style>
+              <value>{employeeInfo.employeeAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="employee-city" type="substitute">
+              <style>
+                <padding>1px 4px 3px</padding>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section deductions-section: Deductions Details (left) / Summary + Net Pay (right) -->
+  <section id="deductions-section">
+    <style>
+      <marginTop>16px</marginTop>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="deductions-info" width="70%">
+      <style>
+        <paddingRight>16px</paddingRight>
+      </style>
+      <table id="deductions-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <header title="Deductions Details">
+          <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>13px</fontSize>
+            <paddingBottom>2px</paddingBottom>
+          </style>
+          <hdata>
+            <hd id="description">
+              <style>
+                <width>44%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <label>Deductions</label>
+            </hd>
+            <hd id="current">
+              <style>
+                <width>28%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>This Period</label>
+            </hd>
+            <hd id="ytd">
+              <style>
+                <width>28%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="medical-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="medical-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="medical-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="dental-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="dental-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="dental-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="vision-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="vision-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="vision-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="retirement-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="retirement-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="retirement-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="other-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="other-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="other-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="total-desc" type="static">
+              <style>
+                <padding>3px 4px</padding>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="total-current" type="substitute" format="currency">
+              <style>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="total-ytd" type="substitute" format="currency">
+              <style>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="summary-misc" width="30%">
+      <table id="summary-table">
+        <style>
+          <width>100%</width>
+          <borderTop>2px solid #888b91</borderTop>
+        </style>
+        <header title="Summary">
+          <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>13px</fontSize>
+            <paddingBottom>2px</paddingBottom>
+          </style>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="gross-label" type="static">
+              <style>
+                <padding>3px 6px 2px</padding>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="gross-value" type="substitute" format="currency">
+              <style>
+                <padding>3px 6px 2px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="deductions-label" type="static">
+              <style>
+                <padding>2px 6px</padding>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>Deductions</value>
+            </cell>
+            <cell id="deductions-value" type="substitute" format="currency">
+              <style>
+                <padding>2px 6px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="taxes-label" type="static">
+              <style>
+                <padding>2px 6px</padding>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>Taxes</value>
+            </cell>
+            <cell id="taxes-value" type="substitute" format="currency">
+              <style>
+                <padding>2px 6px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="net-label" type="static">
+              <style>
+                <padding>2px 6px 3px</padding>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>Net Pay</value>
+            </cell>
+            <cell id="net-value" type="substitute" format="currency">
+              <style>
+                <padding>2px 6px 3px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="netpay-table">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+          <borderTop>2px solid #888b91</borderTop>
+          <borderBottom>1px solid #888b91</borderBottom>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="netpay-label" type="static">
+              <style>
+                <padding>5px 6px</padding>
+                <fontWeight>bold</fontWeight>
+                <fontSize>15px</fontSize>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+            <cell id="netpay-value" type="substitute" format="currency">
+              <style>
+                <padding>5px 6px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <fontSize>15px</fontSize>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section taxes-section: Taxes Details (left) / payment details (right) -->
+  <section id="taxes-section">
+    <style>
+      <marginTop>16px</marginTop>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="taxes-col" width="70%">
+      <style>
+        <paddingRight>16px</paddingRight>
+      </style>
+      <table id="taxes-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <header title="Taxes Details">
+          <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>13px</fontSize>
+            <paddingBottom>2px</paddingBottom>
+          </style>
+          <hdata>
+            <hd id="description">
+              <style>
+                <width>44%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <label>Taxes</label>
+            </hd>
+            <hd id="current">
+              <style>
+                <width>28%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>This Period</label>
+            </hd>
+            <hd id="ytd">
+              <style>
+                <width>28%</width>
+                <borderTop>2px solid #888b91</borderTop>
+                <borderBottom>1px solid #888b91</borderBottom>
+                <fontWeight>bold</fontWeight>
+                <fontSize>11px</fontSize>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="fed-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="fed-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="fed-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ss-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Social Security Tax</value>
+            </cell>
+            <cell id="ss-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="ss-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="med-desc" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Medicare Tax</value>
+            </cell>
+            <cell id="med-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="med-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="state-desc" type="substitute">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="state-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="state-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="total-desc" type="static">
+              <style>
+                <padding>3px 4px</padding>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="total-current" type="substitute" format="currency">
+              <style>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="total-ytd" type="substitute" format="currency">
+              <style>
+                <padding>3px 4px</padding>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderTop>1px solid #888b91</borderTop>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="payment-col" width="30%">
+      <table id="payment-table">
+        <style>
+          <width>100%</width>
+          <borderTop>2px solid #888b91</borderTop>
+          <borderBottom>1px solid #888b91</borderBottom>
+        </style>
+        <header title="Payment">
+          <style>
+            <fontWeight>bold</fontWeight>
+            <fontSize>13px</fontSize>
+            <paddingBottom>2px</paddingBottom>
+          </style>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="method-label" type="static">
+              <style>
+                <width>38%</width>
+                <padding>3px 4px 2px</padding>
+              </style>
+              <value>Method</value>
+            </cell>
+            <cell id="method-value" type="substitute">
+              <style>
+                <padding>3px 4px 2px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{generalInfo.paymentMethod}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="check-label" type="static">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>Check No.</value>
+            </cell>
+            <cell id="check-value" type="substitute">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="filing-label" type="static">
+              <style>
+                <padding>2px 4px 3px</padding>
+              </style>
+              <value>Filing Status</value>
+            </cell>
+            <cell id="filing-value" type="substitute">
+              <style>
+                <padding>2px 4px 3px</padding>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section footer-section: disclaimer -->
+  <section id="footer-section">
+    <style>
+      <marginTop>24px</marginTop>
+      <paddingTop>8px</paddingTop>
+      <borderTop>1px solid #d1d5db</borderTop>
+    </style>
+    <column id="disclaimer-column" width="100%">
+      <table id="disclaimer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="disclaimer-text" type="static">
+              <style>
+                <fontSize>9px</fontSize>
+                <color>#6b7280</color>
+                <textAlign>center</textAlign>
+                <padding>1px 0</padding>
+              </style>
+              <value>This statement is for informational purposes only and is not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="record-text" type="static">
+              <style>
+                <fontSize>9px</fontSize>
+                <color>#6b7280</color>
+                <textAlign>center</textAlign>
+                <padding>1px 0</padding>
+              </style>
+              <value>Please retain for your records.</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="contact-text" type="substitute">
+              <style>
+                <fontSize>9px</fontSize>
+                <color>#6b7280</color>
+                <textAlign>center</textAlign>
+                <padding>1px 0</padding>
+              </style>
+              <value>{companyInfo.companyName} · {companyInfo.companyPhone}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
 </paystub>

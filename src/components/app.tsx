@@ -10,9 +10,10 @@ import HeroPage from "./common/hero-page";
 import PrivacyPolicy from "./common/privacy-policy";
 import AccessibilityPolicy from "./common/accessibility-policy";
 import TermsOfUser from "./common/terms-of-use";
-import { TelemetryConfig } from "../types/telemetry";
+import type { TelemetryConfig } from "../types/telemetry";
 import { TelemetryProvider } from "../contexts/telemetry-context";
 import TelemetryErrorBoundary from "./common/telemetry-error-boundary";
+import { RouteTelemetry } from "./common/route-telemetry";
 import PaystubWizard from "./wizard/PaystubWizard";
 
 const NotFound: React.FC = () => (
@@ -25,19 +26,19 @@ const NotFound: React.FC = () => (
   </Container>
 );
 
-const App: React.FC = () => {
-  const telemetryConfig: TelemetryConfig = {
-    endpoint: "/api/telemetry", // Replace with your actual endpoint
-    batchSize: 5,
-    flushInterval: 10000, // 10 seconds
-    enableConsoleLogging: true, // Enable for development
-    enablePerformanceTracking: true,
-    enableErrorTracking: true,
-    anonymizeData: false, // Set to true in production as needed
-  };
+// Module-level so the provider sees one stable object (a per-render literal used to
+// re-run its effect on every App render).
+const TELEMETRY_CONFIG: Partial<TelemetryConfig> = {
+  endpoint: "/api/telemetry",
+  batchSize: 10,
+  flushIntervalMs: 10_000,
+  consoleEcho: process.env.NODE_ENV === "development",
+};
 
+const App: React.FC = () => {
   return (
-    <TelemetryProvider config={telemetryConfig}>
+    <TelemetryProvider config={TELEMETRY_CONFIG}>
+      <RouteTelemetry />
       <TelemetryErrorBoundary componentName="App">
         <div className="app-root">
           <AppHeader />

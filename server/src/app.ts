@@ -4,19 +4,27 @@ import type { Config } from './config';
 import { HttpError } from './lib/errors';
 import type { OrderService } from './services/orders';
 import { paymentsRouter } from './routes/payments';
+import { telemetryRouter } from './routes/telemetry';
+import type { TelemetryService } from './services/telemetry';
 
 export interface AppDeps {
   config: Config;
   orders: OrderService;
+  telemetry: TelemetryService;
 }
 
-export function createApp({ config, orders }: AppDeps): express.Express {
+export function createApp({ config, orders, telemetry }: AppDeps): express.Express {
   const app = express();
   const startedAt = Date.now();
 
   app.set('trust proxy', config.TRUST_PROXY);
   app.disable('x-powered-by');
   app.use(helmet());
+
+  // Telemetry owns its parsers (bigger bodies, text/plain beacons), so it is mounted
+  // ahead of the app-wide JSON parser.
+  app.use('/api/telemetry', telemetryRouter(telemetry));
+
   app.use(express.json({ limit: '16kb' }));
 
   app.get('/api/health', (_req, res) => {
@@ -29,7 +37,7 @@ export function createApp({ config, orders }: AppDeps): express.Express {
     });
   });
 
-  app.use('/api/payments', paymentsRouter(config, orders));
+  app.use('/api/payments', paymentsRouter(config, orders, telemetry));
 
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'No such endpoint' } });

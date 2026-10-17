@@ -108,6 +108,17 @@ const PrivacyPolicy = () => (
             <strong>Yes</strong> — in ordinary web server logs kept by our hosting provider.
           </td>
         </tr>
+        <tr>
+          <td>Usage analytics</td>
+          <td>
+            A random identifier stored in your browser, the pages you visit, which steps of the pay stub wizard
+            you complete (never what you type), whether a payment succeeded or failed and its PayPal order id,
+            your browser type, and timestamps
+          </td>
+          <td>
+            <strong>Yes</strong> — on our server, for up to 90 days.
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -152,14 +163,17 @@ const PrivacyPolicy = () => (
     <h4>7. Cookies, Analytics, and Local Storage</h4>
     <p>
       <strong>Local storage</strong><br />
-      The Service uses your browser's local storage to hold your pay stub draft on your device. That is
-      functional storage that makes the app work; it is not tracking, and it is not sent to us.
+      The Service uses your browser's local storage to hold your pay stub draft on your device. That draft is
+      functional storage that makes the app work; it is not tracking, and it is never sent to us. The only
+      other thing we keep in your browser is a random analytics identifier (see below), which is sent to us.
     </p>
     <p>
       <strong>Analytics</strong><br />
-      The app contains a lightweight telemetry client that is capable of recording page views, JavaScript
-      errors, and performance timings (such as page load time). Whatever such data may be collected is limited
-      to those categories.
+      The Service records anonymous usage events so we can see where people get stuck: page views, which
+      wizard steps were completed, template selection, whether a payment succeeded, failed or was cancelled
+      (with its PayPal order id), print and PDF actions, JavaScript errors, and page load time. Each event
+      carries a random identifier stored in your browser so that repeat visits can be grouped; it is not
+      linked to your name or email. Events are kept on our server for up to 90 days and then deleted.
     </p>
     <p>
       <strong>What analytics never contains:</strong> we do not send pay stub contents, Social Security
@@ -174,7 +188,8 @@ const PrivacyPolicy = () => (
     <p>
       <strong>Your controls</strong><br />
       You can block or clear cookies and local storage in your browser settings. Clearing local storage for{" "}
-      {SITE_DOMAIN} will delete your saved draft, which is the point.
+      {SITE_DOMAIN} will delete your saved draft, which is the point. Clearing site data also resets the
+      analytics identifier.
     </p>
     <p>
       <strong>Do Not Track</strong><br />

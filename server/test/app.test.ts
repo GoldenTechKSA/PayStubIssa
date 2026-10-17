@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app';
-import { makeService, testConfig } from './helpers';
+import { makeService, makeTelemetry, testConfig } from './helpers';
 
 function boot() {
-  const { service, paypal } = makeService();
-  const app = createApp({ config: testConfig, orders: service });
+  const { service, paypal, db } = makeService();
+  const app = createApp({ config: testConfig, orders: service, telemetry: makeTelemetry(db).telemetry });
   return { app, paypal, service };
 }
 

@@ -1,6 +1,7 @@
 // components/TelemetryErrorBoundary.tsx
 import React, { Component, ReactNode, ErrorInfo } from 'react';
-import { telemetryService } from '../../services/telemetry-service';
+import { telemetry } from '../../services/telemetry-service';
+import { T } from '../../telemetry/codes';
 
 interface Props {
   children: ReactNode;
@@ -28,17 +29,7 @@ class TelemetryErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Track the error with telemetry
-    telemetryService.trackError(error, this.props.componentName || 'ErrorBoundary', true);
-    
-    // Also track component stack and additional error info
-    telemetryService.track('error_boundary_triggered', {
-      component: this.props.componentName || 'ErrorBoundary',
-      errorMessage: error.message,
-      errorStack: error.stack,
-      componentStack: errorInfo.componentStack,
-      errorBoundary: true,
-    });
+    telemetry.emit(T.ERROR_BOUNDARY, { component: this.props.componentName || 'ErrorBoundary', message: error.message });
 
     this.setState({
       error,
@@ -47,7 +38,6 @@ class TelemetryErrorBoundary extends Component<Props, State> {
   }
 
   private handleRetry = () => {
-    telemetryService.trackUserAction('retry', this.props.componentName || 'ErrorBoundary', 'error_boundary_retry');
     this.setState({ hasError: false, error: undefined, errorInfo: undefined });
   };
 

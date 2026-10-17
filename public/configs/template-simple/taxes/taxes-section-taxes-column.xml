@@ -1,3 +1,0 @@
-<column id="taxes-col" width="70%">
-    <include href="taxes-section-taxes-table.xml" />
-</column>

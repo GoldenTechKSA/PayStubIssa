@@ -1,35 +1,1107 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!-- Statement of Earnings and Deductions: a typewriter-set statement in IBM Plex Mono,
-     with italic section headings, two outlined identity boxes, a rule-bracketed ledger
-     and a fully gridded summary.
-
-     Type is deliberately uneven, as in the reference: the company block reads large, the
-     ledger is set several sizes down, and the summary sits between them. Monospace is wide
-     - roughly 0.6em per character - so column widths here are sized from character counts
-     ("FICA - Social Security" is 22 characters), not from eyeballed proportions.
-
-     Optional lines (salary vs hourly, overtime, bonus, state paid leave) are their own
-     renderIf tables repeating the same fixed widths, since renderIf drops a table but
-     cannot drop a row. The wage-type branch tests isSalaried / isHourly, because renderIf
-     tests one path and both wageType strings are truthy.
-
-     Sized for the printable page: 720 x 960 CSS px. See CLAUDE.md, one stub one sheet. -->
 <paystub>
+  <style>
+    <fontFamily>'IBM Plex Mono', 'Consolas', 'DejaVu Sans Mono', monospace</fontFamily>
+    <color>#000000</color>
+    <fontSize>11px</fontSize>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>26px 26px 30px</padding>
+  </style>
+  <!-- Section sm-title-section -->
+  <section id="sm-title-section">
+    <column id="sm-title-col" width="100%">
+      <table id="sm-title-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-title" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>21px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <padding>0 0 4px</padding>
+              </style>
+              <value>STATEMENT OF EARNINGS AND DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-company-section -->
+  <section id="sm-company-section">
     <style>
-        <fontFamily>'IBM Plex Mono', 'Consolas', 'DejaVu Sans Mono', monospace</fontFamily>
-        <color>#000000</color>
-        <fontSize>11px</fontSize>
-        <backgroundColor>#ffffff</backgroundColor>
-        <padding>26px 26px 30px</padding>
+      <marginTop>44px</marginTop>
     </style>
-    <include href="header/title-section.xml"/>
-    <include href="header/company-section.xml"/>
-    <include href="employee/labels-section.xml"/>
-    <include href="employee/boxes-section.xml"/>
-    <include href="earnings/heading-section.xml"/>
-    <include href="earnings/ledger-head-section.xml"/>
-    <include href="earnings/ledger-body-section.xml"/>
-    <include href="summary/heading-section.xml"/>
-    <include href="summary/table-section.xml"/>
-    <include href="footer/footer-section.xml"/>
+    <column id="sm-company-col" width="100%">
+      <table id="sm-company-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-company-name" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 0 3px</padding>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-company-street" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <padding>0 0 3px</padding>
+              </style>
+              <value>{companyInfo.companyAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-company-city" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <padding>0 0 3px</padding>
+              </style>
+              <value>{companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sm-company-phone-table" renderIf="companyInfo.companyPhone">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-company-phone" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <padding>0</padding>
+              </style>
+              <value>{companyInfo.companyPhone}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-labels-section -->
+  <section id="sm-labels-section">
+    <style>
+      <marginTop>30px</marginTop>
+      <justifyContent>space-between</justifyContent>
+    </style>
+    <column id="sm-label-employee" width="64%">
+      <table id="sm-label-employee-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-label-employee-text" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <padding>0 0 6px</padding>
+              </style>
+              <value>Employee Information</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="sm-label-schedule" width="33%">
+      <table id="sm-label-schedule-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-label-schedule-text" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <padding>0 0 6px</padding>
+              </style>
+              <value>Pay Schedule</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-boxes-section -->
+  <section id="sm-boxes-section">
+    <style>
+      <justifyContent>space-between</justifyContent>
+    </style>
+    <column id="sm-employee-box" width="64%">
+      <style>
+        <border>1px solid #000000</border>
+        <padding>10px 12px</padding>
+      </style>
+      <table id="sm-employee-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-emp-name-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Employee Name:</value>
+            </cell>
+            <cell id="sm-emp-name-value" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 16px</padding>
+                <width>100%</width>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-emp-ssn-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Employee Social:</value>
+            </cell>
+            <cell id="sm-emp-ssn-value" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 16px</padding>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-emp-id-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Employee ID:</value>
+            </cell>
+            <cell id="sm-emp-id-value" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 16px</padding>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-emp-addr-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Employee Address:</value>
+            </cell>
+            <cell id="sm-emp-addr-value" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 16px</padding>
+              </style>
+              <value>{employeeInfo.employeeAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-emp-addr2-label" type="static">
+              <style>
+                <padding>2px 0</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-emp-addr2-value" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 16px</padding>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="sm-schedule-box" width="33%">
+      <style>
+        <border>1px solid #000000</border>
+        <padding>10px 12px</padding>
+      </style>
+      <table id="sm-schedule-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-sch-type-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Pay Schedule:</value>
+            </cell>
+            <cell id="sm-sch-type-value" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 8px</padding>
+                <width>100%</width>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-sch-beg-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Period Beg:</value>
+            </cell>
+            <cell id="sm-sch-beg-value" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 8px</padding>
+              </style>
+              <value>{incomeDetails.periodStartDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-sch-end-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Period End:</value>
+            </cell>
+            <cell id="sm-sch-end-value" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 8px</padding>
+              </style>
+              <value>{incomeDetails.periodEndDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-sch-pay-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>2px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Pay Date:</value>
+            </cell>
+            <cell id="sm-sch-pay-value" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>2px 0 2px 8px</padding>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-earnings-heading -->
+  <section id="sm-earnings-heading">
+    <style>
+      <marginTop>30px</marginTop>
+    </style>
+    <column id="sm-earnings-heading-col" width="100%">
+      <table id="sm-earnings-heading-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-earnings-heading-text" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <padding>0 0 8px</padding>
+              </style>
+              <value>Earnings and Deductions</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-ledger-head -->
+  <section id="sm-ledger-head">
+    <style>
+      <borderTop>2px solid #000000</borderTop>
+      <borderBottom>2px solid #000000</borderBottom>
+      <justifyContent>space-between</justifyContent>
+    </style>
+    <column id="sm-ledger-head-earnings" width="57%">
+      <table id="sm-ledger-head-earnings-table">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-eh-a1" type="static">
+              <style>
+                <width>62%</width>
+                <padding>5px 4px 0</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-eh-a2" type="static">
+              <style>
+                <width>10%</width>
+                <padding>5px 4px 0</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-eh-a3" type="static">
+              <style>
+                <width>13%</width>
+                <padding>5px 4px 0</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-eh-a4" type="static">
+              <style>
+                <width>15%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>5px 4px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>CURRENT</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-eh-b1" type="static">
+              <style>
+                <width>62%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 4px 5px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+            <cell id="sm-eh-b2" type="static">
+              <style>
+                <width>10%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 4px 5px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>HOURS</value>
+            </cell>
+            <cell id="sm-eh-b3" type="static">
+              <style>
+                <width>13%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 4px 5px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>RATE</value>
+            </cell>
+            <cell id="sm-eh-b4" type="static">
+              <style>
+                <width>15%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 4px 5px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>AMOUNT</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="sm-ledger-head-withholdings" width="42%">
+      <table id="sm-ledger-head-withholdings-table">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-wh-a1" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>5px 4px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>WITHHOLDINGS/</value>
+            </cell>
+            <cell id="sm-wh-a2" type="static">
+              <style>
+                <width>22%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>5px 4px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>CURRENT</value>
+            </cell>
+            <cell id="sm-wh-a3" type="static">
+              <style>
+                <width>28%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>5px 4px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>YTD</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-wh-b1" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 4px 5px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+            <cell id="sm-wh-b2" type="static">
+              <style>
+                <width>22%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 4px 5px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>AMOUNT</value>
+            </cell>
+            <cell id="sm-wh-b3" type="static">
+              <style>
+                <width>28%</width>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>0 4px 5px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>AMOUNT</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-ledger-body -->
+  <section id="sm-ledger-body">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <minHeight>104px</minHeight>
+      <paddingTop>8px</paddingTop>
+    </style>
+    <column id="sm-ledger-body-earnings" width="57%">
+      <table id="sm-earn-salary" renderIf="isSalaried">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-earn-salary-desc" type="static">
+              <style>
+                <width>62%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>SALARY</value>
+            </cell>
+            <cell id="sm-earn-salary-hours" type="static">
+              <style>
+                <width>10%</width>
+                <padding>3px 4px</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-earn-salary-rate" type="static">
+              <style>
+                <width>13%</width>
+                <padding>3px 4px</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-earn-salary-amt" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sm-earn-regular" renderIf="isHourly">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-earn-regular-desc" type="static">
+              <style>
+                <width>62%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>REGULAR</value>
+            </cell>
+            <cell id="sm-earn-regular-hours" type="substitute" format="number">
+              <style>
+                <width>10%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="sm-earn-regular-rate" type="substitute" format="number">
+              <style>
+                <width>13%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="sm-earn-regular-amt" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sm-earn-overtime" renderIf="overtimePay">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-earn-overtime-desc" type="static">
+              <style>
+                <width>62%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>OVERTIME</value>
+            </cell>
+            <cell id="sm-earn-overtime-hours" type="substitute" format="number">
+              <style>
+                <width>10%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="sm-earn-overtime-rate" type="substitute" format="number">
+              <style>
+                <width>13%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="sm-earn-overtime-amt" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sm-earn-bonus" renderIf="otherEarnings">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-earn-bonus-desc" type="static">
+              <style>
+                <width>62%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>BONUS</value>
+            </cell>
+            <cell id="sm-earn-bonus-hours" type="static">
+              <style>
+                <width>10%</width>
+                <padding>3px 4px</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-earn-bonus-rate" type="static">
+              <style>
+                <width>13%</width>
+                <padding>3px 4px</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-earn-bonus-amt" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="sm-ledger-body-withholdings" width="42%">
+      <table id="sm-ded-table">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-ded-fed-desc" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>Federal Tax</value>
+            </cell>
+            <cell id="sm-ded-fed-cur" type="substitute" format="currency">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="sm-ded-fed-ytd" type="substitute" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-ded-med-desc" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>FICA - Medicare</value>
+            </cell>
+            <cell id="sm-ded-med-cur" type="substitute" format="currency">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="sm-ded-med-ytd" type="substitute" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-ded-ss-desc" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>FICA - Social Security</value>
+            </cell>
+            <cell id="sm-ded-ss-cur" type="substitute" format="currency">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="sm-ded-ss-ytd" type="substitute" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-ded-st-desc" type="substitute">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>{employeeStateCode} State Tax</value>
+            </cell>
+            <cell id="sm-ded-st-cur" type="substitute" format="currency">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="sm-ded-st-ytd" type="substitute" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sm-ded-paid-leave" renderIf="paidLeave">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-ded-pfml-desc" type="substitute">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px 3px 0</padding>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="sm-ded-pfml-cur" type="substitute" format="currency">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="sm-ded-pfml-ytd" type="substitute" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <fontSize>10px</fontSize>
+                <padding>3px 4px</padding>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-summary-heading -->
+  <section id="sm-summary-heading">
+    <style>
+      <marginTop>40px</marginTop>
+    </style>
+    <column id="sm-summary-heading-col" width="100%">
+      <table id="sm-summary-heading-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-summary-heading-text" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>14px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <padding>0 0 8px</padding>
+              </style>
+              <value>Summary</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-summary-table-section -->
+  <section id="sm-summary-table-section">
+    <column id="sm-summary-col" width="53%">
+      <table id="sm-summary-table">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-sum-h-blank" type="static">
+              <style>
+                <width>42%</width>
+                <padding>6px 10px</padding>
+                <border>1px solid #000000</border>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="sm-sum-h-cur" type="static">
+              <style>
+                <width>28%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+                <whiteSpace>pre-line</whiteSpace>
+              </style>
+              <value>CURRENT
+AMOUNT</value>
+            </cell>
+            <cell id="sm-sum-h-ytd" type="static">
+              <style>
+                <width>30%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+                <whiteSpace>pre-line</whiteSpace>
+              </style>
+              <value>YTD
+AMOUNT</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-sum-gross-label" type="static">
+              <style>
+                <width>42%</width>
+                <textAlign>left</textAlign>
+                <fontSize>13px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>6px 10px</padding>
+                <border>1px solid #000000</border>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Gross Income:</value>
+            </cell>
+            <cell id="sm-sum-gross-cur" type="substitute" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="sm-sum-gross-ytd" type="substitute" format="currency">
+              <style>
+                <width>30%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-sum-ded-label" type="static">
+              <style>
+                <width>42%</width>
+                <textAlign>left</textAlign>
+                <fontSize>13px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>6px 10px</padding>
+                <border>1px solid #000000</border>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Total Deductions:</value>
+            </cell>
+            <cell id="sm-sum-ded-cur" type="calculated" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+              </style>
+              <formula>{totalTaxes} + {totalDeductions}</formula>
+            </cell>
+            <cell id="sm-sum-ded-ytd" type="calculated" format="currency">
+              <style>
+                <width>30%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+              </style>
+              <formula>{totalTaxesYTD} + {totalDeductionsYTD}</formula>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sm-sum-net-label" type="static">
+              <style>
+                <width>42%</width>
+                <textAlign>left</textAlign>
+                <fontSize>13px</fontSize>
+                <fontWeight>600</fontWeight>
+                <padding>6px 10px</padding>
+                <border>1px solid #000000</border>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Net Income:</value>
+            </cell>
+            <cell id="sm-sum-net-cur" type="substitute" format="currency">
+              <style>
+                <width>28%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="sm-sum-net-ytd" type="substitute" format="currency">
+              <style>
+                <width>30%</width>
+                <textAlign>center</textAlign>
+                <fontSize>12px</fontSize>
+                <padding>6px 8px</padding>
+                <border>1px solid #000000</border>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sm-footer-section -->
+  <section id="sm-footer-section">
+    <style>
+      <marginTop>44px</marginTop>
+    </style>
+    <column id="sm-footer-col" width="100%">
+      <table id="sm-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sm-footer-text" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>11px</fontSize>
+                <padding>0</padding>
+              </style>
+              <value>{companyInfo.companyName} - {companyInfo.companyAddress1}, {companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
 </paystub>

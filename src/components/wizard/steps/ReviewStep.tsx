@@ -15,7 +15,8 @@ import { formatCurrency } from "../../../utils/util";
 import { UNIT_PRICE, orderTotal, normalizeStubCount } from "constants/pricing";
 import { paymentsApi, unlockStorage, centsToDollars, PaymentsApiError, type CapturedOrder, type Quote } from "services/payments-api";
 import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING } from "constants/business-info";
-import { telemetryService } from "../../../services/telemetry-service";
+import { telemetry } from "../../../services/telemetry-service";
+import { T } from "../../../telemetry/codes";
 import TemplateManager from "../../../templates/components/templatemanager";
 import { FitPage } from "../FitPage";
 import { PreviewWatermark } from "../PreviewWatermark";
@@ -103,6 +104,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
       .then(v => {
         if (cancelled) return;
         dispatch(updateAppSettings({ canPrint: true, unlock: { ...stored, qty: v.qty, expiresAt: v.expiresAt } }));
+        telemetry.emit(T.UNLOCK_RESTORED, { orderId: stored.orderId });
       })
       .catch(() => { if (!cancelled) unlockStorage.clear(); });
     return () => { cancelled = true; };
@@ -116,6 +118,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   const handleAttestChange = (checked: boolean) => {
     setAttested(checked);
     setAttestedAt(checked ? new Date().toISOString() : null);
+    telemetry.emit(T.REVIEW_ATTESTED, { attested: checked });
   };
 
   const handlePaymentSuccess = (result: CapturedOrder) => {
@@ -123,29 +126,25 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     const nextUnlock = { token: result.token, orderId: result.orderId, expiresAt: result.expiresAt, qty: paidQty };
     unlockStorage.save(nextUnlock);
     dispatch(updateAppSettings({ canPrint: true, unlock: nextUnlock }));
-    try {
-      telemetryService.track("PaymentSuccess", {
-        orderId: result.orderId,
-        amount: centsToDollars(result.quote.totalCents),
-        currency: result.quote.currency,
-        paystubTemplate: appSettings.templateId,
-        stubCount: paidQty,
-        attestedAt,
-      });
-    } catch { /* telemetry best-effort */ }
+    telemetry.emit(T.PAYMENT_SUCCEEDED, {
+      orderId: result.orderId,
+      amountCents: result.quote.totalCents,
+      currency: result.quote.currency,
+      stubCount: paidQty,
+      templateId: appSettings.templateId ?? null,
+    });
   };
 
   const handlePaymentError = (error: unknown) => {
     const message = error instanceof PaymentsApiError
       ? error.message
       : (error as any)?.message || String(error);
-    try {
-      telemetryService.track("PaymentError", { message, code: error instanceof PaymentsApiError ? error.code : undefined });
-    } catch { /* telemetry best-effort */ }
+    telemetry.emit(T.PAYMENT_FAILED, { code: error instanceof PaymentsApiError ? error.code : null, message });
     alert(error instanceof PaymentsApiError ? message : "There was an error processing your payment. Please try again.");
   };
 
   const handlePrint = () => {
+    telemetry.emit(T.PRINT_CLICKED);
     document.body.classList.add("print-paystub");
     // A single stub is centred on its sheet; a run of N has to keep flowing one per page,
     // so the centring is opt-in via this class rather than applied to every print.

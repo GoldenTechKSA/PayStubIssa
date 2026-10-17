@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { paymentsApi, PaymentsApiError, type Cart, type CapturedOrder, type OrderMeta } from "services/payments-api";
+import { telemetry } from "services/telemetry-service";
+import { T } from "telemetry/codes";
 
 interface PayPalProps {
     /** What is being bought. The server prices it; the browser never sends an amount. */
@@ -67,11 +69,13 @@ const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPayment
                     // The server quotes the cart and creates the PayPal order; we only relay its id.
                     createOrder: async () => {
                         const { orderId } = await paymentsApi.createOrder(cartRef.current, metaRef.current);
+                        telemetry.emit(T.PAYMENT_ORDER_CREATED, { orderId });
                         return orderId;
                     },
 
                     // The server captures and verifies the amount, then issues the unlock token.
                     onApprove: async (data: any, actions: any) => {
+                        telemetry.emit(T.PAYMENT_CAPTURE_STARTED, { orderId: data?.orderID ?? null });
                         try {
                             const result = await paymentsApi.captureOrder(data.orderID);
                             successRef.current(result);
@@ -84,6 +88,8 @@ const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPayment
                         }
                     },
 
+                    onCancel: (data: any) => telemetry.emit(T.PAYMENT_CANCELLED, { orderId: data?.orderID ?? null }),
+
                     onError: (err: unknown) => errorRef.current(err),
                 });
 
@@ -95,6 +101,7 @@ const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPayment
                 }
             } catch (err) {
                 if (cancelled) return;
+                telemetry.emit(T.PAYMENT_BUTTONS_FAILED, { message: (err as any)?.message || String(err) });
                 setStatus("failed");
                 setFailure(
                     err instanceof PaymentsApiError

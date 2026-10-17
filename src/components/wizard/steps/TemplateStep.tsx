@@ -5,6 +5,8 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { updateAppSettings } from "../../../redux/actions";
+import { telemetry } from "../../../services/telemetry-service";
+import { T } from "../../../telemetry/codes";
 import { PayStubDetails, AppSettings } from "assets/data/pay-stub-details";
 import { WizardStepLayout } from "../WizardStepLayout";
 import { FitPage } from "../FitPage";
@@ -82,6 +84,7 @@ const TemplateStep: React.FC<StepProps> = ({ onNext, onBack }) => {
 
   const select = (index: number, t: TemplateMeta) => {
     dispatch(updateAppSettings({ configPath: t.configFile, templateId: index }));
+    telemetry.emit(T.TEMPLATE_SELECTED, { templateId: index });
   };
 
   const q = query.trim().toLowerCase();
