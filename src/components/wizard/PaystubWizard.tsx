@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Container, Stepper, Step, StepLabel, Box, Typography, LinearProgress, useMediaQuery, useTheme,
 } from "@mui/material";
@@ -16,6 +16,7 @@ import TemplateStep from "./steps/TemplateStep";
 import ReviewStep from "./steps/ReviewStep";
 import { telemetry } from "../../services/telemetry-service";
 import { T } from "../../telemetry/codes";
+import { isDevUnlock } from "../../utils/dev-flags";
 
 const STEPS = ["Company", "Employee", "Pay period", "Earnings", "Template", "Review"];
 const DRAFT_KEY = "paystubissa.draft.v1";
@@ -26,6 +27,7 @@ const DEFAULT_CONFIG = "/configs/template-simple/paystub-config.xml";
 const PaystubWizard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [active, setActive] = useState(0);
@@ -58,6 +60,12 @@ const PaystubWizard = () => {
     }
     if (!appSettings.configPath) {
       dispatch(updateAppSettings({ configPath: DEFAULT_CONFIG, templateId: 0 }));
+    }
+    // Local testing shortcut (never in production builds): `?dev=unlock` goes straight to
+    // Review with print/PDF unlocked. The draft above still wins over the dev seed.
+    if (isDevUnlock(location.search)) {
+      dispatch(updateAppSettings({ canPrint: true }));
+      setActive(STEPS.length - 1);
     }
     hydrated.current = true;
     telemetry.emit(T.WIZARD_ENTERED, { draftRestored });

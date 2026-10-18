@@ -153,7 +153,10 @@ const TemplateStep: React.FC<StepProps> = ({ onNext, onBack }) => {
         <Grid size={{ xs: 12, md: 7 }}>
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>Live preview</Typography>
           {/* "Desk" surface: gray backdrop that makes the white sheet read as a physical page */}
-          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "68vh", overflow: "auto", display: "flex", justifyContent: "center" }}>
+          {/* alignItems flex-start: a single-line flex container clamps its line to max-height and
+              stretches items to it, which pinned the sheet at its min-height while the stub inside
+              kept rendering past the sheet's bottom edge. */}
+          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "68vh", overflow: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
             {previewAvailable ? (
               // `paystub-locked-preview` hides this from printing so the unpaid
               // preview can't be printed to bypass payment (see print.css).

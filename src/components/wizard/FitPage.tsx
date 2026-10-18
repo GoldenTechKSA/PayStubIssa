@@ -9,6 +9,26 @@ import React, { useRef, useState, useLayoutEffect } from "react";
 const PAGE_WIDTH = 720;
 
 /**
+ * Undo the FitPage scaling on a DOM subtree, for anything that measures the DOM to produce
+ * the stub at full size. html2canvas needs it: it neutralizes `transform` only on elements
+ * inside the subtree it captures, so with the scaler left on an ANCESTOR it measures every
+ * box and text run at the shrunken on-screen size while still painting glyphs at their CSS
+ * font size. Words then overrun their slots and right-aligned text runs off the canvas —
+ * exactly what the downloaded PDF showed. Mirrors the `.paystub-scale` / `.paystub-fit-*`
+ * reset in print.css, which does the same job for window.print().
+ */
+export const unscaleFitPage = (root: ParentNode) => {
+  root.querySelectorAll<HTMLElement>(".paystub-scale").forEach((el) => {
+    el.style.transform = "none";
+  });
+  root.querySelectorAll<HTMLElement>(".paystub-fit-box, .paystub-fit-outer").forEach((el) => {
+    el.style.width = "";
+    el.style.height = "";
+    el.style.margin = "";
+  });
+};
+
+/**
  * Renders its children at a fixed Letter-page width and scales them down (never up)
  * to fit the available width, so the whole paystub shrinks proportionally instead of
  * overflowing the sheet. The transform is screen-only — print.css neutralizes

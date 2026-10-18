@@ -344,7 +344,10 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
               : <Chip label="Watermarked until payment" size="small" variant="outlined" />}
           </Stack>
           {/* "Desk" surface: gray backdrop that makes the white sheet read as a physical page */}
-          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "75vh", overflow: "auto", display: "flex", justifyContent: "center" }}>
+          {/* alignItems flex-start: a single-line flex container clamps its line to max-height and
+              stretches items to it, which pinned the sheet at its min-height while the stub inside
+              kept rendering past the sheet's bottom edge. */}
+          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "75vh", overflow: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
             {/* The sheet: white Letter page with margins + lift. #pdf-content stays the print/PDF surface.
                 Until paid, `paystub-locked-preview` blocks Ctrl+P from printing the unpaid stub. */}
             <Box className={canPrint ? "paystub-sheet" : "paystub-sheet paystub-locked-preview"} sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>

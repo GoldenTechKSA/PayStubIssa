@@ -3,6 +3,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { telemetry } from '../../services/telemetry-service';
 import { T } from '../../telemetry/codes';
+import { unscaleFitPage } from '../wizard/FitPage';
 
 interface PDFDownloadButtonProps {
   targetId: string;
@@ -51,6 +52,12 @@ const PDFDownloadButton: React.FC<PDFDownloadButtonProps> = ({
           useCORS: true,
           scale: 2, // Higher scale for better quality
           logging: false,
+          // The preview is shrunk by FitPage whenever the Review column is narrower than the
+          // 720px sheet. html2canvas measures its clone with that ancestor transform still
+          // applied but paints text at full CSS size, so the stub came out with words
+          // overlapping and the right edge cut off. Capture the clone at full size instead,
+          // the same way print.css restores it for window.print().
+          onclone: (doc) => unscaleFitPage(doc),
         });
 
         // Scale each stub to fit inside one page's margins, preserving aspect ratio.
