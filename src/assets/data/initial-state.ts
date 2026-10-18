@@ -41,29 +41,32 @@ const employeeInfo: EmployeeInfo = {
 const incomeDetails: IncomeDetails = {
     annualSalary: 0,
     wageType: "Hourly", 
-    hourlyRate: 0, // Example hourly rate
-    hoursWorked: 0, // Example hours worked per week
-    overtimeRate: 0, // Example overtime hourly rate
-    overtimeHours: 0, // Example overtime hours worked per week
-    bonusAmount: 0, // Example extrea bonus amount
-    deduction401k: 0, // Optional 401K amount
-    medicalDeduction: 0, // Optional medical deduction amount
-    dentalDeduction: 0, // Optional dental deduction amount
-    visionDeduction: 0, // Optional vision deduction amount
-    otherDeduction: 0, // Optional other deduction amount
+    // A complete, realistic bi-weekly example (the same figures the template snapshot
+    // harness renders) so every wizard step validates as-is and the preview shows real
+    // numbers. Keep the dates in the past: the Pay period step rejects future dates.
+    hourlyRate: 32.5,
+    hoursWorked: 80,
+    overtimeRate: 48.75,
+    overtimeHours: 6,
+    bonusAmount: 250,
+    deduction401k: 150,
+    medicalDeduction: 120.5,
+    dentalDeduction: 25,
+    visionDeduction: 10,
+    otherDeduction: 0,
     unionDues: 0, // Optional union dues percentage (e.g., 0.01 for 1%)
-    periodStartDate: null as unknown as Date,
-    periodEndDate: null as unknown as Date,
-    periodPayDate: null as unknown as Date,
-    periodType: "Weekly"
+    periodStartDate: new Date("2025-09-28T00:00:00"),
+    periodEndDate: new Date("2025-10-11T00:00:00"),
+    periodPayDate: new Date("2025-10-17T00:00:00"),
+    periodType: "Bi-Weekly"
 };
 
 const generalInfo: GeneralInfo = {
     employmentType: "Employee",
     paymentMethod: "Direct Deposit",
     paymentFrequency: "",
-    payStubCount: 0,
-    payStubNumber: 0,
+    payStubCount: 1,
+    payStubNumber: 1024,
     extraNotes: "This is an example note for the pay stub.",
     checkNumber: 5001
 };

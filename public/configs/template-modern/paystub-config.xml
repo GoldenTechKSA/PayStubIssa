@@ -691,12 +691,13 @@
       </table>
     </column>
   </section>
-  <!-- Section modern-deductions-section: DEDUCTIONS -->
-  <section id="modern-deductions-section" renderIf="totalDeductions">
+  <!-- Section modern-deductions-section: DEDUCTIONS / SUMMARY -->
+  <section id="modern-deductions-section">
     <style>
       <marginTop>20px</marginTop>
+      <justifyContent>flex-end</justifyContent>
     </style>
-    <column id="modern-deductions-col" width="60%">
+    <column id="modern-deductions-col" width="60%" renderIf="totalDeductions">
       <style>
         <paddingRight>12px</paddingRight>
       </style>
@@ -917,14 +918,10 @@
         </cells>
       </table>
     </column>
-  </section>
-  <!-- Section modern-netpay-section -->
-  <section id="modern-netpay-section">
-    <style>
-      <marginTop>24px</marginTop>
-      <justifyContent>center</justifyContent>
-    </style>
-    <column id="modern-netpay-col" width="55%">
+    <column id="modern-netpay-col" width="40%">
+      <style>
+        <paddingLeft>12px</paddingLeft>
+      </style>
       <!-- Inset lives on the cells, not the table: border-collapse (set by the
              renderer) makes <table> padding a no-op. -->
       <table id="modern-netpay-table">
@@ -933,6 +930,15 @@
           <backgroundColor>#f3f4f6</backgroundColor>
           <border>2px solid #111827</border>
         </style>
+        <header title="SUMMARY">
+          <style>
+            <fontSize>13px</fontSize>
+            <fontWeight>bold</fontWeight>
+            <color>#374151</color>
+            <letterSpacing>1px</letterSpacing>
+            <marginBottom>4px</marginBottom>
+          </style>
+        </header>
         <cells>
           <rowcells>
             <cell id="sum-gross-label" type="static">
