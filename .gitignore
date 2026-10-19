@@ -55,3 +55,6 @@ CLAUDE.local.md
 
 # Template snapshots from scripts/snapshot-templates.js
 .snapshots
+
+# Brainstorming mockups from the superpowers visual companion
+.superpowers

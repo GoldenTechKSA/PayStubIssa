@@ -8,8 +8,9 @@ template for that audience is designed; see CLAUDE.md for how templates are buil
 
 Still shipping: Standard Employee Paystub (simple), Modern, Earnings Statement — Classic
 Ruled / Banded Panels / Payroll Register, Statement of Earnings and Deductions — Typewriter,
-and Independent Contractor Invoice & Earnings Statement (kept as a stopgap: it is the only
-no-withholding layout).
+Independent Contractor Invoice & Earnings Statement (kept as a stopgap: it is the only
+no-withholding layout), and Temporary Assignment Paystub (`template-ledger-classic`, built
+2026-10-18 from the entry below).
 
 Each entry notes the retired template id, the visual skin it used, and the audience
 specific block it tried to add. Those blocks were static placeholders (rendered as dashes)
@@ -18,6 +19,10 @@ model extended first.
 
 ## Temporary Assignment Paystub
 
+- **Shipped 2026-10-18 as `template-ledger-classic`** — a compact grayscale Roboto ledger. The
+  Assignment Details block is still not built: the data model has no agency / client /
+  assignment / supervisor fields. Add those to the wizard and `PaystubModel` first, then give
+  the template a `renderIf` block for them.
 - Retired id: `template-temporary`
 - Skin: INVOICE / EARNINGS header with FROM, sans
 - Audience block: Assignment Details (staffing agency, client company, assignment, supervisor)

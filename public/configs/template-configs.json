@@ -47,5 +47,12 @@
     "imageName": "paystub-contractor.png",
     "title": "Independent Contractor Invoice & Earnings Statement",
     "description": "Designed for 1099 contractors, this template functions as both an invoice for services rendered and an earnings summary. It highlights gross pay without traditional employee tax withholdings, emphasizing it is not a W-2 wage statement."
+  },
+  {
+    "imageFile": "templates/thumb-ledger-classic.png",
+    "configFile": "/configs/template-ledger-classic/paystub-config.xml",
+    "imageName": "paystub-ledger-classic.png",
+    "title": "Temporary Assignment Paystub",
+    "description": "This paystub is tailored for employees hired through a staffing agency or for a specific, short-term assignment. It may include details about the hiring agency, client company, and the assignment period."
   }
 ]

@@ -37,6 +37,7 @@ const AVAILABLE_CONFIGS = new Set<string>([
   "/configs/template-earnings-register/paystub-config.xml",
   "/configs/template-statement-mono/paystub-config.xml",
   "/configs/template-contractor/paystub-config.xml",
+  "/configs/template-ledger-classic/paystub-config.xml",
 ]);
 
 const FALLBACK_THUMB = `${process.env.PUBLIC_URL}/images/thumb0.png`;

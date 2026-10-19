@@ -1,0 +1,1711 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Temporary Assignment Paystub (ledger-classic). Compact grayscale ledger set in Roboto:
+    hairline rules, shading on header rows only. Designed for the 720 x 960 px printable
+    area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet"); the full sample stub
+    uses roughly 680 px. Base type is 10.5px. Column widths are repeated on every row table
+    (tableLayout fixed) so the per-row renderIf tables line up under the shaded header row.
+  -->
+  <style>
+    <fontFamily>Roboto, 'Helvetica Neue', Arial, sans-serif</fontFamily>
+    <color>#111827</color>
+    <fontSize>10.5px</fontSize>
+    <lineHeight>1.3</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>20px 24px 24px</padding>
+  </style>
+  <!-- Section lc-header: company (left) / EARNINGS STATEMENT, period, pay date (right) -->
+  <section id="lc-header">
+    <style>
+      <alignItems>flex-start</alignItems>
+      <justifyContent>space-between</justifyContent>
+      <borderBottom>1px solid #111827</borderBottom>
+      <paddingBottom>10px</paddingBottom>
+      <marginBottom>12px</marginBottom>
+    </style>
+    <column id="lc-company-col" width="55%">
+      <table id="lc-company-name">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-co-name" type="substitute">
+              <style>
+                <fontSize>17px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0 0 2px</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-co-addr1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <color>#374151</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress1}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-company-addr2" renderIf="companyInfo.companyAddress2">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-co-addr2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <color>#374151</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress2}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-company-city">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-co-city" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <color>#374151</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-company-ein" renderIf="companyInfo.companyEIN">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-co-ein" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <color>#374151</color>
+                <padding>0</padding>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lc-statement-col" width="45%">
+      <table id="lc-statement">
+        <style>
+          <width>100%</width>
+          <marginLeft>auto</marginLeft>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-stmt-title" type="static" colspan="2">
+              <style>
+                <fontSize>19px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+              </style>
+              <value>EARNINGS STATEMENT</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-stmt-period-label" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <color>#6b7280</color>
+                <padding>1px 8px 1px 0</padding>
+              </style>
+              <value>Pay period</value>
+            </cell>
+            <cell id="lc-stmt-period" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <fontWeight>500</fontWeight>
+                <padding>1px 0</padding>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-stmt-paydate-label" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <color>#6b7280</color>
+                <padding>1px 8px 1px 0</padding>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="lc-stmt-paydate" type="substitute" format="date">
+              <style>
+                <textAlign>right</textAlign>
+                <fontWeight>500</fontWeight>
+                <padding>1px 0</padding>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-stmt-stub-label" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <color>#6b7280</color>
+                <padding>1px 8px 1px 0</padding>
+              </style>
+              <value>Stub No.</value>
+            </cell>
+            <cell id="lc-stmt-stub" type="substitute" format="text">
+              <style>
+                <textAlign>right</textAlign>
+                <fontWeight>500</fontWeight>
+                <padding>1px 0</padding>
+              </style>
+              <value>{stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lc-employee: four-cell strip — employee, address, SSN, filing status -->
+  <section id="lc-employee">
+    <style>
+      <borderTop>1px solid #d1d5db</borderTop>
+      <borderBottom>1px solid #d1d5db</borderBottom>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="lc-emp-name-col" width="25%">
+      <style>
+        <borderRight>1px solid #d1d5db</borderRight>
+        <padding>6px 8px</padding>
+      </style>
+      <table id="lc-emp-name">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-emp-name-cap" type="static">
+              <style>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1.5px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#6b7280</color>
+                <textAlign>left</textAlign>
+                <padding>0 0 3px</padding>
+              </style>
+              <value>Employee</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-emp-name-val" type="substitute">
+              <style>
+                <fontSize>11px</fontSize>
+                <fontWeight>500</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-emp-id" renderIf="employeeInfo.employeeID">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-emp-id-val" type="substitute">
+              <style>
+                <color>#6b7280</color>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+              </style>
+              <value>ID {employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lc-emp-addr-col" width="25%">
+      <style>
+        <borderRight>1px solid #d1d5db</borderRight>
+        <padding>6px 8px</padding>
+      </style>
+      <table id="lc-emp-addr">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-emp-addr-cap" type="static">
+              <style>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1.5px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#6b7280</color>
+                <textAlign>left</textAlign>
+                <padding>0 0 3px</padding>
+              </style>
+              <value>Address</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-emp-addr1" type="substitute">
+              <style>
+                <fontSize>11px</fontSize>
+                <fontWeight>500</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-emp-addr-city" type="substitute">
+              <style>
+                <color>#374151</color>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lc-emp-ssn-col" width="25%">
+      <style>
+        <borderRight>1px solid #d1d5db</borderRight>
+        <padding>6px 8px</padding>
+      </style>
+      <table id="lc-emp-ssn">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-emp-ssn-cap" type="static">
+              <style>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1.5px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#6b7280</color>
+                <textAlign>left</textAlign>
+                <padding>0 0 3px</padding>
+              </style>
+              <value>SSN</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-emp-ssn-val" type="substitute">
+              <style>
+                <fontSize>11px</fontSize>
+                <fontWeight>500</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lc-emp-filing-col" width="25%">
+      <style>
+        <padding>6px 8px</padding>
+      </style>
+      <table id="lc-emp-filing">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-emp-filing-cap" type="static">
+              <style>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1.5px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#6b7280</color>
+                <textAlign>left</textAlign>
+                <padding>0 0 3px</padding>
+              </style>
+              <value>Filing status</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-emp-filing-val" type="substitute">
+              <style>
+                <fontSize>11px</fontSize>
+                <fontWeight>500</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-emp-exempt" renderIf="employeeInfo.employeeExemptions">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-emp-exempt-val" type="substitute" format="text">
+              <style>
+                <color>#6b7280</color>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+              </style>
+              <value>Exemptions {employeeInfo.employeeExemptions}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lc-earnings: EARNINGS ledger — description, rate, hours, current, YTD -->
+  <section id="lc-earnings">
+    <style>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="lc-earnings-col" width="100%">
+      <table id="lc-earn-head">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header title="Earnings">
+          <style>
+            <fontSize>9px</fontSize>
+            <letterSpacing>1.5px</letterSpacing>
+            <textTransform>uppercase</textTransform>
+            <color>#6b7280</color>
+            <marginBottom>4px</marginBottom>
+          </style>
+          <hdata>
+            <hd id="lc-earn-h-desc">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Description</label>
+            </hd>
+            <hd id="lc-earn-h-rate">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Rate</label>
+            </hd>
+            <hd id="lc-earn-h-hours">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Hours</label>
+            </hd>
+            <hd id="lc-earn-h-cur">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lc-earn-h-ytd">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lc-earn-head-spacer" type="static" colspan="5">
+              <style>
+                <display>none</display>
+              </style>
+              <value> </value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-earn-regular" renderIf="isHourly">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-earn-reg-desc" type="static">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Regular</value>
+            </cell>
+            <cell id="lc-earn-reg-rate" type="substitute" format="number">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="lc-earn-reg-hours" type="substitute" format="number">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="lc-earn-reg-cur" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="lc-earn-reg-ytd" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-earn-salary" renderIf="isSalaried">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-earn-sal-desc" type="static">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="lc-earn-sal-rate" type="static">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lc-earn-sal-hours" type="static">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lc-earn-sal-cur" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="lc-earn-sal-ytd" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-earn-overtime" renderIf="overtimePay">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-earn-ot-desc" type="static">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="lc-earn-ot-rate" type="substitute" format="number">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="lc-earn-ot-hours" type="substitute" format="number">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="lc-earn-ot-cur" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="lc-earn-ot-ytd" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-earn-bonus" renderIf="otherEarnings">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-earn-bonus-desc" type="static">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="lc-earn-bonus-rate" type="static">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lc-earn-bonus-hours" type="static">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lc-earn-bonus-cur" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="lc-earn-bonus-ytd" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-earn-total">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-earn-total-desc" type="static">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>Gross pay</value>
+            </cell>
+            <cell id="lc-earn-total-rate" type="static">
+              <style>
+                <width>15%</width>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lc-earn-total-hours" type="static">
+              <style>
+                <width>15%</width>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lc-earn-total-cur" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="lc-earn-total-ytd" type="substitute" format="currency">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lc-deductions: DEDUCTIONS ledger — hidden entirely when there are none -->
+  <section id="lc-deductions" renderIf="totalDeductions">
+    <style>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="lc-deductions-col" width="100%">
+      <table id="lc-ded-head">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header title="Deductions">
+          <style>
+            <fontSize>9px</fontSize>
+            <letterSpacing>1.5px</letterSpacing>
+            <textTransform>uppercase</textTransform>
+            <color>#6b7280</color>
+            <marginBottom>4px</marginBottom>
+          </style>
+          <hdata>
+            <hd id="lc-ded-h-desc">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Description</label>
+            </hd>
+            <hd id="lc-ded-h-cur">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lc-ded-h-ytd">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-head-spacer" type="static" colspan="3">
+              <style>
+                <display>none</display>
+              </style>
+              <value> </value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-ded-medical" renderIf="medical">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-medical-desc" type="static">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="lc-ded-medical-cur" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="lc-ded-medical-ytd" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-ded-dental" renderIf="dental">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-dental-desc" type="static">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="lc-ded-dental-cur" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="lc-ded-dental-ytd" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-ded-vision" renderIf="vision">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-vision-desc" type="static">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="lc-ded-vision-cur" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="lc-ded-vision-ytd" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-ded-401k" renderIf="retirement401k">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-401k-desc" type="static">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="lc-ded-401k-cur" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="lc-ded-401k-ytd" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-ded-union" renderIf="unionDues">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-union-desc" type="static">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Union dues</value>
+            </cell>
+            <cell id="lc-ded-union-cur" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{unionDues}</value>
+            </cell>
+            <cell id="lc-ded-union-ytd" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{unionDuesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-ded-other" renderIf="otherDeductions">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-other-desc" type="static">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Other deductions</value>
+            </cell>
+            <cell id="lc-ded-other-cur" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="lc-ded-other-ytd" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-ded-total">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-ded-total-desc" type="static">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>Total deductions</value>
+            </cell>
+            <cell id="lc-ded-total-cur" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="lc-ded-total-ytd" type="substitute" format="currency">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lc-bottom: TAXES (left) / SUMMARY box and NET PAY box (right) -->
+  <section id="lc-bottom">
+    <style>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="lc-taxes-col" width="50%">
+      <style>
+        <paddingRight>8px</paddingRight>
+      </style>
+      <table id="lc-tax-head">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header title="Taxes">
+          <style>
+            <fontSize>9px</fontSize>
+            <letterSpacing>1.5px</letterSpacing>
+            <textTransform>uppercase</textTransform>
+            <color>#6b7280</color>
+            <marginBottom>4px</marginBottom>
+          </style>
+          <hdata>
+            <hd id="lc-tax-h-desc">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Description</label>
+            </hd>
+            <hd id="lc-tax-h-cur">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lc-tax-h-ytd">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #d1d5db</borderTop>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lc-tax-fed-desc" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Federal income tax</value>
+            </cell>
+            <cell id="lc-tax-fed-cur" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="lc-tax-fed-ytd" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-tax-state-desc" type="substitute">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="lc-tax-state-cur" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="lc-tax-state-ytd" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-tax-ss-desc" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="lc-tax-ss-cur" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="lc-tax-ss-ytd" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-tax-med-desc" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="lc-tax-med-cur" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="lc-tax-med-ytd" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-tax-paid-leave" renderIf="paidLeave">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-tax-pl-desc" type="substitute">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="lc-tax-pl-cur" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="lc-tax-pl-ytd" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <borderBottom>1px solid #d1d5db</borderBottom>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lc-tax-total">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-tax-total-desc" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>Total taxes</value>
+            </cell>
+            <cell id="lc-tax-total-cur" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="lc-tax-total-ytd" type="substitute" format="currency">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>3px 6px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+                <borderBottom>1px solid #111827</borderBottom>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lc-summary-col" width="50%">
+      <style>
+        <paddingLeft>8px</paddingLeft>
+      </style>
+      <table id="lc-summary">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <border>1px solid #d1d5db</border>
+        </style>
+        <header title="Summary">
+          <style>
+            <fontSize>9px</fontSize>
+            <letterSpacing>1.5px</letterSpacing>
+            <textTransform>uppercase</textTransform>
+            <color>#6b7280</color>
+            <marginBottom>4px</marginBottom>
+          </style>
+          <hdata>
+            <hd id="lc-sum-h-desc">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 10px</padding>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label> </label>
+            </hd>
+            <hd id="lc-sum-h-cur">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 10px</padding>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lc-sum-h-ytd">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#f3f4f6</backgroundColor>
+                <fontSize>9px</fontSize>
+                <fontWeight>500</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <color>#374151</color>
+                <padding>3px 10px</padding>
+                <borderBottom>1px solid #9ca3af</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lc-sum-gross-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>Gross pay</value>
+            </cell>
+            <cell id="lc-sum-gross-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="lc-sum-gross-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-sum-tax-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>Taxes</value>
+            </cell>
+            <cell id="lc-sum-tax-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="lc-sum-tax-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-sum-ded-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>Deductions</value>
+            </cell>
+            <cell id="lc-sum-ded-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="lc-sum-ded-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <borderBottom>1px solid #e5e7eb</borderBottom>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-sum-net-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>4px 10px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+              </style>
+              <value>Net pay</value>
+            </cell>
+            <cell id="lc-sum-net-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>4px 10px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="lc-sum-net-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <padding>4px 10px</padding>
+                <borderTop>1px solid #9ca3af</borderTop>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <!-- Bordered NET PAY box. Border lives on the table; the inset lives on the cells
+           because border-collapse (set by the renderer) makes <table> padding a no-op. -->
+      <table id="lc-netpay">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <border>2px solid #111827</border>
+          <marginTop>10px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-net-label" type="static">
+              <style>
+                <width>50%</width>
+                <textAlign>left</textAlign>
+                <fontSize>10px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <textTransform>uppercase</textTransform>
+                <padding>8px 12px 0</padding>
+              </style>
+              <value>Net pay</value>
+            </cell>
+            <cell id="lc-net-check-label" type="static">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <color>#6b7280</color>
+                <padding>8px 6px 0 0</padding>
+              </style>
+              <value>Check No.</value>
+            </cell>
+            <cell id="lc-net-check" type="substitute" format="text">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <fontWeight>500</fontWeight>
+                <padding>8px 12px 0 0</padding>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-net-amount" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>22px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>0 12px 2px</padding>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="lc-net-paydate-label" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <color>#6b7280</color>
+                <padding>0 6px 0 0</padding>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="lc-net-paydate" type="substitute" format="date">
+              <style>
+                <textAlign>right</textAlign>
+                <fontWeight>500</fontWeight>
+                <padding>0 12px 0 0</padding>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lc-net-spacer" type="static">
+              <style>
+                <padding>0 12px 8px</padding>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lc-net-method-label" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <color>#6b7280</color>
+                <padding>0 6px 8px 0</padding>
+              </style>
+              <value>Method</value>
+            </cell>
+            <cell id="lc-net-method" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <fontWeight>500</fontWeight>
+                <padding>0 12px 8px 0</padding>
+              </style>
+              <value>{generalInfo.paymentMethod}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lc-footer: one-line disclaimer -->
+  <section id="lc-footer">
+    <style>
+      <marginTop>16px</marginTop>
+      <borderTop>1px solid #d1d5db</borderTop>
+      <paddingTop>6px</paddingTop>
+    </style>
+    <column id="lc-footer-col" width="100%">
+      <table id="lc-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lc-footer-text" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#6b7280</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>This statement is provided for the employee's records. Retain for your tax files.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>
