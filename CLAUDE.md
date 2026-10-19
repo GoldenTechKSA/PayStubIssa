@@ -63,7 +63,7 @@ Key model behaviors:
 - **Gross basis**: full earnings — regular + overtime + bonus, or `annualSalary / periodsPerYear` when `wageType === 'Salary'`.
 - **Annualize for tax, then de-annualize**: the tax engine expects annual income (annual standard deduction + annual brackets), so the period gross is multiplied by `periodsPerYear`, taxed, then divided back to the period. Without this, federal/state withholding comes out ~0.
 - **Filing status**: `employeeMarriedStatus` is passed through as the IRS `FilingStatus` (`single | marriedFilingJointly | marriedFilingSeparately | headOfHousehold`, matching [filing-status.json](src/assets/data/filing-status.json)), with legacy "Married" normalized. `FilingStatus` is **not** `'single' | 'married'` — using `'married'` produces `NaN`.
-- **YTD** is a simple proportional estimate: `current × periodsToDateThisYear`, not a real payroll-history accumulation.
+- **YTD** is an estimate, not a payroll-history accumulation, with two kinds of line. *Recurring* lines (regular pay, the withholding on regular pay alone, every deduction) are `per-period × periodsElapsedAt(pay date)`. *One-time* lines (overtime, bonus, and the extra tax they drew) are counted once: on the stub that pays them and, carried forward, on every later stub in the run. Only period #1 of a multi-stub run pays overtime/bonus; later stubs get 0 of each. The identities `grossYTD = regularYTD + overtimeYTD + bonusYTD` and `netYTD = grossYTD − taxesYTD − deductionsYTD` hold on every stub.
 
 ## Review, payment, PDF/print, telemetry
 
