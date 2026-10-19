@@ -1,48 +1,48 @@
 [
   {
-    "imageFile": "picture1.png",
+    "imageFile": "templates/thumb-simple.png",
     "configFile": "/configs/template-simple/paystub-config.xml",
     "imageName": "paystub-regular.png",
     "title": "Standard Employee Paystub",
     "description": "The standard paystub for a regular, ongoing employee. This template calculates standard withholdings (federal/state tax, FICA) and is suitable for most traditional employment relationships with a consistent schedule."
   },
   {
-    "imageFile": "picture1.png",
+    "imageFile": "templates/thumb-modern.png",
     "configFile": "/configs/template-modern/paystub-config.xml",
     "imageName": "paystub-modern.png",
     "title": "Standard Employee Paystub — Modern",
     "description": "The same standard employee paystub data in a modern, grayscale layout: a bold header band with your company logo, side-by-side taxes and deductions, and a prominent boxed NET PAY total. Print-optimized in black, white, and gray."
   },
   {
-    "imageFile": "picture1.png",
+    "imageFile": "templates/thumb-earnings-statement.png",
     "configFile": "/configs/template-earnings-statement/paystub-config.xml",
     "imageName": "paystub-earnings-statement.png",
     "title": "Earnings Statement — Classic Ruled",
     "description": "The traditional payroll form: serif type inside a hairline-ruled box, a single identity strip across the top, earnings and withholding side by side, and a closing band of year-to-date and current-period totals. Figures print without a currency symbol, the way payroll bureaus issue them."
   },
   {
-    "imageFile": "picture1.png",
+    "imageFile": "templates/thumb-earnings-panels.png",
     "configFile": "/configs/template-earnings-panels/paystub-config.xml",
     "imageName": "paystub-earnings-panels.png",
     "title": "Earnings Statement — Banded Panels",
     "description": "A grey-banded payroll form: an outlined company block, employee details in two columns, payment and deduction cards side by side, and year-to-date and net totals boxed at the foot. Shows the state paid family-leave premium as its own deduction line where the employee's state runs one."
   },
   {
-    "imageFile": "picture1.png",
+    "imageFile": "templates/thumb-earnings-register.png",
     "configFile": "/configs/template-earnings-register/paystub-config.xml",
     "imageName": "paystub-earnings-register.png",
     "title": "Earnings Statement — Payroll Register",
     "description": "The payroll-register format: an indented identity head, a wide earnings and statutory-withholding ledger with deductions shown as negatives, and employee-paid benefits carried in an Other Benefits and Information panel alongside. Adds a state paid-leave line and a disbursement line naming the payment method."
   },
   {
-    "imageFile": "picture1.png",
+    "imageFile": "templates/thumb-statement-mono.png",
     "configFile": "/configs/template-statement-mono/paystub-config.xml",
     "imageName": "paystub-statement-mono.png",
     "title": "Statement of Earnings and Deductions — Typewriter",
     "description": "A monospaced statement set in IBM Plex Mono with italic section headings, outlined employee and pay-schedule boxes, a rule-bracketed earnings and withholding ledger, and a gridded current/year-to-date summary. Adapts its earnings line to the wage type and adds a state paid-leave row where one applies."
   },
   {
-    "imageFile": "picture1.png",
+    "imageFile": "templates/thumb-contractor.png",
     "configFile": "/configs/template-contractor/paystub-config.xml",
     "imageName": "paystub-contractor.png",
     "title": "Independent Contractor Invoice & Earnings Statement",
