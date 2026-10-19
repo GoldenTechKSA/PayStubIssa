@@ -70,7 +70,7 @@ const page = (title: string, body: string, printCss: string) => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>${title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 /* What the app gives the stub: MUI CssBaseline + theme typography (src/theme/theme.ts). */
 html { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
