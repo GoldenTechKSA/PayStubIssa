@@ -94,13 +94,38 @@ describe('buildPaystubModel', () => {
     expect(Number.isFinite(legacy.federalTax)).toBe(true);
   });
 
-  it('computes YTD from the periods elapsed as of THIS stub\'s pay date', () => {
+  it('projects recurring pay and deductions over the periods elapsed as of THIS stub\'s pay date', () => {
     const m = buildPaystubModel(makeStore());
     // Not "as of today" — as of the stub's own pay date, so a run of stubs shows YTD growing.
     const multiplier = periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
-    expect(m.grossPayYTD).toBeCloseTo(m.grossPay * multiplier, 5);
-    expect(m.netPayYTD).toBeCloseTo(m.netPay * multiplier, 5);
+    expect(multiplier).toBeGreaterThan(1); // the test only means something if YTD != current
+    expect(m.regularPayYTD).toBeCloseTo(m.regularPay * multiplier, 5);
     expect(m.totalDeductionsYTD).toBeCloseTo(m.totalDeductions * multiplier, 5);
+  });
+
+  it('counts overtime and bonus in YTD once — they are one-time, not recurring', () => {
+    const m = buildPaystubModel(makeStore());
+    const multiplier = periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
+    expect(m.overtimePayYTD).toBe(75);
+    expect(m.otherEarningsYTD).toBe(100);
+    expect(m.grossPayYTD).toBeCloseTo(m.regularPay * multiplier + 75 + 100, 5);
+  });
+
+  it('keeps the YTD net-pay identity when YTD mixes recurring and one-time amounts', () => {
+    const m = buildPaystubModel(makeStore());
+    expect(m.totalTaxesYTD).toBeCloseTo(
+      m.federalTaxYTD + m.stateTaxYTD + m.socialSecurityYTD + m.medicareYTD + m.paidLeaveYTD, 5);
+    expect(m.netPayYTD).toBeCloseTo(m.grossPayYTD - m.totalTaxesYTD - m.totalDeductionsYTD, 5);
+  });
+
+  it('bases YTD taxes on regular pay, plus the extra tax the one-time pay actually drew', () => {
+    const withExtras = buildPaystubModel(makeStore());
+    const regularOnly = buildPaystubModel(makeStore({ overtimeRate: 0, overtimeHours: 0, bonusAmount: 0 }));
+    const multiplier = periodsElapsedAt('Weekly', withExtras.incomeDetails.periodPayDate);
+    // Taxes on a regular-only period recur; the difference the overtime/bonus made is added once.
+    const extraTax = withExtras.totalTaxes - regularOnly.totalTaxes;
+    expect(extraTax).toBeGreaterThan(0);
+    expect(withExtras.totalTaxesYTD).toBeCloseTo(regularOnly.totalTaxes * multiplier + extraTax, 5);
   });
 });
 
@@ -128,16 +153,56 @@ describe('buildPaystubModels — the purchased run of stubs', () => {
     expect(models.map(m => m.stubNumber)).toEqual([1, 2, 3]);
   });
 
-  it('grows YTD across the run while per-period pay stays constant', () => {
+  it('grows YTD across the run while regular pay stays constant', () => {
     const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 6 } });
 
-    // Same wages every period...
-    expect(new Set(models.map(m => m.grossPay)).size).toBe(1);
+    // Same regular wages every period...
+    expect(new Set(models.map(m => m.regularPay)).size).toBe(1);
     // ...but YTD is non-decreasing, and the last stub's YTD is strictly greater than the first's.
     for (let i = 1; i < models.length; i++) {
       expect(models[i].grossPayYTD).toBeGreaterThanOrEqual(models[i - 1].grossPayYTD);
     }
     expect(models[models.length - 1].grossPayYTD).toBeGreaterThan(models[0].grossPayYTD);
+  });
+
+  it('pays overtime and bonus on the entered period only; later stubs get none', () => {
+    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
+
+    expect(models[0].overtimePay).toBe(75);
+    expect(models[0].otherEarnings).toBe(100);
+    expect(models[0].grossPay).toBe(1175);
+    for (const later of models.slice(1)) {
+      expect(later.overtimePay).toBe(0);
+      expect(later.otherEarnings).toBe(0);
+      expect(later.grossPay).toBe(1000); // regular only
+    }
+  });
+
+  it('carries the one-time overtime and bonus forward in later stubs\' YTD, once', () => {
+    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
+
+    for (const m of models) {
+      const multiplier = periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
+      expect(m.overtimePayYTD).toBe(75);
+      expect(m.otherEarningsYTD).toBe(100);
+      expect(m.grossPayYTD).toBeCloseTo(m.regularPay * multiplier + 75 + 100, 5);
+      expect(m.netPayYTD).toBeCloseTo(m.grossPayYTD - m.totalTaxesYTD - m.totalDeductionsYTD, 5);
+    }
+  });
+
+  it('grows YTD taxes between later stubs by the regular-only tax times the periods added', () => {
+    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
+    const [first, second, third] = models;
+    const mult = (m: typeof first) => periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
+
+    // Stubs 2 and 3 are regular-only, so their per-period tax is the recurring base.
+    expect(third.totalTaxes).toBeCloseTo(second.totalTaxes, 5);
+    expect(third.totalTaxesYTD - second.totalTaxesYTD)
+      .toBeCloseTo(second.totalTaxes * (mult(third) - mult(second)), 5);
+    // The first stub's extra tax (from overtime + bonus) is in every stub's YTD exactly once.
+    const extraTax = first.totalTaxes - second.totalTaxes;
+    expect(extraTax).toBeGreaterThan(0);
+    expect(second.totalTaxesYTD).toBeCloseTo(second.totalTaxes * mult(second) + extraTax, 5);
   });
 
   it('clamps the stub count to the supported 1–12 range', () => {
