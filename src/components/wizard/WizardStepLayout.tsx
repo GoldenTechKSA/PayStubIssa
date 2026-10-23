@@ -10,6 +10,8 @@ interface WizardStepLayoutProps {
   nextDisabled?: boolean;
   nextLabel?: string;
   backLabel?: string;
+  /** Optional content rendered to the right of the title, top-aligned with it (e.g. a mode toggle). */
+  headerAction?: React.ReactNode;
 }
 
 /**
@@ -25,17 +27,23 @@ export const WizardStepLayout: React.FC<WizardStepLayoutProps> = ({
   nextDisabled = false,
   nextLabel = "Continue",
   backLabel = "Back",
+  headerAction,
 }) => (
   <Card variant="outlined" sx={{ borderColor: "divider" }}>
     <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
-      <Typography variant="h5" component="h2" gutterBottom>
-        {title}
-      </Typography>
-      {subtitle && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          {subtitle}
-        </Typography>
-      )}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 2 }}>
+        <Box>
+          <Typography variant="h5" component="h2" gutterBottom>
+            {title}
+          </Typography>
+          {subtitle && (
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              {subtitle}
+            </Typography>
+          )}
+        </Box>
+        {headerAction}
+      </Box>
       <Box sx={{ mt: 2 }}>{children}</Box>
       <Divider sx={{ my: 3 }} />
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>

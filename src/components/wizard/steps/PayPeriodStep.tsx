@@ -76,7 +76,7 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
       onNext={handleNext}
       nextDisabled={!isValid}
     >
-      <Grid container spacing={2}>
+      <Grid container columnSpacing={2} rowSpacing={1}>
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField select fullWidth label="Pay frequency" value={periodType} onChange={e => handlePeriodTypeChange(e.target.value)} helperText=" ">
             {PAYPERIODTYPE.map(p => <MenuItem key={p.name} value={p.name}>{p.name}</MenuItem>)}

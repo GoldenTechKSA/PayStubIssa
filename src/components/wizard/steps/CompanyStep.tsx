@@ -73,7 +73,7 @@ const CompanyStep: React.FC<StepProps> = ({ onNext, onBack }) => {
       onNext={handleNext}
       nextDisabled={!isValid}
     >
-      <Grid container spacing={2}>
+      <Grid container columnSpacing={2} rowSpacing={1}>
         <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth required label="Company name" value={companyName}
@@ -145,7 +145,7 @@ const CompanyStep: React.FC<StepProps> = ({ onNext, onBack }) => {
 
         <Grid size={{ xs: 12 }}>
           <Stack direction="row" spacing={2} alignItems="center">
-            <Button variant="outlined" onClick={() => fileRef.current?.click()}>Upload company logo</Button>
+            <Button variant="outlined" size="small" onClick={() => fileRef.current?.click()}>Upload company logo</Button>
             <input type="file" accept="image/*" ref={fileRef} style={{ display: "none" }} onChange={handleLogo} />
             {logoPreview
               ? <Box component="img" src={logoPreview} alt="Company logo preview" sx={{ maxWidth: 120, maxHeight: 60, borderRadius: 1, border: 1, borderColor: "divider" }} />
