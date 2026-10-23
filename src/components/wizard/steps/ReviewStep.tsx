@@ -7,6 +7,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
 import LockIcon from "@mui/icons-material/Lock";
+import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
@@ -80,16 +81,49 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   const canPrint = !!appSettings.canPrint && (!unlock || unlock.qty >= stubCount);
   const paidForFewer = !!appSettings.canPrint && !!unlock && unlock.qty < stubCount;
 
+  // Coupon: the customer types a code and applies it; only the applied code is sent with the
+  // quote and the order. The server is the only judge of what a code is worth.
+  const [couponInput, setCouponInput] = useState("");
+  const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const cart = { items: [{ type: "paystub" as const, qty: stubCount }], ...(couponCode ? { couponCode } : {}) };
+
+  const applyCoupon = () => {
+    const code = couponInput.trim();
+    setCouponError(null);
+    setCouponCode(code ? code : null);
+  };
+  const removeCoupon = () => {
+    setCouponInput("");
+    setCouponError(null);
+    setCouponCode(null);
+  };
+
   // Server-authoritative quote for the displayed total; the local constants are only a
   // fallback for the moment before the API answers (or if it is unreachable).
   const [quote, setQuote] = useState<Quote | null>(null);
   useEffect(() => {
     let cancelled = false;
-    paymentsApi.quote({ items: [{ type: "paystub", qty: stubCount }] })
-      .then(q => { if (!cancelled) setQuote(q); })
-      .catch(() => { if (!cancelled) setQuote(null); });
+    paymentsApi.quote(cart)
+      .then(q => {
+        if (cancelled) return;
+        setQuote(q);
+        if (couponCode) telemetry.emit(T.COUPON_APPLIED, { amountCents: q.discountCents });
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        if (couponCode && err instanceof PaymentsApiError && err.code === "INVALID_COUPON") {
+          // Drop the code and re-quote at full price; the message stays under the field.
+          telemetry.emit(T.COUPON_REJECTED, { code: err.code });
+          setCouponError(err.message);
+          setCouponCode(null);
+          return;
+        }
+        setQuote(null);
+      });
     return () => { cancelled = true; };
-  }, [stubCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stubCount, couponCode]);
   const unitPrice = quote ? centsToDollars(quote.lines[0]?.unitCents ?? 0) : UNIT_PRICE;
   const total = quote ? centsToDollars(quote.totalCents) : orderTotal(stubCount);
 
@@ -270,8 +304,19 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                         <Typography variant="body2">{formatCurrency(quote ? centsToDollars(quote.subtotalCents) : total)}</Typography>
                       </Stack>
                       {quote?.discounts.map(d => (
-                        <Stack key={d.code} direction="row" justifyContent="space-between">
-                          <Typography variant="body2" color="success.main">{d.description} ({d.code})</Typography>
+                        <Stack key={d.code} direction="row" justifyContent="space-between" alignItems="center">
+                          <Stack direction="row" alignItems="center" spacing={0.5}>
+                            <Typography variant="body2" color="success.main">{d.description} ({d.code})</Typography>
+                            <Button
+                              size="small"
+                              color="inherit"
+                              onClick={removeCoupon}
+                              aria-label="Remove coupon"
+                              sx={{ minWidth: 0, p: 0.25, color: "text.secondary" }}
+                            >
+                              <CloseIcon fontSize="inherit" />
+                            </Button>
+                          </Stack>
                           <Typography variant="body2" color="success.main">-{formatCurrency(centsToDollars(d.amountCents))}</Typography>
                         </Stack>
                       ))}
@@ -281,6 +326,26 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                         <Typography variant="subtitle2" fontWeight={700}>{formatCurrency(total)}</Typography>
                       </Stack>
                     </Stack>
+
+                    {/* Coupon entry stays visible until a code is applied; the discount line above then carries the remove control. */}
+                    {!quote?.discounts.length && (
+                      <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 2 }}>
+                        <TextField
+                          label="Coupon code"
+                          size="small"
+                          value={couponInput}
+                          onChange={e => { setCouponInput(e.target.value); if (couponError) setCouponError(null); }}
+                          onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); applyCoupon(); } }}
+                          error={!!couponError}
+                          helperText={couponError ?? " "}
+                          inputProps={{ autoCapitalize: "characters", autoCorrect: "off", spellCheck: false, maxLength: 40 }}
+                          sx={{ flex: 1 }}
+                        />
+                        <Button variant="outlined" onClick={applyCoupon} disabled={!couponInput.trim()} sx={{ mt: "1px", height: 40 }}>
+                          Apply
+                        </Button>
+                      </Stack>
+                    )}
 
                     {/* Accuracy attestation — payment is not offered until this is affirmed. */}
                     <Box sx={{ p: 1.5, mb: 2, bgcolor: "background.default", border: 1, borderColor: "divider", borderRadius: 1 }}>
@@ -308,7 +373,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                           pay stub{stubCount === 1 ? "" : "s"} as a PDF.
                         </Typography>
                         <PayPal
-                          cart={{ items: [{ type: "paystub", qty: stubCount }] }}
+                          cart={cart}
                           meta={{ attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId }}
                           onPaymentSuccess={handlePaymentSuccess}
                           onPaymentError={handlePaymentError}

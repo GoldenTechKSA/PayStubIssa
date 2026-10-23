@@ -62,10 +62,17 @@ Errors are JSON: `{ error: { code, message, details? } }`. Codes the client acts
 
 ## Pricing and coupons
 
-`src/services/pricing.ts` is the only place money is computed (integer cents). It already
+`src/services/pricing.ts` is the only place money is computed (integer cents). It
 accepts `couponCode` and returns an itemized quote (lines, discounts, subtotal, total).
-Coupons are an empty registry in Phase 1; adding one is filling `coupons` in
-`src/index.ts` (or a table later), not changing the routes or the client.
+
+Coupons come from the `COUPONS` env var, parsed at boot by `parseCoupons` in
+`src/config.ts`: `COUPONS=FRIEND:25,LAUNCH:10` is two percent-off codes. Percent only,
+whole numbers 1–99 — a 100% code is refused at startup because a $0 order cannot go
+through PayPal. Codes are matched case-insensitively, an unknown code is a `400
+INVALID_COUPON`, and the applied code is stored on the order row (`coupon_code`). The
+Review step has a "Coupon code" field that re-quotes with the code and sends it with the
+order. Adding or revoking a code is a `.env` edit plus `pm2 restart <app> --update-env`;
+a fixed-amount kind and a coupons table can slot into the same registry later.
 
 ## Data
 

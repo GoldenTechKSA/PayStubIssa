@@ -30,6 +30,7 @@ export const testConfig: Config = {
   CURRENCY: 'USD',
   PRICE_PER_STUB_CENTS: 899,
   MAX_STUBS_PER_ORDER: 12,
+  coupons: {},
   DATABASE_PATH: ':memory:',
   databasePath: ':memory:',
   TELEMETRY_ENABLED: true,

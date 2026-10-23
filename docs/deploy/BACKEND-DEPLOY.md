@@ -86,6 +86,8 @@ UNLOCK_TOKEN_TTL_MINUTES=60
 CURRENCY=USD
 PRICE_PER_STUB_CENTS=899
 MAX_STUBS_PER_ORDER=12
+# Optional percent-off coupon codes, e.g. COUPONS=FRIEND:25 (see server/README.md).
+COUPONS=
 DATABASE_PATH=./data/orders.sqlite
 ENV
 chmod 600 .env
