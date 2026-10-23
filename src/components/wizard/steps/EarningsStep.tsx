@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Grid, TextField, Typography, ToggleButton, ToggleButtonGroup,
-  FormControlLabel, Switch, Collapse, InputAdornment, Box,
+  FormControlLabel, Switch, Collapse, InputAdornment, Box, Stack,
 } from "@mui/material";
 import { saveIncomeDetails } from "../../../redux/actions";
 import { IncomeDetails, PayStubDetails } from "assets/data/pay-stub-details";
@@ -78,19 +78,22 @@ const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   return (
     <WizardStepLayout
       title="Earnings"
-      subtitle="How this employee is paid for the period."
+      headerAction={
+        <Stack alignItems={{ xs: "flex-start", sm: "flex-end" }} spacing={0.5}>
+          <Typography variant="body2" color="text.secondary">How this employee is paid for the period.</Typography>
+          <ToggleButtonGroup exclusive size="small" color="primary" value={wageType} onChange={handleWageType}>
+            <ToggleButton value="Hourly">Hourly wage</ToggleButton>
+            <ToggleButton value="Salary">Yearly salary</ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+      }
       onBack={onBack}
       onNext={handleNext}
       nextDisabled={!isValid}
       nextLabel="Choose a template"
     >
-      <ToggleButtonGroup exclusive color="primary" value={wageType} onChange={handleWageType} sx={{ mb: 3 }}>
-        <ToggleButton value="Hourly">Hourly wage</ToggleButton>
-        <ToggleButton value="Salary">Yearly salary</ToggleButton>
-      </ToggleButtonGroup>
-
       {wageType === "Hourly" ? (
-        <Grid container spacing={2}>
+        <Grid container columnSpacing={2} rowSpacing={1}>
           <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               fullWidth required label="Hourly rate" type="number" value={hourlyRate}
@@ -128,7 +131,7 @@ const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
           </Grid>
         </Grid>
       ) : (
-        <Grid container spacing={2}>
+        <Grid container columnSpacing={2} rowSpacing={1}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth required label="Annual salary" type="number" value={annualSalary}
@@ -147,7 +150,7 @@ const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
         </Grid>
       )}
 
-      <Box sx={{ mt: 3 }}>
+      <Box sx={{ mt: 1 }}>
         <FormControlLabel
           control={<Switch checked={showDeductions} onChange={e => setShowDeductions(e.target.checked)} />}
           label="Include deductions (medical, dental, vision, 401k, union dues…)"
@@ -157,7 +160,7 @@ const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
       <Collapse in={showDeductions}>
         <Box sx={{ mt: 2 }}>
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>Per pay period amounts</Typography>
-          <Grid container spacing={2}>
+          <Grid container columnSpacing={2} rowSpacing={1}>
             <Grid size={{ xs: 6, sm: 3 }}>
               <TextField fullWidth label="Medical" type="number" value={medical} onChange={e => setMedical(e.target.value)} helperText=" " InputProps={money} inputProps={{ min: 0, step: "any" }} />
             </Grid>

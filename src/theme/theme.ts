@@ -37,6 +37,10 @@ const theme = createTheme({
     MuiAppBar: {
       defaultProps: { color: 'inherit', elevation: 0 },
     },
+    MuiTextField: {
+      // Compact fields everywhere (40px tall instead of 56px) so wizard steps fit the viewport.
+      defaultProps: { size: "small" },
+    },
     MuiFormLabel: {
       styleOverrides: {
         // Red required-field asterisk (instead of inheriting the label color).

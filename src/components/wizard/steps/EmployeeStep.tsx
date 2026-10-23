@@ -72,7 +72,7 @@ const EmployeeStep: React.FC<StepProps> = ({ onNext, onBack }) => {
       onNext={handleNext}
       nextDisabled={!isValid}
     >
-      <Grid container spacing={2}>
+      <Grid container columnSpacing={2} rowSpacing={1}>
         <Grid size={{ xs: 12, sm: 5 }}>
           <TextField
             fullWidth required label="First name" value={employeeFirstName}
