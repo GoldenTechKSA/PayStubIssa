@@ -66,7 +66,9 @@ beforeAll(() => {
   };
 });
 
-const page = (title: string, body: string, printCss: string) => `<!doctype html>
+/** A standalone page. `body` is the full body markup — the stub test passes #pdf-content itself,
+ *  the review-shell test passes the Review step's whole ancestor chain around it. */
+const page = (title: string, body: string, printCss: string, extraCss = '') => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>${title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,10 +87,11 @@ body { margin: 0; padding: 0; background: #fff; color: #0F172A;
   .page-guide { position: absolute; top: 960px; left: 0; width: 720px; border-top: 2px dashed #DC2626; color: #DC2626; font: 11px/1 monospace; padding-top: 2px; }
 }
 @media print { .page-guide { display: none; } }
+${extraCss}
 ${printCss}
 </style></head>
 <body class="print-paystub print-paystub-single">
-<div id="pdf-content">${body}</div>
+${body}
 <div class="page-guide">page bottom (960px) - anything below this prints on a second sheet</div>
 </body></html>
 `;
@@ -109,6 +112,43 @@ describe('render harness', () => {
         React.createElement(PaystubRenderer, { config, data: model }))
     );
     const name = configFile.split('/')[2];
-    fs.writeFileSync(path.join(OUT, `${name}.html`), page(title, stub, printCss));
+    fs.writeFileSync(path.join(OUT, `${name}.html`), page(title, `<div id="pdf-content">${stub}</div>`, printCss));
+  });
+
+  /**
+   * The stub inside the Review step's ancestor chain, with the body classes handlePrint adds.
+   * print.css hides the rest of the review page with `visibility`, which keeps it IN LAYOUT:
+   * before #App was collapsed in print, this printed the stub and then the blank sheets the
+   * hidden summary column and shell still paginated to. Inline styles stand in for the MUI
+   * `sx` values of PaystubWizard / ReviewStep / FitPage; keep them in step when those change.
+   */
+  it('review-shell renders', async () => {
+    const t = templates[0];
+    if (!t) return;
+    const config = await loadPaystubConfig(t.configFile);
+    const model = buildPaystubModels(SAMPLE)[0];
+    const stub = renderToStaticMarkup(
+      React.createElement('div', { className: 'paystub-page' },
+        React.createElement(PaystubRenderer, { config, data: model }))
+    );
+    const shell = `<div id="App"><div class="app-root">
+<header class="no-print" style="height:64px;border-bottom:1px solid #ccc">header</header>
+<main class="app-main"><div style="max-width:1200px;margin:0 auto;padding:40px 24px"><div style="padding:32px;border:1px solid #ddd">
+<div style="height:120px">stepper + progress</div>
+<div style="display:flex;gap:24px">
+<div style="flex:0 0 40%"><div style="height:1500px;border:1px solid #ddd">summary cards, totals, payment, notes</div></div>
+<div style="flex:1"><div style="background:#eee;padding:24px;max-height:75vh;overflow:auto;display:flex;justify-content:center;align-items:flex-start">
+<div class="paystub-sheet" style="position:relative;width:100%;max-width:720px;min-height:480px;background:#fff;padding:24px">
+<div class="paystub-fit-outer" style="width:100%"><div class="paystub-fit-box" style="width:504px;height:500px;margin:0 auto"><div class="paystub-scale" style="width:720px;transform-origin:top left;transform:scale(0.7)">
+<div id="pdf-content">${stub}</div>
+</div></div></div>
+</div></div></div>
+</div>
+<div style="height:80px">back / start over</div>
+</div></div></main>
+<footer class="no-print" style="height:200px">footer</footer>
+</div></div>`;
+    const indexCss = fs.readFileSync(path.join(ROOT, 'src/index.css'), 'utf8');
+    fs.writeFileSync(path.join(OUT, 'review-shell.html'), page(`Review shell: ${t.title}`, shell, printCss, indexCss));
   });
 });
