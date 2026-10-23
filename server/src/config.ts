@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import type { Coupon } from './services/pricing';
 
 /** The server/ folder, independent of the process cwd (PM2, tsx, node dist/ all differ). */
 export const SERVER_ROOT = path.resolve(__dirname, '..');
@@ -23,6 +24,19 @@ const schema = z.object({
   CURRENCY: z.string().length(3).transform(s => s.toUpperCase()).default('USD'),
   PRICE_PER_STUB_CENTS: z.coerce.number().int().positive().default(899),
   MAX_STUBS_PER_ORDER: z.coerce.number().int().positive().default(12),
+  // `CODE:PERCENT,CODE:PERCENT` — hand-made percent-off codes. Parsed at boot so a typo
+  // (or a 100% "free" code, which PayPal cannot process) stops the API instead of a customer.
+  COUPONS: z
+    .string()
+    .optional()
+    .transform((v, ctx) => {
+      try {
+        return parseCoupons(v);
+      } catch (err) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: (err as Error).message });
+        return z.NEVER;
+      }
+    }),
 
   DATABASE_PATH: z.string().min(1).default('./data/orders.sqlite'),
 
@@ -42,7 +56,45 @@ const schema = z.object({
   TELEMETRY_MAX_ROWS: z.coerce.number().int().positive().default(2_000_000),
 });
 
-export type Config = z.infer<typeof schema> & { databasePath: string };
+export type Config = Omit<z.infer<typeof schema>, 'COUPONS'> & {
+  databasePath: string;
+  /** Keyed by upper-cased code; what `COUPONS` parsed to. */
+  coupons: Record<string, Coupon>;
+};
+
+const COUPON_CODE_RE = /^[A-Z0-9_-]{1,40}$/;
+
+/**
+ * Parse `COUPONS="FRIEND:25, LAUNCH:10"` into the pricing registry. Percent only, whole
+ * numbers 1–99: no fixed amounts yet, and never 100% (a $0 order has no PayPal path).
+ */
+export function parseCoupons(raw: string | undefined): Record<string, Coupon> {
+  const coupons: Record<string, Coupon> = {};
+  const text = (raw ?? '').trim();
+  if (!text) return coupons;
+
+  for (const entry of text.split(',')) {
+    const pair = entry.trim();
+    if (!pair) continue;
+    const m = /^([^:]+):([^:]+)$/.exec(pair);
+    if (!m) throw new Error(`COUPONS entry "${pair}" must look like CODE:PERCENT`);
+    const code = m[1].trim().toUpperCase();
+    const percentText = m[2].trim();
+    if (!COUPON_CODE_RE.test(code)) {
+      throw new Error(`COUPONS code "${m[1].trim()}" may only use letters, digits, "-" and "_" (max 40)`);
+    }
+    if (!/^\d+$/.test(percentText)) {
+      throw new Error(`COUPONS entry "${code}" percent must be a whole number 1–99, got "${percentText}"`);
+    }
+    const value = Number(percentText);
+    if (value < 1 || value > 99) {
+      throw new Error(`COUPONS entry "${code}" percent must be 1–99 (100% off is not supported), got ${value}`);
+    }
+    if (coupons[code]) throw new Error(`COUPONS has a duplicate code "${code}"`);
+    coupons[code] = { code, description: `${value}% off`, kind: 'percent', value };
+  }
+  return coupons;
+}
 
 export class ConfigError extends Error {}
 
@@ -76,5 +128,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     ? cfg.DATABASE_PATH
     : path.resolve(SERVER_ROOT, cfg.DATABASE_PATH);
 
-  return { ...cfg, databasePath };
+  const { COUPONS: coupons, ...rest } = cfg;
+  return { ...rest, coupons, databasePath };
 }

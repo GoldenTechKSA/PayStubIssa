@@ -30,7 +30,7 @@ function main(): void {
       currency: config.CURRENCY,
       unitCents: { paystub: config.PRICE_PER_STUB_CENTS },
       maxQty: config.MAX_STUBS_PER_ORDER,
-      coupons: {},
+      coupons: config.coupons,
     },
     jwtSecret: config.JWT_SECRET,
     tokenTtlMinutes: config.UNLOCK_TOKEN_TTL_MINUTES,

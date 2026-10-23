@@ -61,6 +61,9 @@ export const T = {
   PAYMENT_CANCELLED: { code: 1306, name: 'payment.cancelled', level: 'info', props: ['orderId'] },
   PAYMENT_BUTTONS_FAILED: { code: 1307, name: 'payment.buttons_failed', level: 'error', props: ['message'] },
   UNLOCK_RESTORED: { code: 1308, name: 'unlock.restored', level: 'info', props: ['orderId'] },
+  // The coupon text itself is never sent: only whether the server took it and what it was worth.
+  COUPON_APPLIED: { code: 1309, name: 'coupon.applied', level: 'info', props: ['amountCents'] },
+  COUPON_REJECTED: { code: 1310, name: 'coupon.rejected', level: 'info', props: ['code'] },
 
   // 14xx — print / PDF
   PRINT_CLICKED: { code: 1401, name: 'print.clicked', level: 'info' },
