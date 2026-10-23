@@ -11,6 +11,10 @@
  *    (real print path: @page letter, 0.5in margins, print.css).
  * 3. Reports the PDF page count. One stub must be one page.
  *
+ * The harness also writes review-shell.html: the first template inside a model of the Review
+ * step's ancestor chain, printed the way the Print button prints. It is always included and
+ * must be one page too (see print.css on why the hidden review page once added blank sheets).
+ *
  * Default output: <repo>/.snapshots (gitignored).
  */
 const { execFileSync, spawnSync } = require('child_process');
@@ -64,7 +68,7 @@ const pdfPages = (pdf) => {
 if (names.length) names.forEach(n => renderOne(n)); else renderOne();
 
 const pages = fs.readdirSync(OUT)
-  .filter(f => f.endsWith('.html') && (!names.length || names.includes(f.replace(/\.html$/, ''))));
+  .filter(f => f.endsWith('.html') && (!names.length || names.includes(f.replace(/\.html$/, '')) || f === 'review-shell.html'));
 const rows = [];
 for (const html of pages) {
   const name = html.replace(/\.html$/, '');
@@ -78,4 +82,4 @@ for (const html of pages) {
 for (const r of rows) console.log(String(r.pages).padStart(2) + ' page(s)  ' + r.name);
 console.log('\noutput: ' + OUT);
 const bad = rows.filter(r => r.pages !== 1);
-if (bad.length) console.log(bad.length + ' template(s) do not fit on one page');
+if (bad.length) console.log(bad.length + ' page(s) do not print as one sheet');
