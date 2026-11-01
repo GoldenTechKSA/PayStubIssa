@@ -5,6 +5,15 @@ import { telemetry } from '../../services/telemetry-service';
 import { T } from '../../telemetry/codes';
 import { unscaleFitPage } from '../wizard/FitPage';
 
+// The Review preview hides every stub but the one its pager shows (`paystub-page-inactive`,
+// see wizard/print.css). The PDF needs all of them, so unhide the pages in the clone that
+// html2canvas measures and paints.
+const revealAllPages = (root: ParentNode) => {
+  root.querySelectorAll<HTMLElement>('.paystub-page-inactive').forEach((el) => {
+    el.classList.remove('paystub-page-inactive');
+  });
+};
+
 interface PDFDownloadButtonProps {
   targetId: string;
   fileName?: string;
@@ -57,7 +66,7 @@ const PDFDownloadButton: React.FC<PDFDownloadButtonProps> = ({
           // applied but paints text at full CSS size, so the stub came out with words
           // overlapping and the right edge cut off. Capture the clone at full size instead,
           // the same way print.css restores it for window.print().
-          onclone: (doc) => unscaleFitPage(doc),
+          onclone: (doc) => { unscaleFitPage(doc); revealAllPages(doc); },
         });
 
         // Scale each stub to fit inside one page's margins, preserving aspect ratio.

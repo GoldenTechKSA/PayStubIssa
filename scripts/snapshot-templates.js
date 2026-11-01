@@ -68,7 +68,7 @@ const pdfPages = (pdf) => {
 if (names.length) names.forEach(n => renderOne(n)); else renderOne();
 
 const pages = fs.readdirSync(OUT)
-  .filter(f => f.endsWith('.html') && (!names.length || names.includes(f.replace(/\.html$/, '')) || f === 'review-shell.html'));
+  .filter(f => f.endsWith('.html') && (!names.length || names.includes(f.replace(/\.html$/, '')) || f === 'review-shell.html' || f === 'review-shell-run.html'));
 const rows = [];
 for (const html of pages) {
   const name = html.replace(/\.html$/, '');
@@ -79,7 +79,10 @@ for (const html of pages) {
   chrome(file, ['--no-pdf-header-footer', '--print-to-pdf=' + pdf]);
   rows.push({ name, pages: pdfPages(pdf) });
 }
-for (const r of rows) console.log(String(r.pages).padStart(2) + ' page(s)  ' + r.name);
+// Every page must print as ONE sheet, except review-shell-run: a run of three stubs with the
+// two before the active one hidden on screen, which print.css must reveal again — three sheets.
+const expectedPages = (name) => (name === 'review-shell-run' ? 3 : 1);
+for (const r of rows) console.log(String(r.pages).padStart(2) + ' page(s)  ' + r.name + (r.pages === expectedPages(r.name) ? '' : '   <-- expected ' + expectedPages(r.name)));
 console.log('\noutput: ' + OUT);
-const bad = rows.filter(r => r.pages !== 1);
-if (bad.length) console.log(bad.length + ' page(s) do not print as one sheet');
+const bad = rows.filter(r => r.pages !== expectedPages(r.name));
+if (bad.length) console.log(bad.length + ' page(s) do not print as expected');
