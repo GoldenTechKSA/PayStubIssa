@@ -1060,8 +1060,9 @@
               <style>
                 <padding>3px 4px 2px</padding>
                 <textAlign>left</textAlign>
+                <whiteSpace>normal</whiteSpace>
               </style>
-              <value>{generalInfo.paymentMethod}</value>
+              <value>{paymentMethodLabel}</value>
             </cell>
           </rowcells>
           <rowcells>

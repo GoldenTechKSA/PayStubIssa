@@ -64,6 +64,9 @@ const incomeDetails: IncomeDetails = {
 const generalInfo: GeneralInfo = {
     employmentType: "Employee",
     paymentMethod: "Direct Deposit",
+    bankRoutingNumber: "021000021",
+    bankAccountType: "Checking",
+    bankAccountNumber: "000123456789",
     paymentFrequency: "",
     payStubCount: 1,
     payStubNumber: 1024,

@@ -69,7 +69,10 @@ const incomeDetails: IncomeDetails = {
 
 const generalInfo: GeneralInfo = {
     employmentType: "",
-    paymentMethod: "",
+    paymentMethod: "Physical Check",
+    bankRoutingNumber: "",
+    bankAccountType: "",
+    bankAccountNumber: "",
     paymentFrequency: "",
     payStubCount: 0,
     payStubNumber: 1,

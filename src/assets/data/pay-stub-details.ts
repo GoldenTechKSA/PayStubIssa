@@ -65,7 +65,12 @@ export interface IncomeDetails {
 }
 export interface GeneralInfo {
     employmentType: string;
-    paymentMethod: string; // "Direct Deposit" or "Check"
+    paymentMethod: string; // "Direct Deposit" | "Physical Check" | "Others"
+    // Bank details, collected only when paymentMethod is "Direct Deposit". Raw digits; the
+    // stub prints only the account type and last four digits (see PaystubModel.paymentMethodLabel).
+    bankRoutingNumber: string;
+    bankAccountType: string;   // "Checking" | "Savings"
+    bankAccountNumber: string;
     paymentFrequency: string;
     payStubCount: number;
     payStubNumber: number;
@@ -103,6 +108,7 @@ export interface PaystubModel extends PayStubDetails {
     filingStatusLabel: string;    // "Married filing jointly" — not the stored id
     paidLeaveLabel: string;       // "CO FMLI", empty where the state runs no program
     employeeStateCode: string;    // "CA" — the store holds the full state name
+    paymentMethodLabel: string;   // "Direct Deposit to Checking ****6789", or just the method
     // Wage type as booleans: renderIf tests a single path, and both "Salary" and
     // "Hourly" are truthy strings, so a template cannot branch on wageType itself.
     isSalaried: boolean;

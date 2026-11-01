@@ -4,7 +4,7 @@ import { Grid, TextField, MenuItem, Typography } from "@mui/material";
 import { saveIncomeDetails, saveGeneralInfo } from "../../../redux/actions";
 import { PAYPERIODTYPE, PAYMENTMETHOD, EMPLOYMENTTYPE } from "../../../constants/globals";
 import { IncomeDetails, GeneralInfo, PayStubDetails } from "assets/data/pay-stub-details";
-import { isValidDate, isValidStubCount } from "../../../utils/util";
+import { isValidDate, isValidStubCount, isValidRoutingNumber, isValidBankAccountNumber } from "../../../utils/util";
 import {
   calculateEndDate,
   calculatePayDate,
@@ -14,6 +14,10 @@ import {
   toISODate,
 } from "../../../utils/date-calculator";
 import { WizardStepLayout } from "../WizardStepLayout";
+import { BankAccountInput } from "../BankAccountInput";
+
+const DIRECT_DEPOSIT = "Direct Deposit";
+const ACCOUNT_TYPES = ["Checking", "Savings"];
 
 // Read-only, computed fields: muted so they read as results rather than inputs awaiting a value.
 const readOnlySx = {
@@ -43,7 +47,14 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const [checkNumber, setCheckNumber] = useState<number>(general.checkNumber || 5000);
   const [payStubNumber, setPayStubNumber] = useState<number>(general.payStubNumber || 1);
   const [employmentType, setEmploymentType] = useState(general.employmentType || "");
-  const [paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "");
+  const [paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "Physical Check");
+
+  // Bank details only matter for Direct Deposit. They stay in state when the user switches away
+  // so flipping back doesn't lose what was typed, but they are neither validated nor printed then.
+  const [bankRoutingNumber, setBankRoutingNumber] = useState(general.bankRoutingNumber || "");
+  const [bankAccountType, setBankAccountType] = useState(general.bankAccountType || "");
+  const [bankAccountNumber, setBankAccountNumber] = useState(general.bankAccountNumber || "");
+  const isDirectDeposit = paymentMethod === DIRECT_DEPOSIT;
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const touch = (k: string) => setTouched(t => ({ ...t, [k]: true }));
@@ -65,11 +76,19 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
       ? `Start date must be at least ${periodLengthLabel(periodType)} before today so the pay period has ended.`
       : "";
 
-  const isValid = !startError && isValidStubCount(String(payStubCount));
+  const routingError = isValidRoutingNumber(bankRoutingNumber) ? "" : "Enter a valid 9-digit routing number.";
+  const accountTypeError = bankAccountType ? "" : "Choose Checking or Savings.";
+  const accountError = isValidBankAccountNumber(bankAccountNumber) ? "" : "Enter 4 to 17 digits.";
+  const bankValid = !isDirectDeposit || (!routingError && !accountTypeError && !accountError);
+
+  const isValid = !startError && isValidStubCount(String(payStubCount)) && bankValid;
 
   const handleNext = () => {
     dispatch(saveIncomeDetails({ periodType, periodStartDate, periodEndDate, periodPayDate }));
-    dispatch(saveGeneralInfo({ payStubCount, checkNumber, payStubNumber, employmentType, paymentMethod }));
+    dispatch(saveGeneralInfo({
+      payStubCount, checkNumber, payStubNumber, employmentType, paymentMethod,
+      bankRoutingNumber, bankAccountType, bankAccountNumber,
+    }));
     onNext();
   };
 
@@ -145,6 +164,43 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
             {PAYMENTMETHOD.map(p => <MenuItem key={p.count} value={p.name}>{p.name}</MenuItem>)}
           </TextField>
         </Grid>
+
+        {isDirectDeposit && (
+          <>
+            <Grid size={{ xs: 12 }}>
+              <Typography variant="subtitle2" color="text.secondary">Bank details for direct deposit</Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                fullWidth required label="Routing number" value={bankRoutingNumber}
+                onChange={e => setBankRoutingNumber(e.target.value.replace(/\D/g, "").substring(0, 9))}
+                onBlur={() => touch("routing")}
+                error={touched.routing && !!routingError}
+                helperText={touched.routing && routingError ? routingError : " "}
+                inputProps={{ maxLength: 9, inputMode: "numeric" }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                select fullWidth required label="Account type" value={bankAccountType}
+                onChange={e => { setBankAccountType(e.target.value); touch("accountType"); }}
+                onBlur={() => touch("accountType")}
+                error={touched.accountType && !!accountTypeError}
+                helperText={touched.accountType && accountTypeError ? accountTypeError : " "}
+              >
+                {ACCOUNT_TYPES.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+              </TextField>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <BankAccountInput
+                required label="Account number" value={bankAccountNumber}
+                onChange={setBankAccountNumber} onBlur={() => touch("account")}
+                error={touched.account && !!accountError}
+                helperText={touched.account && accountError ? accountError : "Only the last four digits print on the stub."}
+              />
+            </Grid>
+          </>
+        )}
       </Grid>
     </WizardStepLayout>
   );

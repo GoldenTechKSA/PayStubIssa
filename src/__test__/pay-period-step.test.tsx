@@ -4,6 +4,7 @@ import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithApp } from './test-utils';
 import PayPeriodStep from '../components/wizard/steps/PayPeriodStep';
+import { initialState as devInitialState } from '../assets/data/initial-state';
 import { prodInitialState } from '../assets/data/production-initial-state';
 import { calculateEndDate, calculatePayDate, defaultPeriodStart, toISODate } from '../utils/date-calculator';
 
@@ -98,5 +99,82 @@ describe('PayPeriodStep', () => {
     renderStep();
     expect(prodInitialState.generalInfo.payStubNumber).toBe(1);
     expect((screen.getByLabelText(/pay stub number/i) as HTMLInputElement).value).toBe('1');
+  });
+});
+
+describe('PayPeriodStep — payment method and bank details', () => {
+  const routing = () => screen.getByLabelText(/routing number/i) as HTMLInputElement;
+  const account = () => screen.getByLabelText(/account number/i) as HTMLInputElement;
+  const pickPaymentMethod = async (name: string) => {
+    await userEvent.click(screen.getByRole('combobox', { name: /payment method/i }));
+    await userEvent.click(screen.getByRole('option', { name }));
+  };
+  const pickAccountType = async (name: string) => {
+    await userEvent.click(screen.getByRole('combobox', { name: /account type/i }));
+    await userEvent.click(screen.getByRole('option', { name }));
+  };
+
+  it('defaults to Physical Check with the bank fields hidden', () => {
+    renderStep();
+    expect(prodInitialState.generalInfo.paymentMethod).toBe('Physical Check');
+    expect(screen.getByRole('combobox', { name: /payment method/i }).textContent).toBe('Physical Check');
+    expect(screen.queryByLabelText(/routing number/i)).toBeNull();
+    expect(screen.queryByLabelText(/account type/i)).toBeNull();
+    expect(screen.queryByLabelText(/account number/i)).toBeNull();
+    expect(continueButton().disabled).toBe(false);
+  });
+
+  it('shows the three bank fields when Direct Deposit is chosen and blocks Continue until they are valid', async () => {
+    renderStep();
+    await pickPaymentMethod('Direct Deposit');
+    expect(routing()).toBeTruthy();
+    expect(screen.getByRole('combobox', { name: /account type/i })).toBeTruthy();
+    expect(account()).toBeTruthy();
+    expect(continueButton().disabled).toBe(true);
+
+    fireEvent.change(routing(), { target: { value: '123456789' } }); // fails the ABA checksum
+    fireEvent.blur(routing());
+    expect(screen.getByText(/enter a valid 9-digit routing number/i)).toBeTruthy();
+    fireEvent.change(routing(), { target: { value: '021000021' } });
+    await pickAccountType('Checking');
+    fireEvent.change(account(), { target: { value: '000123456789' } });
+    expect(continueButton().disabled).toBe(false);
+  });
+
+  it('hides the bank fields again for another method, which no longer hold Continue', async () => {
+    renderStep();
+    await pickPaymentMethod('Direct Deposit');
+    expect(continueButton().disabled).toBe(true);
+    await pickPaymentMethod('Others');
+    expect(screen.queryByLabelText(/routing number/i)).toBeNull();
+    expect(continueButton().disabled).toBe(false);
+  });
+
+  it('masks the account number to its last four digits once complete', async () => {
+    renderStep();
+    await pickPaymentMethod('Direct Deposit');
+    fireEvent.change(account(), { target: { value: '000123456789' } });
+    fireEvent.blur(account());
+    expect(account().value).toBe('********6789');
+  });
+
+  it('saves the bank details to the store on Continue', async () => {
+    const { store } = renderStep();
+    await pickPaymentMethod('Direct Deposit');
+    fireEvent.change(routing(), { target: { value: '021000021' } });
+    await pickAccountType('Savings');
+    fireEvent.change(account(), { target: { value: '000123456789' } });
+    await userEvent.click(continueButton());
+    const saved = store.getState().generalInfo;
+    expect(saved.paymentMethod).toBe('Direct Deposit');
+    expect(saved.bankRoutingNumber).toBe('021000021');
+    expect(saved.bankAccountType).toBe('Savings');
+    expect(saved.bankAccountNumber).toBe('000123456789');
+  });
+
+  it('the dev seed carries sample bank details so the preview shows the printed line', () => {
+    expect(devInitialState.generalInfo.paymentMethod).toBe('Direct Deposit');
+    expect(devInitialState.generalInfo.bankAccountNumber.length).toBeGreaterThanOrEqual(4);
+    expect(devInitialState.generalInfo.bankAccountType).toBe('Checking');
   });
 });

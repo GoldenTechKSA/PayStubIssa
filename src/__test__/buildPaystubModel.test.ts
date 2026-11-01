@@ -12,7 +12,8 @@ import { orderTotal, UNIT_PRICE } from '../constants/pricing';
 import { PayStubDetails } from '../assets/data/pay-stub-details';
 
 const makeStore = (overrides: Partial<PayStubDetails['incomeDetails']> = {},
-                   employeeOverrides: Partial<PayStubDetails['employeeInfo']> = {}): PayStubDetails => ({
+                   employeeOverrides: Partial<PayStubDetails['employeeInfo']> = {},
+                   generalOverrides: Partial<PayStubDetails['generalInfo']> = {}): PayStubDetails => ({
   appSettings: { templateId: 0, nextTabStep: 'template', canPrint: false, configPath: '' },
   companyInfo: {
     companyName: 'Acme', companyEIN: '11-2233445', companyAddress1: '1 St', companyAddress2: '',
@@ -38,6 +39,8 @@ const makeStore = (overrides: Partial<PayStubDetails['incomeDetails']> = {},
   generalInfo: {
     employmentType: 'Employee', paymentMethod: 'Direct Deposit', paymentFrequency: 'Weekly',
     payStubCount: 1, payStubNumber: 1, checkNumber: 5001, extraNotes: '',
+    bankRoutingNumber: '021000021', bankAccountType: 'Checking', bankAccountNumber: '000123456789',
+    ...generalOverrides,
   },
 });
 
@@ -126,6 +129,34 @@ describe('buildPaystubModel', () => {
     const extraTax = withExtras.totalTaxes - regularOnly.totalTaxes;
     expect(extraTax).toBeGreaterThan(0);
     expect(withExtras.totalTaxesYTD).toBeCloseTo(regularOnly.totalTaxes * multiplier + extraTax, 5);
+  });
+});
+
+describe('paymentMethodLabel', () => {
+  it('names the account type and the last four digits for Direct Deposit', () => {
+    const m = buildPaystubModel(makeStore());
+    expect(m.paymentMethodLabel).toBe('Direct Deposit to Checking ****6789');
+  });
+
+  it('never carries the routing number or more than four account digits', () => {
+    const m = buildPaystubModel(makeStore());
+    expect(m.paymentMethodLabel).not.toContain('021000021');
+    expect(m.paymentMethodLabel).not.toContain('123456789');
+  });
+
+  it('is just the method for Direct Deposit with no account number yet', () => {
+    const m = buildPaystubModel(makeStore({}, {}, { bankAccountNumber: '', bankAccountType: '' }));
+    expect(m.paymentMethodLabel).toBe('Direct Deposit');
+  });
+
+  it('is just the method for any other payment method, even if bank fields linger', () => {
+    const m = buildPaystubModel(makeStore({}, {}, { paymentMethod: 'Physical Check' }));
+    expect(m.paymentMethodLabel).toBe('Physical Check');
+  });
+
+  it('falls back to a dash when no method is chosen', () => {
+    const m = buildPaystubModel(makeStore({}, {}, { paymentMethod: '' }));
+    expect(m.paymentMethodLabel).toBe('—');
   });
 });
 

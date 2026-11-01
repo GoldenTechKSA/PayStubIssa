@@ -1652,27 +1652,22 @@
             </cell>
           </rowcells>
           <rowcells>
-            <cell id="lc-net-spacer" type="static">
-              <style>
-                <padding>0 12px 8px</padding>
-              </style>
-              <value> </value>
-            </cell>
             <cell id="lc-net-method-label" type="static">
               <style>
                 <textAlign>right</textAlign>
                 <color>#6b7280</color>
-                <padding>0 6px 8px 0</padding>
+                <padding>0 6px 8px 12px</padding>
               </style>
               <value>Method</value>
             </cell>
-            <cell id="lc-net-method" type="substitute">
+            <cell id="lc-net-method" type="substitute" colspan="2">
               <style>
                 <textAlign>right</textAlign>
                 <fontWeight>500</fontWeight>
                 <padding>0 12px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
               </style>
-              <value>{generalInfo.paymentMethod}</value>
+              <value>{paymentMethodLabel}</value>
             </cell>
           </rowcells>
         </cells>
