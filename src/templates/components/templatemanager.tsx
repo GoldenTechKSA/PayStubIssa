@@ -24,9 +24,15 @@ interface TemplateManagerProps {
    * doesn't render a 12-page document; the Review step omits it and renders the whole run.
    */
   maxStubs?: number;
+  /**
+   * Index of the one stub to show on screen. Every stub is still rendered (print and the PDF
+   * need all of them); the others get `paystub-page-inactive`, which wizard/print.css hides
+   * on screen and shows again in print. Omit it to show the whole run stacked.
+   */
+  activeStub?: number;
 }
 
-export const TemplateManager: React.FC<TemplateManagerProps> = ({ configPath, store, maxStubs }) => {
+export const TemplateManager: React.FC<TemplateManagerProps> = ({ configPath, store, maxStubs, activeStub }) => {
   const [config, setConfig] = useState<PaystubConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -72,7 +78,10 @@ export const TemplateManager: React.FC<TemplateManagerProps> = ({ configPath, st
       {config && !loading && models.map((model) => (
         // Each stub is its own page: `paystub-page` is what the printer and the PDF exporter
         // break on (see wizard/print.css and pdf/pdf-button-comp).
-        <div className="paystub-page" key={model.stubIndex}>
+        <div
+          className={activeStub != null && model.stubIndex !== activeStub ? "paystub-page paystub-page-inactive" : "paystub-page"}
+          key={model.stubIndex}
+        >
           <PaystubRenderer config={config} data={model} />
         </div>
       ))}

@@ -93,6 +93,25 @@
   padding-top: 24px;
   border-top: 1px dashed #cbd5e1;
 }
+/*
+ * The Review step pages through a multi-stub run: every stub is rendered (print and the PDF
+ * need all of them) but only the one the pager points at is shown on screen. The shown page
+ * must not carry the separator above, since its hidden predecessor is still its sibling.
+ * The PDF button strips this class in html2canvas's clone (see pdf/pdf-button-comp).
+ */
+.paystub-page-inactive {
+  display: none;
+}
+.paystub-page-inactive + .paystub-page {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+@media print {
+  body.print-paystub .paystub-page-inactive {
+    display: block !important;
+  }
+}
 @media print {
   body.print-paystub .paystub-page + .paystub-page {
     margin-top: 0;

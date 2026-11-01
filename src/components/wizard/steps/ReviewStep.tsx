@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, Link, Chip,
@@ -11,7 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
-import { buildPaystubModel, buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
+import { buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
 import { UNIT_PRICE, orderTotal, normalizeStubCount } from "constants/pricing";
 import { paymentsApi, unlockStorage, centsToDollars, PaymentsApiError, type CapturedOrder, type Quote } from "services/payments-api";
@@ -20,6 +20,7 @@ import { telemetry } from "../../../services/telemetry-service";
 import { T } from "../../../telemetry/codes";
 import TemplateManager from "../../../templates/components/templatemanager";
 import { FitPage } from "../FitPage";
+import { StubPager } from "../StubPager";
 import { PreviewWatermark } from "../PreviewWatermark";
 import PayPal from "../../common/paypal-payment";
 import PDFDownloadButton from "../../pdf/pdf-button-comp";
@@ -74,10 +75,28 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   const [attested, setAttested] = useState(false);
   const [attestedAt, setAttestedAt] = useState<string | null>(null);
 
-  const model = buildPaystubModel(fullState);
   const models = buildPaystubModels(fullState);
 
   const stubCount = normalizeStubCount(generalInfo.payStubCount);
+
+  // Which stub of the run the preview and the pay summary show. The whole run is rendered
+  // (print and the PDF need every page); on screen only this one is visible. Lands on stub 1
+  // whenever the size of the run changes.
+  const [activeStub, setActiveStub] = useState(0);
+  useEffect(() => { setActiveStub(0); }, [stubCount]);
+  const active = Math.min(activeStub, models.length - 1);
+  const model = models[active];
+  const goToStub = (i: number) => setActiveStub(Math.max(0, Math.min(models.length - 1, i)));
+
+  // Swipe left/right between stubs on a touch screen.
+  const touchStartX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0]?.clientX ?? null; };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = (e.changedTouches[0]?.clientX ?? touchStartX.current) - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) > 50) goToStub(active + (dx < 0 ? 1 : -1));
+  };
   const canPrint = !!appSettings.canPrint && (!unlock || unlock.qty >= stubCount);
   const paidForFewer = !!appSettings.canPrint && !!unlock && unlock.qty < stubCount;
 
@@ -242,23 +261,31 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
             <Card variant="outlined" sx={{ borderColor: "divider", bgcolor: "background.default" }}>
               <CardContent>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Pay summary ({stubCount === 1 ? "this period" : "per period"})
+                  Pay summary{stubCount === 1 ? "" : ` (stub ${active + 1} of ${stubCount})`}
                 </Typography>
+                {/* The period the preview shows, with its year-to-date beside it so a run reads as growing. */}
                 <Stack spacing={0.5}>
+                  <Stack direction="row" justifyContent="space-between">
+                    <Box sx={{ flex: 1 }} />
+                    <Typography variant="caption" color="text.secondary" sx={{ width: 96, textAlign: "right" }}>This period</Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ width: 96, textAlign: "right" }}>YTD</Typography>
+                  </Stack>
                   {([
-                    ["Gross pay", model.grossPay],
-                    ["Taxes", -model.totalTaxes],
-                    ["Deductions", -model.totalDeductions],
-                  ] as Array<[string, number]>).map(([label, value]) => (
+                    ["Gross pay", model.grossPay, model.grossPayYTD],
+                    ["Taxes", -model.totalTaxes, -model.totalTaxesYTD],
+                    ["Deductions", -model.totalDeductions, -model.totalDeductionsYTD],
+                  ] as Array<[string, number, number]>).map(([label, value, ytd]) => (
                     <Stack key={label} direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">{label}</Typography>
-                      <Typography variant="body2">{formatCurrency(value)}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>{label}</Typography>
+                      <Typography variant="body2" sx={{ width: 96, textAlign: "right" }}>{formatCurrency(value)}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ width: 96, textAlign: "right" }}>{formatCurrency(ytd)}</Typography>
                     </Stack>
                   ))}
                   <Divider sx={{ my: 1 }} />
                   <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="subtitle2" fontWeight={700}>Net pay</Typography>
-                    <Typography variant="subtitle2" fontWeight={700} color="success.main">{formatCurrency(model.netPay)}</Typography>
+                    <Typography variant="subtitle2" fontWeight={700} sx={{ flex: 1 }}>Net pay</Typography>
+                    <Typography variant="subtitle2" fontWeight={700} color="success.main" sx={{ width: 96, textAlign: "right" }}>{formatCurrency(model.netPay)}</Typography>
+                    <Typography variant="subtitle2" fontWeight={700} color="text.secondary" sx={{ width: 96, textAlign: "right" }}>{formatCurrency(model.netPayYTD)}</Typography>
                   </Stack>
                 </Stack>
               </CardContent>
@@ -408,17 +435,28 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
               ? <Chip icon={<CheckCircleIcon />} color="success" variant="outlined" size="small" label="Ready to print" />
               : <Chip label="Watermarked until payment" size="small" variant="outlined" />}
           </Stack>
+          {/* A run of N stubs is paged: arrows, "Pay stub k of N" with its dates, and a dot per stub. */}
+          <StubPager
+            count={models.length}
+            active={active}
+            onChange={goToStub}
+            stubs={models.map(m => ({
+              periodStart: m.incomeDetails.periodStartDate,
+              periodEnd: m.incomeDetails.periodEndDate,
+              payDate: m.incomeDetails.periodPayDate,
+            }))}
+          />
           {/* "Desk" surface: gray backdrop that makes the white sheet read as a physical page */}
           {/* alignItems flex-start: a single-line flex container clamps its line to max-height and
               stretches items to it, which pinned the sheet at its min-height while the stub inside
               kept rendering past the sheet's bottom edge. */}
-          <Box sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "75vh", overflow: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
+          <Box onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} sx={{ bgcolor: "grey.200", border: 1, borderColor: "divider", borderRadius: 1, p: { xs: 1.5, md: 3 }, maxHeight: "75vh", overflow: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
             {/* The sheet: white Letter page with margins + lift. #pdf-content stays the print/PDF surface.
                 Until paid, `paystub-locked-preview` blocks Ctrl+P from printing the unpaid stub. */}
             <Box className={canPrint ? "paystub-sheet" : "paystub-sheet paystub-locked-preview"} sx={{ position: "relative", width: "100%", maxWidth: 720, minHeight: 480, bgcolor: "#fff", boxShadow: 3, p: { xs: 2, md: 3 } }}>
               <FitPage>
                 <Box id="pdf-content">
-                  <TemplateManager id={appSettings.templateId} configPath={appSettings.configPath} store={fullState} />
+                  <TemplateManager id={appSettings.templateId} configPath={appSettings.configPath} store={fullState} activeStub={active} />
                 </Box>
               </FitPage>
               {!canPrint && <PreviewWatermark />}
@@ -427,7 +465,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
           <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1, textAlign: "center" }}>
             {stubCount === 1
               ? "This is exactly what will print."
-              : `This is exactly what will print — ${stubCount} pay stubs, one per page, covering ${stubCount} consecutive pay periods.`}
+              : `This is exactly what will print — ${stubCount} pay stubs, one per page, covering ${stubCount} consecutive pay periods. Use the arrows to see each one.`}
           </Typography>
         </Grid>
       </Grid>

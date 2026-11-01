@@ -55,7 +55,8 @@ const ONLY = process.env.RENDER_TEMPLATE;
 
 const templates: { configFile: string; title: string }[] = JSON.parse(
   fs.readFileSync(path.join(PUBLIC_DIR, 'configs/template-configs.json'), 'utf8')
-).filter((t: { configFile: string }) => !ONLY || t.configFile.includes(`/${ONLY}/`));
+  // The review-shell pages are built from templates[0], so asking for one of them keeps every template.
+).filter((t: { configFile: string }) => !ONLY || ONLY.startsWith('review-shell') || t.configFile.includes(`/${ONLY}/`));
 
 beforeAll(() => {
   (globalThis as any).fetch = async (url: string) => {
@@ -68,7 +69,7 @@ beforeAll(() => {
 
 /** A standalone page. `body` is the full body markup — the stub test passes #pdf-content itself,
  *  the review-shell test passes the Review step's whole ancestor chain around it. */
-const page = (title: string, body: string, printCss: string, extraCss = '') => `<!doctype html>
+const page = (title: string, body: string, printCss: string, extraCss = '', bodyClass = 'print-paystub print-paystub-single') => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>${title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,7 +91,7 @@ body { margin: 0; padding: 0; background: #fff; color: #0F172A;
 ${extraCss}
 ${printCss}
 </style></head>
-<body class="print-paystub print-paystub-single">
+<body class="${bodyClass}">
 ${body}
 <div class="page-guide">page bottom (960px) - anything below this prints on a second sheet</div>
 </body></html>
@@ -150,5 +151,40 @@ describe('render harness', () => {
 </div></div>`;
     const indexCss = fs.readFileSync(path.join(ROOT, 'src/index.css'), 'utf8');
     fs.writeFileSync(path.join(OUT, 'review-shell.html'), page(`Review shell: ${t.title}`, shell, printCss, indexCss));
+  });
+
+  /**
+   * A run of three stubs inside the same shell, as the Review step's pager leaves it: every
+   * page rendered, the two before the active one hidden with `paystub-page-inactive`. Printing
+   * (body `print-paystub`, no `-single`) must reveal them again and produce three sheets.
+   */
+  it('review-shell-run renders', async () => {
+    const t = templates[0];
+    if (!t) return;
+    const config = await loadPaystubConfig(t.configFile);
+    const models = buildPaystubModels({ ...SAMPLE, generalInfo: { ...SAMPLE.generalInfo, payStubCount: 3 } });
+    const stubs = models.map((model, i) => renderToStaticMarkup(
+      React.createElement('div', { className: i < models.length - 1 ? 'paystub-page paystub-page-inactive' : 'paystub-page' },
+        React.createElement(PaystubRenderer, { config, data: model }))
+    )).join('');
+    const shell = `<div id="App"><div class="app-root">
+<header class="no-print" style="height:64px;border-bottom:1px solid #ccc">header</header>
+<main class="app-main"><div style="max-width:1200px;margin:0 auto;padding:40px 24px"><div style="padding:32px;border:1px solid #ddd">
+<div style="height:120px">stepper + progress</div>
+<div style="display:flex;gap:24px">
+<div style="flex:0 0 40%"><div style="height:1500px;border:1px solid #ddd">summary cards, totals, payment, notes</div></div>
+<div style="flex:1"><div style="height:60px">pager</div><div style="background:#eee;padding:24px;max-height:75vh;overflow:auto;display:flex;justify-content:center;align-items:flex-start">
+<div class="paystub-sheet" style="position:relative;width:100%;max-width:720px;min-height:480px;background:#fff;padding:24px">
+<div class="paystub-fit-outer" style="width:100%"><div class="paystub-fit-box" style="width:504px;height:500px;margin:0 auto"><div class="paystub-scale" style="width:720px;transform-origin:top left;transform:scale(0.7)">
+<div id="pdf-content">${stubs}</div>
+</div></div></div>
+</div></div></div>
+</div>
+<div style="height:80px">back / start over</div>
+</div></div></main>
+<footer class="no-print" style="height:200px">footer</footer>
+</div></div>`;
+    const indexCss = fs.readFileSync(path.join(ROOT, 'src/index.css'), 'utf8');
+    fs.writeFileSync(path.join(OUT, 'review-shell-run.html'), page(`Review shell, run of 3: ${t.title}`, shell, printCss, indexCss, 'print-paystub'));
   });
 });
