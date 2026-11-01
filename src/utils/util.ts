@@ -54,6 +54,12 @@ export const isValidRoutingNumber = (value: string): boolean => {
 // US bank account numbers have no checksum; lengths run from 4 to 17 digits.
 export const isValidBankAccountNumber = (value: string): boolean => /^\d{4,17}$/.test(value);
 
+// A 10-digit US phone number in the usual spellings — (555) 123-4567, 555-123-4567,
+// 555.123.4567, 5551234567 — optionally preceded by the US country code (+1 or 1), which
+// is how browser autofill writes a saved number into a `tel` field. Other country codes fail.
+export const isValidUSPhone = (value: string): boolean =>
+    /^(\+?1[\s.-]?)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value.trim());
+
 // Helper to format date fields safely
 export const formatDate = (date: Date | string | undefined | null) => {
   if (!date) return "";

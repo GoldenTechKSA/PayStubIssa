@@ -6,6 +6,7 @@ import { STATESLIST } from "../../../constants/globals";
 import { CompanyInfo as CompanyDetails, PayStubDetails } from "assets/data/pay-stub-details";
 import { WizardStepLayout } from "../WizardStepLayout";
 import { MaskedIdInput } from "../MaskedIdInput";
+import { isValidUSPhone } from "../../../utils/util";
 
 interface StepProps {
   onNext: () => void;
@@ -15,7 +16,8 @@ interface StepProps {
 const isValidName = (n: string) => n.trim().length >= 3 && n.trim().length <= 100;
 const isValidAddress = (a: string) => a.trim().length >= 5 && a.trim().length <= 255;
 const isValidZip = (z: string) => /^\d{5}$/.test(z);
-const isValidPhone = (p: string) => /^(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/.test(p);
+// Shared validator: accepts a leading +1 so a browser-autofilled number doesn't block Continue.
+const isValidPhone = isValidUSPhone;
 const isValidEmail = (e: string) => /^\S+@\S+\.\S+$/.test(e);
 
 const CompanyStep: React.FC<StepProps> = ({ onNext, onBack }) => {
