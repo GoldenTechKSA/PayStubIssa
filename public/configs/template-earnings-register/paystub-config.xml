@@ -961,8 +961,9 @@
                 <textAlign>left</textAlign>
                 <padding>4px 0 4px 5px</padding>
                 <borderBottom>1px solid #555555</borderBottom>
+                <whiteSpace>normal</whiteSpace>
               </style>
-              <value>{generalInfo.paymentMethod}</value>
+              <value>{paymentMethodLabel}</value>
             </cell>
             <cell id="er-disburse-amt" type="calculated" format="currency">
               <style>

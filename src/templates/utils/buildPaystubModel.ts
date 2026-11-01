@@ -49,6 +49,19 @@ const resolveFilingStatus = (raw: string | undefined): FilingStatus => {
 // returns '' (getNestedValue coerces an empty string to '0', which would print as data).
 const EMPTY = '—';
 
+// "Direct Deposit to Checking ****6789": the method plus, for direct deposit only, the account
+// type and the LAST FOUR digits of the account. The routing number and the rest of the account
+// number never reach the model, so no template can print them by accident.
+const paymentMethodLabel = (generalInfo: PayStubDetails['generalInfo']): string => {
+  const method = String(generalInfo.paymentMethod ?? '').trim();
+  if (!method) return EMPTY;
+  if (method !== 'Direct Deposit') return method;
+  const digits = String(generalInfo.bankAccountNumber ?? '').replace(/\D/g, '');
+  if (digits.length < 4) return method;
+  const type = String(generalInfo.bankAccountType ?? '').trim();
+  return `${method} to ${type ? type + ' ' : ''}****${digits.slice(-4)}`;
+};
+
 // The wizard stores full state NAMES ('Washington'); labels and addresses want 'WA'.
 const STATE_CODE_BY_NAME: Record<string, string> = states.states.reduce(
   (acc: Record<string, string>, state: { code: string; name: string }) => {
@@ -295,6 +308,7 @@ const buildModelForPeriod = (
       FILING_STATUS_NAME_BY_ID[resolveFilingStatus(employeeInfo.employeeMarriedStatus)] || EMPTY,
     paidLeaveLabel: taxes.paidLeaveLabel,
     employeeStateCode: stateCode,
+    paymentMethodLabel: paymentMethodLabel(generalInfo),
     isSalaried: incomeDetails.wageType === 'Salary',
     isHourly: incomeDetails.wageType !== 'Salary',
 

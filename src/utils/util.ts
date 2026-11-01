@@ -42,6 +42,18 @@ export const isValidDate = (dateStr: string): boolean => {
     return date <= today; // Reject future dates
 }
 
+// ABA routing transit number: exactly 9 digits whose weighted sum (3,7,1 repeating) is a multiple
+// of 10. Catches a mistyped digit before it is printed on a stub.
+export const isValidRoutingNumber = (value: string): boolean => {
+    if (!/^\d{9}$/.test(value)) return false;
+    const weights = [3, 7, 1, 3, 7, 1, 3, 7, 1];
+    const sum = value.split('').reduce((acc, ch, i) => acc + Number(ch) * weights[i], 0);
+    return sum % 10 === 0;
+};
+
+// US bank account numbers have no checksum; lengths run from 4 to 17 digits.
+export const isValidBankAccountNumber = (value: string): boolean => /^\d{4,17}$/.test(value);
+
 // Helper to format date fields safely
 export const formatDate = (date: Date | string | undefined | null) => {
   if (!date) return "";
