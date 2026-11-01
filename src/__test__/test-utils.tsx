@@ -5,10 +5,14 @@ import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
 import theme from '../theme/theme';
 import { createAppStore } from '../redux/store';
+import type { PayStubDetails } from '../assets/data/pay-stub-details';
 
 /** Render a component inside the same Redux store, router and MUI theme the app uses. */
-export function renderWithApp(ui: React.ReactElement, { route = '/create' } = {}) {
-  const store = createAppStore();
+export function renderWithApp(
+  ui: React.ReactElement,
+  { route = '/create', preloaded = {} }: { route?: string; preloaded?: Partial<PayStubDetails> } = {},
+) {
+  const store = createAppStore(preloaded);
   return {
     store,
     ...render(

@@ -2,7 +2,7 @@
 // which is the PREVIOUS day everywhere west of Greenwich — enough to shift every printed
 // period by a day and, for Semi-Monthly, to put the start in the wrong half of the month
 // and collapse the period to a single day.
-const parseLocalDate = (value: unknown): Date => {
+export const parseLocalDate = (value: unknown): Date => {
     const raw = String(value ?? '');
     const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw);
     return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(raw);
@@ -179,4 +179,54 @@ export const buildPayPeriods = (startDate: unknown, periodType: string, count: n
     }
 
     return periods;
+};
+
+// Plain-words length of one pay period, for validation messages ("at least one week before today").
+export const periodLengthLabel = (periodType: string): string => {
+    switch (periodType) {
+        case "Weekly": return "one week";
+        case "Bi-Weekly": return "two weeks";
+        case "Semi-Monthly": return "half a month";
+        case "Monthly": return "one month";
+        case "Quarterly": return "three months";
+        case "Semiannually": return "six months";
+        case "Annually": return "one year";
+        default: return "one week";
+    }
+};
+
+// The start of the most recent COMPLETED pay period of the given frequency, as 'YYYY-MM-DD'.
+// This is what the Pay period step pre-fills and snaps back to when the frequency changes:
+// a stub is for a period that has already been worked, so the default start sits one full
+// period in the past. Weekly/Bi-Weekly count back from today; the calendar-aligned frequencies
+// return the period that ended at the end of last month (or on the 15th, for Semi-Monthly),
+// so that `calculateEndDate(defaultPeriodStart(t), t)` is always before `today`.
+export const defaultPeriodStart = (periodType: string, today: Date = new Date()): string => {
+    const y = today.getFullYear();
+    const m = today.getMonth();
+    const d = today.getDate();
+
+    switch (periodType) {
+        case "Bi-Weekly": return formatLocalDate(new Date(y, m, d - 14));
+        case "Semi-Monthly":
+            // First half (1st–15th) has ended once today is the 16th or later; otherwise the
+            // most recent finished half is the 16th–end of last month.
+            return d >= 16 ? formatLocalDate(new Date(y, m, 1)) : formatLocalDate(new Date(y, m - 1, 16));
+        case "Monthly": return formatLocalDate(new Date(y, m - 1, 1));
+        case "Quarterly": return formatLocalDate(new Date(y, m - 3, 1));
+        case "Semiannually": return formatLocalDate(new Date(y, m - 6, 1));
+        case "Annually": return formatLocalDate(new Date(y, m - 12, 1));
+        case "Weekly":
+        default: return formatLocalDate(new Date(y, m, d - 7));
+    }
+};
+
+// True when the pay period that begins on `startDate` has already ended, i.e. its computed end
+// date is strictly before `today`. This is the "start at least one period in the past" rule.
+export const periodHasEnded = (startDate: unknown, periodType: string, today: Date = new Date()): boolean => {
+    const start = toISODate(startDate);
+    if (!start) return false;
+    const end = calculateEndDate(start, periodType);
+    if (!end) return false;
+    return end < formatLocalDate(today);
 };

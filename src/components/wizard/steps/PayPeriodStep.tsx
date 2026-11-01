@@ -5,19 +5,26 @@ import { saveIncomeDetails, saveGeneralInfo } from "../../../redux/actions";
 import { PAYPERIODTYPE, PAYMENTMETHOD, EMPLOYMENTTYPE } from "../../../constants/globals";
 import { IncomeDetails, GeneralInfo, PayStubDetails } from "assets/data/pay-stub-details";
 import { isValidDate, isValidStubCount } from "../../../utils/util";
-import { calculateEndDate, calculatePayDate } from "../../../utils/date-calculator";
+import {
+  calculateEndDate,
+  calculatePayDate,
+  defaultPeriodStart,
+  periodHasEnded,
+  periodLengthLabel,
+  toISODate,
+} from "../../../utils/date-calculator";
 import { WizardStepLayout } from "../WizardStepLayout";
+
+// Read-only, computed fields: muted so they read as results rather than inputs awaiting a value.
+const readOnlySx = {
+  "& .MuiInputBase-root": { bgcolor: "action.hover" },
+  "& .MuiInputBase-input": { color: "text.secondary", cursor: "default" },
+};
 
 interface StepProps {
   onNext: () => void;
   onBack: () => void;
 }
-
-const toDateInput = (d: Date | string | null | undefined): string => {
-  if (!d) return "";
-  const date = d instanceof Date ? d : new Date(d);
-  return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
-};
 
 const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const income = useSelector<PayStubDetails, IncomeDetails>(s => s.incomeDetails);
@@ -25,42 +32,40 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const dispatch = useDispatch();
 
   const [periodType, setPeriodType] = useState(income.periodType || "Weekly");
-  const [periodStartDate, setStart] = useState(toDateInput(income.periodStartDate));
-  const [periodEndDate, setEnd] = useState(toDateInput(income.periodEndDate));
-  const [periodPayDate, setPayDate] = useState(toDateInput(income.periodPayDate));
+  const [periodStartDate, setStart] = useState(toISODate(income.periodStartDate));
+
+  // End and pay date are not editable: they are always derived from start + frequency, so a
+  // saved end/pay date that disagrees with the start is simply recomputed here.
+  const periodEndDate = calculateEndDate(periodStartDate, periodType);
+  const periodPayDate = calculatePayDate(periodEndDate);
 
   const [payStubCount, setPayStubCount] = useState<number>(general.payStubCount || 1);
   const [checkNumber, setCheckNumber] = useState<number>(general.checkNumber || 5000);
-  const [payStubNumber, setPayStubNumber] = useState<number>(general.payStubNumber || 0);
+  const [payStubNumber, setPayStubNumber] = useState<number>(general.payStubNumber || 1);
   const [employmentType, setEmploymentType] = useState(general.employmentType || "");
   const [paymentMethod, setPaymentMethod] = useState(general.paymentMethod || "");
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const touch = (k: string) => setTouched(t => ({ ...t, [k]: true }));
 
-  // Recompute end + pay dates when start or period type changes.
-  const recompute = (start: string, type: string) => {
-    if (start && type) {
-      const end = calculateEndDate(start, type);
-      setEnd(end);
-      if (end) setPayDate(calculatePayDate(end));
-    }
-  };
-
-  const handleStartChange = (value: string) => {
-    setStart(value);
-    recompute(value, periodType);
-  };
+  // A pay stub covers a period that has already been worked, so the start must sit at least one
+  // full period in the past (the computed end date is before today). Changing the frequency snaps
+  // the start back to that frequency's default, even over a hand-typed date: the frequency decides
+  // the period, and the user then adjusts the start if they need a different one.
   const handlePeriodTypeChange = (value: string) => {
     setPeriodType(value);
-    recompute(periodStartDate, value);
+    setStart(defaultPeriodStart(value));
   };
 
-  const isValid =
-    isValidDate(periodStartDate) &&
-    isValidDate(periodEndDate) &&
-    isValidDate(periodPayDate) &&
-    isValidStubCount(String(payStubCount));
+  const startIsDate = isValidDate(periodStartDate);
+  const startTooRecent = startIsDate && !periodHasEnded(periodStartDate, periodType);
+  const startError = !startIsDate
+    ? "Enter a valid date (not in the future)."
+    : startTooRecent
+      ? `Start date must be at least ${periodLengthLabel(periodType)} before today so the pay period has ended.`
+      : "";
+
+  const isValid = !startError && isValidStubCount(String(payStubCount));
 
   const handleNext = () => {
     dispatch(saveIncomeDetails({ periodType, periodStartDate, periodEndDate, periodPayDate }));
@@ -71,7 +76,7 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   return (
     <WizardStepLayout
       title="Pay period"
-      subtitle="The dates and cadence for this pay stub. Tip: the end date should not be in the future."
+      subtitle="Pick the pay frequency and the day the period started. The end date and pay date follow from those, and the period must already have ended."
       onBack={onBack}
       onNext={handleNext}
       nextDisabled={!isValid}
@@ -85,28 +90,28 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
             fullWidth required label="Period start date" type="date" value={periodStartDate}
-            onChange={e => handleStartChange(e.target.value)} onBlur={() => touch("start")}
-            error={touched.start && !isValidDate(periodStartDate)}
-            helperText={touched.start && !isValidDate(periodStartDate) ? "Enter a valid date (not in the future)." : " "}
+            onChange={e => setStart(e.target.value)} onBlur={() => touch("start")}
+            error={touched.start && !!startError}
+            helperText={touched.start && startError ? startError : " "}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
-            fullWidth required label="Period end date" type="date" value={periodEndDate}
-            onChange={e => setEnd(e.target.value)} onBlur={() => touch("end")}
-            error={touched.end && !isValidDate(periodEndDate)}
-            helperText={touched.end && !isValidDate(periodEndDate) ? "Enter a valid date." : "Auto-filled from start + frequency."}
+            fullWidth label="Period end date" type="date" value={periodEndDate}
+            helperText="Calculated from start date and frequency."
             InputLabelProps={{ shrink: true }}
+            InputProps={{ readOnly: true }}
+            sx={readOnlySx}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
-            fullWidth required label="Pay date" type="date" value={periodPayDate}
-            onChange={e => setPayDate(e.target.value)} onBlur={() => touch("pay")}
-            error={touched.pay && !isValidDate(periodPayDate)}
-            helperText={touched.pay && !isValidDate(periodPayDate) ? "Enter a valid date." : "Auto-filled (end + 1 day)."}
+            fullWidth label="Pay date" type="date" value={periodPayDate}
+            helperText="Calculated: end date plus one day."
             InputLabelProps={{ shrink: true }}
+            InputProps={{ readOnly: true }}
+            sx={readOnlySx}
           />
         </Grid>
 
@@ -127,7 +132,7 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
           <TextField fullWidth label="Starting check number" type="number" value={checkNumber} onChange={e => setCheckNumber(parseInt(e.target.value, 10) || 0)} helperText=" " inputProps={{ min: 0, step: 1 }} />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <TextField fullWidth label="Pay stub number" type="number" value={payStubNumber} onChange={e => setPayStubNumber(parseInt(e.target.value, 10) || 0)} helperText=" " inputProps={{ min: 0, step: 1 }} />
+          <TextField fullWidth label="Pay stub number" type="number" value={payStubNumber} onChange={e => setPayStubNumber(parseInt(e.target.value, 10) || 1)} helperText=" " inputProps={{ min: 1, step: 1 }} />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>

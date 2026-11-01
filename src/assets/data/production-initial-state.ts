@@ -1,4 +1,13 @@
 import { AppSettings, CompanyInfo, EmployeeInfo, GeneralInfo, IncomeDetails, PayStubDetails } from "./pay-stub-details";
+import { calculateEndDate, calculatePayDate, defaultPeriodStart, parseLocalDate } from "../../utils/date-calculator";
+
+// A stub is for a period that has already been worked, so the seed starts one full Weekly period
+// in the past: end date yesterday, pay date today. The Pay period step re-derives end + pay date
+// from the start, so these three must stay consistent.
+const seedPeriodType = "Weekly";
+const seedStart = defaultPeriodStart(seedPeriodType);
+const seedEnd = calculateEndDate(seedStart, seedPeriodType);
+const seedPay = calculatePayDate(seedEnd);
 
 const appSettings: AppSettings = {
     templateId: 0,
@@ -52,10 +61,10 @@ const incomeDetails: IncomeDetails = {
     visionDeduction: 0, // Optional vision deduction amount
     otherDeduction: 0, // Optional other deduction amount
     unionDues: 0, // Optional union dues percentage (e.g., 0.01 for 1%)
-    periodStartDate: new Date(),
-    periodEndDate: new Date(),
-    periodPayDate: new Date(),
-    periodType: "Weekly"
+    periodStartDate: parseLocalDate(seedStart),
+    periodEndDate: parseLocalDate(seedEnd),
+    periodPayDate: parseLocalDate(seedPay),
+    periodType: seedPeriodType
 };
 
 const generalInfo: GeneralInfo = {
@@ -63,7 +72,7 @@ const generalInfo: GeneralInfo = {
     paymentMethod: "",
     paymentFrequency: "",
     payStubCount: 0,
-    payStubNumber: 0,
+    payStubNumber: 1,
     extraNotes: "",
     checkNumber: 5001
 };
