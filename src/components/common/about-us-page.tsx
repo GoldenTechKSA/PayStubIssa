@@ -6,7 +6,6 @@ import {
   FRAUD_WARNING,
   SUPPORT_EMAIL,
   SUPPORT_PHONE,
-  SUPPORT_PHONE_HREF,
   TEMPLATE_COUNT,
 } from "constants/business-info";
 import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
@@ -143,8 +142,7 @@ const AboutUsPage: React.FC = () => (
     </Card>
 
     <Alert severity="info">
-      Need help? Our support team is available during business hours by phone at{" "}
-      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a> or by email at{" "}
+      Need help? Our support team is available during business hours by phone at {SUPPORT_PHONE} or by email at{" "}
       <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
     </Alert>
   </Container>

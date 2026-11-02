@@ -9,7 +9,6 @@ import {
   SITE_DOMAIN,
   SUPPORT_EMAIL,
   SUPPORT_PHONE,
-  SUPPORT_PHONE_HREF,
 } from "constants/business-info";
 
 const DRAFT_KEY = "paystubissa.draft.v1";
@@ -40,16 +39,7 @@ const PrivacyPolicy = () => (
       not email it, store it, or keep a copy.
     </p>
 
-    <h4>2. Contact Us</h4>
-    <p>
-      For questions about this policy or about your information:<br />
-      <strong>Email:</strong> <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a><br />
-      <strong>Support:</strong> <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a><br />
-      <strong>Mailing Address:</strong> {MAILING_ADDRESS}<br />
-      <strong>Phone:</strong> <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>
-    </p>
-
-    <h4>3. Your Pay Stub Data Never Reaches Us</h4>
+    <h4>2. Your Pay Stub Data Never Reaches Us</h4>
     <p>
       <strong>Where it lives</strong><br />
       Everything you enter in the pay stub wizard is held in your browser's memory while you work. So that you
@@ -74,7 +64,7 @@ const PrivacyPolicy = () => (
       a shared or public computer, clear the draft and your browser data when you are finished.
     </p>
 
-    <h4>4. What We Actually Collect</h4>
+    <h4>3. What We Actually Collect</h4>
     <table>
       <thead>
         <tr>
@@ -143,7 +133,7 @@ const PrivacyPolicy = () => (
       </tbody>
     </table>
 
-    <h4>5. Payments and PayPal</h4>
+    <h4>4. Payments and PayPal</h4>
     <p>
       Payment is by PayPal only. When you pay, PayPal's own software handles the transaction. Your card number,
       bank details, and PayPal credentials go to PayPal — never to us. We do not see them, receive them, or
@@ -165,11 +155,11 @@ const PrivacyPolicy = () => (
       notices.
     </p>
 
-    <h4>6. Contacting Support</h4>
+    <h4>5. Contacting Support</h4>
     <p>
       If you email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> or{" "}
-      <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>, or call us on{" "}
-      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>, we receive whatever you choose to tell us — typically
+      <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>, or call us on {SUPPORT_PHONE}, we receive
+      whatever you choose to tell us — typically
       your name, your email address, and a description of your problem. We use it only to answer you. We keep
       support correspondence only as long as we need it to resolve the issue and to keep a basic record of the
       request.
@@ -184,7 +174,7 @@ const PrivacyPolicy = () => (
       anything itself, so the reliable way to reach us is email or phone.
     </p>
 
-    <h4>7. Cookies, Analytics, Local Storage, and Third-Party Resources</h4>
+    <h4>6. Cookies, Analytics, Local Storage, and Third-Party Resources</h4>
     <p>
       <strong>Local storage</strong><br />
       The Service uses your browser's local storage to hold your pay stub draft on your device. That draft is
@@ -231,7 +221,7 @@ const PrivacyPolicy = () => (
       track you across sites in any case.
     </p>
 
-    <h4>8. Hosting and Server Logs</h4>
+    <h4>7. Hosting and Server Logs</h4>
     <p>
       The website, and the server that handles payments and analytics, run on a virtual server in the United
       States that is operated for us by our hosting provider. Like any web server, it writes ordinary access
@@ -240,14 +230,14 @@ const PrivacyPolicy = () => (
       your pay stub data is never sent to the server.
     </p>
 
-    <h4>9. Third-Party Links</h4>
+    <h4>8. Third-Party Links</h4>
     <p>
       The Service may link to external sites, such as state tax resources or government portals. Those sites
       have their own privacy policies and we are not responsible for their practices. Review their policies
       before giving them information.
     </p>
 
-    <h4>10. Your Privacy Rights</h4>
+    <h4>9. Your Privacy Rights</h4>
     <ul>
       <li>
         <strong>Deletion — you can do it yourself, right now.</strong> Your pay stub data is on your device, not
@@ -278,7 +268,7 @@ const PrivacyPolicy = () => (
       within 30 days and may need to verify your identity first.
     </p>
 
-    <h4>11. California Residents (CCPA/CPRA)</h4>
+    <h4>10. California Residents (CCPA/CPRA)</h4>
     <p>
       If you are a California resident, you have the right to know what personal information we collect about
       you, to request access to it, to request that we delete it, to request correction of it, and not to be
@@ -301,7 +291,7 @@ const PrivacyPolicy = () => (
       have not listed, write to us and we will honor it.
     </p>
 
-    <h4>12. Children's Privacy (COPPA)</h4>
+    <h4>11. Children's Privacy (COPPA)</h4>
     <p>
       The Service is not intended for children. It is for adults 18 and over. We do not knowingly collect
       personal information from anyone under 13. If we learn that we have received information from a child
@@ -312,7 +302,7 @@ const PrivacyPolicy = () => (
       <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.
     </p>
 
-    <h4>13. Data Breach Response</h4>
+    <h4>12. Data Breach Response</h4>
     <p>
       Because your pay stub data is never transmitted to us, a compromise of our systems could not expose it.
       That is by design, and it is the strongest protection we can give you.
@@ -324,7 +314,7 @@ const PrivacyPolicy = () => (
       authorities where the law requires, and tell you plainly what happened and what we are doing about it.
     </p>
 
-    <h4>14. Data Retention</h4>
+    <h4>13. Data Retention</h4>
     <p>
       Order records are kept for three years from the date of the order and are then deleted automatically.
       Usage analytics events are deleted after 90 days. We keep support
@@ -333,14 +323,14 @@ const PrivacyPolicy = () => (
       no retention period on our side, because it never arrives.
     </p>
 
-    <h4>15. Business Transfers</h4>
+    <h4>14. Business Transfers</h4>
     <p>
       If our business is merged, acquired, or sold, information we hold — which is order records, correspondence
       and logs, not your pay stub data — may transfer as part of that transaction. We will post notice on this
       page if that happens.
     </p>
 
-    <h4>16. Changes to This Policy</h4>
+    <h4>15. Changes to This Policy</h4>
     <p>
       We may update this policy. When we do, we will change the "Last Updated" date above and post the new
       version here. Material changes will be flagged on the site. We do not hold a mailing list, so we cannot
@@ -358,6 +348,15 @@ const PrivacyPolicy = () => (
         {SITE_DOMAIN}/privacy
       </a>
       .
+    </p>
+
+    <h4>Contact Us</h4>
+    <p>
+      For questions about this policy or about your information:<br />
+      Email: <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a><br />
+      Support: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a><br />
+      Mailing address: {MAILING_ADDRESS}<br />
+      Phone: {SUPPORT_PHONE}
     </p>
   </LegalPageShell>
 );

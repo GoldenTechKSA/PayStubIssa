@@ -8,7 +8,6 @@ import {
   SITE_DOMAIN,
   SUPPORT_EMAIL,
   SUPPORT_PHONE,
-  SUPPORT_PHONE_HREF,
 } from "constants/business-info";
 
 const AccessibilityPolicy = () => (
@@ -32,15 +31,7 @@ const AccessibilityPolicy = () => (
       finished project. If something on this site blocks you, tell us. We will fix it.
     </p>
 
-    <h4>2. Contact Us About Accessibility</h4>
-    <p>
-      <strong>Email:</strong> <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a><br />
-      <strong>Phone:</strong> <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a><br />
-      <strong>Mailing Address:</strong> {MAILING_ADDRESS}<br />
-      <strong>General support:</strong> <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
-    </p>
-
-    <h4>3. Standards We Aim For</h4>
+    <h4>2. Standards We Aim For</h4>
     <p>
       <strong>WCAG 2.1 Level AA</strong><br />
       We <strong>aim</strong> to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 at Level AA
@@ -59,7 +50,7 @@ const AccessibilityPolicy = () => (
       compatibility with assistive technology.
     </p>
 
-    <h4>4. What We Have Built For</h4>
+    <h4>3. What We Have Built For</h4>
     <p>
       <strong>Keyboard navigation</strong><br />
       The site is designed to be operable with a keyboard alone. We use logical tab order, visible focus
@@ -90,7 +81,7 @@ const AccessibilityPolicy = () => (
       desktop.
     </p>
 
-    <h4>5. Known Limitation: The Downloaded PDF</h4>
+    <h4>4. Known Limitation: The Downloaded PDF</h4>
     <p>
       We want to be straightforward about this one. The pay stub you see on screen is accessible HTML text. The
       PDF you download is generated as a visual snapshot of that pay stub, which means{" "}
@@ -105,13 +96,12 @@ const AccessibilityPolicy = () => (
       the accessibility of the generated PDF is on our roadmap.
     </p>
 
-    <h4>6. Reporting an Accessibility Barrier</h4>
+    <h4>5. Reporting an Accessibility Barrier</h4>
     <p>
       <strong>How to report</strong><br />
       If anything on {SITE_DOMAIN} is difficult or impossible for you to use, email{" "}
-      <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a> or call{" "}
-      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>. It helps if you can tell us the page or step, the
-      assistive technology and browser you were using, and what happened.
+      <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a> or call {SUPPORT_PHONE}. It helps if
+      you can tell us the page or step, the assistive technology and browser you were using, and what happened.
     </p>
     <p>
       <strong>What we will do</strong><br />
@@ -126,11 +116,11 @@ const AccessibilityPolicy = () => (
       you without the service.
     </p>
 
-    <h4>7. Alternative Ways to Get Help</h4>
+    <h4>6. Alternative Ways to Get Help</h4>
     <p>
       <strong>Phone</strong><br />
-      You can call us at <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a> during business hours. If you cannot
-      complete something on the site, we will talk you through it.
+      You can call us at {SUPPORT_PHONE} during business hours. If you cannot complete something on the site, we
+      will talk you through it.
     </p>
     <p>
       <strong>Email</strong><br />
@@ -143,7 +133,7 @@ const AccessibilityPolicy = () => (
       alternative accessible format such as large print or plain electronic text.
     </p>
 
-    <h4>8. Third-Party Components</h4>
+    <h4>7. Third-Party Components</h4>
     <p>
       <strong>Payment</strong><br />
       Checkout uses PayPal's own payment buttons, which are provided and controlled by PayPal. Their
@@ -157,7 +147,7 @@ const AccessibilityPolicy = () => (
       source.
     </p>
 
-    <h4>9. How We Test</h4>
+    <h4>8. How We Test</h4>
     <p>
       We check accessibility during development using automated tooling and manual keyboard and screen-reader
       testing. We have not yet commissioned an independent audit or formal user testing with people who use
@@ -165,7 +155,7 @@ const AccessibilityPolicy = () => (
       reports are, today, our most valuable source of information — which is why we take them seriously.
     </p>
 
-    <h4>10. Updates to This Policy</h4>
+    <h4>9. Updates to This Policy</h4>
     <p>
       We review this policy as our accessibility work progresses and update it to reflect what is actually true
       at the time. Changes are posted on this page with a new "Last Updated" date.
@@ -184,6 +174,14 @@ const AccessibilityPolicy = () => (
         {SITE_DOMAIN}/accessibility
       </a>
       .
+    </p>
+
+    <h4>Contact Us About Accessibility</h4>
+    <p>
+      Email: <a href={`mailto:${ACCESSIBILITY_EMAIL}`}>{ACCESSIBILITY_EMAIL}</a><br />
+      General support: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a><br />
+      Mailing address: {MAILING_ADDRESS}<br />
+      Phone: {SUPPORT_PHONE}
     </p>
   </LegalPageShell>
 );
