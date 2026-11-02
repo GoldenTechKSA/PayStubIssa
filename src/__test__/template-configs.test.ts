@@ -10,6 +10,7 @@ import { describe, it, expect, beforeAll } from '@jest/globals';
 import * as fs from 'fs';
 import * as path from 'path';
 import { loadPaystubConfig, validateConfig } from '../templates/components/paystub/xmlParser';
+import { TEMPLATE_COUNT } from '../constants/business-info';
 
 const PUBLIC_DIR = path.resolve(__dirname, '../../public');
 const templates: { configFile: string; title: string }[] = JSON.parse(
@@ -31,6 +32,12 @@ beforeAll(() => {
 describe('template XML configs', () => {
   it('lists templates', () => {
     expect(templates.length).toBeGreaterThan(0);
+  });
+
+  // TEMPLATE_COUNT is quoted on the home, About and FAQ pages as "N templates". A marketing
+  // claim has to stay true, so the constant must equal the gallery.
+  it('advertises exactly as many templates as the gallery lists', () => {
+    expect(TEMPLATE_COUNT).toBe(templates.length);
   });
 
   it.each(templates.map(t => [t.configFile, t.title]))('%s loads and validates', async (configFile) => {

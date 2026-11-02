@@ -1100,6 +1100,17 @@ AMOUNT</value>
               <value>{companyInfo.companyName} - {companyInfo.companyAddress1}, {companyCityStateZip}</value>
             </cell>
           </rowcells>
+          <rowcells>
+            <cell id="sm-footer-disclaimer" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <padding>4px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
         </cells>
       </table>
     </column>

@@ -76,9 +76,12 @@ a fixed-amount kind and a coupons table can slot into the same registry later.
 
 ## Data
 
-`DATABASE_PATH` (default `server/data/orders.sqlite`, gitignored). One table, `orders`,
-holding the quote, PayPal order/capture ids, captured amount, raw capture JSON and the
-client's attestation timestamp. Back this file up with the VPS; it is the sales ledger.
+`DATABASE_PATH` (default `server/data/orders.sqlite`, gitignored). The `orders` table
+holds the quote, PayPal order/capture ids, captured amount, raw capture JSON (which carries
+the payer's name and email) and the client's checkout record: attestation timestamp, the
+Terms version agreed to, IP address and user agent. Back this file up with the VPS; it is the
+sales ledger. Rows older than `ORDER_RETENTION_DAYS` (default `1095`, three years) are
+deleted at boot and daily; the Privacy Policy states the same period, so change both together.
 
 A second table, `telemetry_events`, and the `telemetry_sessions` view hold the usage
 telemetry described next.

@@ -638,4 +638,33 @@
       </table>
     </column>
   </section>
+  <!-- Section es-footer-section: source and disclaimer line -->
+  <section id="es-footer-section">
+    <style>
+      <marginTop>12px</marginTop>
+      <paddingTop>6px</paddingTop>
+      <borderTop>1px solid #000000</borderTop>
+    </style>
+    <column id="es-footer-col" width="100%">
+      <table id="es-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="es-footer-text" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
 </paystub>

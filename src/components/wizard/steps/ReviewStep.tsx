@@ -15,7 +15,7 @@ import { buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
 import { UNIT_PRICE, orderTotal, normalizeStubCount } from "constants/pricing";
 import { paymentsApi, unlockStorage, centsToDollars, PaymentsApiError, type CapturedOrder, type Quote } from "services/payments-api";
-import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING } from "constants/business-info";
+import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING, POLICIES_VERSION } from "constants/business-info";
 import { telemetry } from "../../../services/telemetry-service";
 import { T } from "../../../telemetry/codes";
 import TemplateManager from "../../../templates/components/templatemanager";
@@ -69,9 +69,10 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
 
   const [extraNotes, setExtraNotes] = useState(generalInfo.extraNotes || "");
 
-  // The customer must affirm the figures are real before we will take their money. This is the
-  // condition of the licence to use the document — see the Accuracy Attestation section of the
-  // Terms. `attestedAt` is recorded with the payment so the affirmation is timestamped.
+  // The customer must agree to the Terms and affirm the figures are real before we will take
+  // their money. One box does both (clickwrap): its label links to the Terms and the Privacy
+  // Policy and carries the Accuracy Attestation quoted in the Terms. `attestedAt` and the
+  // policies version are recorded with the order, so each purchase shows what was agreed, and when.
   const [attested, setAttested] = useState(false);
   const [attestedAt, setAttestedAt] = useState<string | null>(null);
 
@@ -382,10 +383,17 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                             checked={attested}
                             onChange={e => handleAttestChange(e.target.checked)}
                             sx={{ alignSelf: "flex-start", pt: 0 }}
-                            inputProps={{ "aria-label": "Confirm the information entered is true and accurate" }}
+                            inputProps={{ "aria-label": "Agree to the Terms of Use and Privacy Policy and confirm the information entered is true and accurate" }}
                           />
                         }
-                        label={<Typography variant="body2">{ATTESTATION_TEXT}</Typography>}
+                        label={
+                          <Typography variant="body2">
+                            I have read and agree to the{" "}
+                            <Link href="/terms" target="_blank" rel="noopener noreferrer">Terms of Use</Link> and{" "}
+                            <Link href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>, and{" "}
+                            {ATTESTATION_TEXT}
+                          </Typography>
+                        }
                         sx={{ alignItems: "flex-start", m: 0 }}
                       />
                       <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
@@ -401,7 +409,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                         </Typography>
                         <PayPal
                           cart={cart}
-                          meta={{ attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId }}
+                          meta={{ attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId, termsVersion: POLICIES_VERSION }}
                           onPaymentSuccess={handlePaymentSuccess}
                           onPaymentError={handlePaymentError}
                         />

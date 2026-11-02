@@ -26,6 +26,8 @@ export interface Cart {
 export interface OrderMeta {
   attestedAt?: string;
   templateId?: number | string;
+  /** Version of the Terms / Privacy Policy the customer agreed to at checkout (POLICIES_VERSION). */
+  termsVersion?: string;
 }
 
 export interface QuoteLine {

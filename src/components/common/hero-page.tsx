@@ -8,13 +8,15 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CheckIcon from "@mui/icons-material/Check";
 import HeroImage from "../../assets/images/heroimage.png";
 import { UNIT_PRICE, MIN_STUBS, MAX_STUBS } from "constants/pricing";
-import { CORE_DISCLAIMER } from "constants/business-info";
+import { CORE_DISCLAIMER, TEMPLATE_COUNT } from "constants/business-info";
 
 // Every claim here has to be one the product can actually back. "Private by design" is the
-// literal truth (there is no server) and is a stronger promise than the encryption boast it
-// replaced; "Real tax math" is what the tax engine actually does.
+// literal truth (the server handles payment and anonymous analytics; pay stub data never leaves
+// the browser) and is a stronger promise than the encryption boast it replaced; "Real tax math"
+// is what the tax engine actually does. Template counts come from TEMPLATE_COUNT, which a test
+// pins to template-configs.json, so the number on this page cannot drift from the gallery.
 const TRUST = [
-  { icon: <LockIcon color="primary" />, label: "Private by design — your data never leaves your browser" },
+  { icon: <LockIcon color="primary" />, label: "Private by design — your pay stub data never leaves your browser" },
   { icon: <CalculateIcon color="primary" />, label: "Real federal, state & FICA tax math" },
   { icon: <BoltIcon color="primary" />, label: "Instant PDF & print" },
 ];
@@ -22,11 +24,11 @@ const TRUST = [
 const STEPS = [
   {
     title: "1. Enter your details",
-    details: "Add your company, employee, pay period, and salary or hourly details. Our guided form checks each field for accuracy.",
+    details: "Add your company, employee, pay period, and salary or hourly details. Our guided form checks that each field is complete and correctly formatted.",
   },
   {
     title: "2. Pick a template & preview",
-    details: "Choose from 29 layouts built for different kinds of work, and see your pay stub populated live with your real data before you pay.",
+    details: `Choose from ${TEMPLATE_COUNT} layouts, from a standard employee pay stub to an independent contractor statement, and see your pay stub populated live with your real data before you pay.`,
   },
   {
     title: "3. Download & print",
@@ -36,7 +38,7 @@ const STEPS = [
 
 const INCLUDED = [
   "Federal, state, Social Security and Medicare calculated for you",
-  "29 templates — hourly, salaried, contractor, commission, tips, per diem and more",
+  `${TEMPLATE_COUNT} templates — standard employee, classic earnings statements, payroll register, independent contractor and temporary assignment`,
   "Your company logo on the stub",
   "Live preview before you pay",
   "Print-ready US Letter PDF, one page per stub",

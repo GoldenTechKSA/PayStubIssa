@@ -38,6 +38,10 @@ const schema = z.object({
       }
     }),
 
+  // How long an order row (quote, PayPal confirmation, attestation, IP) is kept. Three years by
+  // default, which is what the Privacy Policy promises: change the two together.
+  ORDER_RETENTION_DAYS: z.coerce.number().int().positive().default(1095),
+
   DATABASE_PATH: z.string().min(1).default('./data/orders.sqlite'),
 
   // z.coerce.boolean() would turn the string 'false' into true; parse the usual spellings

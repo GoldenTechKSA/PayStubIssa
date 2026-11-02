@@ -20,20 +20,24 @@ const PrivacyPolicy = () => (
     <p><strong>Last Updated:</strong> {POLICIES_LAST_UPDATED}</p>
     <p>
       This Privacy Policy explains what {LEGAL_ENTITY_NAME} ("we," "us," or "our") does with information when
-      you use {SITE_DOMAIN} (the "Service"). It is short, because the honest answer is that we collect almost
-      nothing.
+      you use {SITE_DOMAIN} (the "Service"). It is short, because the honest answer is that we collect very
+      little.
     </p>
 
     <h4>1. The Short Version</h4>
     <p>
-      <strong>{BRAND_NAME} runs entirely in your browser.</strong> There is no account, no login, and no
-      server that receives your pay stub data. The company name, employee name, Social Security number,
-      Employer Identification number, wages, hours, and deductions you type in never leave your device. We
-      never see them. We could not produce them if we wanted to, because we do not have them.
+      <strong>The {BRAND_NAME} pay stub builder runs entirely in your browser.</strong> There is no account, no
+      login, and no server that receives your pay stub data. The company name, employee name, Social Security
+      number, Employer Identification number, bank routing and account numbers, wages, hours, and deductions
+      you type in never leave your device. We never see them. We could not produce them if we wanted to,
+      because we do not have them.
     </p>
     <p>
-      Payment is handled by PayPal, not by us. We never receive your card number. Your finished pay stub is a
-      PDF download or a browser print — we do not email it, store it, or keep a copy.
+      What we do receive is the record of your order and payment, and anonymous statistics about how the site
+      is used. Payment is handled by PayPal, not by us, and we never receive your card number. PayPal does tell
+      us when a payment completes, together with the name and email address on your PayPal account, and we keep
+      that as the record of your purchase. Your finished pay stub is a PDF download or a browser print — we do
+      not email it, store it, or keep a copy.
     </p>
 
     <h4>2. Contact Us</h4>
@@ -82,16 +86,31 @@ const PrivacyPolicy = () => (
       <tbody>
         <tr>
           <td>Pay stub data</td>
-          <td>Company, employee, SSN, EIN, wages, hours, deductions, the generated document</td>
+          <td>
+            Company, employee, SSN, EIN, bank routing and account numbers, wages, hours, deductions, the
+            generated document
+          </td>
           <td>
             <strong>No.</strong> Entered and kept in your browser only. Never transmitted to us.
           </td>
         </tr>
         <tr>
-          <td>Payment data</td>
-          <td>Card number, PayPal login, billing address</td>
+          <td>Payment details</td>
+          <td>Card number, bank details, PayPal login, billing address</td>
           <td>
-            <strong>No.</strong> Handled entirely by PayPal. We only learn that a payment succeeded.
+            <strong>No.</strong> Handled entirely by PayPal. We never see them.
+          </td>
+        </tr>
+        <tr>
+          <td>Order records</td>
+          <td>
+            The number of stubs ordered, the amount, any discount code you entered, the template you chose, the
+            time you ticked the checkout confirmation and the version of the Terms you agreed to, your IP
+            address and browser type, and PayPal's confirmation of the payment, which carries the PayPal order
+            id and the name and email address on your PayPal account
+          </td>
+          <td>
+            <strong>Yes</strong> — on our server, for three years (see Data Retention).
           </td>
         </tr>
         <tr>
@@ -105,15 +124,17 @@ const PrivacyPolicy = () => (
           <td>Technical data</td>
           <td>IP address, browser and device type, requested pages, timestamps</td>
           <td>
-            <strong>Yes</strong> — in ordinary web server logs kept by our hosting provider.
+            <strong>Yes</strong> — in ordinary web server access logs on our server.
           </td>
         </tr>
         <tr>
           <td>Usage analytics</td>
           <td>
             A random identifier stored in your browser, the pages you visit, which steps of the pay stub wizard
-            you complete (never what you type), whether a payment succeeded or failed and its PayPal order id,
-            your browser type, and timestamps
+            you complete (never what you type), the template you pick, whether you ticked the checkout
+            confirmation, whether a discount code was accepted (never the code itself), whether a payment
+            succeeded or failed with its PayPal order id, the number of stubs and amount paid, your browser type,
+            and timestamps
           </td>
           <td>
             <strong>Yes</strong> — on our server, for up to 90 days.
@@ -137,8 +158,11 @@ const PrivacyPolicy = () => (
       .
     </p>
     <p>
-      The Service is told only whether a payment succeeded, so that it can unlock the download and print
-      buttons in your browser.
+      When your payment completes, PayPal sends our server a confirmation. It contains the PayPal order id, the
+      amount, and the name and email address on your PayPal account. We use it to unlock the download and print
+      buttons in your browser, to keep a record of what was sold, to handle refunds and billing disputes, and as
+      evidence that the checkout confirmation was made. We do not use the email address for marketing or
+      notices.
     </p>
 
     <h4>6. Contacting Support</h4>
@@ -156,29 +180,39 @@ const PrivacyPolicy = () => (
       have them.
     </p>
     <p>
-      The contact form on our site is not currently connected to a message-delivery service, so the reliable
-      way to reach us is email or phone.
+      The contact form on our site opens a pre-written message in your own email app rather than sending
+      anything itself, so the reliable way to reach us is email or phone.
     </p>
 
-    <h4>7. Cookies, Analytics, and Local Storage</h4>
+    <h4>7. Cookies, Analytics, Local Storage, and Third-Party Resources</h4>
     <p>
       <strong>Local storage</strong><br />
       The Service uses your browser's local storage to hold your pay stub draft on your device. That draft is
-      functional storage that makes the app work; it is not tracking, and it is never sent to us. The only
-      other thing we keep in your browser is a random analytics identifier (see below), which is sent to us.
+      functional storage that makes the app work; it is not tracking, and it is never sent to us. We also keep a
+      random analytics identifier in your browser (see below), which is sent to us, and, after you pay, a
+      short-lived unlock token in session storage so that reloading the page does not lose your purchase.
     </p>
     <p>
       <strong>Analytics</strong><br />
       The Service records anonymous usage events so we can see where people get stuck: page views, which
-      wizard steps were completed, template selection, whether a payment succeeded, failed or was cancelled
-      (with its PayPal order id), print and PDF actions, JavaScript errors, and page load time. Each event
-      carries a random identifier stored in your browser so that repeat visits can be grouped; it is not
-      linked to your name or email. Events are kept on our server for up to 90 days and then deleted.
+      wizard steps were completed, template selection, whether the checkout confirmation was ticked, whether a
+      discount code was accepted or rejected (never the code itself), whether a payment succeeded, failed or was
+      cancelled (with its PayPal order id, the number of stubs and the amount), print and PDF actions,
+      JavaScript errors, and page load time. Each event carries a random identifier stored in your browser so
+      that repeat visits can be grouped; it is not linked to your name or email. Events are kept on our server
+      for up to 90 days and then deleted.
     </p>
     <p>
       <strong>What analytics never contains:</strong> we do not send pay stub contents, Social Security
-      numbers, Employer Identification numbers, employer or employee names, wage figures, or any part of a
-      generated document in analytics or error reports. That data stays in your browser, full stop.
+      numbers, Employer Identification numbers, bank account numbers, employer or employee names, wage figures,
+      or any part of a generated document in analytics or error reports. Our server also checks every incoming
+      event and discards anything that looks like such a value. That data stays in your browser, full stop.
+    </p>
+    <p>
+      <strong>Third-party resources</strong><br />
+      The site's fonts and code are served from our own server. The only third-party code we load is PayPal's
+      checkout, when you reach the payment step; like any web request, that shows PayPal your IP address and
+      browser type. We load no advertising or tracking code from anyone.
     </p>
     <p>
       <strong>Advertising</strong><br />
@@ -199,9 +233,10 @@ const PrivacyPolicy = () => (
 
     <h4>8. Hosting and Server Logs</h4>
     <p>
-      The website files are served from a web server in the United States. Like any web server, it writes
-      ordinary access logs — IP address, time, requested page, browser type — which are used to keep the site
-      running and secure. These logs relate to page requests. They do not contain your pay stub data, because
+      The website, and the server that handles payments and analytics, run on a virtual server in the United
+      States that is operated for us by our hosting provider. Like any web server, it writes ordinary access
+      logs — IP address, time, requested page, browser type — which are used to keep the site running and
+      secure. These logs relate to page and payment requests. They do not contain your pay stub data, because
       your pay stub data is never sent to the server.
     </p>
 
@@ -221,16 +256,17 @@ const PrivacyPolicy = () => (
       </li>
       <li>
         <strong>Access and portability.</strong> You may ask us what information we hold about you. In practice
-        that is limited to any correspondence you have sent us and, for a short period, server logs. We will
-        provide it in a common, readable format.
+        that is limited to any correspondence you have sent us, the record of any order you placed, and, for a
+        short period, server logs. We will provide it in a common, readable format.
       </li>
       <li>
         <strong>Correction.</strong> You may ask us to correct anything inaccurate in the information we hold
         about you. Pay stub data you can correct yourself, in the app, at any time.
       </li>
       <li>
-        <strong>Deletion of correspondence.</strong> You may ask us to delete the support correspondence we hold
-        about you, subject to any record we are legally required to keep.
+        <strong>Deletion of correspondence and order records.</strong> You may ask us to delete the support
+        correspondence we hold about you, and the personal details in your order record, subject to any record
+        we are legally required to keep.
       </li>
       <li>
         <strong>No sale, no marketing lists.</strong> We do not sell personal information and we do not send
@@ -251,10 +287,10 @@ const PrivacyPolicy = () => (
     <p>
       Applied to us, this is straightforward: we do not collect your pay stub data at all, we do not sell or
       share personal information, and we do not use personal information for cross-context behavioral
-      advertising. The only personal information we may hold about you is correspondence you have sent us and
-      routine server logs. Submit a request to{" "}
-      <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>. More about California privacy rights is available
-      from the California Attorney General at{" "}
+      advertising. The personal information we may hold about you is correspondence you have sent us, the record
+      of an order you placed (including the name and email address PayPal gave us), and routine server logs.
+      Submit a request to <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>. More about California privacy
+      rights is available from the California Attorney General at{" "}
       <a href="https://oag.ca.gov/privacy/ccpa" target="_blank" rel="noopener noreferrer">
         oag.ca.gov/privacy/ccpa
       </a>
@@ -282,24 +318,26 @@ const PrivacyPolicy = () => (
       That is by design, and it is the strongest protection we can give you.
     </p>
     <p>
-      Should a security incident nonetheless affect information we do hold — support correspondence or server
-      logs — we will contain it, assess what was affected, notify affected people without undue delay and in any
-      event within 72 hours of confirming the breach, report it to the relevant authorities where the law
-      requires, and tell you plainly what happened and what we are doing about it.
+      Should a security incident nonetheless affect information we do hold — order records, support
+      correspondence or server logs — we will contain it, assess what was affected, notify affected people
+      without unreasonable delay and within the time required by applicable law, report it to the relevant
+      authorities where the law requires, and tell you plainly what happened and what we are doing about it.
     </p>
 
     <h4>14. Data Retention</h4>
     <p>
-      We keep support correspondence only as long as needed to resolve your issue and keep a basic record of it.
-      Server logs are kept for a short period for security and troubleshooting, then discarded. Your pay stub
-      data has no retention period on our side, because it never arrives.
+      Order records are kept for three years from the date of the order and are then deleted automatically.
+      Usage analytics events are deleted after 90 days. We keep support
+      correspondence only as long as needed to resolve your issue and keep a basic record of it. Server access
+      logs are kept for a short period for security and troubleshooting, then discarded. Your pay stub data has
+      no retention period on our side, because it never arrives.
     </p>
 
     <h4>15. Business Transfers</h4>
     <p>
-      If our business is merged, acquired, or sold, information we hold — which is correspondence and logs, not
-      your pay stub data — may transfer as part of that transaction. We will post notice on this page if that
-      happens.
+      If our business is merged, acquired, or sold, information we hold — which is order records, correspondence
+      and logs, not your pay stub data — may transfer as part of that transaction. We will post notice on this
+      page if that happens.
     </p>
 
     <h4>16. Changes to This Policy</h4>
