@@ -20,7 +20,7 @@ async function expectHttp(p: Promise<unknown>, status: number, code: string) {
 describe('OrderService', () => {
   it('creates an order with a server-side quote and records it', async () => {
     const { service, paypal } = makeService();
-    const created = await service.createOrder(cart, { attestedAt: '2026-10-10T10:00:00Z', templateId: 0 });
+    const created = await service.createOrder(cart, { attestedAt: '2026-10-10T10:00:00Z', templateId: 0, termsVersion: '2026-11-01' });
 
     expect(created.orderId).toBe('ORDER1');
     expect(created.quote.totalCents).toBe(2697);
@@ -31,7 +31,26 @@ describe('OrderService', () => {
     const row = service.getRow('ORDER1')!;
     expect(row.status).toBe('CREATED');
     expect(row.total_cents).toBe(2697);
-    expect(JSON.parse(row.client_meta_json!)).toMatchObject({ attestedAt: '2026-10-10T10:00:00Z', templateId: 0 });
+    expect(JSON.parse(row.client_meta_json!)).toMatchObject({ attestedAt: '2026-10-10T10:00:00Z', templateId: 0, termsVersion: '2026-11-01' });
+  });
+
+  // The Privacy Policy promises order records are deleted after three years; prune() is that promise.
+  it('prunes orders older than the retention period and keeps the rest', async () => {
+    let clock = new Date('2023-01-15T10:00:00Z');
+    const { service } = makeService({ now: () => clock, retentionDays: 1095 });
+    const old = await service.createOrder(cart, { attestedAt: '2023-01-15T10:00:00Z' });
+    clock = new Date('2026-06-01T10:00:00Z');
+    const recent = await service.createOrder(cart, { attestedAt: '2026-06-01T10:00:00Z' });
+
+    expect(service.prune()).toBe(1);
+    expect(service.getRow(old.orderId)).toBeUndefined();
+    expect(service.getRow(recent.orderId)).toBeDefined();
+  });
+
+  it('does not prune when no retention period is configured', async () => {
+    const { service } = makeService({ now: () => new Date('2020-01-01T00:00:00Z') });
+    await service.createOrder(cart);
+    expect(service.prune()).toBe(0);
   });
 
   it('turns pricing failures into 400s and PayPal failures into 502s', async () => {

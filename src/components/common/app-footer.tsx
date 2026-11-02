@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Box, Container, Stack, Link, Typography, Divider } from "@mui/material";
 import PayPalImg from "../../assets/images/paypal.png";
 import {
-  BRAND_NAME, CORE_DISCLAIMER, FRAUD_WARNING, SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_HREF,
+  CORE_DISCLAIMER, FRAUD_WARNING, LEGAL_ENTITY_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_HREF,
 } from "constants/business-info";
 
 const AppFooter = () => {
@@ -21,7 +21,7 @@ const AppFooter = () => {
           justifyContent="space-between"
         >
           <Typography variant="body2" color="text.secondary">
-            © {BRAND_NAME} 2020–{new Date().getFullYear()}. All rights reserved.
+            © 2020–{new Date().getFullYear()} {LEGAL_ENTITY_NAME}. All rights reserved.
           </Typography>
 
           <Stack direction="row" spacing={3} component="nav" flexWrap="wrap" useFlexGap justifyContent="center">

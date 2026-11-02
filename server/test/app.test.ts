@@ -55,7 +55,7 @@ describe('HTTP API', () => {
 
     const created = await request(app)
       .post('/api/payments/orders')
-      .send({ items: [{ type: 'paystub', qty: 1 }], meta: { attestedAt: '2026-10-10T10:00:00Z', templateId: 0 } });
+      .send({ items: [{ type: 'paystub', qty: 1 }], meta: { attestedAt: '2026-10-10T10:00:00Z', templateId: 0, termsVersion: '2026-11-01' } });
     expect(created.status).toBe(201);
     expect(created.body.orderId).toBe('ORDER1');
     expect(created.body.quote.totalCents).toBe(899);

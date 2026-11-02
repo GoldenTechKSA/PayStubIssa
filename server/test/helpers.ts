@@ -35,6 +35,7 @@ export const testConfig: Config = {
   databasePath: ':memory:',
   TELEMETRY_ENABLED: true,
   TELEMETRY_RETENTION_DAYS: 90,
+  ORDER_RETENTION_DAYS: 1095,
   TELEMETRY_MAX_ROWS: 2_000_000,
 };
 
@@ -85,7 +86,7 @@ export class FakePayPal implements PayPalClient {
   }
 }
 
-export function makeService(overrides: Partial<{ paypal: PayPalClient; now: () => Date }> = {}) {
+export function makeService(overrides: Partial<{ paypal: PayPalClient; now: () => Date; retentionDays: number }> = {}) {
   const db = openDatabase(':memory:');
   const paypal = overrides.paypal ?? new FakePayPal();
   const service = new OrderService({
@@ -94,6 +95,7 @@ export function makeService(overrides: Partial<{ paypal: PayPalClient; now: () =
     pricing: rules,
     jwtSecret: JWT_SECRET,
     tokenTtlMinutes: 60,
+    retentionDays: overrides.retentionDays,
     now: overrides.now,
   });
   return { db, paypal: paypal as FakePayPal, service };

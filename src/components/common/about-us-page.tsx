@@ -46,7 +46,7 @@ const STEPS = [
   {
     title: "Step 2: Choose a template and preview",
     items: [
-      `Choose from ${TEMPLATE_COUNT} templates built for specific worker types — independent contractor, commission-only, hospitality and tips, construction, travel nurse, day rate, per diem, seasonal, and more`,
+      `Choose from ${TEMPLATE_COUNT} templates — standard employee pay stubs, classic earnings statements, a payroll-register layout, an independent contractor statement and a temporary assignment stub`,
       "See a live preview of your pay stub as you go, before you pay",
       "Go back and change anything — edits are free and unlimited",
     ],
@@ -62,9 +62,9 @@ const STEPS = [
 ];
 
 const WHY_US = [
-  "Private by design — your data never leaves your browser. We have no server storing it, because we never receive it.",
+  "Private by design — your pay stub data never leaves your browser. Our server handles payment and anonymous usage statistics only; it never receives it.",
   "Real tax math — federal income tax, Social Security, Medicare, and state income tax are calculated automatically from the employee's state and IRS filing status.",
-  `Built for how people actually get paid — ${TEMPLATE_COUNT} templates covering contractors, tipped workers, commission earners, day-rate and per-diem workers, and more.`,
+  `A choice of ${TEMPLATE_COUNT} layouts — from a plain standard stub to a detailed earnings statement, plus an independent contractor statement and a temporary assignment stub.`,
   "A clear, professional wage record — gross pay, itemized earnings, taxes withheld, deductions, net pay, and year-to-date figures, laid out the way a pay stub should be.",
   "Instant generation — create, preview, and download in minutes. No software to install.",
   `Pay per stub, no subscription — ${PRICE} per pay stub, ${MIN_STUBS}–${MAX_STUBS} stubs per order.`,
@@ -78,9 +78,8 @@ const AboutUsPage: React.FC = () => (
       <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Who are we?</Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
         {BRAND_NAME} makes pay stub generation simple for small businesses, freelancers, and independent
-        contractors. Our team includes certified accountants and payroll experts, and we have built one thing and
-        built it well: a tool that takes the figures you already have and turns them into a clear, professional
-        wage record.
+        contractors. Built with input from payroll professionals, it does one thing and does it well: it takes
+        the figures you already have and turns them into a clear, professional wage record.
       </Typography>
 
       <Typography variant="h6" component="h2" sx={{ mt: 2 }}>Why choose us?</Typography>

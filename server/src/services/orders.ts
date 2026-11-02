@@ -16,9 +16,13 @@ import { issueUnlockToken, verifyUnlockToken, TokenError, type IssuedToken, type
 import { quoteCart, PricingError, normalizeCouponCode, type CartInput, type Quote, type PricingRules } from './pricing';
 import { PayPalError, type PayPalClient } from './paypal';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 export interface ClientMeta {
   attestedAt?: string;
   templateId?: number | string;
+  /** Which Terms / Privacy Policy revision the customer ticked "I agree" to. */
+  termsVersion?: string;
   userAgent?: string;
   ip?: string;
 }
@@ -40,12 +44,15 @@ export interface OrderServiceDeps {
   pricing: PricingRules;
   jwtSecret: string;
   tokenTtlMinutes: number;
+  /** Days an order row is kept before prune() deletes it. Omit to never prune. */
+  retentionDays?: number;
   now?: () => Date;
 }
 
 export class OrderService {
   private readonly inFlight = new Map<string, Promise<CapturedOrderResult>>();
   private readonly now: () => Date;
+  private pruneTimer: NodeJS.Timeout | null = null;
 
   constructor(private readonly deps: OrderServiceDeps) {
     this.now = deps.now ?? (() => new Date());
@@ -169,6 +176,32 @@ export class OrderService {
 
   getRow(orderId: string): OrderRow | undefined {
     return this.deps.db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId) as OrderRow | undefined;
+  }
+
+  /**
+   * Delete orders created more than `retentionDays` ago. This is the Privacy Policy's retention
+   * promise made real: the row carries the payer's name and email (PayPal's capture), the IP and
+   * the attestation, and none of it should outlive the period the policy states.
+   */
+  prune(): number {
+    const days = this.deps.retentionDays;
+    if (!days) return 0;
+    const cutoff = new Date(this.now().getTime() - days * DAY_MS).toISOString();
+    return this.deps.db.prepare('DELETE FROM orders WHERE created_at < ?').run(cutoff).changes;
+  }
+
+  /** Prune now and once a day after that. The timer never keeps the process alive. */
+  startPruneTimer(): void {
+    if (this.pruneTimer) return;
+    this.prune();
+    this.pruneTimer = setInterval(() => this.prune(), DAY_MS);
+    this.pruneTimer.unref();
+  }
+
+  stopPruneTimer(): void {
+    if (!this.pruneTimer) return;
+    clearInterval(this.pruneTimer);
+    this.pruneTimer = null;
   }
 
   private issue(row: OrderRow): IssuedToken {

@@ -8,24 +8,23 @@
  * page and the checkout gate read from here. Do not restate an address, phone
  * number, support email or disclaimer anywhere else — change it once, here.
  *
- * !! ACTION REQUIRED !!
- * The values marked TODO below still render as placeholders on the live site.
- * They must be filled in with the real registered details before launch.
+ * Identity values were confirmed by the owner on 2026-11-01: a Washington LLC, Washington law,
+ * and the registered agent's street address (public on the WA Secretary of State record).
  */
 
 /** Legal/registered name of the operating entity. */
-export const LEGAL_ENTITY_NAME = 'PayStubIssa'; // TODO: replace with the registered entity name, e.g. "PayStubIssa LLC"
+export const LEGAL_ENTITY_NAME = 'GOLDENTECH KSA L.L.C.'; // Washington limited liability company
 
 /** Trading name shown in UI copy. */
 export const BRAND_NAME = 'PayStubIssa';
 
 export const SITE_DOMAIN = 'paystubissa.com';
 
-/** US state whose law governs the Terms and whose courts/arbitration venue applies. */
-export const GOVERNING_STATE = 'TODO_STATE'; // TODO: the state of incorporation, e.g. "Washington"
+/** US state whose law governs the Terms and whose state and federal courts hear disputes. */
+export const GOVERNING_STATE = 'Washington';
 
 /** Registered mailing address. Rendered verbatim on Terms, Privacy and Accessibility. */
-export const MAILING_ADDRESS = 'TODO_MAILING_ADDRESS'; // TODO: e.g. "1234 Example St, Suite 100, Bellevue, WA 98004"
+export const MAILING_ADDRESS = '27540 SE 30th St, Sammamish, WA 98075'; // registered agent address
 
 /** Support phone line. Confirmed live. */
 export const SUPPORT_PHONE = '+1 (425) 247-8733';
@@ -36,8 +35,15 @@ export const PRIVACY_EMAIL = `privacy@${SITE_DOMAIN}`;
 export const LEGAL_EMAIL = `legal@${SITE_DOMAIN}`;
 export const ACCESSIBILITY_EMAIL = `accessibility@${SITE_DOMAIN}`;
 
-/** Date the current Terms / Privacy / Accessibility revisions took effect. */
-export const POLICIES_LAST_UPDATED = 'July 10, 2026';
+/** Date the current Terms / Privacy / Accessibility revisions took effect. Bump POLICIES_VERSION with it. */
+export const POLICIES_LAST_UPDATED = 'November 1, 2026';
+
+/**
+ * Machine-readable version of the policies above (the ISO date of POLICIES_LAST_UPDATED). It is
+ * recorded with every order next to the attestation time, so each purchase shows which Terms
+ * the customer agreed to.
+ */
+export const POLICIES_VERSION = '2026-11-01';
 
 /** Window, in days, of the satisfaction guarantee. Terms and FAQ must agree. */
 export const REFUND_WINDOW_DAYS = 30;
@@ -45,9 +51,10 @@ export const REFUND_WINDOW_DAYS = 30;
 /**
  * Number of pay stub templates we advertise. This is a marketing claim, so it has to stay true:
  * it must equal the number of entries in public/configs/template-configs.json that are also
- * allow-listed in the wizard's Template step. If you add or remove a template, update this.
+ * allow-listed in the wizard's Template step. If you add or remove a template, update this —
+ * template-configs.test.ts fails when the two disagree.
  */
-export const TEMPLATE_COUNT = 29;
+export const TEMPLATE_COUNT = 8;
 
 /**
  * The core disclaimer. This is the load-bearing sentence of our legal posture:

@@ -19,6 +19,7 @@ export const createOrderSchema = cartSchema.extend({
     .object({
       attestedAt: z.string().datetime({ offset: true }).optional(),
       templateId: z.union([z.number().int(), z.string().max(64)]).optional(),
+      termsVersion: z.string().max(32).optional(),
     })
     .strict()
     .optional(),

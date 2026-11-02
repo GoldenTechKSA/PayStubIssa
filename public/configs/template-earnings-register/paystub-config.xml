@@ -1398,4 +1398,33 @@
       </table>
     </column>
   </section>
+  <!-- Section er-footer-section: source and disclaimer line -->
+  <section id="er-footer-section">
+    <style>
+      <marginTop>14px</marginTop>
+      <padding>6px 26px 0</padding>
+      <borderTop>1px solid #555555</borderTop>
+    </style>
+    <column id="er-footer-col" width="100%">
+      <table id="er-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="er-footer-text" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#555555</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
 </paystub>

@@ -65,10 +65,9 @@ const faqData = [
             Four things:
             <br />
             <br />
-            <strong>Templates built for how people actually get paid.</strong> We offer {TEMPLATE_COUNT} worker-specific
-            templates — independent contractor, commission-only, hospitality and tips, construction certified payroll,
-            travel nurse, day rate, per diem, RSU vesting, seasonal, grant-funded, and more. Most generators give you one
-            generic layout.
+            <strong>A choice of layouts.</strong> We offer {TEMPLATE_COUNT} templates: standard employee pay stubs in
+            two styles, classic earnings statements including a payroll-register layout, an independent contractor
+            statement that shows no withholding, and a temporary assignment stub.
             <br />
             <br />
             <strong>Real tax math.</strong> We calculate federal income tax from current progressive brackets, Social
@@ -76,8 +75,9 @@ const faqData = [
             employee’s state, based on the IRS filing status you select.
             <br />
             <br />
-            <strong>Privacy by design.</strong> The whole app runs in your browser. Your company, employee, SSN, and wage
-            data is never transmitted to us. There is no server holding it, because we never receive it.
+            <strong>Privacy by design.</strong> The pay stub builder runs in your browser. Your company, employee, SSN,
+            bank account, and wage data is never transmitted to us. Our server handles payment and anonymous usage
+            statistics only; it never receives that data.
             <br />
             <br />
             <strong>Pay per document.</strong> {PRICE} per stub, no subscription, no account.
@@ -132,9 +132,10 @@ const faqData = [
             <br />
             <br />
             But the math only knows what you tell it. It does not know about a mid-year job change, a second income, a
-            spouse’s earnings, or extra withholding you requested on a W-4. And year-to-date figures are a{" "}
-            <strong>proportional estimate</strong> — current period × periods elapsed this year — not an accumulation of
-            a real payroll history.
+            spouse’s earnings, or extra withholding you requested on a W-4. And year-to-date figures are an{" "}
+            <strong>estimate</strong> built from what you enter — recurring pay projected over the pay periods elapsed
+            this year, one-time items such as overtime and bonus counted once — not an accumulation of a real payroll
+            history.
             <br />
             <br />
             We are not accountants for you and we are not a tax advisor. For anything you file, consult a tax
@@ -159,7 +160,8 @@ const faqData = [
             Small business owners without a dedicated payroll department, self-employed professionals who need to
             document their own income, and employers who want a clean wage record for the people they pay. Freelancers,
             gig workers, and independent contractors use it to keep an organized record of earnings they have actually
-            received.
+            received. Independent contractors should pick the contractor statement, which shows no tax withholding,
+            because nothing is withheld from a contractor’s pay.
           </>
         ),
       },
@@ -202,8 +204,8 @@ const faqData = [
         answer: (
           <>
             Yes. You can upload your company logo, and it appears on the pay stub. You can also pick from{" "}
-            {TEMPLATE_COUNT} template designs — from minimalist to detailed layouts, and several built for specific kinds
-            of work — to match how you want the document to read.
+            {TEMPLATE_COUNT} template designs — from a plain standard stub to detailed statement layouts, plus an
+            independent contractor statement and a temporary assignment stub — to match how you want the document to read.
           </>
         ),
       },
@@ -286,7 +288,9 @@ const faqData = [
             <br />
             <br />
             The transaction happens entirely on PayPal’s side. <strong>We never see, receive, or store your card number
-            or your PayPal credentials.</strong> Your payment is governed by PayPal’s own terms and privacy policy.
+            or your PayPal credentials.</strong> When the payment completes, PayPal sends us a confirmation with the
+            amount and the name and email address on your PayPal account, which we keep as the record of your order.
+            Your payment is governed by PayPal’s own terms and privacy policy.
           </>
         ),
       },
@@ -319,10 +323,10 @@ const faqData = [
             By never receiving it.
             <br />
             <br />
-            The app runs entirely in your browser. The company details, employee details, Social Security and Employer
-            Identification numbers, and wage figures you enter are <strong>never transmitted to us</strong>. There is no
-            server that receives them, no database that stores them, and no copy of your document anywhere but on your own
-            device.
+            The pay stub builder runs entirely in your browser. The company details, employee details, Social Security
+            and Employer Identification numbers, bank account details, and wage figures you enter are{" "}
+            <strong>never transmitted to us</strong>. Our server handles payment and anonymous usage statistics only; it
+            never receives that data, and no copy of your document exists anywhere but on your own device.
             <br />
             <br />
             While you are working, your entries are saved as a draft in your browser’s local storage — on your machine, not

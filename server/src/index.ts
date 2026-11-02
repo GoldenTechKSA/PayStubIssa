@@ -34,6 +34,7 @@ function main(): void {
     },
     jwtSecret: config.JWT_SECRET,
     tokenTtlMinutes: config.UNLOCK_TOKEN_TTL_MINUTES,
+    retentionDays: config.ORDER_RETENTION_DAYS,
   });
 
   const telemetry = new TelemetryService({
@@ -46,6 +47,7 @@ function main(): void {
   const app = createApp({ config, orders, telemetry });
   const server = app.listen(config.PORT, config.HOST, () => {
     telemetry.startPruneTimer();
+    orders.startPruneTimer();
     console.log(
       `[api] listening on http://${config.HOST}:${config.PORT} ` +
         `(env=${config.NODE_ENV}, paypal=${config.PAYPAL_ENV}, db=${config.databasePath})`,
@@ -55,6 +57,7 @@ function main(): void {
   const shutdown = (signal: string) => {
     console.log(`[api] ${signal} received, shutting down`);
     telemetry.stopPruneTimer();
+    orders.stopPruneTimer();
     server.close(() => {
       db.close();
       process.exit(0);
