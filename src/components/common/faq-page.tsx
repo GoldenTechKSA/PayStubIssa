@@ -9,7 +9,6 @@ import {
   REFUND_WINDOW_DAYS,
   SUPPORT_EMAIL,
   SUPPORT_PHONE,
-  SUPPORT_PHONE_HREF,
   TEMPLATE_COUNT,
 } from "constants/business-info";
 import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
@@ -17,7 +16,8 @@ import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
 const PRICE = `$${UNIT_PRICE.toFixed(2)}`;
 
 const SupportEmailLink = () => <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>;
-const SupportPhoneLink = () => <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>;
+// Phone numbers are plain text site-wide; only email addresses and page URLs are links.
+const SupportPhone = () => <>{SUPPORT_PHONE}</>;
 
 const faqData = [
   {
@@ -386,7 +386,7 @@ const faqData = [
             <br />
             Email <SupportEmailLink /> — best for refund requests, corrections, and anything with details we need to read.
             <br />
-            Phone <SupportPhoneLink /> — best if you’re stuck mid-order.
+            Phone <SupportPhone /> — best if you’re stuck mid-order.
             <br />
             <br />
             We don’t offer live chat, and we won’t pretend to be available around the clock. We answer during business

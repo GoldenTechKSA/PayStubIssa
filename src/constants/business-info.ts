@@ -26,9 +26,8 @@ export const GOVERNING_STATE = 'Washington';
 /** Registered mailing address. Rendered verbatim on Terms, Privacy and Accessibility. */
 export const MAILING_ADDRESS = '27540 SE 30th St, Sammamish, WA 98075'; // registered agent address
 
-/** Support phone line. Confirmed live. */
+/** Support phone line. Confirmed live. Rendered as plain text everywhere: only emails and page URLs are links. */
 export const SUPPORT_PHONE = '+1 (425) 247-8733';
-export const SUPPORT_PHONE_HREF = 'tel:+14252478733';
 
 export const SUPPORT_EMAIL = `support@${SITE_DOMAIN}`;
 export const PRIVACY_EMAIL = `privacy@${SITE_DOMAIN}`;

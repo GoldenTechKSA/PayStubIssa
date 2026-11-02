@@ -14,7 +14,6 @@ import {
   SITE_DOMAIN,
   SUPPORT_EMAIL,
   SUPPORT_PHONE,
-  SUPPORT_PHONE_HREF,
 } from "constants/business-info";
 import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
 
@@ -276,7 +275,7 @@ const TermsOfUse = () => (
     </p>
     <p>
       Support is available by email at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and by phone at{" "}
-      <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>. We respond during business hours.
+      {SUPPORT_PHONE}. We respond during business hours.
     </p>
 
     <h4>11. Disclaimer of Warranties</h4>
@@ -373,15 +372,6 @@ const TermsOfUse = () => (
       <strong>Force Majeure</strong><br />
       We are not liable for any failure or delay caused by circumstances beyond our reasonable control.
     </p>
-    <p>
-      <strong>Contact</strong><br />
-      Questions about these Terms:<br />
-      Email: <a href={`mailto:${LEGAL_EMAIL}`}>{LEGAL_EMAIL}</a><br />
-      Support: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a><br />
-      Mailing Address: {MAILING_ADDRESS}<br />
-      Phone: <a href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</a>
-    </p>
-
     <h4>Acknowledgment</h4>
     <p>
       By using {SITE_DOMAIN}, you acknowledge that you have read and understood these Terms, that you are solely
@@ -395,6 +385,15 @@ const TermsOfUse = () => (
         {SITE_DOMAIN}/terms
       </a>
       .
+    </p>
+
+    <h4>Contact</h4>
+    <p>
+      Questions about these Terms:<br />
+      Email: <a href={`mailto:${LEGAL_EMAIL}`}>{LEGAL_EMAIL}</a><br />
+      Support: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a><br />
+      Mailing address: {MAILING_ADDRESS}<br />
+      Phone: {SUPPORT_PHONE}
     </p>
   </LegalPageShell>
 );

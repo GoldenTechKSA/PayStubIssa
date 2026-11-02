@@ -4,7 +4,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_HREF } from "constants/business-info";
+import { SUPPORT_EMAIL, SUPPORT_PHONE } from "constants/business-info";
 
 interface FormData {
   firstName: string;
@@ -87,8 +87,7 @@ const ContactForm: React.FC = () => {
         <Typography fontWeight={600}>Your email app should now be open.</Typography>
         We’ve composed the message for you — press send in your email app and it will reach us
         at {SUPPORT_EMAIL}. If nothing opened, email us directly at{" "}
-        <Link href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</Link> or call{" "}
-        <Link href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</Link>.
+        <Link href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</Link> or call {SUPPORT_PHONE}.
       </Alert>
     );
   }
@@ -98,8 +97,7 @@ const ContactForm: React.FC = () => {
       <Typography variant="h6" component="h2" gutterBottom>Send us a message</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         Fill this in and we’ll open a pre-written email in your mail app — just press send. You can
-        also reach us directly at <Link href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</Link> or{" "}
-        <Link href={SUPPORT_PHONE_HREF}>{SUPPORT_PHONE}</Link>.
+        also reach us directly at <Link href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</Link> or {SUPPORT_PHONE}.
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6 }}>

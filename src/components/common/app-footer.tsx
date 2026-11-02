@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Box, Container, Stack, Link, Typography, Divider } from "@mui/material";
 import PayPalImg from "../../assets/images/paypal.png";
 import {
-  CORE_DISCLAIMER, FRAUD_WARNING, LEGAL_ENTITY_NAME, SUPPORT_EMAIL, SUPPORT_PHONE, SUPPORT_PHONE_HREF,
+  CORE_DISCLAIMER, FRAUD_WARNING, LEGAL_ENTITY_NAME, SUPPORT_EMAIL, SUPPORT_PHONE,
 } from "constants/business-info";
 
 const AppFooter = () => {
@@ -37,9 +37,9 @@ const AppFooter = () => {
             <Link href={`mailto:${SUPPORT_EMAIL}`} underline="hover" color="text.secondary">
               {SUPPORT_EMAIL}
             </Link>
-            <Link href={SUPPORT_PHONE_HREF} underline="hover" color="text.secondary">
+            <Typography variant="body2" color="text.secondary">
               {SUPPORT_PHONE}
-            </Link>
+            </Typography>
           </Stack>
 
           <Box component="img" src={PayPalImg} alt="PayPal Acceptance Mark" sx={{ height: 28, borderRadius: 1 }} />
