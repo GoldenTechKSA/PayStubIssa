@@ -1,38 +1,42 @@
 import { STATE_TAX_DATA } from "../assets/data/state-tax-data";
 import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../types/tax-rate-types";
 import { getPaidLeaveProgram } from "../assets/data/paid-leave-data";
+import { federalTaxYearFor, FederalSchedule } from "../assets/data/federal-tax-data";
+
+const SOCIAL_SECURITY_RATE = 0.062; // employee share, fixed by statute
 
 export class TaxCalculator {
-  // Calculate federal income tax using progressive brackets
-  private calculateFederalIncomeTax(taxableIncome: number, filingStatus: FilingStatus): number {
-    if (taxableIncome <= 0) return 0;
+  // Federal income tax withholding for a year of wages, by the IRS percentage method for
+  // automated payroll systems (Publication 15-T, Worksheet 1A) with a standard Form W-4:
+  // Step 2 box not checked, nothing in Steps 3 and 4. `annualWages` is already net of pre-tax
+  // deductions. Each filing status has its own schedule; married filing separately uses the
+  // single one, as the IRS tables do.
+  private calculateFederalIncomeTax(annualWages: number, filingStatus: FilingStatus, taxYear?: number): number {
+    const tables = federalTaxYearFor(taxYear);
+    const allowance = filingStatus === 'marriedFilingJointly'
+      ? tables.step2UncheckedAllowance.marriedFilingJointly
+      : tables.step2UncheckedAllowance.other;
+    const adjustedAnnualWage = annualWages - allowance;
+    if (adjustedAnnualWage <= 0) return 0;
 
-    const federalRates = STATE_TAX_DATA['AL'].taxRates.federalIncomeTax; // Federal rates are same for all states
+    const scheduleKey: FederalSchedule = filingStatus === 'marriedFilingSeparately' ? 'single' : filingStatus;
+    const brackets = tables.schedules[scheduleKey];
+
     let tax = 0;
-    let remainingIncome = taxableIncome;
-
-    for (const bracket of federalRates.brackets) {
-      if (remainingIncome <= 0) break;
-
-      const bracketMin = bracket.min;
-      const bracketMax = bracket.max || Infinity;
-      const bracketWidth = bracketMax - bracketMin;
-      const taxableAtThisBracket = Math.min(remainingIncome, bracketWidth);
-
-      if (taxableIncome > bracketMin) {
-        tax += taxableAtThisBracket * bracket.rate;
-        remainingIncome -= taxableAtThisBracket;
+    brackets.forEach((bracket, i) => {
+      const top = i + 1 < brackets.length ? brackets[i + 1].over : Infinity;
+      if (adjustedAnnualWage > bracket.over) {
+        tax += (Math.min(adjustedAnnualWage, top) - bracket.over) * bracket.rate;
       }
-    }
+    });
 
     return Math.round(tax * 100) / 100;
   }
 
-  // Calculate Social Security tax
-  private calculateSocialSecurityTax(grossIncome: number): number {
-    const socialSecurityData = STATE_TAX_DATA['AL'].taxRates.socialSecurityTax; // Same for all states
-    const taxableWages = Math.min(grossIncome, socialSecurityData.wageBase);
-    return Math.round(taxableWages * socialSecurityData.rate * 100) / 100;
+  // Calculate Social Security tax (wages above that year's wage base are not taxed)
+  private calculateSocialSecurityTax(grossIncome: number, taxYear?: number): number {
+    const taxableWages = Math.min(grossIncome, federalTaxYearFor(taxYear).socialSecurityWageBase);
+    return Math.round(taxableWages * SOCIAL_SECURITY_RATE * 100) / 100;
   }
 
   // Calculate Medicare tax (including additional Medicare tax for high earners)
@@ -93,12 +97,6 @@ export class TaxCalculator {
     return 0;
   }
 
-  //Get standard deduction for federal taxes
-  private getFederalStandardDeduction(filingStatus: FilingStatus): number {
-    const federalRates = STATE_TAX_DATA['AL'].taxRates.federalIncomeTax;
-    return federalRates.standardDeduction[filingStatus];
-  }
-
   //Get standard deduction for state taxes
   private getStateStandardDeduction(stateCode: string, filingStatus: FilingStatus): number {
     const stateData = STATE_TAX_DATA[stateCode.toUpperCase()];
@@ -128,23 +126,23 @@ export class TaxCalculator {
       grossIncome,
       filingStatus,
       stateCode,
-      additionalDeductions = 0
+      additionalDeductions = 0,
+      taxYear
     } = input;
 
     // Calculate deductions
-    const federalStandardDeduction = this.getFederalStandardDeduction(filingStatus);
     const stateStandardDeduction = this.getStateStandardDeduction(stateCode, filingStatus);
     
-    const totalFederalDeductions = federalStandardDeduction + additionalDeductions;
     const totalStateDeductions = stateStandardDeduction + additionalDeductions;
 
     // Calculate taxable income
-    const federalTaxableIncome = Math.max(0, grossIncome - totalFederalDeductions);
+    // Federal: wages net of pre-tax deductions; the standard deduction is inside the IRS tables.
+    const federalWages = Math.max(0, grossIncome - additionalDeductions);
     const stateTaxableIncome = Math.max(0, grossIncome - totalStateDeductions);
 
     // Calculate each tax component
-    const federalIncomeTax = this.calculateFederalIncomeTax(federalTaxableIncome, filingStatus);
-    const socialSecurityTax = this.calculateSocialSecurityTax(grossIncome);
+    const federalIncomeTax = this.calculateFederalIncomeTax(federalWages, filingStatus, taxYear);
+    const socialSecurityTax = this.calculateSocialSecurityTax(grossIncome, taxYear);
     const medicareTax = this.calculateMedicareTax(grossIncome, filingStatus);
     const stateIncomeTax = this.calculateStateIncomeTax(stateTaxableIncome, stateCode, filingStatus);
     const paidLeave = this.calculatePaidLeave(grossIncome, stateCode);

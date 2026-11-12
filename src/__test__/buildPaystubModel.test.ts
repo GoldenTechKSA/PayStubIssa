@@ -166,6 +166,18 @@ describe('buildPaystubModel', () => {
     });
   });
 
+  it('withholds federal tax under the tables of the year the stub is PAID in', () => {
+    const paidIn = (payDate: string) => buildPaystubModel(makeStore({
+      periodStartDate: new Date(`${payDate.slice(0, 4)}-03-02`), periodEndDate: new Date(`${payDate.slice(0, 4)}-03-08`),
+      periodPayDate: payDate as unknown as Date, deduction401k: 0, overtimeRate: 0, overtimeHours: 0, bonusAmount: 0,
+    }, { employeeState: 'TX' }));
+    // 1,000 a week, single: 52,000 a year. IRS 2026: 52,000 - 8,600 = 43,400 adjusted;
+    // 10% of (19,900 - 7,500) + 12% of (43,400 - 19,900) = 4,060 a year = 78.08 a week.
+    expect(paidIn('2026-03-13').federalTax).toBeCloseTo(78.08, 2);
+    // IRS 2025: 10% of (18,325 - 6,400) + 12% of (43,400 - 18,325) = 4,201.50 = 80.80 a week.
+    expect(paidIn('2025-03-13').federalTax).toBeCloseTo(80.8, 2);
+  });
+
   it('keeps the deduction lines adding up to the total, current and YTD, across a run', () => {
     const models = buildPaystubModels({
       ...makeStore({ deduction401k: 0.05, unionDues: 0.01, otherDeduction: 12 }),

@@ -1,23 +1,6 @@
 // Tax processing types and interfaces
 
 export interface TaxRates {
-  federalIncomeTax: {
-    brackets: Array<{
-      min: number;
-      max: number | null;
-      rate: number;
-    }>;
-    standardDeduction: {
-      single: number;
-      marriedFilingJointly: number;
-      marriedFilingSeparately: number;
-      headOfHousehold: number;
-    };
-  };
-  socialSecurityTax: {
-    rate: number;
-    wageBase: number; // Maximum taxable wages
-  };
   medicareTax: {
     rate: number;
     additionalRate: number; // Additional Medicare tax for high earners
@@ -25,6 +8,7 @@ export interface TaxRates {
       single: number;
       marriedFilingJointly: number;
       marriedFilingSeparately: number;
+      headOfHousehold: number;
     };
   };
   stateIncomeTax: {
@@ -68,7 +52,10 @@ export interface TaxCalculationInput {
   grossIncome: number;
   filingStatus: FilingStatus;
   stateCode: string;
+  // Pre-tax amounts (a traditional 401(k)) that come out of the wages income tax is figured on.
   additionalDeductions?: number;
+  // Calendar year the wages are paid in; picks the IRS tables. Defaults to the latest on file.
+  taxYear?: number;
 }
 
 export interface TaxCalculationResult {
