@@ -75,6 +75,7 @@ const parseTable = (tableElement: Element): TableConfig => {
     id: tableElement.getAttribute('id') || '',
     header: headerElement ? parseTableHeader(headerElement) : undefined,
     cells: cellsByRow,
+    rowRenderIf: rowElements.map(rowEl => rowEl.getAttribute('renderIf') || undefined),
     style: parseStyle(tableElement),
     renderIf: tableElement.getAttribute('renderIf') || undefined
   };

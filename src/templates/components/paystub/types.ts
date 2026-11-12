@@ -49,6 +49,9 @@ export interface TableConfig {
   id: string;
   header?: TableHeaderConfig;
   cells: TableCellConfig[][];
+  // Optional `renderIf` of each <rowcells>, index-aligned with `cells`: lets one row of a
+  // table be skipped (e.g. a paid-leave line only in states that have the program).
+  rowRenderIf?: (string | undefined)[];
   style?: StyleConfig;
   renderIf?: string;
 }

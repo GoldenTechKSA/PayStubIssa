@@ -390,3 +390,12 @@ class FICATaxCalculator {
 }
 
 export { FICATaxCalculator, type FICAResult, type FICALimits };
+
+// A percent-of-gross deduction (401(k), union dues) as stored: a FRACTION of gross pay, so 5% is
+// 0.05. Anything that is not a number in 0..1 is not a rate the Earnings step could have saved
+// (an old draft may still hold a dollar amount there) and is read as "no deduction" rather than
+// as thousands of percent of the pay.
+export const rateOfGross = (value: unknown): number => {
+  const v = Number(value);
+  return Number.isFinite(v) && v > 0 && v <= 1 ? v : 0;
+};

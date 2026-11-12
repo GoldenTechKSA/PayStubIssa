@@ -15,7 +15,11 @@
 import { PayStubDetails, PaystubModel } from 'assets/data/pay-stub-details';
 import { taxCalculator } from '../../utils/tax-calculator';
 import { calculateOvertime } from '../../utils/overtime-calculator';
-import { periodsPerYear, periodsElapsedAt, buildPayPeriods, PayPeriod } from '../../utils/date-calculator';
+import { rateOfGross } from '../../utils/util';
+import {
+  periodsPerYear, periodsElapsedAt, buildPayPeriods, PayPeriod,
+  calculateEndDate, payDateGapDays, toISODate,
+} from '../../utils/date-calculator';
 import { normalizeStubCount } from 'constants/pricing';
 import states from 'assets/data/states.json';
 import filingStatuses from 'assets/data/filing-status.json';
@@ -116,6 +120,9 @@ interface OneTimeTotals {
   medicare: number;
   paidLeave: number;
   totalTaxes: number;
+  retirement401k: number;
+  unionDues: number;
+  totalDeductions: number;
   netPay: number;
 }
 
@@ -129,6 +136,9 @@ const NO_ONE_TIME: OneTimeTotals = {
   medicare: 0,
   paidLeave: 0,
   totalTaxes: 0,
+  retirement401k: 0,
+  unionDues: 0,
+  totalDeductions: 0,
   netPay: 0,
 };
 
@@ -142,6 +152,9 @@ const addOneTime = (a: OneTimeTotals, b: OneTimeTotals): OneTimeTotals => ({
   medicare: a.medicare + b.medicare,
   paidLeave: a.paidLeave + b.paidLeave,
   totalTaxes: a.totalTaxes + b.totalTaxes,
+  retirement401k: a.retirement401k + b.retirement401k,
+  unionDues: a.unionDues + b.unionDues,
+  totalDeductions: a.totalDeductions + b.totalDeductions,
   netPay: a.netPay + b.netPay,
 });
 
@@ -156,6 +169,9 @@ interface PeriodWithholding {
 }
 
 // Withholding for ONE period of the given gross.
+// `periodPreTax` is what a traditional 401(k) took out of that gross: it lowers the wages that
+// federal and state INCOME tax are figured on, but not Social Security, Medicare or a state
+// paid-leave premium, which are still charged on the full gross.
 // The tax engine works on ANNUAL income (annual standard deduction + annual brackets),
 // so we annualize the period gross, compute annual tax, then divide back to this period.
 // FICA is flat-rate so this is neutral for it; it is required for federal/state accuracy.
@@ -164,15 +180,19 @@ const withholdForPeriod = (
   perYear: number,
   filingStatus: FilingStatus,
   stateCode: string,
+  periodPreTax: number = 0,
 ): PeriodWithholding => {
   const annualTaxes: TaxCalculationResult = taxCalculator.calculateTaxes({
     grossIncome: periodGross * perYear,
     filingStatus,
     stateCode,
-    additionalDeductions: 0,
+    additionalDeductions: periodPreTax * perYear,
   });
 
-  const perPeriod = (annualAmount: number) => (perYear > 0 ? annualAmount / perYear : 0);
+  // Each line is rounded to the cent it prints as, and the total is the sum of those cents, so
+  // "Total Taxes" on a stub always equals the tax lines above it added up by hand.
+  const perPeriod = (annualAmount: number) =>
+    (perYear > 0 ? Math.round((annualAmount / perYear) * 100) / 100 : 0);
   const federalTax = perPeriod(annualTaxes.federalIncomeTax);
   const stateTax = perPeriod(annualTaxes.stateIncomeTax);
   const socialSecurity = perPeriod(annualTaxes.socialSecurityTax);
@@ -206,8 +226,11 @@ interface PeriodBuild {
  * YTD method:
  *   - Regular pay, taxes on regular pay, and deductions are assumed to recur every period of
  *     the year, so each is `per-period amount × periods elapsed as of this stub's pay date`.
- *   - Overtime and bonus are one-time: they (and the extra tax they drew) are added to YTD
- *     once — on the stub that pays them and, via `carried`, on every later stub in the run.
+ *     For the two percent-of-gross deductions (401(k), union dues) the recurring part is the
+ *     percentage of REGULAR pay.
+ *   - Overtime and bonus are one-time: they (and the extra tax and extra percent-of-gross
+ *     deductions they drew) are added to YTD once — on the stub that pays them and, via
+ *     `carried`, on every later stub in the run.
  */
 const buildModelForPeriod = (
   store: PayStubDetails,
@@ -236,27 +259,44 @@ const buildModelForPeriod = (
   const otherEarnings = num(incomeDetails.bonusAmount);
   const grossPay = regularPay + overtimePay + otherEarnings;
 
+  // 401(k) and union dues are stored as a FRACTION of gross pay (the Earnings step takes a
+  // percentage: 5% is saved as 0.05), so the dollar amount is that fraction of this period's gross.
+  const rate401k = rateOfGross(incomeDetails.deduction401k);
+  const rateUnion = rateOfGross(incomeDetails.unionDues);
+  const retirement401k = grossPay * rate401k;
+  const unionDues = grossPay * rateUnion;
+  // The same two on regular pay alone: the recurring base for YTD.
+  const base401k = regularPay * rate401k;
+  const baseUnion = regularPay * rateUnion;
+
   // --- Taxes (current period) ---
-  const taxes = withholdForPeriod(grossPay, perYear, filingStatus, stateCode);
+  // The 401(k) is a traditional, pre-tax contribution: income tax is withheld on gross less it.
+  const taxes = withholdForPeriod(grossPay, perYear, filingStatus, stateCode, retirement401k);
   const { federalTax, stateTax, socialSecurity, medicare, paidLeave, totalTaxes } = taxes;
 
   // Withholding on regular pay alone: the recurring tax base for YTD. Only differs from the
   // period's actual withholding when there is one-time pay on top.
   const oneTimeEarnings = overtimePay + otherEarnings;
-  const baseTaxes = oneTimeEarnings > 0 ? withholdForPeriod(regularPay, perYear, filingStatus, stateCode) : taxes;
+  const baseTaxes = oneTimeEarnings > 0
+    ? withholdForPeriod(regularPay, perYear, filingStatus, stateCode, base401k)
+    : taxes;
 
   // --- Deductions (current period) ---
   const medical = num(incomeDetails.medicalDeduction);
   const dental = num(incomeDetails.dentalDeduction);
   const vision = num(incomeDetails.visionDeduction);
-  const retirement401k = num(incomeDetails.deduction401k);
-  const otherDeductions = num(incomeDetails.otherDeduction);
-  const unionDues = num(incomeDetails.unionDues); // passthrough; interpretation left to template
-  const totalDeductions = medical + dental + vision + retirement401k + otherDeductions;
+  // The flat "Other" amount on its own, for a template that prints union dues on a separate line.
+  const otherDeductionsExUnion = num(incomeDetails.otherDeduction);
+  // The catch-all "Other" line: most templates have no union-dues row, so the dues print here.
+  const otherDeductions = otherDeductionsExUnion + unionDues;
+  const flatDeductions = medical + dental + vision + otherDeductionsExUnion;
+  const totalDeductions = flatDeductions + retirement401k + unionDues;
+
+  const baseTotalDeductions = flatDeductions + base401k + baseUnion;
 
   // --- Net (current period) ---
   const netPay = grossPay - totalTaxes - totalDeductions;
-  const baseNetPay = regularPay - baseTaxes.totalTaxes - totalDeductions;
+  const baseNetPay = regularPay - baseTaxes.totalTaxes - baseTotalDeductions;
 
   // --- Year-to-date ---
   // Recurring amounts: proportional estimate (per-period amount × periods elapsed).
@@ -273,6 +313,9 @@ const buildModelForPeriod = (
     medicare: medicare - baseTaxes.medicare,
     paidLeave: paidLeave - baseTaxes.paidLeave,
     totalTaxes: totalTaxes - baseTaxes.totalTaxes,
+    retirement401k: retirement401k - base401k,
+    unionDues: unionDues - baseUnion,
+    totalDeductions: totalDeductions - baseTotalDeductions,
     netPay: netPay - baseNetPay,
   });
 
@@ -335,6 +378,7 @@ const buildModelForPeriod = (
     vision,
     retirement401k,
     otherDeductions,
+    otherDeductionsExUnion,
     unionDues,
     totalDeductions,
 
@@ -354,10 +398,11 @@ const buildModelForPeriod = (
     medicalYTD: recurring(medical),
     dentalYTD: recurring(dental),
     visionYTD: recurring(vision),
-    retirement401kYTD: recurring(retirement401k),
-    otherDeductionsYTD: recurring(otherDeductions),
-    unionDuesYTD: recurring(unionDues),
-    totalDeductionsYTD: recurring(totalDeductions),
+    retirement401kYTD: recurring(base401k) + oneTimeToDate.retirement401k,
+    otherDeductionsYTD: recurring(otherDeductionsExUnion + baseUnion) + oneTimeToDate.unionDues,
+    otherDeductionsExUnionYTD: recurring(otherDeductionsExUnion),
+    unionDuesYTD: recurring(baseUnion) + oneTimeToDate.unionDues,
+    totalDeductionsYTD: recurring(baseTotalDeductions) + oneTimeToDate.totalDeductions,
     netPayYTD: recurring(baseNetPay) + oneTimeToDate.netPay,
   };
 
@@ -381,7 +426,13 @@ export const buildPaystubModels = (store: PayStubDetails): PaystubModel[] => {
   const { incomeDetails, generalInfo } = store;
 
   const stubCount = normalizeStubCount(generalInfo.payStubCount);
-  const periods = buildPayPeriods(incomeDetails.periodStartDate, incomeDetails.periodType, stubCount);
+  // The user chooses the pay date of period #1; its distance from that period's end date is
+  // applied to every stub in the run.
+  const payGapDays = payDateGapDays(
+    calculateEndDate(toISODate(incomeDetails.periodStartDate), incomeDetails.periodType),
+    incomeDetails.periodPayDate,
+  );
+  const periods = buildPayPeriods(incomeDetails.periodStartDate, incomeDetails.periodType, stubCount, payGapDays);
 
   // No usable start date / period type yet (the user is mid-wizard): fall back to whatever dates
   // are already on the store so the preview still renders.

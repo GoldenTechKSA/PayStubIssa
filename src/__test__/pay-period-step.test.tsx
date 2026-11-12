@@ -46,10 +46,53 @@ describe('PayPeriodStep', () => {
     expect(continueButton().disabled).toBe(false);
   });
 
-  it('end date and pay date are read-only', () => {
+  it('end date is read-only, pay date is editable and floored at the end date', () => {
     renderStep();
     expect(endInput().readOnly).toBe(true);
-    expect(payInput().readOnly).toBe(true);
+    expect(payInput().readOnly).toBe(false);
+    expect(payInput().min).toBe(endInput().value);
+  });
+
+  it('pay date defaults to seven days after the end date', () => {
+    renderStep();
+    fireEvent.change(startInput(), { target: { value: '2024-03-04' } });
+    expect(endInput().value).toBe('2024-03-10');
+    expect(payInput().value).toBe('2024-03-17');
+  });
+
+  it('accepts a pay date on the end date itself and saves it', async () => {
+    const { store } = renderStep();
+    fireEvent.change(startInput(), { target: { value: '2024-03-04' } });
+    fireEvent.change(payInput(), { target: { value: '2024-03-10' } });
+    expect(continueButton().disabled).toBe(false);
+    await userEvent.click(continueButton());
+    expect(store.getState().incomeDetails.periodPayDate).toBe('2024-03-10');
+  });
+
+  it('rejects a pay date before the end date and disables Continue', () => {
+    renderStep();
+    fireEvent.change(startInput(), { target: { value: '2024-03-04' } });
+    fireEvent.change(payInput(), { target: { value: '2024-03-09' } });
+    expect(screen.getByText(/pay date cannot be before the period end date/i)).toBeTruthy();
+    expect(continueButton().disabled).toBe(true);
+  });
+
+  it('keeps a saved pay date that is still on or after the end date', () => {
+    renderStep({ periodStartDate: '2024-03-04' as any, periodPayDate: '2024-03-12' as any });
+    expect(payInput().value).toBe('2024-03-12');
+  });
+
+  it('replaces a saved pay date that falls before the end date with the default', () => {
+    renderStep({ periodStartDate: '2024-03-04' as any, periodPayDate: '2024-03-05' as any });
+    expect(payInput().value).toBe('2024-03-17');
+  });
+
+  it('changing the start snaps a hand-picked pay date back to the default', () => {
+    renderStep();
+    fireEvent.change(startInput(), { target: { value: '2024-03-04' } });
+    fireEvent.change(payInput(), { target: { value: '2024-03-30' } });
+    fireEvent.change(startInput(), { target: { value: '2024-03-11' } });
+    expect(payInput().value).toBe('2024-03-24');
   });
 
   it('changing the frequency snaps the start to that frequency default', async () => {
@@ -62,11 +105,11 @@ describe('PayPeriodStep', () => {
     expect(payInput().value).toBe(calculatePayDate(calculateEndDate(start, 'Bi-Weekly')));
   });
 
-  it('typing a new start recomputes the read-only end and pay dates', () => {
+  it('typing a new start recomputes the end and pay dates', () => {
     renderStep();
     fireEvent.change(startInput(), { target: { value: '2024-03-04' } });
     expect(endInput().value).toBe('2024-03-10');
-    expect(payInput().value).toBe('2024-03-11');
+    expect(payInput().value).toBe('2024-03-17');
   });
 
   it('rejects a start less than one period in the past and disables Continue', () => {
@@ -84,7 +127,7 @@ describe('PayPeriodStep', () => {
     const saved = store.getState().incomeDetails;
     expect(saved.periodStartDate).toBe('2024-03-04');
     expect(saved.periodEndDate).toBe('2024-03-10');
-    expect(saved.periodPayDate).toBe('2024-03-11');
+    expect(saved.periodPayDate).toBe('2024-03-17');
     expect(saved.periodType).toBe('Weekly');
   });
 

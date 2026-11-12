@@ -30,7 +30,7 @@ const makeStore = (overrides: Partial<PayStubDetails['incomeDetails']> = {},
   },
   incomeDetails: {
     annualSalary: 0, wageType: 'Hourly', hourlyRate: 25, hoursWorked: 40, overtimeRate: 37.5,
-    overtimeHours: 2, bonusAmount: 100, deduction401k: 20, medicalDeduction: 50, dentalDeduction: 10,
+    overtimeHours: 2, bonusAmount: 100, deduction401k: 0.02, medicalDeduction: 50, dentalDeduction: 10,
     visionDeduction: 5, otherDeduction: 0, unionDues: 0,
     periodStartDate: new Date('2025-01-01'), periodEndDate: new Date('2025-01-07'),
     periodPayDate: new Date('2025-01-08'), periodType: 'Weekly',
@@ -61,7 +61,8 @@ describe('buildPaystubModel', () => {
 
   it('sums deductions and satisfies the net-pay identity', () => {
     const m = buildPaystubModel(makeStore());
-    expect(m.totalDeductions).toBe(85);  // 50 + 10 + 5 + 20
+    expect(m.retirement401k).toBeCloseTo(23.5, 5);   // 2% of the 1,175 gross
+    expect(m.totalDeductions).toBeCloseTo(88.5, 5);  // 50 + 10 + 5 + 23.50
     // paidLeave is the fifth component of totalTaxes — a mandatory withholding in the
     // dozen states running a paid family/medical leave fund (this store is WA, which does).
     expect(m.totalTaxes).toBeCloseTo(
@@ -103,7 +104,83 @@ describe('buildPaystubModel', () => {
     const multiplier = periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
     expect(multiplier).toBeGreaterThan(1); // the test only means something if YTD != current
     expect(m.regularPayYTD).toBeCloseTo(m.regularPay * multiplier, 5);
-    expect(m.totalDeductionsYTD).toBeCloseTo(m.totalDeductions * multiplier, 5);
+    // Flat deductions and the 401(k) on regular pay recur; the 401(k) on the one-time
+    // overtime and bonus (2% of 175) is counted once.
+    expect(m.totalDeductionsYTD).toBeCloseTo((65 + 20) * multiplier + 3.5, 5);
+    expect(m.retirement401kYTD).toBeCloseTo(20 * multiplier + 3.5, 5);
+  });
+
+  it('turns the 401(k) and union dues percentages into dollar amounts of gross pay', () => {
+    const m = buildPaystubModel(makeStore({ deduction401k: 0.05, unionDues: 0.01, otherDeduction: 12 }));
+    expect(m.retirement401k).toBeCloseTo(58.75, 5);  // 5% of 1,175
+    expect(m.unionDues).toBeCloseTo(11.75, 5);       // 1% of 1,175
+    // Union dues print on the catch-all "Other" line unless a template gives them their own row.
+    expect(m.otherDeductions).toBeCloseTo(23.75, 5);
+    expect(m.otherDeductionsExUnion).toBe(12);
+    expect(m.totalDeductions).toBeCloseTo(50 + 10 + 5 + 12 + 58.75 + 11.75, 5);
+    expect(m.netPay).toBeCloseTo(m.grossPay - m.totalTaxes - m.totalDeductions, 5);
+  });
+
+  it('takes the 401(k) out before income tax, but not before Social Security or Medicare', () => {
+    // Virginia has a state income tax, so both income taxes can be seen to drop.
+    const without = buildPaystubModel(makeStore({ deduction401k: 0 }, { employeeState: 'VA' }));
+    const withK = buildPaystubModel(makeStore({ deduction401k: 0.1 }, { employeeState: 'VA' }));
+    // Same as withholding on a gross that is 10% lower, with no 401(k).
+    const lowerGross = buildPaystubModel(makeStore(
+      { deduction401k: 0, hourlyRate: 22.5, overtimeRate: 33.75, bonusAmount: 90 }, { employeeState: 'VA' }));
+
+    expect(withK.federalTax).toBeLessThan(without.federalTax);
+    expect(withK.stateTax).toBeLessThan(without.stateTax);
+    expect(withK.federalTax).toBeCloseTo(lowerGross.federalTax, 2);
+    expect(withK.stateTax).toBeCloseTo(lowerGross.stateTax, 2);
+    expect(withK.socialSecurity).toBeCloseTo(without.socialSecurity, 5);
+    expect(withK.medicare).toBeCloseTo(without.medicare, 5);
+    expect(withK.grossPay).toBe(without.grossPay);
+  });
+
+  it('ignores a 401(k) or union-dues rate that is not a fraction of gross', () => {
+    // An old saved draft can still carry the retired dev seed's `deduction401k: 150` (dollars).
+    // Read as a rate that is 15,000% of gross, and as a pre-tax amount it wiped out federal tax.
+    const clean = buildPaystubModel(makeStore({ deduction401k: 0 }));
+    const stale = buildPaystubModel(makeStore({ deduction401k: 150, unionDues: 7 }));
+    expect(clean.federalTax).toBeGreaterThan(0);
+    expect(stale.retirement401k).toBe(0);
+    expect(stale.unionDues).toBe(0);
+    expect(stale.federalTax).toBeCloseTo(clean.federalTax, 5);
+    expect(stale.netPay).toBeCloseTo(clean.netPay, 5);
+  });
+
+  it('prints tax lines in whole cents that add up exactly to Total Taxes, on every stub', () => {
+    const cents = (v: number) => Math.round(v * 100);
+    const models = buildPaystubModels({
+      ...makeStore({ hourlyRate: 32.57, hoursWorked: 79.25, deduction401k: 0.0375 }, { employeeState: 'OR' }),
+      generalInfo: { ...makeStore().generalInfo, payStubCount: 3 },
+    });
+    models.forEach(m => {
+      [m.federalTax, m.stateTax, m.socialSecurity, m.medicare, m.paidLeave].forEach(v =>
+        expect(v * 100).toBeCloseTo(cents(v), 6));
+      expect(cents(m.totalTaxes)).toBe(
+        cents(m.federalTax) + cents(m.stateTax) + cents(m.socialSecurity) + cents(m.medicare) + cents(m.paidLeave));
+      expect(cents(m.totalTaxesYTD)).toBe(
+        cents(m.federalTaxYTD) + cents(m.stateTaxYTD) + cents(m.socialSecurityYTD) + cents(m.medicareYTD) + cents(m.paidLeaveYTD));
+    });
+  });
+
+  it('keeps the deduction lines adding up to the total, current and YTD, across a run', () => {
+    const models = buildPaystubModels({
+      ...makeStore({ deduction401k: 0.05, unionDues: 0.01, otherDeduction: 12 }),
+      generalInfo: { ...makeStore().generalInfo, payStubCount: 3 },
+    });
+    models.forEach(m => {
+      expect(m.totalDeductions).toBeCloseTo(
+        m.medical + m.dental + m.vision + m.retirement401k + m.otherDeductions, 5);
+      expect(m.totalDeductionsYTD).toBeCloseTo(
+        m.medicalYTD + m.dentalYTD + m.visionYTD + m.retirement401kYTD + m.otherDeductionsYTD, 5);
+      expect(m.otherDeductionsYTD).toBeCloseTo(m.otherDeductionsExUnionYTD + m.unionDuesYTD, 5);
+      expect(m.netPayYTD).toBeCloseTo(m.grossPayYTD - m.totalTaxesYTD - m.totalDeductionsYTD, 5);
+    });
+    // Later stubs pay regular wages only, so their 401(k) is 5% of 1,000.
+    expect(models[1].retirement401k).toBeCloseTo(50, 5);
   });
 
   it('counts overtime and bonus in YTD once — they are one-time, not recurring', () => {
@@ -176,6 +253,21 @@ describe('buildPaystubModels — the purchased run of stubs', () => {
     expect(models.map(m => String(m.incomeDetails.periodEndDate))).toEqual(['2025-01-07', '2025-01-14', '2025-01-21']);
     // Each period begins the day after the previous one ended — no gaps, no overlaps.
     expect(String(models[1].incomeDetails.periodStartDate)).toBe('2025-01-08');
+  });
+
+  it('carries the chosen gap between end date and pay date onto every stub of the run', () => {
+    const run = (periodPayDate: unknown) => buildPaystubModels({
+      ...makeStore(),
+      incomeDetails: { ...makeStore().incomeDetails, periodPayDate: periodPayDate as Date },
+      generalInfo: { ...makeStore().generalInfo, payStubCount: 3 },
+    }).map(m => String(m.incomeDetails.periodPayDate));
+
+    // Weekly periods ending 2025-01-07, -14, -21.
+    expect(run('2025-01-10')).toEqual(['2025-01-10', '2025-01-17', '2025-01-24']); // 3 days after
+    expect(run('2025-01-07')).toEqual(['2025-01-07', '2025-01-14', '2025-01-21']); // on the end date
+    // A pay date before the end date, or none at all, falls back to the 7-day default.
+    expect(run('2025-01-03')).toEqual(['2025-01-14', '2025-01-21', '2025-01-28']);
+    expect(run('')).toEqual(['2025-01-14', '2025-01-21', '2025-01-28']);
   });
 
   it('increments the check and stub numbers across the run', () => {

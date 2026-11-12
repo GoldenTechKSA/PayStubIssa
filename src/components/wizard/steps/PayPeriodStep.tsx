@@ -19,7 +19,7 @@ import { BankAccountInput } from "../BankAccountInput";
 const DIRECT_DEPOSIT = "Direct Deposit";
 const ACCOUNT_TYPES = ["Checking", "Savings"];
 
-// Read-only, computed fields: muted so they read as results rather than inputs awaiting a value.
+// The read-only, computed end date: muted so they read as results rather than inputs awaiting a value.
 const readOnlySx = {
   "& .MuiInputBase-root": { bgcolor: "action.hover" },
   "& .MuiInputBase-input": { color: "text.secondary", cursor: "default" },
@@ -38,10 +38,16 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const [periodType, setPeriodType] = useState(income.periodType || "Weekly");
   const [periodStartDate, setStart] = useState(toISODate(income.periodStartDate));
 
-  // End and pay date are not editable: they are always derived from start + frequency, so a
-  // saved end/pay date that disagrees with the start is simply recomputed here.
+  // The end date is not editable: it is always derived from start + frequency, so a saved end
+  // date that disagrees with the start is simply recomputed here.
   const periodEndDate = calculateEndDate(periodStartDate, periodType);
-  const periodPayDate = calculatePayDate(periodEndDate);
+
+  // The pay date defaults to a week after the end date and the user may move it, but never to
+  // before the end date. A saved pay date is kept only while it still respects that floor.
+  const [periodPayDate, setPayDate] = useState(() => {
+    const saved = toISODate(income.periodPayDate);
+    return saved && periodEndDate && saved >= periodEndDate ? saved : calculatePayDate(periodEndDate);
+  });
 
   const [payStubCount, setPayStubCount] = useState<number>(general.payStubCount || 1);
   const [checkNumber, setCheckNumber] = useState<number>(general.checkNumber || 5000);
@@ -63,9 +69,18 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   // full period in the past (the computed end date is before today). Changing the frequency snaps
   // the start back to that frequency's default, even over a hand-typed date: the frequency decides
   // the period, and the user then adjusts the start if they need a different one.
+  // Moving the period (new frequency or new start) snaps the pay date back to its default for
+  // the new end date as well, for the same reason.
   const handlePeriodTypeChange = (value: string) => {
+    const start = defaultPeriodStart(value);
     setPeriodType(value);
-    setStart(defaultPeriodStart(value));
+    setStart(start);
+    setPayDate(calculatePayDate(calculateEndDate(start, value)));
+  };
+
+  const handleStartChange = (value: string) => {
+    setStart(value);
+    setPayDate(calculatePayDate(calculateEndDate(value, periodType)));
   };
 
   const startIsDate = isValidDate(periodStartDate);
@@ -81,7 +96,16 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const accountError = isValidBankAccountNumber(bankAccountNumber) ? "" : "Enter 4 to 17 digits.";
   const bankValid = !isDirectDeposit || (!routingError && !accountTypeError && !accountError);
 
-  const isValid = !startError && isValidStubCount(String(payStubCount)) && bankValid;
+  // Only judged once there is an end date to compare against; a bad start already blocks Next.
+  const payDateError = !periodEndDate
+    ? ""
+    : !/^\d{4}-\d{2}-\d{2}$/.test(periodPayDate)
+      ? "Enter a valid pay date."
+      : periodPayDate < periodEndDate
+        ? "Pay date cannot be before the period end date."
+        : "";
+
+  const isValid = !startError && !payDateError && isValidStubCount(String(payStubCount)) && bankValid;
 
   const handleNext = () => {
     dispatch(saveIncomeDetails({ periodType, periodStartDate, periodEndDate, periodPayDate }));
@@ -95,7 +119,7 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   return (
     <WizardStepLayout
       title="Pay period"
-      subtitle="Pick the pay frequency and the day the period started. The end date and pay date follow from those, and the period must already have ended."
+      subtitle="Pick the pay frequency and the day the period started. The end date follows from those, and the period must already have ended. The pay date starts a week after the end date and can be changed."
       onBack={onBack}
       onNext={handleNext}
       nextDisabled={!isValid}
@@ -109,7 +133,7 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
             fullWidth required label="Period start date" type="date" value={periodStartDate}
-            onChange={e => setStart(e.target.value)} onBlur={() => touch("start")}
+            onChange={e => handleStartChange(e.target.value)} onBlur={() => touch("start")}
             error={touched.start && !!startError}
             helperText={touched.start && startError ? startError : " "}
             InputLabelProps={{ shrink: true }}
@@ -126,11 +150,12 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
-            fullWidth label="Pay date" type="date" value={periodPayDate}
-            helperText="Calculated: end date plus one day."
+            fullWidth required label="Pay date" type="date" value={periodPayDate}
+            onChange={e => { setPayDate(e.target.value); touch("pay"); }} onBlur={() => touch("pay")}
+            error={touched.pay && !!payDateError}
+            helperText={touched.pay && payDateError ? payDateError : "On or after the period end date."}
             InputLabelProps={{ shrink: true }}
-            InputProps={{ readOnly: true }}
-            sx={readOnlySx}
+            inputProps={{ min: periodEndDate || undefined }}
           />
         </Grid>
 

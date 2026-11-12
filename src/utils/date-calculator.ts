@@ -63,13 +63,28 @@ export const calculateEndDate = (startDate, payPeriodType) => {
     }
 };
 
-// Function to calculate pay date (end date + 1 day)
-export const calculatePayDate = (endDate) => {
+// How many days after the period end the pay date sits unless the user picks another one.
+export const DEFAULT_PAY_DATE_GAP_DAYS = 7;
+
+// The pay date for a period: its end date plus `gapDays` (a week by default).
+export const calculatePayDate = (endDate, gapDays: number = DEFAULT_PAY_DATE_GAP_DAYS) => {
     if (!endDate) return "";
 
     const end = parseLocalDate(endDate);
-    end.setDate(end.getDate() + 1);
+    end.setDate(end.getDate() + gapDays);
     return formatLocalDate(end);
+};
+
+// Whole days from a period's end date to its pay date. The user may move the pay date anywhere
+// on or after the end date, so 0 is a valid answer. A pay date that is missing, unusable or
+// BEFORE the end date is not one the wizard would have saved, so it falls back to the default.
+export const payDateGapDays = (endDate: unknown, payDate: unknown): number => {
+    const end = toISODate(endDate);
+    const pay = toISODate(payDate);
+    if (!end || !pay || pay < end) return DEFAULT_PAY_DATE_GAP_DAYS;
+
+    const ms = new Date(`${pay}T00:00:00Z`).getTime() - new Date(`${end}T00:00:00Z`).getTime();
+    return Math.round(ms / (24 * 60 * 60 * 1000));
 };
 
 // Number of pay periods in a full year for a given period type.
@@ -157,7 +172,15 @@ export interface PayPeriod {
 // The date the user enters is period #1; the run advances forward from there. That matches the
 // rest of the form, where the check number and pay stub number are both "starting" values that
 // increment across the run.
-export const buildPayPeriods = (startDate: unknown, periodType: string, count: number): PayPeriod[] => {
+//
+// `payGapDays` is the distance from each period's end to its pay date. The user picks the pay
+// date for period #1 only; every later stub keeps that same gap after its own end date.
+export const buildPayPeriods = (
+    startDate: unknown,
+    periodType: string,
+    count: number,
+    payGapDays: number = DEFAULT_PAY_DATE_GAP_DAYS,
+): PayPeriod[] => {
     const periods: PayPeriod[] = [];
 
     let currentStart = toISODate(startDate);
@@ -169,7 +192,7 @@ export const buildPayPeriods = (startDate: unknown, periodType: string, count: n
         const endDate = calculateEndDate(currentStart, periodType);
         if (!endDate) break;
 
-        periods.push({ startDate: currentStart, endDate, payDate: calculatePayDate(endDate) });
+        periods.push({ startDate: currentStart, endDate, payDate: calculatePayDate(endDate, payGapDays) });
 
         // The next period starts the day after this one ends. Step in UTC so the run can't
         // drift a day in timezones behind GMT.

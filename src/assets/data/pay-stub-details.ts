@@ -52,7 +52,7 @@ export interface IncomeDetails {
     overtimeRate: number; // Example overtime hourly rate
     overtimeHours: number; // Example overtime hours worked per week
     bonusAmount: number; // Example extrea bonus amount
-    deduction401k: number; // Optional 401K amount
+    deduction401k: number; // Optional 401(k) contribution as a fraction of gross pay (e.g., 0.05 for 5%)
     medicalDeduction: number; // Optional medical deduction amount
     dentalDeduction: number; // Optional dental deduction amount
     visionDeduction: number; // Optional vision deduction amount
@@ -141,7 +141,8 @@ export interface PaystubModel extends PayStubDetails {
     dental: number;
     vision: number;
     retirement401k: number;
-    otherDeductions: number;
+    otherDeductions: number; // flat "Other" amount PLUS union dues: the catch-all line
+    otherDeductionsExUnion: number; // flat "Other" amount alone, for templates with a union-dues row
     unionDues: number;
     totalDeductions: number;
     // Net (current period)
@@ -163,6 +164,7 @@ export interface PaystubModel extends PayStubDetails {
     visionYTD: number;
     retirement401kYTD: number;
     otherDeductionsYTD: number;
+    otherDeductionsExUnionYTD: number;
     unionDuesYTD: number;
     totalDeductionsYTD: number;
     netPayYTD: number;

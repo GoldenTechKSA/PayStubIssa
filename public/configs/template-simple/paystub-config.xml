@@ -1002,6 +1002,28 @@
               <value>{stateTaxYTD}</value>
             </cell>
           </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="pfml-desc" type="substitute">
+              <style>
+                <padding>2px 4px</padding>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="pfml-current" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="pfml-ytd" type="substitute" format="currency">
+              <style>
+                <padding>2px 4px</padding>
+                <textAlign>right</textAlign>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
           <rowcells>
             <cell id="total-desc" type="static">
               <style>
