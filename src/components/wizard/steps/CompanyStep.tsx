@@ -6,7 +6,7 @@ import { STATESLIST } from "../../../constants/globals";
 import { CompanyInfo as CompanyDetails, PayStubDetails } from "assets/data/pay-stub-details";
 import { WizardStepLayout } from "../WizardStepLayout";
 import { MaskedIdInput } from "../MaskedIdInput";
-import { isValidUSPhone } from "../../../utils/util";
+import { isValidUSPhone, normalizeUSPhone } from "../../../utils/util";
 
 interface StepProps {
   onNext: () => void;
@@ -51,7 +51,9 @@ const CompanyStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const handleNext = () => {
     dispatch(saveCompanyInfo({
       companyName, companyEIN, companyAddress1, companyAddress2, companyCity,
-      companyState, companyZipCode, companyLogo, companyPhone, companyEmail,
+      companyState, companyZipCode, companyLogo, companyEmail,
+      // The stub prints this verbatim, so drop the +1 that browser autofill adds.
+      companyPhone: normalizeUSPhone(companyPhone),
     }));
     onNext();
   };

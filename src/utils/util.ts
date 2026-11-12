@@ -60,6 +60,13 @@ export const isValidBankAccountNumber = (value: string): boolean => /^\d{4,17}$/
 export const isValidUSPhone = (value: string): boolean =>
     /^(\+?1[\s.-]?)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value.trim());
 
+// The same number without the US country code, otherwise as typed: "+1 (555) 123-4567" →
+// "(555) 123-4567". The lookahead insists on a full 10-digit number after the code, so a
+// leading 1 that is really the first digit of an area code is left alone. Used when the
+// wizard saves a phone, because the stub prints the stored text verbatim.
+export const normalizeUSPhone = (value: string): string =>
+    value.trim().replace(/^\+?1[\s.-]?(?=\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$)/, '');
+
 // Helper to format date fields safely
 export const formatDate = (date: Date | string | undefined | null) => {
   if (!date) return "";
@@ -381,75 +388,5 @@ class FICATaxCalculator {
         return { ...this.DEFAULT_LIMITS_2025 };
     }
 }
-
-// Function to display FICA tax results
-function displayFICAResults(income: number, filingStatus?: string, isSelfEmployed: boolean = false): void {
-    try {
-        let result: FICAResult;
-        let title: string;
-
-        if (isSelfEmployed) {
-            result = FICATaxCalculator.calculateSelfEmployedFICA(income, filingStatus as any);
-            title = 'Self-Employed FICA Tax Calculation';
-        } else {
-            result = FICATaxCalculator.calculateFICA(income, filingStatus as any);
-            title = 'Employee FICA Tax Calculation';
-        }
-
-        // console.log(`📊 ${title} for 2025`);
-        // console.log('=========================================');
-        // console.log(`Annual Income: ${formatCurrency(income)}`);
-        // console.log(`Filing Status: ${filingStatus || 'Not specified'}`);
-        // console.log('-----------------------------------------');
-        // console.log(`Social Security Tax (6.2%): ${formatCurrency(result.socialSecurityTax)}`);
-        // console.log(`Medicare Tax: ${formatCurrency(result.medicareTax)}`);
-        // console.log(`Total FICA Tax: ${formatCurrency(result.totalFICATax)}`);
-        
-        // if (!isSelfEmployed) {
-        //     console.log(`Employer Match: ${formatCurrency(result.employerMatch)}`);
-        //     console.log(`Total FICA Contribution: ${formatCurrency(result.totalFICAContribution)}`);
-        // } else {
-        //     console.log(`Self-Employment Tax: ${formatCurrency(result.totalFICATax)}`);
-        // }
-        
-        // console.log(`Net Income After FICA: ${formatCurrency(result.netIncomeAfterFICA)}`);
-        // console.log('=========================================\n');
-    } catch (error) {
-        console.error('Error:', (error as Error).message);
-    }
-}
-
-// Example usage and test cases
-// console.log('FICA Tax Calculation Examples:\n');
-
-// Regular employee examples
-displayFICAResults(50000, 'single');
-displayFICAResults(200000, 'single');
-displayFICAResults(300000, 'married_joint');
-
-// High income example (hits Social Security cap and Additional Medicare tax)
-displayFICAResults(250000, 'single');
-
-// Self-employed examples
-displayFICAResults(80000, 'single', true);
-displayFICAResults(150000, 'married_joint', true);
-
-// Get current FICA limits
-const limits = FICATaxCalculator.getFICALimits();
-// console.log('📋 2025 FICA Tax Limits (Estimated):');
-// console.log(`Social Security Wage Base: ${formatCurrency(limits.socialSecurityWageBase)}`);
-// console.log(`Social Security Rate: ${(limits.socialSecurityRate * 100).toFixed(2)}%`);
-// console.log(`Medicare Standard Rate: ${(limits.medicareStandardRate * 100).toFixed(2)}%`);
-// console.log(`Additional Medicare Rate: ${(limits.medicareAdditionalRate * 100).toFixed(2)}%`);
-// console.log(`Additional Medicare Threshold (Single): ${formatCurrency(limits.additionalMedicareThreshold)}\n`);
-
-// Advanced usage with custom limits
-const customLimits: Partial<FICALimits> = {
-    socialSecurityWageBase: 180000, // Custom wage base
-    medicareAdditionalRate: 0.0095  // Custom additional Medicare rate
-};
-
-const customResult = FICATaxCalculator.calculateFICA(220000, 'single', customLimits);
-// console.log('Custom limits calculation:', customResult);
 
 export { FICATaxCalculator, type FICAResult, type FICALimits };

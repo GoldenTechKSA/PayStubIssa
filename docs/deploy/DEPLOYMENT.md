@@ -154,10 +154,11 @@ flip DNS.
 
 ## Note: `homepage` in package.json
 
-`homepage` is currently `"."` (relative asset paths, a leftover from the old
-subfolder FTP hosting). Serving at the domain root on the VPS, `"/"` is the
-correct value and avoids asset 404s on deep routes. Consider changing it to `"/"`
-before the first production deploy.
+`homepage` is `"/"` (changed 2026-11-11): the site is served at the domain root
+on the VPS, so the build emits absolute asset paths (`/static/...`) and deep
+routes such as `/create` can never 404 on their assets. The earlier `"."` was a
+leftover from the old subfolder FTP hosting. If the site ever moves under a
+path prefix, set `homepage` to that prefix.
 
 ---
 

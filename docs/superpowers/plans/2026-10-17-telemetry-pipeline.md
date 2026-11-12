@@ -1,5 +1,7 @@
 # Telemetry Pipeline Implementation Plan
 
+> **Status: done.** Implemented 2026-10-17 and shipped in PR #35 (merged to master the same day). The checkboxes below are ticked for the record; see the spec for the design as built.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Every user journey through the site lands as `[NNNN]`-coded rows in a `telemetry_events` SQLite table the owner can query, including server-side payment milestones under the same session id.
@@ -54,7 +56,7 @@
   ```
   Codes/names/levels exactly as the spec's "Server events" table: 2001 `telemetry.batch.accepted` info, 2002 `telemetry.batch.rejected` warn, 2003 `telemetry.scrubbed` warn, 2101 `payments.order.created` info, 2102 `payments.order.captured` info, 2103 `payments.capture.failed` error, 2104 `payments.order.create_failed` error.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // server/test/telemetry-codes.test.ts
@@ -80,14 +82,14 @@ describe('server site codes', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd server && npx vitest run test/telemetry-codes.test.ts`
 Expected: FAIL, cannot find module `../src/telemetry/codes`
 
-- [ ] **Step 3: Implement `server/src/telemetry/codes.ts`** with the interface above.
+- [x] **Step 3: Implement `server/src/telemetry/codes.ts`** with the interface above.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd server && npx vitest run test/telemetry-codes.test.ts`
 Expected: PASS (2 tests)
@@ -132,7 +134,7 @@ Expected: PASS (2 tests)
 - Migration 2 (verbatim from the spec, table + three indexes + `telemetry_sessions` view). In the view, `max_step_completed` uses `json_extract(props_json, '$.step')`; `paid` is `MAX(code IN (1304, 2102))`; `order_id` prefers the 2102 row's `$.orderId` and falls back to 1304's.
 - `ingest` stores `ts` as ISO from the client millisecond timestamp, `received_at` as `now().toISOString()`, `user_agent` truncated to 256, `props_json` = JSON of scrubbed props or NULL. Scrub removals across the batch are concatenated into `scrubbed`; when non-empty, `ingest` calls `this.log(S.TELEMETRY_SCRUBBED, { keys: scrubbed.join(',') }, ids)`.
 
-- [ ] **Step 1: Write the failing scrub test**
+- [x] **Step 1: Write the failing scrub test**
 
 ```ts
 // server/test/telemetry-scrub.test.ts
@@ -161,19 +163,19 @@ describe('scrubProps', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cd server && npx vitest run test/telemetry-scrub.test.ts`
 Expected: FAIL, module not found
 
-- [ ] **Step 3: Implement `server/src/telemetry/scrub.ts`.** Deny test is case-insensitive substring on the key; allow list wins. Redaction regexes: `/\b\d{3}-?\d{2}-?\d{4}\b/g`, `/\b\d{2}-?\d{7}\b/g`, `/\d{9,}/g`.
+- [x] **Step 3: Implement `server/src/telemetry/scrub.ts`.** Deny test is case-insensitive substring on the key; allow list wins. Redaction regexes: `/\b\d{3}-?\d{2}-?\d{4}\b/g`, `/\b\d{2}-?\d{7}\b/g`, `/\d{9,}/g`.
 
-- [ ] **Step 4: Run to verify it passes**
+- [x] **Step 4: Run to verify it passes**
 
 Run: `cd server && npx vitest run test/telemetry-scrub.test.ts`
 Expected: PASS (4 tests)
 
-- [ ] **Step 5: Write the failing service test**
+- [x] **Step 5: Write the failing service test**
 
 ```ts
 // server/test/telemetry-service.test.ts
@@ -247,14 +249,14 @@ describe('TelemetryService', () => {
 });
 ```
 
-- [ ] **Step 6: Run to verify it fails**
+- [x] **Step 6: Run to verify it fails**
 
 Run: `cd server && npx vitest run test/telemetry-service.test.ts`
 Expected: FAIL, module not found
 
-- [ ] **Step 7: Add migration 2 to `server/src/db.ts` and implement `server/src/services/telemetry.ts`.** Note the view's `events` count includes `source='server'` rows (the test expects 9 = 7 client + 2 server). `prune` compares `received_at < now - retentionDays` using ISO strings. `log` writes the `ts` and `received_at` of a server row from `now()`.
+- [x] **Step 7: Add migration 2 to `server/src/db.ts` and implement `server/src/services/telemetry.ts`.** Note the view's `events` count includes `source='server'` rows (the test expects 9 = 7 client + 2 server). `prune` compares `received_at < now - retentionDays` using ISO strings. `log` writes the `ts` and `received_at` of a server row from `now()`.
 
-- [ ] **Step 8: Run the whole server suite**
+- [x] **Step 8: Run the whole server suite**
 
 Run: `cd server && npm test`
 Expected: PASS, all files including the existing 28 cases
@@ -299,7 +301,7 @@ Expected: PASS, all files including the existing 28 cases
   export interface AppDeps { config: Config; orders: OrderService; telemetry: TelemetryService }
   ```
 
-- [ ] **Step 1: Update `helpers.ts`** — add `TELEMETRY_ENABLED: true, TELEMETRY_RETENTION_DAYS: 90` to `testConfig`; add
+- [x] **Step 1: Update `helpers.ts`** — add `TELEMETRY_ENABLED: true, TELEMETRY_RETENTION_DAYS: 90` to `testConfig`; add
   ```ts
   export function makeTelemetry(db: Database.Database, overrides: Partial<{ enabled: boolean }> = {}) {
     const lines: string[] = [];
@@ -309,7 +311,7 @@ Expected: PASS, all files including the existing 28 cases
   ```
   and change `app.test.ts`'s `boot()` to pass `telemetry: makeTelemetry(db).telemetry` (makeService already returns `db`).
 
-- [ ] **Step 2: Write the failing route test**
+- [x] **Step 2: Write the failing route test**
 
 ```ts
 // server/test/telemetry-route.test.ts
@@ -378,12 +380,12 @@ describe('POST /api/telemetry', () => {
 });
 ```
 
-- [ ] **Step 3: Run to verify it fails**
+- [x] **Step 3: Run to verify it fails**
 
 Run: `cd server && npx vitest run test/telemetry-route.test.ts`
 Expected: FAIL (module not found / 404)
 
-- [ ] **Step 4: Implement** `schemas.ts` additions, `request-ids.ts`, `routes/telemetry.ts`, the `config.ts` vars, and wire `app.ts` so `app.use('/api/telemetry', telemetryRouter(telemetry))` is registered **before** `app.use(express.json({ limit: '16kb' }))`. Update `index.ts` to build `new TelemetryService({ db, enabled: config.TELEMETRY_ENABLED, retentionDays: config.TELEMETRY_RETENTION_DAYS })`, call `startPruneTimer()` after listen, and `stopPruneTimer()` in `shutdown`. Append to `.env.example`:
+- [x] **Step 4: Implement** `schemas.ts` additions, `request-ids.ts`, `routes/telemetry.ts`, the `config.ts` vars, and wire `app.ts` so `app.use('/api/telemetry', telemetryRouter(telemetry))` is registered **before** `app.use(express.json({ limit: '16kb' }))`. Update `index.ts` to build `new TelemetryService({ db, enabled: config.TELEMETRY_ENABLED, retentionDays: config.TELEMETRY_RETENTION_DAYS })`, call `startPruneTimer()` after listen, and `stopPruneTimer()` in `shutdown`. Append to `.env.example`:
   ```
   # --- Telemetry ---------------------------------------------------------------
   # Store anonymous usage events from the client in telemetry_events (same DB). false = accept and discard.
@@ -392,7 +394,7 @@ Expected: FAIL (module not found / 404)
   TELEMETRY_RETENTION_DAYS=90
   ```
 
-- [ ] **Step 5: Run the whole server suite and typecheck**
+- [x] **Step 5: Run the whole server suite and typecheck**
 
 Run: `cd server && npm test && npm run typecheck`
 Expected: PASS; no type errors
@@ -410,7 +412,7 @@ Expected: PASS; no type errors
 - Consumes: `readTelemetryIds` (Task 3), `TelemetryService.log`, `S`.
 - Behaviour: on `POST /orders` success → `log(S.PAYMENTS_ORDER_CREATED, { orderId, totalCents }, ids)`; on throw → `log(S.PAYMENTS_ORDER_CREATE_FAILED, { code }, ids)` then rethrow, where `code` is `err.code` for an `HttpError` else `'INTERNAL'`. On capture success → `log(S.PAYMENTS_ORDER_CAPTURED, { orderId, captureId: result.captureId ?? null, capturedCents: result.quote.totalCents }, ids)`; on throw → `log(S.PAYMENTS_CAPTURE_FAILED, { orderId, code }, ids)` then rethrow. (`CapturedOrderResult` has no `captureId`; read it from the `orders` row via `db` only if the service exposes it, otherwise omit the key. Builder's call; the test below does not assert on `captureId`.)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // server/test/telemetry-payments.test.ts
@@ -460,14 +462,14 @@ describe('payment milestones', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cd server && npx vitest run test/telemetry-payments.test.ts`
 Expected: FAIL, no server rows
 
-- [ ] **Step 3: Implement** the router changes and pass `telemetry` from `app.ts`.
+- [x] **Step 3: Implement** the router changes and pass `telemetry` from `app.ts`.
 
-- [ ] **Step 4: Run the whole server suite**
+- [x] **Step 4: Run the whole server suite**
 
 Run: `cd server && npm test && npm run typecheck`
 Expected: PASS
@@ -487,7 +489,7 @@ Expected: PASS
 - `telemetry-queries.sql` holds named blocks separated by lines `-- name: <id>`; ids and intent: `sessions` (last 7 days from `telemetry_sessions`, newest first), `timeline` (one session: `SELECT ts, source, printf('[%04d] %s', code, name) AS event, props_json FROM telemetry_events WHERE session_id = ? ORDER BY ts, id`), `funnel` (per day: sessions, entered_wizard, reached_review = `max_step_completed >= 4`, started_payment, paid), `errors` (last 24 h grouped by code, name, count), `paid` (paid sessions joined to `orders` on `order_id = orders.id` showing `orders.status`).
 - `query.js` usage: `node scripts/query.js <name> [args…]` binds positional args to `?`; `node scripts/query.js --sql "SELECT …"` runs raw SQL; `--json` prints JSON instead of `console.table`. Reads `DATABASE_PATH` via `dotenv` from `server/.env`, resolving relative to the server folder. Exports `loadNamedQueries(file): Record<string, string>` and `run(db, sql, params): unknown[]` for the test; only executes `main()` when `require.main === module`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // server/test/query-script.test.ts
@@ -514,19 +516,19 @@ describe('scripts/query.js', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `cd server && npx vitest run test/query-script.test.ts`
 Expected: FAIL, module not found
 
-- [ ] **Step 3: Write `telemetry-queries.sql` and `scripts/query.js`.** Check `server/tsconfig.json` `include` covers `test`; `require` of a `.js` outside `src` is fine under CommonJS.
+- [x] **Step 3: Write `telemetry-queries.sql` and `scripts/query.js`.** Check `server/tsconfig.json` `include` covers `test`; `require` of a `.js` outside `src` is fine under CommonJS.
 
-- [ ] **Step 4: Run to verify it passes**
+- [x] **Step 4: Run to verify it passes**
 
 Run: `cd server && npx vitest run test/query-script.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: README and workflows.** Add the Endpoints row `POST /api/telemetry — Store a batch of anonymous client events; 204`. Add a "Telemetry" section after "Data": what is stored, retention, the two env vars, and the owner's exact commands:
+- [x] **Step 5: README and workflows.** Add the Endpoints row `POST /api/telemetry — Store a batch of anonymous client events; 204`. Add a "Telemetry" section after "Data": what is stored, retention, the two env vars, and the owner's exact commands:
   ```
   ssh paystubissa@<vps>
   cd ~/apps/production/server     # or ~/apps/staging/server
@@ -539,7 +541,7 @@ Expected: PASS
   ```
   (Confirm the production `API_PATH` in `deploy.yml` and use it verbatim.) In both workflows change the rsync source line to `server/dist server/scripts server/sql server/package.json server/package-lock.json server/ecosystem.config.cjs \`.
 
-- [ ] **Step 6: Verify**
+- [x] **Step 6: Verify**
 
 Run: `cd server && npm test && node scripts/query.js --sql "SELECT 1 AS ok"`
 Expected: tests PASS; the script prints a one-row table with `ok = 1` (it opens `server/data/orders.sqlite` locally and the migration creates the tables).
@@ -568,7 +570,7 @@ Expected: tests PASS; the script prints a one-row table with `ok = 1` (it opens 
   ```
   Codes, names, levels and `props` lists exactly as the spec's "Client events" table (1001–1003, 1101–1106, 1201, 1301–1308, 1401–1404, 1901–1903).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/__test__/telemetry-codes.test.ts
@@ -603,14 +605,14 @@ describe('client site codes', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `npm test -- --watchAll=false telemetry-codes`
 Expected: FAIL, cannot find module
 
-- [ ] **Step 3: Implement `src/telemetry/codes.ts`.**
+- [x] **Step 3: Implement `src/telemetry/codes.ts`.**
 
-- [ ] **Step 4: Run to verify it passes**
+- [x] **Step 4: Run to verify it passes**
 
 Run: `npm test -- --watchAll=false telemetry-codes`
 Expected: PASS (4 tests)
@@ -657,7 +659,7 @@ Expected: PASS (4 tests)
   ```
   Visitor id: `v_` + 16 chars of `[A-Za-z0-9_-]` from `crypto.getRandomValues` when available else `Math.random`; migrated from `LEGACY_VISITOR_KEY` if present (stored as-is after prefixing `v_` and stripping chars outside the class, then the legacy key is removed). Session: read `SESSION_KEY`; reuse `id` if `now - lastSeen < SESSION_IDLE_MS`, else mint `s_…`; write `lastSeen = now` on every `emit`. Any storage throw → in-memory fallback.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/__test__/telemetry-service.test.ts
@@ -758,14 +760,14 @@ describe('TelemetryService', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `npm test -- --watchAll=false telemetry-service`
 Expected: FAIL (exports missing)
 
-- [ ] **Step 3: Rewrite `src/types/telemetry.ts` and `src/services/telemetry-service.ts`** per the interface. Keep the private queue field named `queue` (the truncation test peeks at it). The flush uses `fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true })`. The `pagehide` handler calls `sendBeacon(endpoint, new Blob([body], { type: 'application/json' }))` and clears the queue when it returns `true`.
+- [x] **Step 3: Rewrite `src/types/telemetry.ts` and `src/services/telemetry-service.ts`** per the interface. Keep the private queue field named `queue` (the truncation test peeks at it). The flush uses `fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true })`. The `pagehide` handler calls `sendBeacon(endpoint, new Blob([body], { type: 'application/json' }))` and clears the queue when it returns `true`.
 
-- [ ] **Step 4: Run to verify it passes**
+- [x] **Step 4: Run to verify it passes**
 
 Run: `npm test -- --watchAll=false telemetry-service`
 Expected: PASS (8 tests). Typecheck: `npx tsc --noEmit -p tsconfig.json` reports errors only in files Task 8 rewrites (`telemetry-context.tsx`, `telemetry-error-boundary.tsx`, `app.tsx`, `ReviewStep.tsx`). That is expected until Task 8.
@@ -804,12 +806,12 @@ Expected: PASS (8 tests). Typecheck: `npx tsc --noEmit -p tsconfig.json` reports
   //   'X-Telemetry-Session': telemetry.ids().sessionId, 'X-Telemetry-Visitor': telemetry.ids().visitorId
   ```
 
-- [ ] **Step 1: Install test tooling**
+- [x] **Step 1: Install test tooling**
 
 Run: `npm install --save-dev @testing-library/react@^16.3.0 @testing-library/user-event@^14.6.1 @testing-library/jest-dom@^6.6.3`
 Expected: installs cleanly (`.npmrc` already sets legacy-peer-deps). Create `src/setupTests.ts` containing `import '@testing-library/jest-dom';` (CRA picks it up automatically).
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```tsx
 // src/__test__/route-telemetry.test.tsx
@@ -839,19 +841,19 @@ test('emits page.viewed on navigation but not on first render', async () => {
 });
 ```
 
-- [ ] **Step 3: Run to verify it fails**
+- [x] **Step 3: Run to verify it fails**
 
 Run: `npm test -- --watchAll=false route-telemetry`
 Expected: FAIL, module not found
 
-- [ ] **Step 4: Implement** `route-telemetry.tsx`, rewrite `telemetry-context.tsx`, update `app.tsx`, the error boundary, `payments-api.ts`, and the two ReviewStep imports/emits.
+- [x] **Step 4: Implement** `route-telemetry.tsx`, rewrite `telemetry-context.tsx`, update `app.tsx`, the error boundary, `payments-api.ts`, and the two ReviewStep imports/emits.
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Run: `npm test -- --watchAll=false && npx tsc --noEmit -p tsconfig.json`
 Expected: all jest suites PASS; zero type errors.
 
-- [ ] **Step 6: Manual check in dev** — in one terminal `npm run api`, in another `npm start`; open `http://localhost:3000`, click "Create". The browser console shows `[1001] app.loaded {"path":"/"}` then `[1002] page.viewed {"path":"/create"}`; the API terminal shows `[2001] telemetry.batch.accepted {"count":N}` within 10 s; the CRA terminal shows no proxy error.
+- [x] **Step 6: Manual check in dev** — in one terminal `npm run api`, in another `npm start`; open `http://localhost:3000`, click "Create". The browser console shows `[1001] app.loaded {"path":"/"}` then `[1002] page.viewed {"path":"/create"}`; the API terminal shows `[2001] telemetry.batch.accepted {"count":N}` within 10 s; the CRA terminal shows no proxy error.
 
 ---
 
@@ -874,7 +876,7 @@ Expected: all jest suites PASS; zero type errors.
 - PayPal: after `createOrder` resolves → `T.PAYMENT_ORDER_CREATED { orderId }`; at the top of `onApprove` → `T.PAYMENT_CAPTURE_STARTED { orderId: data.orderID }`; new `onCancel: (data) => emit(T.PAYMENT_CANCELLED, { orderId: data?.orderID ?? null })`; in the outer catch that sets `status = failed` → `T.PAYMENT_BUTTONS_FAILED { message }`.
 - `createAppStore(preloaded?: Partial<PayStubDetails>)` returns `createStore(rootReducer, { ...getInitialState(), ...preloaded })`; the default export stays `createAppStore()`.
 
-- [ ] **Step 1: Write the test helper and the failing test**
+- [x] **Step 1: Write the test helper and the failing test**
 
 ```tsx
 // src/__test__/test-utils.tsx
@@ -931,19 +933,19 @@ describe('wizard telemetry', () => {
 
 (The dev initial state pre-fills the Company step, so Next passes validation under jest's `NODE_ENV=test`. If the Company "Continue" button has a different accessible name, read it from `CompanyStep.tsx` and adjust the regex, not the assertion.)
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `npm test -- --watchAll=false wizard-telemetry`
 Expected: FAIL (`createAppStore` missing / no emits)
 
-- [ ] **Step 3: Implement** every emit site listed in Interfaces, `createAppStore`, and delete the now-unused `handlePaymentError` try/catch wrappers. MUI's `useMediaQuery` returns `false` in jsdom, so the desktop stepper renders and the label click test is valid.
+- [x] **Step 3: Implement** every emit site listed in Interfaces, `createAppStore`, and delete the now-unused `handlePaymentError` try/catch wrappers. MUI's `useMediaQuery` returns `false` in jsdom, so the desktop stepper renders and the label click test is valid.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `npm test -- --watchAll=false && npx tsc --noEmit -p tsconfig.json`
 Expected: all suites PASS; zero type errors.
 
-- [ ] **Step 5: Manual end-to-end in dev** — with `npm run api` and `npm start` running, walk the wizard to Review and pay with a sandbox account. Then in `server/`: `node scripts/query.js sessions` shows one row with `entered_wizard = 1`, `max_step_completed = 4`, `picked_template = 1`, `paid = 1`, `order_id` set; `node scripts/query.js timeline <session_id>` lists `[1101] … [1103] … [1201] … [1302] … [2101] … [1303] … [2102] … [1304]` in order. Record the actual output in the session notes.
+- [x] **Step 5: Manual end-to-end in dev** — with `npm run api` and `npm start` running, walk the wizard to Review and pay with a sandbox account. Then in `server/`: `node scripts/query.js sessions` shows one row with `entered_wizard = 1`, `max_step_completed = 4`, `picked_template = 1`, `paid = 1`, `order_id` set; `node scripts/query.js timeline <session_id>` lists `[1101] … [1103] … [1201] … [1302] … [2101] … [1303] … [2102] … [1304]` in order. Record the actual output in the session notes.
 
 ---
 
@@ -962,8 +964,8 @@ Expected: all suites PASS; zero type errors.
   `The Service records anonymous usage events so we can see where people get stuck: page views, which wizard steps were completed, template selection, whether a payment succeeded, failed or was cancelled (with its PayPal order id), print and PDF actions, JavaScript errors, and page load time. Each event carries a random identifier stored in your browser so that repeat visits can be grouped; it is not linked to your name or email. Events are kept on our server for up to 90 days and then deleted.`
 - §7 Your controls: append `Clearing site data also resets the analytics identifier.`
 
-- [ ] **Step 1: Apply the copy.**
-- [ ] **Step 2: Verify** — `npm test -- --watchAll=false && npx tsc --noEmit -p tsconfig.json` PASS; open `http://localhost:3000/privacy` and confirm the three passages read as above.
+- [x] **Step 1: Apply the copy.**
+- [x] **Step 2: Verify** — `npm test -- --watchAll=false && npx tsc --noEmit -p tsconfig.json` PASS; open `http://localhost:3000/privacy` and confirm the three passages read as above.
 
 ---
 
@@ -974,6 +976,6 @@ Expected: all suites PASS; zero type errors.
 - Modify: `docs/BACKEND-PLAN.md` (§6 status: implemented 2026-10-17, pointer to the spec; Phase 3 row in the timeline table)
 - Modify: `server/README.md` only if Task 5 left anything out
 
-- [ ] **Step 1: CLAUDE.md** — replace the Telemetry bullet with: the registry location (`src/telemetry/codes.ts`, `server/src/telemetry/codes.ts`), the `[NNNN]` rule (one emit site per code; client 1000–1999, server 2000–2999; add a new code to the registry before emitting), the endpoint, the table and view names, the retention/kill-switch env vars, the privacy rule (never emit form values; server scrubs; a `[2003]` line means a client leak), and `node scripts/query.js sessions|timeline|funnel|errors|paid` as the way to read it. Replace "not yet implemented server-side" everywhere it appears.
-- [ ] **Step 2: BACKEND-PLAN.md** — update §6 and the header status line (keep the owner's existing pending diff intact).
-- [ ] **Step 3: Verify** — `node scripts/format-template-configs.js --check` still passes (unrelated, sanity); `git diff --stat` lists only the files this plan names.
+- [x] **Step 1: CLAUDE.md** — replace the Telemetry bullet with: the registry location (`src/telemetry/codes.ts`, `server/src/telemetry/codes.ts`), the `[NNNN]` rule (one emit site per code; client 1000–1999, server 2000–2999; add a new code to the registry before emitting), the endpoint, the table and view names, the retention/kill-switch env vars, the privacy rule (never emit form values; server scrubs; a `[2003]` line means a client leak), and `node scripts/query.js sessions|timeline|funnel|errors|paid` as the way to read it. Replace "not yet implemented server-side" everywhere it appears.
+- [x] **Step 2: BACKEND-PLAN.md** — update §6 and the header status line (keep the owner's existing pending diff intact).
+- [x] **Step 3: Verify** — `node scripts/format-template-configs.js --check` still passes (unrelated, sanity); `git diff --stat` lists only the files this plan names.
