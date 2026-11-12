@@ -1,6 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithApp } from './test-utils';
 import CompanyStep from '../components/wizard/steps/CompanyStep';
 
@@ -21,5 +22,12 @@ describe('CompanyStep phone field', () => {
     fireEvent.blur(phone());
     expect(screen.getByText(/enter a valid 10-digit phone number/i)).toBeTruthy();
     expect((screen.getByRole('button', { name: /continue/i }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('saves the phone without the country code so the stub prints the domestic form', async () => {
+    const { store } = renderWithApp(<CompanyStep onNext={() => {}} onBack={() => {}} />);
+    fireEvent.change(phone(), { target: { value: '+1 (555) 123-4567' } });
+    await userEvent.click(screen.getByRole('button', { name: /continue/i }));
+    expect(store.getState().companyInfo.companyPhone).toBe('(555) 123-4567');
   });
 });

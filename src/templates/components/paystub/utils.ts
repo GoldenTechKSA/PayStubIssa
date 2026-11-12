@@ -99,7 +99,7 @@ export const isValidEmail = (email: string): boolean => {
  */
 export const isValidPhone = (phone: string): boolean => {
   // Accepts formats like: (555) 123-4567, 555-123-4567, 5551234567
-  const phoneRegex = /^[\d\s\-\(\)]+$/;
+  const phoneRegex = /^[\d\s\-()]+$/;
   const digitsOnly = phone.replace(/\D/g, '');
   return phoneRegex.test(phone) && digitsOnly.length === 10;
 };
