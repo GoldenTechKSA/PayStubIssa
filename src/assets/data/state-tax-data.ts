@@ -1,36 +1,15 @@
-import { StateTaxInfo, TaxRates } from "../../types/tax-rate-types";
+import { StateTaxInfo } from "../../types/tax-rate-types";
 
-// 2024 Tax Year Data
-const FEDERAL_TAX_RATES: TaxRates['federalIncomeTax'] = {
-  brackets: [
-    { min: 0, max: 11000, rate: 0.10 },
-    { min: 11000, max: 44725, rate: 0.12 },
-    { min: 44725, max: 95375, rate: 0.22 },
-    { min: 95375, max: 182050, rate: 0.24 },
-    { min: 182050, max: 231250, rate: 0.32 },
-    { min: 231250, max: 578125, rate: 0.35 },
-    { min: 578125, max: null, rate: 0.37 }
-  ],
-  standardDeduction: {
-    single: 13850,
-    marriedFilingJointly: 27700,
-    marriedFilingSeparately: 13850,
-    headOfHousehold: 20800
-  }
-};
-
-const SOCIAL_SECURITY_TAX = {
-  rate: 0.062, // 6.2%
-  wageBase: 160200 // 2024 wage base
-};
-
+// Federal income tax and the Social Security wage base change every year and live in
+// federal-tax-data.ts. Medicare's rate and thresholds are fixed by statute (not indexed).
 const MEDICARE_TAX = {
   rate: 0.0145, // 1.45%
   additionalRate: 0.009, // 0.9% additional
   additionalThreshold: {
     single: 200000,
     marriedFilingJointly: 250000,
-    marriedFilingSeparately: 125000
+    marriedFilingSeparately: 125000,
+    headOfHousehold: 200000
   }
 };
 
@@ -39,8 +18,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Alabama',
     stateCode: 'AL',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -63,8 +40,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Alaska',
     stateCode: 'AK',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -76,8 +51,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Arizona',
     stateCode: 'AZ',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -90,8 +63,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Arkansas',
     stateCode: 'AR',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -115,8 +86,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'California',
     stateCode: 'CA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -145,8 +114,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Colorado',
     stateCode: 'CO',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -159,8 +126,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Connecticut',
     stateCode: 'CT',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -180,8 +145,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Delaware',
     stateCode: 'DE',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -206,8 +169,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Florida',
     stateCode: 'FL',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -219,8 +180,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Georgia',
     stateCode: 'GA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -246,8 +205,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Hawaii',
     stateCode: 'HI',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -278,8 +235,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Idaho',
     stateCode: 'ID',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -292,8 +247,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Illinois',
     stateCode: 'IL',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -306,8 +259,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Indiana',
     stateCode: 'IN',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -320,8 +271,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Iowa',
     stateCode: 'IA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -334,8 +283,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Kansas',
     stateCode: 'KS',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -358,8 +305,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Kentucky',
     stateCode: 'KY',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -372,8 +317,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Louisiana',
     stateCode: 'LA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -396,8 +339,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Maine',
     stateCode: 'ME',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -420,8 +361,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Maryland',
     stateCode: 'MD',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -449,8 +388,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Massachusetts',
     stateCode: 'MA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -463,8 +400,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Michigan',
     stateCode: 'MI',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -477,8 +412,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Minnesota',
     stateCode: 'MN',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -502,8 +435,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Mississippi',
     stateCode: 'MS',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -526,8 +457,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Missouri',
     stateCode: 'MO',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -556,8 +485,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Montana',
     stateCode: 'MT',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -584,8 +511,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Nebraska',
     stateCode: 'NE',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -609,8 +534,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Nevada',
     stateCode: 'NV',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -622,8 +545,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'New Hampshire',
     stateCode: 'NH',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -635,8 +556,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'New Jersey',
     stateCode: 'NJ',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -657,8 +576,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'New Mexico',
     stateCode: 'NM',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -683,8 +600,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'New York',
     stateCode: 'NY',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -713,8 +628,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'North Carolina',
     stateCode: 'NC',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -727,8 +640,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'North Dakota',
     stateCode: 'ND',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -752,8 +663,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Ohio',
     stateCode: 'OH',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -772,8 +681,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Oklahoma',
     stateCode: 'OK',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -799,8 +706,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Oregon',
     stateCode: 'OR',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -826,8 +731,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Pennsylvania',
     stateCode: 'PA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -840,8 +743,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Rhode Island',
     stateCode: 'RI',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -864,8 +765,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'South Carolina',
     stateCode: 'SC',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -891,8 +790,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'South Dakota',
     stateCode: 'SD',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -904,8 +801,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Tennessee',
     stateCode: 'TN',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -917,8 +812,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Texas',
     stateCode: 'TX',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -930,8 +823,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Utah',
     stateCode: 'UT',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -944,8 +835,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Vermont',
     stateCode: 'VT',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -969,8 +858,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Virginia',
     stateCode: 'VA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -994,8 +881,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Washington',
     stateCode: 'WA',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -1007,8 +892,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'West Virginia',
     stateCode: 'WV',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -1033,8 +916,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Wisconsin',
     stateCode: 'WI',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,
@@ -1058,8 +939,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'Wyoming',
     stateCode: 'WY',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: false
@@ -1071,8 +950,6 @@ export const STATE_TAX_DATA: Record<string, StateTaxInfo> = {
     stateName: 'District of Columbia',
     stateCode: 'DC',
     taxRates: {
-      federalIncomeTax: FEDERAL_TAX_RATES,
-      socialSecurityTax: SOCIAL_SECURITY_TAX,
       medicareTax: MEDICARE_TAX,
       stateIncomeTax: {
         hasIncomeTax: true,

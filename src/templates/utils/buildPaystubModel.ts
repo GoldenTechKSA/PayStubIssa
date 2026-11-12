@@ -181,12 +181,14 @@ const withholdForPeriod = (
   filingStatus: FilingStatus,
   stateCode: string,
   periodPreTax: number = 0,
+  taxYear?: number,
 ): PeriodWithholding => {
   const annualTaxes: TaxCalculationResult = taxCalculator.calculateTaxes({
     grossIncome: periodGross * perYear,
     filingStatus,
     stateCode,
     additionalDeductions: periodPreTax * perYear,
+    taxYear,
   });
 
   // Each line is rounded to the cent it prints as, and the total is the sum of those cents, so
@@ -271,14 +273,17 @@ const buildModelForPeriod = (
 
   // --- Taxes (current period) ---
   // The 401(k) is a traditional, pre-tax contribution: income tax is withheld on gross less it.
-  const taxes = withholdForPeriod(grossPay, perYear, filingStatus, stateCode, retirement401k);
+  // Wages are taxed under the rules of the year they are PAID in, so the IRS tables follow this
+  // stub's pay date: a stub dated in 2025 uses the 2025 tables even when it is made in 2026.
+  const taxYear = Number(toISODate(incomeDetails.periodPayDate).slice(0, 4)) || undefined;
+  const taxes = withholdForPeriod(grossPay, perYear, filingStatus, stateCode, retirement401k, taxYear);
   const { federalTax, stateTax, socialSecurity, medicare, paidLeave, totalTaxes } = taxes;
 
   // Withholding on regular pay alone: the recurring tax base for YTD. Only differs from the
   // period's actual withholding when there is one-time pay on top.
   const oneTimeEarnings = overtimePay + otherEarnings;
   const baseTaxes = oneTimeEarnings > 0
-    ? withholdForPeriod(regularPay, perYear, filingStatus, stateCode, base401k)
+    ? withholdForPeriod(regularPay, perYear, filingStatus, stateCode, base401k, taxYear)
     : taxes;
 
   // --- Deductions (current period) ---

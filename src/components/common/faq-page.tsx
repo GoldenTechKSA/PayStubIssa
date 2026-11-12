@@ -70,7 +70,7 @@ const faqData = [
             statement that shows no withholding, and a temporary assignment stub.
             <br />
             <br />
-            <strong>Real tax math.</strong> We calculate federal income tax from current progressive brackets, Social
+            <strong>Real tax math.</strong> We calculate federal income tax from the IRS withholding tables for the year of the pay date, Social
             Security (with the wage-base cap), Medicare (including additional Medicare), and state income tax for the
             employee’s state, based on the IRS filing status you select.
             <br />
@@ -126,7 +126,7 @@ const faqData = [
             They are a careful estimate, not a filing-grade figure.
             <br />
             <br />
-            We use current federal income tax brackets, Social Security (capped at the annual wage base), Medicare
+            We use the IRS federal withholding tables for the year of the pay date (for a standard Form W-4), Social Security (capped at the annual wage base), Medicare
             (including additional Medicare above the threshold for your filing status), and state income tax for the
             employee’s state — all driven by the IRS filing status you select.
             <br />
