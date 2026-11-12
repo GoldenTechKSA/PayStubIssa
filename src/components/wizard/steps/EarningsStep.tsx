@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { saveIncomeDetails } from "../../../redux/actions";
 import { IncomeDetails, PayStubDetails } from "assets/data/pay-stub-details";
-import { formatCurrency } from "../../../utils/util";
+import { formatCurrency, rateOfGross } from "../../../utils/util";
 import { periodsPerYear } from "../../../utils/date-calculator";
 import { WizardStepLayout } from "../WizardStepLayout";
 
@@ -20,6 +20,9 @@ const n = (s: string): number => {
   return isNaN(v) ? 0 : v;
 };
 const numStr = (v: number | undefined) => (v && v !== 0 ? String(v) : "");
+// A stored fraction back to the percentage the user typed, without float noise (0.07 → "7").
+const pctStr = (fraction: number) => String(Math.round(fraction * 1e6) / 1e4);
+const PCT_ERROR = "Enter a percentage from 0 to 100.";
 
 const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const income = useSelector<PayStubDetails, IncomeDetails>(s => s.incomeDetails);
@@ -33,14 +36,17 @@ const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   const [bonusAmount, setBonusAmount] = useState(numStr(income.bonusAmount));
   const [annualSalary, setAnnualSalary] = useState(numStr(income.annualSalary));
 
-  const hasDeductions = !!(income.medicalDeduction || income.dentalDeduction || income.visionDeduction || income.otherDeduction || income.deduction401k || income.unionDues);
+  // Stored as a fraction of gross (0.05 = 5%); see rateOfGross for why out-of-range values read as none.
+  const saved401k = rateOfGross(income.deduction401k);
+  const savedUnion = rateOfGross(income.unionDues);
+  const hasDeductions = !!(income.medicalDeduction || income.dentalDeduction || income.visionDeduction || income.otherDeduction || saved401k || savedUnion);
   const [showDeductions, setShowDeductions] = useState(hasDeductions);
   const [medical, setMedical] = useState(numStr(income.medicalDeduction));
   const [dental, setDental] = useState(numStr(income.dentalDeduction));
   const [vision, setVision] = useState(numStr(income.visionDeduction));
   const [other, setOther] = useState(numStr(income.otherDeduction));
-  const [d401kPct, setD401kPct] = useState(income.deduction401k ? String(income.deduction401k * 100) : "");
-  const [unionPct, setUnionPct] = useState(income.unionDues ? String(income.unionDues * 100) : "");
+  const [d401kPct, setD401kPct] = useState(saved401k ? pctStr(saved401k) : "");
+  const [unionPct, setUnionPct] = useState(savedUnion ? pctStr(savedUnion) : "");
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const touch = (k: string) => setTouched(t => ({ ...t, [k]: true }));
@@ -50,9 +56,10 @@ const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
     ? n(hourlyRate) * n(hoursWorked) + n(overtimeRate) * n(overtimeHours) + n(bonusAmount)
     : n(annualSalary) / periodsPer + n(bonusAmount);
 
-  const isValid = wageType === "Hourly"
+  const pctOk = (s: string) => n(s) >= 0 && n(s) <= 100;
+  const isValid = (wageType === "Hourly"
     ? n(hourlyRate) > 0 && n(hoursWorked) > 0
-    : n(annualSalary) > 0;
+    : n(annualSalary) > 0) && pctOk(d401kPct) && pctOk(unionPct);
 
   const handleWageType = (_: React.MouseEvent<HTMLElement>, value: string | null) => {
     if (!value) return;
@@ -177,15 +184,17 @@ const EarningsStep: React.FC<StepProps> = ({ onNext, onBack }) => {
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth label="401(k)" type="number" value={d401kPct} onChange={e => setD401kPct(e.target.value)}
-                helperText={d401kPct ? `≈ ${formatCurrency((grossForPct * n(d401kPct)) / 100)} this period` : "Percentage of gross pay"}
-                InputProps={pct} inputProps={{ min: 0, step: "any" }}
+                error={!pctOk(d401kPct)}
+                helperText={!pctOk(d401kPct) ? PCT_ERROR : d401kPct ? `≈ ${formatCurrency((grossForPct * n(d401kPct)) / 100)} this period, taken before income tax` : "Percentage of gross pay"}
+                InputProps={pct} inputProps={{ min: 0, max: 100, step: "any" }}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth label="Union dues" type="number" value={unionPct} onChange={e => setUnionPct(e.target.value)}
-                helperText={unionPct ? `≈ ${formatCurrency((grossForPct * n(unionPct)) / 100)} this period` : "Percentage of gross pay"}
-                InputProps={pct} inputProps={{ min: 0, step: "any" }}
+                error={!pctOk(unionPct)}
+                helperText={!pctOk(unionPct) ? PCT_ERROR : unionPct ? `≈ ${formatCurrency((grossForPct * n(unionPct)) / 100)} this period` : "Percentage of gross pay"}
+                InputProps={pct} inputProps={{ min: 0, max: 100, step: "any" }}
               />
             </Grid>
           </Grid>

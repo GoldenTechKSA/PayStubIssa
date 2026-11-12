@@ -39,11 +39,13 @@ export const Table: React.FC<TableProps> = ({ config, data }) => {
         )}
         <tbody>
           {config.cells.map((row, rowIndex) => (
-            <tr key={`${config.id}-row-${rowIndex}`}>
-              {row.map(cell => (
-                <TableCell key={cell.id} config={cell} data={data} />
-              ))}
-            </tr>
+            evalRenderIf(config.rowRenderIf?.[rowIndex], data) && (
+              <tr key={`${config.id}-row-${rowIndex}`}>
+                {row.map(cell => (
+                  <TableCell key={cell.id} config={cell} data={data} />
+                ))}
+              </tr>
+            )
           ))}
         </tbody>
       </table>

@@ -3,7 +3,8 @@ import { PaystubModel } from 'assets/data/pay-stub-details';
 /**
  * Evaluates a `renderIf` expression against the data model.
  *
- * `renderIf` is an optional attribute on <section>/<column>/<table>. Its value is a
+ * `renderIf` is an optional attribute on <section>/<column>/<table>, and on a single
+ * <rowcells> row of a table. Its value is a
  * dotted path into the PaystubModel (e.g. "totalDeductions"). The element renders
  * only when that path resolves to a "present" value:
  *   - number  -> non-zero (and not NaN)

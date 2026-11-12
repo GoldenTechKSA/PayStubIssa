@@ -497,6 +497,29 @@
               <value>{stateTaxYTD}</value>
             </cell>
           </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="es-pfml-desc" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px</padding>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="es-pfml-current" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="es-pfml-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
         </cells>
       </table>
     </column>

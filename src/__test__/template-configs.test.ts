@@ -53,4 +53,15 @@ describe('template XML configs', () => {
       fs.writeFileSync(path.join(dumpDir, `${name}.json`), JSON.stringify(config, null, 2));
     }
   });
+
+  // Total Taxes includes the state paid-leave premium, so a template that prints the federal,
+  // Social Security, Medicare and state lines must print the paid-leave line too. Without it the
+  // total is larger than the lines above it in every state that runs a paid-leave program.
+  it.each(templates)('$title prints every tax line that Total Taxes adds up', ({ configFile }) => {
+    const xml = fs.readFileSync(path.join(PUBLIC_DIR, configFile), 'utf8');
+    if (!xml.includes('{federalTax}')) return; // no tax breakdown at all (contractor statement)
+    ['{stateTax}', '{socialSecurity}', '{medicare}', '{paidLeave}', '{paidLeaveLabel}',
+      '{federalTaxYTD}', '{stateTaxYTD}', '{socialSecurityYTD}', '{medicareYTD}', '{paidLeaveYTD}',
+    ].forEach(field => expect(xml).toContain(field));
+  });
 });

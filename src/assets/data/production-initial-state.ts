@@ -55,7 +55,7 @@ const incomeDetails: IncomeDetails = {
     overtimeRate: 0.0, // Example overtime hourly rate
     overtimeHours: 0.0, // Example overtime hours worked per week
     bonusAmount: 0.0, // Example extrea bonus amount
-    deduction401k: 0, // Optional 401K amount
+    deduction401k: 0, // Optional 401(k) fraction of gross pay (e.g., 0.05 for 5%)
     medicalDeduction: 0, // Optional medical deduction amount
     dentalDeduction: 0, // Optional dental deduction amount
     visionDeduction: 0, // Optional vision deduction amount

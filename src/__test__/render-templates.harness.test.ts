@@ -35,7 +35,7 @@ const SAMPLE: PayStubDetails = {
     overtimeRate: 48.75,
     overtimeHours: 6,
     bonusAmount: 250,
-    deduction401k: 150,
+    deduction401k: 0.05,
     medicalDeduction: 120.5,
     dentalDeduction: 25,
     visionDeduction: 10,

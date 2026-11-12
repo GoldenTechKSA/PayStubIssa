@@ -1051,7 +1051,7 @@
           </rowcells>
         </cells>
       </table>
-      <table id="lc-ded-other" renderIf="otherDeductions">
+      <table id="lc-ded-other" renderIf="otherDeductionsExUnion">
         <style>
           <width>100%</width>
           <tableLayout>fixed</tableLayout>
@@ -1074,7 +1074,7 @@
                 <padding>3px 6px</padding>
                 <borderBottom>1px solid #d1d5db</borderBottom>
               </style>
-              <value>{otherDeductions}</value>
+              <value>{otherDeductionsExUnion}</value>
             </cell>
             <cell id="lc-ded-other-ytd" type="substitute" format="currency">
               <style>
@@ -1083,7 +1083,7 @@
                 <padding>3px 6px</padding>
                 <borderBottom>1px solid #d1d5db</borderBottom>
               </style>
-              <value>{otherDeductionsYTD}</value>
+              <value>{otherDeductionsExUnionYTD}</value>
             </cell>
           </rowcells>
         </cells>
