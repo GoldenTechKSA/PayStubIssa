@@ -35,14 +35,14 @@ export const LEGAL_EMAIL = `legal@${SITE_DOMAIN}`;
 export const ACCESSIBILITY_EMAIL = `accessibility@${SITE_DOMAIN}`;
 
 /** Date the current Terms / Privacy / Accessibility revisions took effect. Bump POLICIES_VERSION with it. */
-export const POLICIES_LAST_UPDATED = 'November 1, 2026';
+export const POLICIES_LAST_UPDATED = 'November 13, 2026';
 
 /**
  * Machine-readable version of the policies above (the ISO date of POLICIES_LAST_UPDATED). It is
  * recorded with every order next to the attestation time, so each purchase shows which Terms
  * the customer agreed to.
  */
-export const POLICIES_VERSION = '2026-11-01';
+export const POLICIES_VERSION = '2026-11-13';
 
 /** Window, in days, of the satisfaction guarantee. Terms and FAQ must agree. */
 export const REFUND_WINDOW_DAYS = 30;

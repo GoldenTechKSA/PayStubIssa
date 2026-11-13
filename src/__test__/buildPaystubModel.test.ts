@@ -8,7 +8,7 @@
 import { describe, it, expect } from '@jest/globals';
 import { buildPaystubModel, buildPaystubModels } from '../templates/utils/buildPaystubModel';
 import { periodsElapsedAt } from '../utils/date-calculator';
-import { orderTotal, UNIT_PRICE } from '../constants/pricing';
+import { normalizeStubCount } from '../constants/pricing';
 import { PayStubDetails } from '../assets/data/pay-stub-details';
 
 const makeStore = (overrides: Partial<PayStubDetails['incomeDetails']> = {},
@@ -357,17 +357,12 @@ describe('buildPaystubModels — the purchased run of stubs', () => {
   });
 });
 
-describe('pricing — charged per pay stub', () => {
-  it('multiplies the unit price by the stub count', () => {
-    expect(orderTotal(1)).toBe(UNIT_PRICE);
-    expect(orderTotal(4)).toBe(35.96); // 4 x 8.99
-    expect(orderTotal(12)).toBe(107.88);
-  });
-
-  it('clamps out-of-range and junk counts rather than charging a nonsense total', () => {
-    expect(orderTotal(0)).toBe(UNIT_PRICE);
-    expect(orderTotal(-5)).toBe(UNIT_PRICE);
-    expect(orderTotal(99)).toBe(orderTotal(12));
-    expect(orderTotal('abc')).toBe(UNIT_PRICE);
+describe('pricing — stub count', () => {
+  it('clamps out-of-range and junk counts rather than pricing a nonsense quantity', () => {
+    expect(normalizeStubCount(0)).toBe(1);
+    expect(normalizeStubCount(-5)).toBe(1);
+    expect(normalizeStubCount(4)).toBe(4);
+    expect(normalizeStubCount(99)).toBe(12);
+    expect(normalizeStubCount('abc')).toBe(1);
   });
 });

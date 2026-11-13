@@ -12,6 +12,7 @@ import AccessibilityPolicy from "./common/accessibility-policy";
 import TermsOfUser from "./common/terms-of-use";
 import type { TelemetryConfig } from "../types/telemetry";
 import { TelemetryProvider } from "../contexts/telemetry-context";
+import { PriceProvider } from "../contexts/price-context";
 import TelemetryErrorBoundary from "./common/telemetry-error-boundary";
 import { RouteTelemetry } from "./common/route-telemetry";
 import PaystubWizard from "./wizard/PaystubWizard";
@@ -39,6 +40,7 @@ const App: React.FC = () => {
   return (
     <TelemetryProvider config={TELEMETRY_CONFIG}>
       <RouteTelemetry />
+      <PriceProvider>
       <TelemetryErrorBoundary componentName="App">
         <div className="app-root">
           <AppHeader />
@@ -58,6 +60,7 @@ const App: React.FC = () => {
           <AppFooter />
         </div>
       </TelemetryErrorBoundary>
+      </PriceProvider>
     </TelemetryProvider>
   );
 };

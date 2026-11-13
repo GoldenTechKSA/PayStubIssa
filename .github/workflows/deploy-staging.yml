@@ -58,6 +58,9 @@ jobs:
         run: npm run build
         env:
           CI: "false"
+          # The build stamps the per-stub price it reads from this site's own API
+          # (scripts/stamp-price.js); the browser then confirms it live on every visit.
+          PRICE_SOURCE_URL: ${{ env.SITE_URL }}
 
       # ---- Server -----------------------------------------------------------
       - name: Install server dependencies

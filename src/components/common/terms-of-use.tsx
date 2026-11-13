@@ -15,9 +15,7 @@ import {
   SUPPORT_EMAIL,
   SUPPORT_PHONE,
 } from "constants/business-info";
-import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
-
-const PRICE = `$${UNIT_PRICE.toFixed(2)}`;
+import { MAX_STUBS, MIN_STUBS } from "constants/pricing";
 
 const TermsOfUse = () => (
   <LegalPageShell>
@@ -205,9 +203,10 @@ const TermsOfUse = () => (
     <h4>8. Pricing, Payment, and Refunds</h4>
     <p>
       <strong>Price</strong><br />
-      The Service is charged per pay stub. The price is {PRICE} for each pay stub you generate. You may generate
-      between {MIN_STUBS} and {MAX_STUBS} pay stubs in a single order, and you are charged {PRICE} for each one.
-      The total is shown to you before you pay. There is no subscription and no recurring charge.
+      The Service is charged per pay stub. The price for each pay stub, and the total for your order, are shown
+      to you at checkout before you pay, and that is the amount you are charged. You may generate between{" "}
+      {MIN_STUBS} and {MAX_STUBS} pay stubs in a single order, each charged at that per-stub price. There is no
+      subscription and no recurring charge.
     </p>
     <p>
       <strong>Discount Codes</strong><br />

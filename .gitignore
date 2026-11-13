@@ -42,6 +42,8 @@ db.json
 # Environment files
 .env.development
 .env.production
+.env.development.local
+.env.production.local
 
 # Backend (server/) - secrets, build output, SQLite ledger
 server/.env

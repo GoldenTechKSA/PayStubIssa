@@ -7,7 +7,8 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CheckIcon from "@mui/icons-material/Check";
 import HeroImage from "../../assets/images/heroimage.png";
-import { UNIT_PRICE, MIN_STUBS, MAX_STUBS } from "constants/pricing";
+import { MIN_STUBS, MAX_STUBS } from "constants/pricing";
+import { usePrice } from "contexts/price-context";
 import { CORE_DISCLAIMER, TEMPLATE_COUNT } from "constants/business-info";
 
 // Every claim here has to be one the product can actually back. "Private by design" is the
@@ -44,8 +45,41 @@ const INCLUDED = [
   "Print-ready US Letter PDF, one page per stub",
 ];
 
+// The price, in view before any scrolling, right beside the button that starts the wizard. It
+// reads the server's price (contexts/price-context.tsx) and is simply absent in the rare case
+// that price is not known — never a guessed number.
+const PriceBadge: React.FC<{ label: string }> = ({ label }) => (
+  <Stack
+    direction="row"
+    alignItems="center"
+    spacing={1.25}
+    aria-label={`${label} per pay stub, no subscription`}
+    sx={{
+      px: 2,
+      py: 0.75,
+      borderRadius: 2,
+      border: 2,
+      borderColor: "success.main",
+      bgcolor: "background.paper",
+      alignSelf: { xs: "flex-start", sm: "center" },
+    }}
+  >
+    <Typography
+      component="span"
+      sx={{ fontFamily: "'IBM Plex Mono', monospace", fontWeight: 700, fontSize: "1.75rem", lineHeight: 1, color: "success.main" }}
+    >
+      {label}
+    </Typography>
+    <Box sx={{ lineHeight: 1.2 }}>
+      <Typography component="span" variant="body2" sx={{ display: "block", fontWeight: 600 }}>per pay stub</Typography>
+      <Typography component="span" variant="caption" color="text.secondary" sx={{ display: "block" }}>no subscription</Typography>
+    </Box>
+  </Stack>
+);
+
 const HeroPage: React.FC = () => {
   const navigate = useNavigate();
+  const { label: price } = usePrice();
 
   return (
     <Box>
@@ -59,12 +93,13 @@ const HeroPage: React.FC = () => {
               </Typography>
               <Typography variant="h6" component="p" sx={{ color: "text.secondary", fontWeight: 400, mb: 3 }}>
                 Create a professional pay stub in minutes — with federal, state and FICA taxes calculated
-                for you — and download a print-ready PDF. ${UNIT_PRICE} per stub, no subscription.
+                for you — and download a print-ready PDF. {price ? `${price} per stub` : "Pay per stub"}, no subscription.
               </Typography>
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 3 }}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2} flexWrap="wrap" useFlexGap sx={{ mb: 3 }}>
                 <Button size="large" variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => navigate("/create")}>
                   Get started today
                 </Button>
+                {price && <PriceBadge label={price} />}
                 <Button size="large" variant="outlined" href="#how-it-works">
                   How it works
                 </Button>
@@ -123,12 +158,12 @@ const HeroPage: React.FC = () => {
           <Card variant="outlined" sx={{ borderColor: "primary.main", borderWidth: 2 }}>
             <CardContent sx={{ p: { xs: 3, md: 4 } }}>
               <Stack direction="row" alignItems="baseline" justifyContent="center" spacing={1}>
-                <Typography variant="h3" component="p" sx={{ fontWeight: 700 }}>${UNIT_PRICE}</Typography>
-                <Typography variant="h6" component="p" color="text.secondary">per pay stub</Typography>
+                {price && <Typography variant="h3" component="p" sx={{ fontWeight: 700 }}>{price}</Typography>}
+                <Typography variant="h6" component="p" color="text.secondary">{price ? "per pay stub" : "Priced per pay stub"}</Typography>
               </Stack>
               <Typography variant="body2" align="center" color="text.secondary" sx={{ mt: 1 }}>
                 Need several? Generate {MIN_STUBS}–{MAX_STUBS} stubs for consecutive pay periods in one
-                order — ${UNIT_PRICE} each.
+                order{price ? ` — ${price} each` : ""}.
               </Typography>
 
               <Divider sx={{ my: 3 }} />
