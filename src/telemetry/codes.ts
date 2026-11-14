@@ -29,7 +29,7 @@ export const NAME_RE = /^[a-z0-9_.]{1,64}$/;
 export const ALLOWED_PROP_KEYS: ReadonlySet<string> = new Set([
   'templateId', 'amountCents', 'stubCount', 'step', 'name', 'path', 'ms', 'orderId', 'code',
   'message', 'pages', 'attested', 'draftRestored', 'from', 'to', 'lastStep', 'component',
-  'count', 'keys', 'reason', 'totalCents', 'captureId', 'capturedCents', 'currency',
+  'count', 'keys', 'reason', 'totalCents', 'captureId', 'capturedCents', 'currency', 'placement',
 ]);
 
 export const T = {
@@ -37,6 +37,11 @@ export const T = {
   APP_LOADED: { code: 1001, name: 'app.loaded', level: 'info', props: ['path'] },
   PAGE_VIEWED: { code: 1002, name: 'page.viewed', level: 'info', props: ['path'] },
   PERF_PAGE_LOAD: { code: 1003, name: 'perf.page_load', level: 'info', props: ['ms'] },
+  // Offers: which quantity tier's card was picked (its lowest stub count), and which
+  // "Bundle and Save" button led to the page (`placement`: 'hero' | 'pricing_card'; not `name`,
+  // which the server keeps only for wizard step labels).
+  OFFERS_TIER_SELECTED: { code: 1004, name: 'offers.tier_selected', level: 'info', props: ['stubCount'] },
+  OFFERS_BUNDLE_CLICKED: { code: 1005, name: 'offers.bundle_clicked', level: 'info', props: ['placement'] },
 
   // 11xx — wizard
   WIZARD_ENTERED: { code: 1101, name: 'wizard.entered', level: 'info', props: ['draftRestored'] },

@@ -50,9 +50,16 @@ export interface Coupon {
   value: number;
 }
 
+/** One step of the price table: orders of `minQty` or more pay `unitCents` per item. */
+export interface PriceTier {
+  minQty: number;
+  unitCents: number;
+}
+
 export interface PricingRules {
   currency: string;
-  unitCents: Record<ItemType, number>;
+  /** Per item type, ascending by `minQty`, the first tier starting at 1. */
+  tiers: Record<ItemType, PriceTier[]>;
   /** Maximum quantity per item type in a single order. */
   maxQty: number;
   /** Keyed by upper-cased code. Empty in Phase 1. */
@@ -77,6 +84,27 @@ export function normalizeCouponCode(code: string | undefined): string | undefine
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+/**
+ * The price of ONE item in an order of `qty`: the highest tier whose `minQty` the quantity
+ * reaches. Every item in the order is charged at it (not graduated).
+ */
+export function unitCentsFor(tiers: PriceTier[], qty: number): number {
+  let unit = tiers[0].unitCents;
+  for (const tier of tiers) {
+    if (qty >= tier.minQty) unit = tier.unitCents;
+  }
+  return unit;
+}
+
+/** The tier table as the site reads it, each tier with the last quantity it covers. */
+export function publicTiers(tiers: PriceTier[], maxQty: number): Array<PriceTier & { maxQty: number }> {
+  return tiers.map((t, i) => ({
+    minQty: t.minQty,
+    maxQty: i + 1 < tiers.length ? tiers[i + 1].minQty - 1 : maxQty,
+    unitCents: t.unitCents,
+  }));
+}
+
 export function quoteCart(input: CartInput, rules: PricingRules): Quote {
   if (!Array.isArray(input.items) || input.items.length === 0) {
     throw new PricingError('EMPTY_CART', 'The cart is empty');
@@ -99,7 +127,7 @@ export function quoteCart(input: CartInput, rules: PricingRules): Quote {
     if (qty > rules.maxQty) {
       throw new PricingError('INVALID_QTY', `You can order at most ${rules.maxQty} ${type}s at a time`);
     }
-    const unitCents = rules.unitCents[type];
+    const unitCents = unitCentsFor(rules.tiers[type], qty);
     lines.push({ type, description: DESCRIPTIONS[type](qty), qty, unitCents, subtotalCents: unitCents * qty });
   }
 

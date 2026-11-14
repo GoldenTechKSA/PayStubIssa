@@ -13,7 +13,8 @@ import { PayStubDetails } from "assets/data/pay-stub-details";
 import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
 import { buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
-import { UNIT_PRICE, orderTotal, normalizeStubCount } from "constants/pricing";
+import { normalizeStubCount } from "constants/pricing";
+import { usePrice } from "contexts/price-context";
 import { paymentsApi, unlockStorage, centsToDollars, PaymentsApiError, type CapturedOrder, type Quote } from "services/payments-api";
 import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING, POLICIES_VERSION } from "constants/business-info";
 import { telemetry } from "../../../services/telemetry-service";
@@ -119,8 +120,10 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     setCouponCode(null);
   };
 
-  // Server-authoritative quote for the displayed total; the local constants are only a
-  // fallback for the moment before the API answers (or if it is unreachable).
+  // Server-authoritative quote for the displayed total. Until it answers (or if the API is
+  // unreachable) the site-wide server price from PriceProvider stands in; with neither, the
+  // amounts show as a dash rather than a guess.
+  const unitCents = usePrice().priceFor(stubCount);
   const [quote, setQuote] = useState<Quote | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -144,8 +147,13 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stubCount, couponCode]);
-  const unitPrice = quote ? centsToDollars(quote.lines[0]?.unitCents ?? 0) : UNIT_PRICE;
-  const total = quote ? centsToDollars(quote.totalCents) : orderTotal(stubCount);
+  const unitPrice = quote
+    ? centsToDollars(quote.lines[0]?.unitCents ?? 0)
+    : unitCents !== null ? centsToDollars(unitCents) : null;
+  const total = quote
+    ? centsToDollars(quote.totalCents)
+    : unitCents !== null ? centsToDollars(unitCents * stubCount) : null;
+  const money = (v: number | null) => (v === null ? "—" : formatCurrency(v));
 
   // A reload on this step should not lose a payment just made: restore the session unlock,
   // but only after the server confirms the token is genuine and its order really completed.
@@ -327,9 +335,9 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                     <Stack spacing={0.5} sx={{ mb: 2 }}>
                       <Stack direction="row" justifyContent="space-between">
                         <Typography variant="body2" color="text.secondary">
-                          {stubCount} pay stub{stubCount === 1 ? "" : "s"} × {formatCurrency(unitPrice)}
+                          {stubCount} pay stub{stubCount === 1 ? "" : "s"} × {money(unitPrice)}
                         </Typography>
-                        <Typography variant="body2">{formatCurrency(quote ? centsToDollars(quote.subtotalCents) : total)}</Typography>
+                        <Typography variant="body2">{money(quote ? centsToDollars(quote.subtotalCents) : total)}</Typography>
                       </Stack>
                       {quote?.discounts.map(d => (
                         <Stack key={d.code} direction="row" justifyContent="space-between" alignItems="center">
@@ -351,7 +359,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                       <Divider />
                       <Stack direction="row" justifyContent="space-between">
                         <Typography variant="subtitle2" fontWeight={700}>Total</Typography>
-                        <Typography variant="subtitle2" fontWeight={700}>{formatCurrency(total)}</Typography>
+                        <Typography variant="subtitle2" fontWeight={700}>{money(total)}</Typography>
                       </Stack>
                     </Stack>
 

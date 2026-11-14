@@ -8,14 +8,13 @@ import {
   SUPPORT_PHONE,
   TEMPLATE_COUNT,
 } from "constants/business-info";
-import { MAX_STUBS, MIN_STUBS, UNIT_PRICE } from "constants/pricing";
+import { MAX_STUBS, MIN_STUBS } from "constants/pricing";
+import { OffersLink, PriceSummary } from "./price-copy";
 
-const PRICE = `$${UNIT_PRICE.toFixed(2)}`;
-
-const CheckList: React.FC<{ items: string[] }> = ({ items }) => (
+const CheckList: React.FC<{ items: React.ReactNode[] }> = ({ items }) => (
   <List dense disablePadding>
-    {items.map(item => (
-      <ListItem key={item} disableGutters alignItems="flex-start">
+    {items.map((item, i) => (
+      <ListItem key={i}disableGutters alignItems="flex-start">
         <ListItemIcon sx={{ minWidth: 24, mt: 1 }}>
           <Box
             sx={{
@@ -60,13 +59,13 @@ const STEPS = [
   },
 ];
 
-const WHY_US = [
+const WHY_US: React.ReactNode[] = [
   "Private by design — your pay stub data never leaves your browser. Our server handles payment and anonymous usage statistics only; it never receives it.",
   "Real tax math — federal income tax, Social Security, Medicare, and state income tax are calculated automatically from the employee's state and IRS filing status.",
   `A choice of ${TEMPLATE_COUNT} layouts — from a plain standard stub to a detailed earnings statement, plus an independent contractor statement and a temporary assignment stub.`,
   "A clear, professional wage record — gross pay, itemized earnings, taxes withheld, deductions, net pay, and year-to-date figures, laid out the way a pay stub should be.",
   "Instant generation — create, preview, and download in minutes. No software to install.",
-  `Pay per stub, no subscription — ${PRICE} per pay stub, ${MIN_STUBS}–${MAX_STUBS} stubs per order.`,
+  <>Pay per stub, no subscription — <PriceSummary lower />, {MIN_STUBS}–{MAX_STUBS} stubs per order (see <OffersLink />).</>,
 ];
 
 const AboutUsPage: React.FC = () => (

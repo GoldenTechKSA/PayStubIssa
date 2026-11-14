@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import type { Config } from '../config';
 import { badRequest, HttpError } from '../lib/errors';
 import type { OrderService } from '../services/orders';
+import { publicTiers } from '../services/pricing';
 import type { TelemetryService } from '../services/telemetry';
 import { S } from '../telemetry/codes';
 import { readTelemetryIds } from '../telemetry/request-ids';
@@ -20,6 +21,24 @@ function parse<T extends z.ZodTypeAny>(schema: T, value: unknown): z.infer<T> {
 export function paymentsRouter(config: Config, orders: OrderService, telemetry: TelemetryService): Router {
   const router = Router();
 
+  /**
+   * Public settings the browser needs to boot the PayPal SDK and display prices. Registered
+   * BEFORE the rate limiter: every page of the site reads the price from here on load (and the
+   * client build stamps it), it touches neither PayPal nor the database, and a throttled
+   * visitor would be left without a price.
+   */
+  router.get('/config', (_req, res) => {
+    res.json({
+      paypalEnv: config.PAYPAL_ENV,
+      clientId: config.PAYPAL_CLIENT_ID,
+      currency: config.CURRENCY,
+      // The single-stub price, kept for callers that predate the tier table.
+      unitCents: { paystub: config.priceTiers[0].unitCents },
+      tiers: publicTiers(config.priceTiers, config.MAX_STUBS_PER_ORDER),
+      maxQty: config.MAX_STUBS_PER_ORDER,
+    });
+  });
+
   // Payment endpoints call PayPal; keep abusers from burning the API quota.
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -29,17 +48,6 @@ export function paymentsRouter(config: Config, orders: OrderService, telemetry: 
     message: { error: { code: 'RATE_LIMITED', message: 'Too many requests, please slow down.' } },
   });
   router.use(limiter);
-
-  /** Public settings the browser needs to boot the PayPal SDK and display prices. */
-  router.get('/config', (_req, res) => {
-    res.json({
-      paypalEnv: config.PAYPAL_ENV,
-      clientId: config.PAYPAL_CLIENT_ID,
-      currency: config.CURRENCY,
-      unitCents: { paystub: config.PRICE_PER_STUB_CENTS },
-      maxQty: config.MAX_STUBS_PER_ORDER,
-    });
-  });
 
   /** Price a cart without creating anything. */
   router.post('/quote', (req, res) => {

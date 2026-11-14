@@ -25,8 +25,8 @@ describe('payment milestones', () => {
     const rows: any[] = serverRows(db);
     expect(rows.map(r => r.code)).toEqual([2101, 2102]);
     expect(rows[0]).toMatchObject({ session_id: 's_abcdefghij', visitor_id: 'v_abcdefghij' });
-    expect(JSON.parse(rows[0].props_json)).toEqual({ orderId: created.body.orderId, totalCents: 1798 });
-    expect(JSON.parse(rows[1].props_json)).toMatchObject({ orderId: created.body.orderId, capturedCents: 1798 });
+    expect(JSON.parse(rows[0].props_json)).toEqual({ orderId: created.body.orderId, totalCents: 1598 });
+    expect(JSON.parse(rows[1].props_json)).toMatchObject({ orderId: created.body.orderId, capturedCents: 1598 });
   });
 
   it('logs 2103 with the error code when capture fails, and the response is unchanged', async () => {

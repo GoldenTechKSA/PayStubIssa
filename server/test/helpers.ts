@@ -11,7 +11,14 @@ export const JWT_SECRET = 'test-secret-that-is-definitely-longer-than-32-chars';
 
 export const rules: PricingRules = {
   currency: 'USD',
-  unitCents: { paystub: 899 },
+  tiers: {
+    paystub: [
+      { minQty: 1, unitCents: 899 },
+      { minQty: 2, unitCents: 799 },
+      { minQty: 5, unitCents: 699 },
+      { minQty: 9, unitCents: 599 },
+    ],
+  },
   maxQty: 12,
   coupons: {},
 };
@@ -28,7 +35,7 @@ export const testConfig: Config = {
   JWT_SECRET,
   UNLOCK_TOKEN_TTL_MINUTES: 60,
   CURRENCY: 'USD',
-  PRICE_PER_STUB_CENTS: 899,
+  priceTiers: rules.tiers.paystub,
   MAX_STUBS_PER_ORDER: 12,
   coupons: {},
   DATABASE_PATH: ':memory:',

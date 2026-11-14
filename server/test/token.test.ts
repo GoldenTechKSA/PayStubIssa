@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { issueUnlockToken, verifyUnlockToken, TokenError, TOKEN_ISSUER, TOKEN_AUDIENCE } from '../src/lib/token';
 import { JWT_SECRET } from './helpers';
 
-const claims = { orderId: 'ORDER1', qty: 2, currency: 'USD', totalCents: 1798 };
+const claims = { orderId: 'ORDER1', qty: 2, currency: 'USD', totalCents: 1598 };
 
 describe('unlock token', () => {
   it('round-trips claims', () => {

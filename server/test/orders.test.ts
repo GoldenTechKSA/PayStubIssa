@@ -23,14 +23,14 @@ describe('OrderService', () => {
     const created = await service.createOrder(cart, { attestedAt: '2026-10-10T10:00:00Z', templateId: 0, termsVersion: '2026-11-01' });
 
     expect(created.orderId).toBe('ORDER1');
-    expect(created.quote.totalCents).toBe(2697);
+    expect(created.quote.totalCents).toBe(2397);
     // PayPal saw exactly the quoted amount, not anything the client chose.
-    expect(paypal.created.get('ORDER1')!.quote.totalCents).toBe(2697);
+    expect(paypal.created.get('ORDER1')!.quote.totalCents).toBe(2397);
     expect(paypal.created.get('ORDER1')!.description).toBe('3 pay stubs');
 
     const row = service.getRow('ORDER1')!;
     expect(row.status).toBe('CREATED');
-    expect(row.total_cents).toBe(2697);
+    expect(row.total_cents).toBe(2397);
     expect(JSON.parse(row.client_meta_json!)).toMatchObject({ attestedAt: '2026-10-10T10:00:00Z', templateId: 0, termsVersion: '2026-11-01' });
   });
 
@@ -70,15 +70,15 @@ describe('OrderService', () => {
 
     expect(captured.status).toBe('COMPLETED');
     expect(captured.token).toBeTypeOf('string');
-    expect(captured.quote.totalCents).toBe(2697);
+    expect(captured.quote.totalCents).toBe(2397);
 
     const row = service.getRow(orderId)!;
     expect(row.status).toBe('COMPLETED');
     expect(row.capture_id).toBe(`CAP-${orderId}`);
-    expect(row.captured_cents).toBe(2697);
+    expect(row.captured_cents).toBe(2397);
 
     const claims = service.verifyUnlock(captured.token);
-    expect(claims).toMatchObject({ orderId, qty: 3, currency: 'USD', totalCents: 2697 });
+    expect(claims).toMatchObject({ orderId, qty: 3, currency: 'USD', totalCents: 2397 });
   });
 
   it('is idempotent: a second capture re-issues a token without calling PayPal again', async () => {
@@ -110,7 +110,7 @@ describe('OrderService', () => {
     const { orderId } = await service.createOrder(cart);
     paypal.nextCapture = { capturedCents: 1 };
     const err = await expectHttp(service.captureOrder(orderId), 402, 'PAYMENT_NOT_VERIFIED');
-    expect(err.message).toMatch(/amount 1 != 2697/);
+    expect(err.message).toMatch(/amount 1 != 2397/);
 
     const row = service.getRow(orderId)!;
     expect(row.status).toBe('FAILED');
