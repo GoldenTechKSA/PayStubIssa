@@ -12,7 +12,7 @@ import {
   TEMPLATE_COUNT,
 } from "constants/business-info";
 import { MAX_STUBS, MIN_STUBS } from "constants/pricing";
-import { Price } from "contexts/price-context";
+import { OffersLink, PriceSummary, StubExample } from "./price-copy";
 
 const SupportEmailLink = () => <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>;
 // Phone numbers are plain text site-wide; only email addresses and page URLs are links.
@@ -42,9 +42,10 @@ const faqData = [
         question: "How much does it cost?",
         answer: (
           <>
-            <Price fallback="One flat price" /> per pay stub. You can generate between {MIN_STUBS} and {MAX_STUBS} pay stubs in a single order —
-            consecutive pay periods for one employee — and you are charged <Price fallback="that price" /> for each one. So four stubs is{" "}
-            <Price fallback="the per-stub price" /> × 4. The total is shown before you pay.
+            <PriceSummary /> — the packs and their prices are on our <OffersLink /> page. You can generate between{" "}
+            {MIN_STUBS} and {MAX_STUBS} pay stubs in a single order — consecutive pay periods for one employee — and every
+            stub in the order is charged at the per-stub price for that order size. So four stubs is{" "}
+            <StubExample qty={4} />. The total is shown before you pay.
             <br />
             <br />
             There is no subscription, no recurring charge, and no account. You pay for the documents you generate and
@@ -79,7 +80,7 @@ const faqData = [
             statistics only; it never receives that data.
             <br />
             <br />
-            <strong>Pay per document.</strong> <Price fallback="One flat price" /> per stub, no subscription, no account.
+            <strong>Pay per document.</strong> <PriceSummary />, no subscription, no account.
           </>
         ),
       },
@@ -168,7 +169,7 @@ const faqData = [
         question: "Do you offer subscription plans for recurring needs?",
         answer: (
           <>
-            No. We charge per document — <Price fallback="one flat price" /> per pay stub — with no subscription and no recurring billing.
+            No. We charge per document — <PriceSummary lower /> — with no subscription and no recurring billing.
             <br />
             <br />
             We are not a payroll service. We do not run payroll, pay employees, remit taxes, or file with the IRS. If you
@@ -213,7 +214,8 @@ const faqData = [
         answer: (
           <>
             Yes — for one employee. You can generate between {MIN_STUBS} and {MAX_STUBS} pay stubs in a single order,
-            covering consecutive pay periods, and you are charged <Price fallback="the per-stub price" /> for each one. They come back as a single PDF
+            covering consecutive pay periods, and each one is charged at the per-stub price for that order size (see{" "}
+            <OffersLink />). They come back as a single PDF
             with one page per stub.
             <br />
             <br />

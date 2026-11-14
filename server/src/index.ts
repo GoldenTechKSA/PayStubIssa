@@ -28,7 +28,7 @@ function main(): void {
     paypal,
     pricing: {
       currency: config.CURRENCY,
-      unitCents: { paystub: config.PRICE_PER_STUB_CENTS },
+      tiers: { paystub: config.priceTiers },
       maxQty: config.MAX_STUBS_PER_ORDER,
       coupons: config.coupons,
     },

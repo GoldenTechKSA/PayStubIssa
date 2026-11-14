@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { centsToMoney, moneyToCents, quoteCart, PricingError, type PricingRules } from '../src/services/pricing';
+import { centsToMoney, moneyToCents, quoteCart, unitCentsFor, PricingError, type PricingRules } from '../src/services/pricing';
 import { rules } from './helpers';
 
 describe('quoteCart', () => {
@@ -15,7 +15,7 @@ describe('quoteCart', () => {
 
   it('multiplies by quantity without floating point drift', () => {
     const q = quoteCart({ items: [{ type: 'paystub', qty: 12 }] }, rules);
-    expect(q.totalCents).toBe(10788);
+    expect(q.totalCents).toBe(7188);
     expect(q.lines[0].description).toBe('12 pay stubs');
   });
 
@@ -23,6 +23,27 @@ describe('quoteCart', () => {
     const q = quoteCart({ items: [{ type: 'paystub', qty: 2 }, { type: 'paystub', qty: 3 }] }, rules);
     expect(q.lines).toHaveLength(1);
     expect(q.lines[0].qty).toBe(5);
+    // The merged quantity, not each cart line, picks the tier.
+    expect(q.lines[0].unitCents).toBe(699);
+    expect(q.totalCents).toBe(3495);
+  });
+
+  it('charges every stub in the order at the price of the tier the quantity falls in', () => {
+    const tiers = rules.tiers.paystub;
+    expect([1, 2, 4, 5, 8, 9, 12].map(qty => unitCentsFor(tiers, qty))).toEqual([899, 799, 799, 699, 699, 599, 599]);
+    expect(quoteCart({ items: [{ type: 'paystub', qty: 4 }] }, rules).subtotalCents).toBe(3196);
+    expect(quoteCart({ items: [{ type: 'paystub', qty: 9 }] }, rules).subtotalCents).toBe(5391);
+  });
+
+  it('takes a percent coupon off the tiered subtotal', () => {
+    const withCoupon: PricingRules = {
+      ...rules,
+      coupons: { QUARTER: { code: 'QUARTER', description: '25% off', kind: 'percent', value: 25 } },
+    };
+    const q = quoteCart({ items: [{ type: 'paystub', qty: 5 }], couponCode: 'quarter' }, withCoupon);
+    expect(q.subtotalCents).toBe(3495);
+    expect(q.discountCents).toBe(874);
+    expect(q.totalCents).toBe(2621);
   });
 
   it('rejects an empty cart, bad quantities and unknown items', () => {
@@ -47,8 +68,8 @@ describe('quoteCart', () => {
       },
     };
     const pct = quoteCart({ items: [{ type: 'paystub', qty: 2 }], couponCode: 'ten' }, withCoupons);
-    expect(pct.discountCents).toBe(180); // 1798 * 10% = 179.8 → 180
-    expect(pct.totalCents).toBe(1618);
+    expect(pct.discountCents).toBe(160); // 1598 * 10% = 159.8 → 160
+    expect(pct.totalCents).toBe(1438);
     expect(pct.discounts[0].code).toBe('TEN');
 
     const fixed = quoteCart({ items: [{ type: 'paystub', qty: 1 }], couponCode: 'BIG' }, withCoupons);

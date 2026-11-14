@@ -12,6 +12,7 @@ import AccessibilityPolicy from "./common/accessibility-policy";
 import TermsOfUser from "./common/terms-of-use";
 import type { TelemetryConfig } from "../types/telemetry";
 import { TelemetryProvider } from "../contexts/telemetry-context";
+import OffersPage from "./common/offers-page";
 import { PriceProvider } from "../contexts/price-context";
 import TelemetryErrorBoundary from "./common/telemetry-error-boundary";
 import { RouteTelemetry } from "./common/route-telemetry";
@@ -48,6 +49,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<HeroPage />} />
               <Route path="/create" element={<PaystubWizard />} />
+              <Route path="/offers" element={<OffersPage />} />
               <Route path="/aboutUsPage" element={<AboutUsPage />} />
               <Route path="/FAQPage" element={<FAQPage />} />
               <Route path="/contactUsPage" element={<ContactUsPage />} />

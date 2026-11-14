@@ -84,7 +84,8 @@ PAYPAL_CLIENT_SECRET=<sandbox secret>
 JWT_SECRET=<the generated secret>
 UNLOCK_TOKEN_TTL_MINUTES=60
 CURRENCY=USD
-PRICE_PER_STUB_CENTS=899
+# Price per stub by order size (see server/README.md); replaces PRICE_PER_STUB_CENTS.
+PRICE_TIERS=1:899,2:799,5:699,9:599
 MAX_STUBS_PER_ORDER=12
 # Optional percent-off coupon codes, e.g. COUPONS=FRIEND:25 (see server/README.md).
 COUPONS=

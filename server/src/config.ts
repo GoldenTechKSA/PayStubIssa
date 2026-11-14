@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import dotenv from 'dotenv';
 import { z } from 'zod';
-import type { Coupon } from './services/pricing';
+import type { Coupon, PriceTier } from './services/pricing';
 
 /** The server/ folder, independent of the process cwd (PM2, tsx, node dist/ all differ). */
 export const SERVER_ROOT = path.resolve(__dirname, '..');
@@ -22,7 +22,11 @@ const schema = z.object({
   UNLOCK_TOKEN_TTL_MINUTES: z.coerce.number().int().positive().default(60),
 
   CURRENCY: z.string().length(3).transform(s => s.toUpperCase()).default('USD'),
-  PRICE_PER_STUB_CENTS: z.coerce.number().int().positive().default(899),
+  // `MINQTY:CENTS,...` — the price of ONE pay stub, by how many are in the order. Every stub
+  // in the order is charged at the price of the tier the quantity falls in. This is the only
+  // place the price is set; the site reads it from GET /api/payments/config. Checked by
+  // parsePriceTiers once MAX_STUBS_PER_ORDER is known (see loadConfig).
+  PRICE_TIERS: z.string().default('1:899,2:799,5:699,9:599'),
   MAX_STUBS_PER_ORDER: z.coerce.number().int().positive().default(12),
   // `CODE:PERCENT,CODE:PERCENT` — hand-made percent-off codes. Parsed at boot so a typo
   // (or a 100% "free" code, which PayPal cannot process) stops the API instead of a customer.
@@ -60,8 +64,10 @@ const schema = z.object({
   TELEMETRY_MAX_ROWS: z.coerce.number().int().positive().default(2_000_000),
 });
 
-export type Config = Omit<z.infer<typeof schema>, 'COUPONS'> & {
+export type Config = Omit<z.infer<typeof schema>, 'COUPONS' | 'PRICE_TIERS'> & {
   databasePath: string;
+  /** What `PRICE_TIERS` parsed to: ascending by `minQty`, first tier at 1, prices falling. */
+  priceTiers: PriceTier[];
   /** Keyed by upper-cased code; what `COUPONS` parsed to. */
   coupons: Record<string, Coupon>;
 };
@@ -100,6 +106,46 @@ export function parseCoupons(raw: string | undefined): Record<string, Coupon> {
   return coupons;
 }
 
+const DEFAULT_PRICE_TIERS = schema.shape.PRICE_TIERS.parse(undefined);
+
+/**
+ * Parse `PRICE_TIERS="1:899,2:799,5:699,9:599"` into the tier table. The first tier must
+ * start at one stub, quantities must rise and stay within the order limit, and the price per
+ * stub must FALL as the quantity rises — the Offers page says "Best value" and "Save $X" on
+ * the strength of that, so a table that breaks it must stop the API rather than reach a page.
+ * For the same reason there must be at least two tiers.
+ */
+export function parsePriceTiers(raw: string | undefined, maxQty: number): PriceTier[] {
+  const text = (raw ?? '').trim() || DEFAULT_PRICE_TIERS;
+  const tiers: PriceTier[] = [];
+
+  for (const entry of text.split(',')) {
+    const pair = entry.trim();
+    if (!pair) continue;
+    const m = /^(\d+)\s*:\s*(\d+)$/.exec(pair);
+    if (!m) throw new Error(`PRICE_TIERS entry "${pair}" must look like MINQTY:CENTS (whole numbers)`);
+    const minQty = Number(m[1]);
+    const unitCents = Number(m[2]);
+    const prev = tiers[tiers.length - 1];
+    if (unitCents < 1) throw new Error(`PRICE_TIERS entry "${pair}": the price must be at least 1 cent`);
+    if (!prev && minQty !== 1) throw new Error(`PRICE_TIERS entry "${pair}": the first tier must start at 1 stub`);
+    if (prev && minQty <= prev.minQty) {
+      throw new Error(`PRICE_TIERS entry "${pair}": quantities must rise from one tier to the next`);
+    }
+    if (minQty > maxQty) {
+      throw new Error(`PRICE_TIERS entry "${pair}": an order holds at most ${maxQty} stubs`);
+    }
+    if (prev && unitCents >= prev.unitCents) {
+      throw new Error(`PRICE_TIERS entry "${pair}": the price per stub must fall as the quantity rises`);
+    }
+    tiers.push({ minQty, unitCents });
+  }
+  // The site tells every visitor that ordering more costs less per stub (home page, FAQ, About,
+  // the "Bundle and Save" buttons). One flat price would make all of that false.
+  if (tiers.length < 2) throw new Error('PRICE_TIERS needs at least two tiers (a single-stub price and a lower bundle price)');
+  return tiers;
+}
+
 export class ConfigError extends Error {}
 
 /**
@@ -132,6 +178,18 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     ? cfg.DATABASE_PATH
     : path.resolve(SERVER_ROOT, cfg.DATABASE_PATH);
 
-  const { COUPONS: coupons, ...rest } = cfg;
-  return { ...rest, coupons, databasePath };
+  let priceTiers: PriceTier[];
+  try {
+    priceTiers = parsePriceTiers(cfg.PRICE_TIERS, cfg.MAX_STUBS_PER_ORDER);
+  } catch (err) {
+    throw new ConfigError(`Invalid configuration (checked ${envFile}):
+  PRICE_TIERS: ${(err as Error).message}`);
+  }
+  if ((merged.PRICE_PER_STUB_CENTS ?? '').trim()) {
+    // Retired: one flat price became a tier table. Say so, so a custom value is not dropped silently.
+    console.warn('[config] PRICE_PER_STUB_CENTS is no longer used and is ignored — set PRICE_TIERS instead.');
+  }
+
+  const { COUPONS: coupons, PRICE_TIERS: _tiers, ...rest } = cfg;
+  return { ...rest, coupons, priceTiers, databasePath };
 }

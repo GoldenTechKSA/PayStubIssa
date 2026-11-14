@@ -58,6 +58,8 @@ export interface PaymentConfig {
   clientId: string;
   currency: string;
   unitCents: Record<ItemType, number>;
+  /** Price per stub by order size; absent from an API older than the tier table. */
+  tiers?: Array<{ minQty: number; maxQty: number; unitCents: number }>;
   maxQty: number;
 }
 

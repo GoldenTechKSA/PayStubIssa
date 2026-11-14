@@ -48,7 +48,7 @@ Errors are JSON: `{ error: { code, message, details? } }`. Codes the client acts
 ## How a payment flows
 
 1. The browser's PayPal button calls `POST /orders`. The server prices the cart from
-   `PRICE_PER_STUB_CENTS` (never from the client), creates the PayPal order with its
+   the `PRICE_TIERS` table (never from the client), creates the PayPal order with its
    secret, and inserts a `CREATED` row.
 2. After the buyer approves, the browser calls `POST /orders/:id/capture`. The server
    captures, then checks that PayPal reports `COMPLETED` **and** the captured amount and
@@ -64,6 +64,19 @@ Errors are JSON: `{ error: { code, message, details? } }`. Codes the client acts
 
 `src/services/pricing.ts` is the only place money is computed (integer cents). It
 accepts `couponCode` and returns an itemized quote (lines, discounts, subtotal, total).
+
+The price of one pay stub depends on how many are in the order. The table is the
+`PRICE_TIERS` env var, `MINQTY:CENTS,...` (default `1:899,2:799,5:699,9:599`), parsed at
+boot by `parsePriceTiers` in `src/config.ts`. Every stub in the order is charged at the
+tier the quantity falls in (`unitCentsFor`); a coupon's percentage comes off that
+subtotal. There must be at least two tiers, the first must start at 1, quantities must rise and stay within
+`MAX_STUBS_PER_ORDER`, and the price must fall from tier to tier, because the site's
+Offers page says "Best value" and "Save $X" on the strength of it; a table that breaks a
+rule stops the API at boot. `GET /config` publishes the table as `tiers` (each with the
+last quantity it covers) and the site reads every price from there. To change a price:
+edit `PRICE_TIERS` in the VPS `.env` and restart the API. The old `PRICE_PER_STUB_CENTS`
+is ignored, with a warning at boot if it is still set. If the quantity ranges move away
+from 1 / 2–4 / 5–8 / 9–12 the Offers page falls back to plain "N–M pay stubs" cards.
 
 Coupons come from the `COUPONS` env var, parsed at boot by `parseCoupons` in
 `src/config.ts`: `COUPONS=FRIEND:25,LAUNCH:10` is two percent-off codes. Percent only,

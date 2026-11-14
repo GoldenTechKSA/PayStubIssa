@@ -7,6 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink as RouterNavLink } from "react-router-dom";
 
 const NAV_ITEMS = [
+  { label: "Offers", to: "/offers" },
   { label: "About Us", to: "/aboutUsPage" },
   { label: "FAQ", to: "/FAQPage" },
   { label: "Contact Us", to: "/contactUsPage" },

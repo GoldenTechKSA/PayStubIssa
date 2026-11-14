@@ -23,4 +23,10 @@ describe('scrubProps', () => {
   it('passes undefined through', () => {
     expect(scrubProps(undefined)).toEqual({ props: undefined, removed: [] });
   });
+
+  it('keeps the placement of a "Bundle and Save" click (offers.bundle_clicked, [1005])', () => {
+    for (const placement of ['hero', 'pricing_card']) {
+      expect(scrubProps({ placement })).toEqual({ props: { placement }, removed: [] });
+    }
+  });
 });

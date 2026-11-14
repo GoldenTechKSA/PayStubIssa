@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import type { Config } from '../config';
 import { badRequest, HttpError } from '../lib/errors';
 import type { OrderService } from '../services/orders';
+import { publicTiers } from '../services/pricing';
 import type { TelemetryService } from '../services/telemetry';
 import { S } from '../telemetry/codes';
 import { readTelemetryIds } from '../telemetry/request-ids';
@@ -31,7 +32,9 @@ export function paymentsRouter(config: Config, orders: OrderService, telemetry: 
       paypalEnv: config.PAYPAL_ENV,
       clientId: config.PAYPAL_CLIENT_ID,
       currency: config.CURRENCY,
-      unitCents: { paystub: config.PRICE_PER_STUB_CENTS },
+      // The single-stub price, kept for callers that predate the tier table.
+      unitCents: { paystub: config.priceTiers[0].unitCents },
+      tiers: publicTiers(config.priceTiers, config.MAX_STUBS_PER_ORDER),
       maxQty: config.MAX_STUBS_PER_ORDER,
     });
   });

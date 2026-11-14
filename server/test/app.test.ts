@@ -26,6 +26,12 @@ describe('HTTP API', () => {
       clientId: 'test-client-id',
       currency: 'USD',
       unitCents: { paystub: 899 },
+      tiers: [
+        { minQty: 1, maxQty: 1, unitCents: 899 },
+        { minQty: 2, maxQty: 4, unitCents: 799 },
+        { minQty: 5, maxQty: 8, unitCents: 699 },
+        { minQty: 9, maxQty: 12, unitCents: 599 },
+      ],
       maxQty: 12,
     });
     expect(JSON.stringify(res.body)).not.toContain('test-secret');
@@ -35,7 +41,7 @@ describe('HTTP API', () => {
     const { app } = boot();
     const ok = await request(app).post('/api/payments/quote').send({ items: [{ type: 'paystub', qty: 2 }] });
     expect(ok.status).toBe(200);
-    expect(ok.body.quote.totalCents).toBe(1798);
+    expect(ok.body.quote.totalCents).toBe(1598);
 
     const bad = await request(app).post('/api/payments/quote').send({ items: [{ type: 'paystub', qty: '2' }] });
     expect(bad.status).toBe(400);

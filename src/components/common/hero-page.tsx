@@ -9,6 +9,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import HeroImage from "../../assets/images/heroimage.png";
 import { MIN_STUBS, MAX_STUBS } from "constants/pricing";
 import { usePrice } from "contexts/price-context";
+import { BundleButton } from "./price-copy";
 import { CORE_DISCLAIMER, TEMPLATE_COUNT } from "constants/business-info";
 
 // Every claim here has to be one the product can actually back. "Private by design" is the
@@ -79,7 +80,7 @@ const PriceBadge: React.FC<{ label: string }> = ({ label }) => (
 
 const HeroPage: React.FC = () => {
   const navigate = useNavigate();
-  const { label: price } = usePrice();
+  const { label: price, fromLabel } = usePrice();
 
   return (
     <Box>
@@ -93,13 +94,15 @@ const HeroPage: React.FC = () => {
               </Typography>
               <Typography variant="h6" component="p" sx={{ color: "text.secondary", fontWeight: 400, mb: 3 }}>
                 Create a professional pay stub in minutes — with federal, state and FICA taxes calculated
-                for you — and download a print-ready PDF. {price ? `${price} per stub` : "Pay per stub"}, no subscription.
+                for you — and download a print-ready PDF.{" "}
+                {price ? `${price} for one stub, less each when you bundle` : "Pay per stub"}, no subscription.
               </Typography>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2} flexWrap="wrap" useFlexGap sx={{ mb: 3 }}>
                 <Button size="large" variant="contained" endIcon={<ArrowForwardIcon />} onClick={() => navigate("/create")}>
                   Get started today
                 </Button>
                 {price && <PriceBadge label={price} />}
+                <BundleButton placement="hero" />
                 <Button size="large" variant="outlined" href="#how-it-works">
                   How it works
                 </Button>
@@ -163,7 +166,7 @@ const HeroPage: React.FC = () => {
               </Stack>
               <Typography variant="body2" align="center" color="text.secondary" sx={{ mt: 1 }}>
                 Need several? Generate {MIN_STUBS}–{MAX_STUBS} stubs for consecutive pay periods in one
-                order{price ? ` — ${price} each` : ""}.
+                order{fromLabel ? ` — bundles from ${fromLabel} each` : ""}.
               </Typography>
 
               <Divider sx={{ my: 3 }} />
@@ -177,12 +180,16 @@ const HeroPage: React.FC = () => {
                 ))}
               </Stack>
 
-              <Button
-                fullWidth size="large" variant="contained" endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate("/create")} sx={{ mt: 4 }}
-              >
-                Create your pay stub
-              </Button>
+              {/* One stub, or a bundle at a lower price each: side by side, stacked on a phone. */}
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 4 }}>
+                <Button
+                  fullWidth size="large" variant="contained" endIcon={<ArrowForwardIcon />}
+                  onClick={() => navigate("/create")}
+                >
+                  Create your pay stub
+                </Button>
+                <BundleButton placement="pricing_card" fullWidth />
+              </Stack>
             </CardContent>
           </Card>
         </Container>

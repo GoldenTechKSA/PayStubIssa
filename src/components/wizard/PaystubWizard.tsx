@@ -17,6 +17,7 @@ import ReviewStep from "./steps/ReviewStep";
 import { telemetry } from "../../services/telemetry-service";
 import { T } from "../../telemetry/codes";
 import { isDevUnlock } from "../../utils/dev-flags";
+import { normalizeStubCount } from "../../constants/pricing";
 
 const STEPS = ["Company", "Employee", "Pay period", "Earnings", "Template", "Review"];
 const DRAFT_KEY = "paystubissa.draft.v1";
@@ -57,6 +58,20 @@ const PaystubWizard = () => {
       }
     } catch {
       /* ignore malformed draft */
+    }
+    // An Offers card opens the wizard as `/create?stubs=N`. That count wins over the draft's
+    // (the customer just picked a pack) but nothing else in the draft is touched. Anything
+    // that is not a whole number of at least 1 is ignored; the parameter is then dropped from
+    // the address so a reload or a shared link does not re-apply it.
+    const params = new URLSearchParams(location.search);
+    if (params.has("stubs")) {
+      const raw = params.get("stubs") || "";
+      if (/^\d+$/.test(raw) && Number(raw) >= 1) {
+        dispatch(saveGeneralInfo({ payStubCount: normalizeStubCount(raw) }));
+      }
+      params.delete("stubs");
+      const rest = params.toString();
+      navigate({ pathname: location.pathname, search: rest ? `?${rest}` : "" }, { replace: true });
     }
     if (!appSettings.configPath) {
       dispatch(updateAppSettings({ configPath: DEFAULT_CONFIG, templateId: 0 }));

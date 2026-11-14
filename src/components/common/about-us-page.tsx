@@ -9,7 +9,7 @@ import {
   TEMPLATE_COUNT,
 } from "constants/business-info";
 import { MAX_STUBS, MIN_STUBS } from "constants/pricing";
-import { Price } from "contexts/price-context";
+import { OffersLink, PriceSummary } from "./price-copy";
 
 const CheckList: React.FC<{ items: React.ReactNode[] }> = ({ items }) => (
   <List dense disablePadding>
@@ -65,7 +65,7 @@ const WHY_US: React.ReactNode[] = [
   `A choice of ${TEMPLATE_COUNT} layouts — from a plain standard stub to a detailed earnings statement, plus an independent contractor statement and a temporary assignment stub.`,
   "A clear, professional wage record — gross pay, itemized earnings, taxes withheld, deductions, net pay, and year-to-date figures, laid out the way a pay stub should be.",
   "Instant generation — create, preview, and download in minutes. No software to install.",
-  <>Pay per stub, no subscription — <Price fallback="one flat price" /> per pay stub, {MIN_STUBS}–{MAX_STUBS} stubs per order.</>,
+  <>Pay per stub, no subscription — <PriceSummary lower />, {MIN_STUBS}–{MAX_STUBS} stubs per order (see <OffersLink />).</>,
 ];
 
 const AboutUsPage: React.FC = () => (

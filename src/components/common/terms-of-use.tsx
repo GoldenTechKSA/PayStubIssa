@@ -203,10 +203,10 @@ const TermsOfUse = () => (
     <h4>8. Pricing, Payment, and Refunds</h4>
     <p>
       <strong>Price</strong><br />
-      The Service is charged per pay stub. The price for each pay stub, and the total for your order, are shown
-      to you at checkout before you pay, and that is the amount you are charged. You may generate between{" "}
-      {MIN_STUBS} and {MAX_STUBS} pay stubs in a single order, each charged at that per-stub price. There is no
-      subscription and no recurring charge.
+      The Service is charged per pay stub. The price per pay stub depends on how many pay stubs are in your
+      order. The price for each pay stub, and the total for your order, are shown to you at checkout before you
+      pay, and that is the amount you are charged. You may generate between {MIN_STUBS} and {MAX_STUBS} pay stubs
+      in a single order. There is no subscription and no recurring charge.
     </p>
     <p>
       <strong>Discount Codes</strong><br />

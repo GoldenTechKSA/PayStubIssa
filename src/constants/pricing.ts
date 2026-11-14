@@ -2,10 +2,11 @@
  * pricing
  * -------
  * Pricing is PER PAY STUB. The customer chooses how many stubs to generate
- * (generalInfo.payStubCount, 1–12) and is charged the same per-stub price for each one.
+ * (generalInfo.payStubCount, 1–12); every stub in the order is charged at the per-stub price
+ * for that order size.
  *
  * The PRICE itself is not here, on purpose. The server (`server/`,
- * PRICE_PER_STUB_CENTS) is the only place it is set: it quotes the cart and
+ * PRICE_TIERS) is the only place it is set: it quotes the cart and
  * creates the PayPal order, and every mention of the price on the site reads it
  * through contexts/price-context.tsx (stamped into the build, then confirmed
  * live). Do not add a price constant back.

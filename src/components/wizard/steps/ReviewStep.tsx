@@ -123,7 +123,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   // Server-authoritative quote for the displayed total. Until it answers (or if the API is
   // unreachable) the site-wide server price from PriceProvider stands in; with neither, the
   // amounts show as a dash rather than a guess.
-  const { unitCents } = usePrice();
+  const unitCents = usePrice().priceFor(stubCount);
   const [quote, setQuote] = useState<Quote | null>(null);
   useEffect(() => {
     let cancelled = false;

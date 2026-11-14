@@ -1,5 +1,15 @@
 import { createTheme } from '@mui/material/styles';
 
+// `bundle` is the one orange on the site: the "Bundle and Save" buttons that lead to the
+// Offers page. `<Button color="bundle">` needs the palette and the Button prop to know it.
+declare module '@mui/material/styles' {
+  interface Palette { bundle: Palette['primary'] }
+  interface PaletteOptions { bundle?: PaletteOptions['primary'] }
+}
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides { bundle: true }
+}
+
 /**
  * PayStubIssa design system — "Trust Blue + Profit Green" (light).
  *
@@ -14,6 +24,9 @@ const theme = createTheme({
     secondary: { main: '#3B82F6', contrastText: '#FFFFFF' },  // Light blue
     success: { main: '#059669', contrastText: '#FFFFFF' },    // Profit green / accent
     error: { main: '#DC2626', contrastText: '#FFFFFF' },      // Destructive
+    // Bundle orange. Dark slate text, not white: white on this orange fails WCAG AA (2.8:1),
+    // slate passes on both the resting and the hover shade (6.4:1 and 4.9:1).
+    bundle: { main: '#F97316', dark: '#EA580C', light: '#FB923C', contrastText: '#0F172A' },
     background: { default: '#F8FAFC', paper: '#FFFFFF' },
     text: { primary: '#0F172A', secondary: '#64748B' },
     divider: '#E4ECFC',

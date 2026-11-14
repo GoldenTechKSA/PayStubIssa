@@ -16,7 +16,7 @@ export const DENY_SUBSTRINGS: readonly string[] = [
 export const ALLOW_KEYS: ReadonlySet<string> = new Set([
   'templateId', 'amountCents', 'stubCount', 'step', 'path', 'ms', 'orderId', 'code',
   'message', 'pages', 'attested', 'draftRestored', 'from', 'to', 'lastStep', 'component',
-  'count', 'keys', 'reason', 'totalCents', 'captureId', 'capturedCents', 'currency',
+  'count', 'keys', 'reason', 'totalCents', 'captureId', 'capturedCents', 'currency', 'placement',
 ]);
 
 export const REDACTED = '[redacted]';
