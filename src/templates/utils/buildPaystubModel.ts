@@ -103,61 +103,6 @@ const formatPeriodDate = (value: unknown): string => {
   return Number.isNaN(new Date(raw).getTime()) ? '' : formatDate(raw);
 };
 
-/**
- * The one-time part of a stub: overtime and bonus are paid in the period they were entered
- * for and in no other, so YTD counts them ONCE rather than projecting them over the year.
- * The tax figures are the EXTRA withholding those earnings drew (tax on the full period minus
- * tax on regular pay alone), and netPay is their net effect. Later stubs in a run receive the
- * running sum of these as `carried`, so the amount stays in YTD without being paid again.
- */
-interface OneTimeTotals {
-  overtimePay: number;
-  otherEarnings: number;
-  grossPay: number;
-  federalTax: number;
-  stateTax: number;
-  socialSecurity: number;
-  medicare: number;
-  paidLeave: number;
-  totalTaxes: number;
-  retirement401k: number;
-  unionDues: number;
-  totalDeductions: number;
-  netPay: number;
-}
-
-const NO_ONE_TIME: OneTimeTotals = {
-  overtimePay: 0,
-  otherEarnings: 0,
-  grossPay: 0,
-  federalTax: 0,
-  stateTax: 0,
-  socialSecurity: 0,
-  medicare: 0,
-  paidLeave: 0,
-  totalTaxes: 0,
-  retirement401k: 0,
-  unionDues: 0,
-  totalDeductions: 0,
-  netPay: 0,
-};
-
-const addOneTime = (a: OneTimeTotals, b: OneTimeTotals): OneTimeTotals => ({
-  overtimePay: a.overtimePay + b.overtimePay,
-  otherEarnings: a.otherEarnings + b.otherEarnings,
-  grossPay: a.grossPay + b.grossPay,
-  federalTax: a.federalTax + b.federalTax,
-  stateTax: a.stateTax + b.stateTax,
-  socialSecurity: a.socialSecurity + b.socialSecurity,
-  medicare: a.medicare + b.medicare,
-  paidLeave: a.paidLeave + b.paidLeave,
-  totalTaxes: a.totalTaxes + b.totalTaxes,
-  retirement401k: a.retirement401k + b.retirement401k,
-  unionDues: a.unionDues + b.unionDues,
-  totalDeductions: a.totalDeductions + b.totalDeductions,
-  netPay: a.netPay + b.netPay,
-});
-
 interface PeriodWithholding {
   federalTax: number;
   stateTax: number;
@@ -213,46 +158,52 @@ const withholdForPeriod = (
   };
 };
 
-interface PeriodBuild {
-  model: PaystubModel;
-  // This stub's own one-time amounts plus everything carried into it — what the NEXT stub carries.
-  oneTimeToDate: OneTimeTotals;
+// Every money line a stub prints for the current period. Each has a `<name>YTD` sibling on the
+// model, built from these same keys.
+const AMOUNT_KEYS = [
+  'regularPay', 'overtimePay', 'otherEarnings', 'grossPay',
+  'federalTax', 'stateTax', 'socialSecurity', 'medicare', 'paidLeave', 'totalTaxes',
+  'medical', 'dental', 'vision', 'retirement401k', 'otherDeductions', 'otherDeductionsExUnion',
+  'unionDues', 'totalDeductions', 'netPay',
+] as const;
+type AmountKey = typeof AMOUNT_KEYS[number];
+type Amounts = Record<AmountKey, number>;
+
+// a + b × times, line by line.
+const addAmounts = (a: Amounts, b: Amounts, times: number = 1): Amounts =>
+  AMOUNT_KEYS.reduce((acc, key) => {
+    acc[key] = a[key] + b[key] * times;
+    return acc;
+  }, {} as Amounts);
+
+const NO_AMOUNTS: Amounts = AMOUNT_KEYS.reduce((acc, key) => {
+  acc[key] = 0;
+  return acc;
+}, {} as Amounts);
+
+interface PeriodFigures {
+  amounts: Amounts;
+  paidLeaveLabel: string;
 }
 
+const payYearOf = (store: PayStubDetails): number | undefined =>
+  Number(toISODate(store.incomeDetails.periodPayDate).slice(0, 4)) || undefined;
+
 /**
- * Build the model for ONE pay period.
- *
- * `store` is expected to already carry that period's dates and check/stub numbers — see
- * buildPaystubModels, which derives a per-stub store before calling this.
- *
- * YTD method:
- *   - Regular pay, taxes on regular pay, and deductions are assumed to recur every period of
- *     the year, so each is `per-period amount × periods elapsed as of this stub's pay date`.
- *     For the two percent-of-gross deductions (401(k), union dues) the recurring part is the
- *     percentage of REGULAR pay.
- *   - Overtime and bonus are one-time: they (and the extra tax and extra percent-of-gross
- *     deductions they drew) are added to YTD once — on the stub that pays them and, via
- *     `carried`, on every later stub in the run.
+ * The current-period money lines for ONE pay period. `store` is expected to already carry that
+ * period's dates and its own hours, overtime hours and bonus — see buildPaystubModels.
  */
-const buildModelForPeriod = (
-  store: PayStubDetails,
-  stubIndex: number,
-  stubCount: number,
-  carried: OneTimeTotals = NO_ONE_TIME,
-): PeriodBuild => {
-  const { incomeDetails, employeeInfo, generalInfo } = store;
+const figuresForPeriod = (store: PayStubDetails): PeriodFigures => {
+  const { incomeDetails, employeeInfo } = store;
 
   // The wizard stores a full state NAME; STATE_TAX_DATA is keyed by postal code, so the
   // engine must be handed the code — passing 'Virginia' misses the table and silently
   // yields 0 state tax.
   const stateCode = resolveStateCode(employeeInfo.employeeState);
   const filingStatus = resolveFilingStatus(employeeInfo.employeeMarriedStatus);
-
   const perYear = periodsPerYear(incomeDetails.periodType);
-  // YTD is measured against THIS stub's pay date, not today — so a run of stubs shows YTD growing.
-  const periodsToDate = periodsElapsedAt(incomeDetails.periodType, new Date(incomeDetails.periodPayDate));
 
-  // --- Earnings (current period) ---
+  // --- Earnings ---
   const regularPay =
     incomeDetails.wageType === 'Salary'
       ? num(incomeDetails.annualSalary) / perYear
@@ -263,30 +214,17 @@ const buildModelForPeriod = (
 
   // 401(k) and union dues are stored as a FRACTION of gross pay (the Earnings step takes a
   // percentage: 5% is saved as 0.05), so the dollar amount is that fraction of this period's gross.
-  const rate401k = rateOfGross(incomeDetails.deduction401k);
-  const rateUnion = rateOfGross(incomeDetails.unionDues);
-  const retirement401k = grossPay * rate401k;
-  const unionDues = grossPay * rateUnion;
-  // The same two on regular pay alone: the recurring base for YTD.
-  const base401k = regularPay * rate401k;
-  const baseUnion = regularPay * rateUnion;
+  const retirement401k = grossPay * rateOfGross(incomeDetails.deduction401k);
+  const unionDues = grossPay * rateOfGross(incomeDetails.unionDues);
 
-  // --- Taxes (current period) ---
+  // --- Taxes ---
   // The 401(k) is a traditional, pre-tax contribution: income tax is withheld on gross less it.
   // Wages are taxed under the rules of the year they are PAID in, so the IRS tables follow this
   // stub's pay date: a stub dated in 2025 uses the 2025 tables even when it is made in 2026.
-  const taxYear = Number(toISODate(incomeDetails.periodPayDate).slice(0, 4)) || undefined;
-  const taxes = withholdForPeriod(grossPay, perYear, filingStatus, stateCode, retirement401k, taxYear);
+  const taxes = withholdForPeriod(grossPay, perYear, filingStatus, stateCode, retirement401k, payYearOf(store));
   const { federalTax, stateTax, socialSecurity, medicare, paidLeave, totalTaxes } = taxes;
 
-  // Withholding on regular pay alone: the recurring tax base for YTD. Only differs from the
-  // period's actual withholding when there is one-time pay on top.
-  const oneTimeEarnings = overtimePay + otherEarnings;
-  const baseTaxes = oneTimeEarnings > 0
-    ? withholdForPeriod(regularPay, perYear, filingStatus, stateCode, base401k, taxYear)
-    : taxes;
-
-  // --- Deductions (current period) ---
+  // --- Deductions ---
   const medical = num(incomeDetails.medicalDeduction);
   const dental = num(incomeDetails.dentalDeduction);
   const vision = num(incomeDetails.visionDeduction);
@@ -294,35 +232,33 @@ const buildModelForPeriod = (
   const otherDeductionsExUnion = num(incomeDetails.otherDeduction);
   // The catch-all "Other" line: most templates have no union-dues row, so the dues print here.
   const otherDeductions = otherDeductionsExUnion + unionDues;
-  const flatDeductions = medical + dental + vision + otherDeductionsExUnion;
-  const totalDeductions = flatDeductions + retirement401k + unionDues;
+  const totalDeductions = medical + dental + vision + otherDeductionsExUnion + retirement401k + unionDues;
 
-  const baseTotalDeductions = flatDeductions + base401k + baseUnion;
+  return {
+    paidLeaveLabel: taxes.paidLeaveLabel,
+    amounts: {
+      regularPay, overtimePay, otherEarnings, grossPay,
+      federalTax, stateTax, socialSecurity, medicare, paidLeave, totalTaxes,
+      medical, dental, vision, retirement401k, otherDeductions, otherDeductionsExUnion,
+      unionDues, totalDeductions,
+      netPay: grossPay - totalTaxes - totalDeductions,
+    },
+  };
+};
 
-  // --- Net (current period) ---
-  const netPay = grossPay - totalTaxes - totalDeductions;
-  const baseNetPay = regularPay - baseTaxes.totalTaxes - baseTotalDeductions;
-
-  // --- Year-to-date ---
-  // Recurring amounts: proportional estimate (per-period amount × periods elapsed).
-  const recurring = (perPeriodAmount: number) => perPeriodAmount * periodsToDate;
-  // One-time amounts: this stub's overtime/bonus (and the extra tax and net effect they had),
-  // plus whatever earlier stubs in the run already paid once.
-  const oneTimeToDate = addOneTime(carried, {
-    overtimePay,
-    otherEarnings,
-    grossPay: oneTimeEarnings,
-    federalTax: federalTax - baseTaxes.federalTax,
-    stateTax: stateTax - baseTaxes.stateTax,
-    socialSecurity: socialSecurity - baseTaxes.socialSecurity,
-    medicare: medicare - baseTaxes.medicare,
-    paidLeave: paidLeave - baseTaxes.paidLeave,
-    totalTaxes: totalTaxes - baseTaxes.totalTaxes,
-    retirement401k: retirement401k - base401k,
-    unionDues: unionDues - baseUnion,
-    totalDeductions: totalDeductions - baseTotalDeductions,
-    netPay: netPay - baseNetPay,
-  });
+/**
+ * Assemble the model for ONE stub from its store, its current-period figures and the
+ * year-to-date totals as of that stub (see buildPaystubModels for how YTD is accumulated).
+ */
+const assembleModel = (
+  store: PayStubDetails,
+  stubIndex: number,
+  stubCount: number,
+  figures: PeriodFigures,
+  ytd: Amounts,
+): PaystubModel => {
+  const { incomeDetails, employeeInfo, generalInfo } = store;
+  const stateCode = resolveStateCode(employeeInfo.employeeState);
 
   // --- Presentation strings (see the helpers above) ---
   const periodStart = formatPeriodDate(incomeDetails.periodStartDate);
@@ -331,14 +267,16 @@ const buildModelForPeriod = (
   const cityStateZip = [companyCity, resolveStateCode(companyState) || companyState]
     .filter(Boolean)
     .join(', ');
-  const employeeCityStateZip = [
-    employeeInfo.employeeCity,
-    resolveStateCode(employeeInfo.employeeState) || employeeInfo.employeeState,
-  ]
+  const employeeCityStateZip = [employeeInfo.employeeCity, stateCode || employeeInfo.employeeState]
     .filter(Boolean)
     .join(', ');
 
-  const model: PaystubModel = {
+  const ytdFields = AMOUNT_KEYS.reduce((acc, key) => {
+    acc[`${key}YTD`] = ytd[key];
+    return acc;
+  }, {} as Record<string, number>);
+
+  return {
     ...store,
 
     employeeSSNMasked: maskSSN(employeeInfo.employeeSSN),
@@ -354,76 +292,131 @@ const buildModelForPeriod = (
       [employeeCityStateZip, employeeInfo.employeeZipCode].filter(Boolean).join(' ') || EMPTY,
     filingStatusLabel:
       FILING_STATUS_NAME_BY_ID[resolveFilingStatus(employeeInfo.employeeMarriedStatus)] || EMPTY,
-    paidLeaveLabel: taxes.paidLeaveLabel,
+    paidLeaveLabel: figures.paidLeaveLabel,
     employeeStateCode: stateCode,
     paymentMethodLabel: paymentMethodLabel(generalInfo),
     isSalaried: incomeDetails.wageType === 'Salary',
     isHourly: incomeDetails.wageType !== 'Salary',
 
-    // The per-stub store handed to us already carries this stub's own numbers — don't advance again.
+    // The per-stub store handed to us already carries this stub's own numbers.
     stubIndex,
     stubCount,
     stubNumber: num(generalInfo.payStubNumber),
     checkNumber: num(generalInfo.checkNumber),
 
-    regularPay,
-    overtimePay,
-    otherEarnings,
-    grossPay,
+    ...figures.amounts,
+    ...ytdFields,
+  } as PaystubModel;
+};
 
-    federalTax,
-    stateTax,
-    socialSecurity,
-    medicare,
-    paidLeave,
-    totalTaxes,
+// The check or stub number a stub of the run gets unless the customer typed another one: the
+// number entered belongs to the most recent stub, and each earlier stub is one lower (an earlier
+// check has a lower number). 0 means "cannot count down that far": the Earnings step leaves the
+// cell empty and asks for a number.
+export const defaultRunNumber = (base: unknown, index: number): number =>
+  Math.max(0, Math.floor(num(base)) - index);
 
-    medical,
-    dental,
-    vision,
-    retirement401k,
-    otherDeductions,
-    otherDeductionsExUnion,
-    unionDues,
-    totalDeductions,
+export interface StubInputs {
+  hourlyRate: number;
+  hoursWorked: number;
+  overtimeRate: number;
+  overtimeHours: number;
+  bonusAmount: number;
+  annualSalary: number;
+  checkNumber: number;
+  payStubNumber: number;
+}
 
-    netPay,
+/**
+ * What ONE stub of the run is built from (index 0 = the most recent period, the one entered).
+ * Stub 0 is the base fields themselves (incomeDetails / generalInfo). An earlier stub has its
+ * own card on the Earnings step; whatever the customer did not type there follows these defaults:
+ *   - Hourly rate, hours worked, overtime rate, annual salary: the same as stub 0.
+ *   - Overtime hours and bonus: none. They are one-time, not something every period repeats.
+ *   - Check and stub number: count down from stub 0's numbers.
+ * A single stub has no per-stub values, so leftovers from a longer run are ignored.
+ */
+export const resolveStubInputs = (
+  incomeDetails: PayStubDetails['incomeDetails'],
+  generalInfo: PayStubDetails['generalInfo'],
+  index: number,
+  stubCount: number,
+): StubInputs => {
+  const override = (stubCount > 1 && index > 0 && incomeDetails.stubOverrides?.[index]) || {};
+  const own = (value: unknown, fallback: number) =>
+    value === undefined || value === null || value === '' ? fallback : num(value);
 
-    // Recurring (× periods elapsed) + one-time (counted once, carried through the run).
-    regularPayYTD: recurring(regularPay),
-    overtimePayYTD: oneTimeToDate.overtimePay,
-    otherEarningsYTD: oneTimeToDate.otherEarnings,
-    grossPayYTD: recurring(regularPay) + oneTimeToDate.grossPay,
-    federalTaxYTD: recurring(baseTaxes.federalTax) + oneTimeToDate.federalTax,
-    stateTaxYTD: recurring(baseTaxes.stateTax) + oneTimeToDate.stateTax,
-    socialSecurityYTD: recurring(baseTaxes.socialSecurity) + oneTimeToDate.socialSecurity,
-    medicareYTD: recurring(baseTaxes.medicare) + oneTimeToDate.medicare,
-    paidLeaveYTD: recurring(baseTaxes.paidLeave) + oneTimeToDate.paidLeave,
-    totalTaxesYTD: recurring(baseTaxes.totalTaxes) + oneTimeToDate.totalTaxes,
-    medicalYTD: recurring(medical),
-    dentalYTD: recurring(dental),
-    visionYTD: recurring(vision),
-    retirement401kYTD: recurring(base401k) + oneTimeToDate.retirement401k,
-    otherDeductionsYTD: recurring(otherDeductionsExUnion + baseUnion) + oneTimeToDate.unionDues,
-    otherDeductionsExUnionYTD: recurring(otherDeductionsExUnion),
-    unionDuesYTD: recurring(baseUnion) + oneTimeToDate.unionDues,
-    totalDeductionsYTD: recurring(baseTotalDeductions) + oneTimeToDate.totalDeductions,
-    netPayYTD: recurring(baseNetPay) + oneTimeToDate.netPay,
+  return {
+    hourlyRate: own(override.hourlyRate, num(incomeDetails.hourlyRate)),
+    hoursWorked: own(override.hoursWorked, num(incomeDetails.hoursWorked)),
+    overtimeRate: own(override.overtimeRate, num(incomeDetails.overtimeRate)),
+    overtimeHours: index === 0 ? num(incomeDetails.overtimeHours) : own(override.overtimeHours, 0),
+    bonusAmount: index === 0 ? num(incomeDetails.bonusAmount) : own(override.bonusAmount, 0),
+    annualSalary: own(override.annualSalary, num(incomeDetails.annualSalary)),
+    checkNumber: index === 0
+      ? num(generalInfo.checkNumber)
+      : own(override.checkNumber, defaultRunNumber(generalInfo.checkNumber, index)),
+    payStubNumber: index === 0
+      ? num(generalInfo.payStubNumber)
+      : own(override.payStubNumber, defaultRunNumber(generalInfo.payStubNumber, index)),
   };
+};
 
-  return { model, oneTimeToDate };
+// The pay periods of a run, most recent first. The user chooses the pay date of period #1; its
+// distance from that period's end date is applied to every stub in the run.
+export const buildRunPeriods = (incomeDetails: PayStubDetails['incomeDetails'], stubCount: number): PayPeriod[] => {
+  const payGapDays = payDateGapDays(
+    calculateEndDate(toISODate(incomeDetails.periodStartDate), incomeDetails.periodType),
+    incomeDetails.periodPayDate,
+  );
+  return buildPayPeriods(incomeDetails.periodStartDate, incomeDetails.periodType, stubCount, payGapDays);
 };
 
 /**
- * Build one model per purchased pay stub.
+ * Year-to-date for a list of stub stores given MOST RECENT FIRST.
  *
- * The customer pays per stub (see constants/pricing) and picks a count of 1–12. The date they
- * entered is period #1; each subsequent stub covers the next consecutive period, with its own
- * period dates, its own incrementing check and stub numbers, and its own YTD figures.
+ * YTD is an estimate with two parts:
+ *   - Before the run: for each period of the year that came before the earliest stub of the run
+ *     in that year, the employee is assumed to have been paid that earliest stub's REGULAR pay
+ *     (its rate × hours, or its salary) with every deduction, and no overtime or bonus.
+ *   - Inside the run: the actual figures of each stub, added up oldest to newest.
+ * So YTD never falls from one stub to the next, overtime and bonus count once, and a run that
+ * crosses January 1 starts the new year's totals from zero.
+ */
+const accumulateYtd = (stubStores: PayStubDetails[], figures: PeriodFigures[]): Amounts[] => {
+  const ytd: Amounts[] = [];
+  let year: number | undefined;
+  let running = NO_AMOUNTS;
+
+  for (let i = stubStores.length - 1; i >= 0; i--) {
+    const store = stubStores[i];
+    const stubYear = payYearOf(store);
+
+    if (i === stubStores.length - 1 || stubYear !== year) {
+      year = stubYear;
+      const regularOnly = figuresForPeriod({
+        ...store,
+        incomeDetails: { ...store.incomeDetails, overtimeHours: 0, bonusAmount: 0 },
+      }).amounts;
+      // YTD is measured against the stub's pay date, not today.
+      const periodsBefore = periodsElapsedAt(store.incomeDetails.periodType, new Date(store.incomeDetails.periodPayDate)) - 1;
+      running = addAmounts(NO_AMOUNTS, regularOnly, periodsBefore);
+    }
+
+    running = addAmounts(running, figures[i].amounts);
+    ytd[i] = running;
+  }
+
+  return ytd;
+};
+
+/**
+ * Build one model per purchased pay stub, MOST RECENT FIRST.
  *
- * The overtime and bonus the customer entered belong to period #1 only ("This period" on the
- * Earnings step). Later stubs pay regular wages alone, and carry period #1's one-time amounts
- * forward in their YTD so the year's totals stay consistent across the run.
+ * The customer pays per stub (see constants/pricing) and picks a count of 1–12. The period they
+ * entered is stub #1, the latest; each further stub covers the period before it, with its own
+ * period dates, its own check and stub numbers (counting down), its own rates, hours, overtime
+ * hours and bonus (see resolveStubInputs), and its own YTD figures (see accumulateYtd).
  *
  * Always returns at least one model, so callers never have to guard against an empty array.
  */
@@ -431,56 +424,45 @@ export const buildPaystubModels = (store: PayStubDetails): PaystubModel[] => {
   const { incomeDetails, generalInfo } = store;
 
   const stubCount = normalizeStubCount(generalInfo.payStubCount);
-  // The user chooses the pay date of period #1; its distance from that period's end date is
-  // applied to every stub in the run.
-  const payGapDays = payDateGapDays(
-    calculateEndDate(toISODate(incomeDetails.periodStartDate), incomeDetails.periodType),
-    incomeDetails.periodPayDate,
-  );
-  const periods = buildPayPeriods(incomeDetails.periodStartDate, incomeDetails.periodType, stubCount, payGapDays);
+  const periods = buildRunPeriods(incomeDetails, stubCount);
 
   // No usable start date / period type yet (the user is mid-wizard): fall back to whatever dates
   // are already on the store so the preview still renders.
-  if (periods.length === 0) {
-    return [buildModelForPeriod(store, 0, 1).model];
-  }
+  const stubStores: PayStubDetails[] = periods.length === 0
+    ? [store]
+    : periods.map((period: PayPeriod, index: number) => {
+        const inputs = resolveStubInputs(incomeDetails, generalInfo, index, periods.length);
+        return {
+          ...store,
+          incomeDetails: {
+            ...incomeDetails,
+            hourlyRate: inputs.hourlyRate,
+            hoursWorked: inputs.hoursWorked,
+            overtimeRate: inputs.overtimeRate,
+            overtimeHours: inputs.overtimeHours,
+            bonusAmount: inputs.bonusAmount,
+            annualSalary: inputs.annualSalary,
+            periodStartDate: period.startDate as unknown as Date,
+            periodEndDate: period.endDate as unknown as Date,
+            periodPayDate: period.payDate as unknown as Date,
+          },
+          generalInfo: {
+            ...generalInfo,
+            checkNumber: inputs.checkNumber,
+            payStubNumber: inputs.payStubNumber,
+          },
+        };
+      });
 
-  const models: PaystubModel[] = [];
-  let carried = NO_ONE_TIME;
+  const figures = stubStores.map(figuresForPeriod);
+  const ytd = accumulateYtd(stubStores, figures);
 
-  periods.forEach((period: PayPeriod, index: number) => {
-    const oneTimePay = index === 0 ? {} : { overtimeRate: 0, overtimeHours: 0, bonusAmount: 0 };
-    const { model, oneTimeToDate } = buildModelForPeriod(
-      {
-        ...store,
-        incomeDetails: {
-          ...incomeDetails,
-          ...oneTimePay,
-          periodStartDate: period.startDate as unknown as Date,
-          periodEndDate: period.endDate as unknown as Date,
-          periodPayDate: period.payDate as unknown as Date,
-        },
-        generalInfo: {
-          ...generalInfo,
-          checkNumber: Number(generalInfo.checkNumber) + index,
-          payStubNumber: Number(generalInfo.payStubNumber) + index,
-        },
-      },
-      index,
-      periods.length,
-      carried,
-    );
-    models.push(model);
-    carried = oneTimeToDate;
-  });
-
-  return models;
+  return stubStores.map((stubStore, index) =>
+    assembleModel(stubStore, index, stubStores.length, figures[index], ytd[index]));
 };
 
 /**
- * The model for the FIRST pay stub. Convenience for callers that only ever show one — the
- * template gallery preview and the Review step's pay summary.
+ * The model for the FIRST pay stub (the most recent period). Convenience for callers that only
+ * ever show one — the template gallery preview and the Review step's pay summary.
  */
 export const buildPaystubModel = (store: PayStubDetails): PaystubModel => buildPaystubModels(store)[0];
-
-export default buildPaystubModel;

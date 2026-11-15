@@ -62,6 +62,24 @@ export interface IncomeDetails {
     periodEndDate: Date;
     periodPayDate: Date;
     periodType: string;
+    // Per-stub values for a run of 2+ stubs, indexed by position in the run (0 = the most recent
+    // period, the one the customer entered; entry 0 is never read). A missing entry or field
+    // follows the default: see resolveStubInputs in buildPaystubModel. Ignored for a single stub.
+    stubOverrides?: StubOverride[];
+}
+/**
+ * What the customer typed on the card of one EARLIER stub of a run (index 1 and up). Stub 0,
+ * the most recent, is the base fields themselves (incomeDetails / generalInfo).
+ */
+export interface StubOverride {
+    hourlyRate?: number;
+    hoursWorked?: number;
+    overtimeRate?: number;
+    annualSalary?: number;
+    overtimeHours?: number;
+    bonusAmount?: number;
+    checkNumber?: number;
+    payStubNumber?: number;
 }
 export interface GeneralInfo {
     employmentType: string;
@@ -115,8 +133,9 @@ export interface PaystubModel extends PayStubDetails {
     isHourly: boolean;
 
     // Position of this stub within the purchased run (0-based), and the run's size.
-    // A run of N stubs covers N consecutive pay periods; each stub carries its own period
-    // dates (on incomeDetails), its own check/stub number, and its own YTD figures.
+    // A run of N stubs covers N consecutive pay periods, most recent first (stub 0 is the period
+    // the customer entered); each stub carries its own period dates and hours/overtime/bonus (on
+    // incomeDetails), its own check/stub number, and its own YTD figures.
     stubIndex: number;
     stubCount: number;
     stubNumber: number;

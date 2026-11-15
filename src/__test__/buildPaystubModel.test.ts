@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from '@jest/globals';
 import { buildPaystubModel, buildPaystubModels } from '../templates/utils/buildPaystubModel';
-import { periodsElapsedAt } from '../utils/date-calculator';
+import { periodsElapsedAt, buildPayPeriods, calculateEndDate } from '../utils/date-calculator';
 import { normalizeStubCount } from '../constants/pricing';
 import { PayStubDetails } from '../assets/data/pay-stub-details';
 
@@ -250,110 +250,176 @@ describe('paymentMethodLabel', () => {
 });
 
 describe('buildPaystubModels — the purchased run of stubs', () => {
+  // Weekly, 25 an hour × 40 hours; the entered (most recent) period is 2025-03-05 to 2025-03-11.
+  const runOf = (
+    payStubCount: number,
+    income: Partial<PayStubDetails['incomeDetails']> = {},
+    general: Partial<PayStubDetails['generalInfo']> = {},
+  ) => buildPaystubModels(makeStore(
+    { periodStartDate: '2025-03-05' as unknown as Date, periodEndDate: '2025-03-11' as unknown as Date,
+      periodPayDate: '2025-03-18' as unknown as Date, ...income },
+    {},
+    { payStubCount, ...general },
+  ));
+
   it('returns one model per purchased stub', () => {
-    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 4 } });
+    const models = runOf(4);
     expect(models).toHaveLength(4);
     expect(models.map(m => m.stubIndex)).toEqual([0, 1, 2, 3]);
     expect(models.every(m => m.stubCount === 4)).toBe(true);
   });
 
-  it('walks consecutive, gapless pay periods forward from the entered start date', () => {
-    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
+  it('walks consecutive, gapless pay periods BACK from the entered period, most recent first', () => {
+    const models = runOf(3);
+    expect(models.map(m => String(m.incomeDetails.periodStartDate))).toEqual(['2025-03-05', '2025-02-26', '2025-02-19']);
+    expect(models.map(m => String(m.incomeDetails.periodEndDate))).toEqual(['2025-03-11', '2025-03-04', '2025-02-25']);
+  });
 
-    // Weekly, starting 2025-01-01.
-    expect(models.map(m => String(m.incomeDetails.periodStartDate))).toEqual(['2025-01-01', '2025-01-08', '2025-01-15']);
-    expect(models.map(m => String(m.incomeDetails.periodEndDate))).toEqual(['2025-01-07', '2025-01-14', '2025-01-21']);
-    // Each period begins the day after the previous one ended — no gaps, no overlaps.
-    expect(String(models[1].incomeDetails.periodStartDate)).toBe('2025-01-08');
+  it('matches the owner\'s example: bi-weekly 10/28–11/10/2026 is followed by 10/14–10/27', () => {
+    const models = runOf(3, { periodType: 'Bi-Weekly', periodStartDate: '2026-10-28' as unknown as Date, periodPayDate: '2026-11-17' as unknown as Date });
+    expect(models.map(m => `${m.incomeDetails.periodStartDate} ${m.incomeDetails.periodEndDate}`)).toEqual([
+      '2026-10-28 2026-11-10', '2026-10-14 2026-10-27', '2026-09-30 2026-10-13',
+    ]);
   });
 
   it('carries the chosen gap between end date and pay date onto every stub of the run', () => {
-    const run = (periodPayDate: unknown) => buildPaystubModels({
-      ...makeStore(),
-      incomeDetails: { ...makeStore().incomeDetails, periodPayDate: periodPayDate as Date },
-      generalInfo: { ...makeStore().generalInfo, payStubCount: 3 },
-    }).map(m => String(m.incomeDetails.periodPayDate));
+    const run = (periodPayDate: unknown) =>
+      runOf(3, { periodPayDate: periodPayDate as Date }).map(m => String(m.incomeDetails.periodPayDate));
 
-    // Weekly periods ending 2025-01-07, -14, -21.
-    expect(run('2025-01-10')).toEqual(['2025-01-10', '2025-01-17', '2025-01-24']); // 3 days after
-    expect(run('2025-01-07')).toEqual(['2025-01-07', '2025-01-14', '2025-01-21']); // on the end date
+    // Weekly periods ending 2025-03-11, -03-04, -02-25.
+    expect(run('2025-03-14')).toEqual(['2025-03-14', '2025-03-07', '2025-02-28']); // 3 days after
+    expect(run('2025-03-11')).toEqual(['2025-03-11', '2025-03-04', '2025-02-25']); // on the end date
     // A pay date before the end date, or none at all, falls back to the 7-day default.
-    expect(run('2025-01-03')).toEqual(['2025-01-14', '2025-01-21', '2025-01-28']);
-    expect(run('')).toEqual(['2025-01-14', '2025-01-21', '2025-01-28']);
+    expect(run('2025-03-07')).toEqual(['2025-03-18', '2025-03-11', '2025-03-04']);
+    expect(run('')).toEqual(['2025-03-18', '2025-03-11', '2025-03-04']);
   });
 
-  it('increments the check and stub numbers across the run', () => {
-    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
-    expect(models.map(m => m.checkNumber)).toEqual([5001, 5002, 5003]);
-    expect(models.map(m => m.stubNumber)).toEqual([1, 2, 3]);
+  it('counts the check and stub numbers DOWN from the entered ones', () => {
+    const models = runOf(3, {}, { checkNumber: 5001, payStubNumber: 12 });
+    expect(models.map(m => m.checkNumber)).toEqual([5001, 5000, 4999]);
+    expect(models.map(m => m.stubNumber)).toEqual([12, 11, 10]);
   });
 
-  it('grows YTD across the run while regular pay stays constant', () => {
-    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 6 } });
+  it('uses a check or stub number the customer typed for one stub', () => {
+    const models = runOf(3, { stubOverrides: [{}, { checkNumber: 4990 }, { payStubNumber: 3 }] }, { checkNumber: 5001, payStubNumber: 12 });
+    expect(models.map(m => m.checkNumber)).toEqual([5001, 4990, 4999]);
+    expect(models.map(m => m.stubNumber)).toEqual([12, 11, 3]);
+  });
 
-    // Same regular wages every period...
-    expect(new Set(models.map(m => m.regularPay)).size).toBe(1);
-    // ...but YTD is non-decreasing, and the last stub's YTD is strictly greater than the first's.
-    for (let i = 1; i < models.length; i++) {
-      expect(models[i].grossPayYTD).toBeGreaterThanOrEqual(models[i - 1].grossPayYTD);
+  it('pays overtime and bonus on the entered period only, unless an earlier stub is given some', () => {
+    const plain = runOf(3);
+    expect(plain.map(m => m.grossPay)).toEqual([1175, 1000, 1000]);
+    expect(plain.slice(1).every(m => m.overtimePay === 0 && m.otherEarnings === 0)).toBe(true);
+
+    const adjusted = runOf(3, { stubOverrides: [{}, { overtimeHours: 4 }, { bonusAmount: 250 }] });
+    expect(adjusted.map(m => m.overtimePay)).toEqual([75, 150, 0]);
+    expect(adjusted.map(m => m.otherEarnings)).toEqual([100, 0, 250]);
+  });
+
+  it('pays each stub at its own rate and hours, and at the most recent stub\'s where none were given', () => {
+    const models = runOf(4, { stubOverrides: [{ hoursWorked: 1 }, { hoursWorked: 30 }, { hourlyRate: 20, hoursWorked: 36, overtimeRate: 30, overtimeHours: 2 }] });
+    // Entry 0 is never read: the most recent stub is the base fields.
+    expect(models.map(m => m.regularPay)).toEqual([1000, 750, 720, 1000]);
+    expect(models.map(m => m.overtimePay)).toEqual([75, 0, 60, 0]);
+    expect(models.map(m => m.incomeDetails.hourlyRate)).toEqual([25, 25, 20, 25]);
+  });
+
+  it('pays each stub its own salary', () => {
+    const models = runOf(2, { wageType: 'Salary', annualSalary: 52000, overtimeHours: 0, bonusAmount: 0, stubOverrides: [{}, { annualSalary: 46800 }] });
+    expect(models.map(m => m.regularPay)).toEqual([1000, 900]);
+  });
+
+  it('ignores per-stub adjustments left over from a longer run when there is one stub', () => {
+    const [only] = runOf(1, { stubOverrides: [{ hoursWorked: 10 }] });
+    expect(only.regularPay).toBe(1000);
+  });
+
+  it('builds YTD from the earliest stub\'s regular pay before the run plus the actual stubs of the run', () => {
+    const models = runOf(3, { hoursWorked: 36, stubOverrides: [{}, { hoursWorked: 30, bonusAmount: 250 }, { hoursWorked: 40 }] });
+    const [latest, middle, oldest] = models;
+    // Periods of the year paid before the oldest stub of the run: each like it (1,000 regular).
+    const before = periodsElapsedAt('Weekly', oldest.incomeDetails.periodPayDate) - 1;
+    expect(before).toBeGreaterThan(0);
+
+    expect(oldest.regularPayYTD).toBeCloseTo(1000 * before + 1000, 5);
+    expect(middle.regularPayYTD).toBeCloseTo(1000 * before + 1000 + 750, 5);
+    expect(latest.regularPayYTD).toBeCloseTo(1000 * before + 1000 + 750 + 900, 5);
+    // One-time pay counts once, from the stub that paid it onward.
+    expect(models.map(m => m.otherEarningsYTD)).toEqual([350, 250, 0]);
+    expect(models.map(m => m.overtimePayYTD)).toEqual([75, 0, 0]);
+    // Taxes: typical withholding before the run, then what each stub actually withheld.
+    const typicalTax = oldest.totalTaxes; // the oldest stub has no overtime or bonus
+    expect(latest.totalTaxesYTD).toBeCloseTo(typicalTax * before + oldest.totalTaxes + middle.totalTaxes + latest.totalTaxes, 5);
+  });
+
+  it('never lets YTD fall from an earlier stub to a later one, even after a short period', () => {
+    const models = runOf(6, { stubOverrides: [{ hoursWorked: 8 }, {}, { hoursWorked: 12 }] });
+    // models are most recent first, so walk them oldest to newest.
+    const chronological = [...models].reverse();
+    for (let i = 1; i < chronological.length; i++) {
+      (['grossPayYTD', 'totalTaxesYTD', 'totalDeductionsYTD', 'netPayYTD'] as const).forEach(key =>
+        expect(chronological[i][key]).toBeGreaterThan(chronological[i - 1][key]));
     }
-    expect(models[models.length - 1].grossPayYTD).toBeGreaterThan(models[0].grossPayYTD);
   });
 
-  it('pays overtime and bonus on the entered period only; later stubs get none', () => {
-    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
-
-    expect(models[0].overtimePay).toBe(75);
-    expect(models[0].otherEarnings).toBe(100);
-    expect(models[0].grossPay).toBe(1175);
-    for (const later of models.slice(1)) {
-      expect(later.overtimePay).toBe(0);
-      expect(later.otherEarnings).toBe(0);
-      expect(later.grossPay).toBe(1000); // regular only
-    }
-  });
-
-  it('carries the one-time overtime and bonus forward in later stubs\' YTD, once', () => {
-    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
-
+  it('keeps the YTD identities on every stub of an adjusted run', () => {
+    const models = runOf(4, { deduction401k: 0.05, unionDues: 0.01, stubOverrides: [{ hoursWorked: 36 }, { overtimeHours: 5 }, { bonusAmount: 80 }] });
     for (const m of models) {
-      const multiplier = periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
-      expect(m.overtimePayYTD).toBe(75);
-      expect(m.otherEarningsYTD).toBe(100);
-      expect(m.grossPayYTD).toBeCloseTo(m.regularPay * multiplier + 75 + 100, 5);
+      expect(m.grossPayYTD).toBeCloseTo(m.regularPayYTD + m.overtimePayYTD + m.otherEarningsYTD, 5);
       expect(m.netPayYTD).toBeCloseTo(m.grossPayYTD - m.totalTaxesYTD - m.totalDeductionsYTD, 5);
+      expect(m.totalTaxesYTD).toBeCloseTo(
+        m.federalTaxYTD + m.stateTaxYTD + m.socialSecurityYTD + m.medicareYTD + m.paidLeaveYTD, 5);
     }
   });
 
-  it('grows YTD taxes between later stubs by the regular-only tax times the periods added', () => {
-    const models = buildPaystubModels({ ...makeStore(), generalInfo: { ...makeStore().generalInfo, payStubCount: 3 } });
-    const [first, second, third] = models;
-    const mult = (m: typeof first) => periodsElapsedAt('Weekly', m.incomeDetails.periodPayDate);
-
-    // Stubs 2 and 3 are regular-only, so their per-period tax is the recurring base.
-    expect(third.totalTaxes).toBeCloseTo(second.totalTaxes, 5);
-    expect(third.totalTaxesYTD - second.totalTaxesYTD)
-      .toBeCloseTo(second.totalTaxes * (mult(third) - mult(second)), 5);
-    // The first stub's extra tax (from overtime + bonus) is in every stub's YTD exactly once.
-    const extraTax = first.totalTaxes - second.totalTaxes;
-    expect(extraTax).toBeGreaterThan(0);
-    expect(second.totalTaxesYTD).toBeCloseTo(second.totalTaxes * mult(second) + extraTax, 5);
+  it('starts the new year\'s YTD from zero when a run crosses January 1', () => {
+    // Weekly periods paid 2025-01-14, 2025-01-07 and 2024-12-31.
+    const models = runOf(3, {
+      periodStartDate: '2025-01-01' as unknown as Date, periodPayDate: '2025-01-14' as unknown as Date,
+      overtimeHours: 0, bonusAmount: 0,
+    });
+    expect(models.map(m => String(m.incomeDetails.periodPayDate))).toEqual(['2025-01-14', '2025-01-07', '2024-12-31']);
+    expect(models[1].grossPayYTD).toBeCloseTo(1000, 5);  // first pay day of 2025
+    expect(models[0].grossPayYTD).toBeCloseTo(2000, 5);
+    expect(models[2].grossPayYTD).toBeCloseTo(52000, 5); // the last pay day of 2024: a full year
   });
 
   it('clamps the stub count to the supported 1–12 range', () => {
-    const base = makeStore();
-    expect(buildPaystubModels({ ...base, generalInfo: { ...base.generalInfo, payStubCount: 0 } })).toHaveLength(1);
-    expect(buildPaystubModels({ ...base, generalInfo: { ...base.generalInfo, payStubCount: 99 } })).toHaveLength(12);
+    expect(runOf(0)).toHaveLength(1);
+    expect(runOf(99)).toHaveLength(12);
   });
 
   it('always yields at least one model even with no start date entered yet', () => {
-    const base = makeStore();
-    const models = buildPaystubModels({
-      ...base,
-      incomeDetails: { ...base.incomeDetails, periodStartDate: '' as unknown as Date },
-    });
+    const models = runOf(1, { periodStartDate: '' as unknown as Date });
     expect(models).toHaveLength(1);
     expect(Number.isFinite(models[0].grossPay)).toBe(true);
+  });
+});
+
+describe('buildPayPeriods — walking back through each pay frequency', () => {
+  const run = (type: string, start: string, count = 3) =>
+    buildPayPeriods(start, type, count).map(p => `${p.startDate} ${p.endDate}`);
+
+  it('steps back by calendar blocks for the calendar frequencies', () => {
+    expect(run('Semi-Monthly', '2026-03-01')).toEqual(['2026-03-01 2026-03-15', '2026-02-16 2026-02-28', '2026-02-01 2026-02-15']);
+    expect(run('Semi-Monthly', '2026-03-16')).toEqual(['2026-03-16 2026-03-31', '2026-03-01 2026-03-15', '2026-02-16 2026-02-28']);
+    expect(run('Monthly', '2026-02-01')).toEqual(['2026-02-01 2026-02-28', '2026-01-01 2026-01-31', '2025-12-01 2025-12-31']);
+    expect(run('Quarterly', '2026-04-01')).toEqual(['2026-04-01 2026-06-30', '2026-01-01 2026-03-31', '2025-10-01 2025-12-31']);
+    expect(run('Semiannually', '2026-01-01', 2)).toEqual(['2026-01-01 2026-06-30', '2025-07-01 2025-12-31']);
+    expect(run('Annually', '2025-01-01', 2)).toEqual(['2025-01-01 2025-12-31', '2024-01-01 2024-12-31']);
+  });
+
+  it('leaves no gap and no overlap, and every earlier period is one calculateEndDate agrees with', () => {
+    ['Weekly', 'Bi-Weekly', 'Semi-Monthly', 'Monthly', 'Quarterly', 'Semiannually', 'Annually'].forEach(type => {
+      const periods = buildPayPeriods('2026-07-01', type, 12);
+      expect(periods).toHaveLength(12);
+      for (let i = 1; i < periods.length; i++) {
+        const dayAfterEnd = new Date(`${periods[i].endDate}T00:00:00Z`);
+        dayAfterEnd.setUTCDate(dayAfterEnd.getUTCDate() + 1);
+        expect(dayAfterEnd.toISOString().slice(0, 10)).toBe(periods[i - 1].startDate);
+        expect(calculateEndDate(periods[i].startDate, type)).toBe(periods[i].endDate);
+      }
+    });
   });
 });
 
