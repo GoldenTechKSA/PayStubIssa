@@ -119,7 +119,7 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
   return (
     <WizardStepLayout
       title="Pay period"
-      subtitle="Pick the pay frequency and the day the period started. The end date follows from those, and the period must already have ended. The pay date starts a week after the end date and can be changed."
+      subtitle="Pick the pay frequency and the day the period started. The end date follows from those, and the period must already have ended. The pay date starts a week after the end date and can be changed. For more than one pay stub, this is the most recent period and the others go back in time from it."
       onBack={onBack}
       onNext={handleNext}
       nextDisabled={!isValid}
@@ -168,15 +168,17 @@ const PayPeriodStep: React.FC<StepProps> = ({ onNext, onBack }) => {
             fullWidth required label="How many pay stubs?" type="number" value={payStubCount}
             onChange={e => setPayStubCount(parseInt(e.target.value, 10) || 0)} onBlur={() => touch("count")}
             error={touched.count && !isValidStubCount(String(payStubCount))}
-            helperText={touched.count && !isValidStubCount(String(payStubCount)) ? "Choose between 1 and 12." : " "}
+            helperText={touched.count && !isValidStubCount(String(payStubCount))
+              ? "Choose between 1 and 12."
+              : payStubCount > 1 ? "The period above is the most recent; the others are the periods before it." : " "}
             inputProps={{ min: 1, max: 12, step: 1 }}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <TextField fullWidth label="Starting check number" type="number" value={checkNumber} onChange={e => setCheckNumber(parseInt(e.target.value, 10) || 0)} helperText=" " inputProps={{ min: 0, step: 1 }} />
+          <TextField fullWidth label="Check number" type="number" value={checkNumber} onChange={e => setCheckNumber(parseInt(e.target.value, 10) || 0)} helperText={payStubCount > 1 ? "Most recent stub; earlier stubs count down." : " "} inputProps={{ min: 0, step: 1 }} />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <TextField fullWidth label="Pay stub number" type="number" value={payStubNumber} onChange={e => setPayStubNumber(parseInt(e.target.value, 10) || 1)} helperText=" " inputProps={{ min: 1, step: 1 }} />
+          <TextField fullWidth label="Pay stub number" type="number" value={payStubNumber} onChange={e => setPayStubNumber(parseInt(e.target.value, 10) || 1)} helperText={payStubCount > 1 ? "Most recent stub; earlier stubs count down." : " "} inputProps={{ min: 1, step: 1 }} />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>

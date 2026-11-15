@@ -173,9 +173,10 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // The run spans from the first stub's period start to the last stub's period end.
-  const firstStub = models[0];
-  const lastStub = models[models.length - 1];
+  // Stubs are most recent first, so the run spans from the LAST model's period start (the
+  // earliest period) to the first model's period end.
+  const latestStub = models[0];
+  const earliestStub = models[models.length - 1];
 
   const handleAttestChange = (checked: boolean) => {
     setAttested(checked);
@@ -256,8 +257,8 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
               ["Frequency", incomeDetails.periodType],
               // With a run of stubs, show the span the whole run covers, not just the first period.
               [stubCount === 1 ? "Period" : "Periods covered",
-                `${String(firstStub.incomeDetails.periodStartDate || "")} – ${String(lastStub.incomeDetails.periodEndDate || "")}`],
-              [stubCount === 1 ? "Pay date" : "First pay date", String(firstStub.incomeDetails.periodPayDate || "")],
+                `${String(earliestStub.incomeDetails.periodStartDate || "")} – ${String(latestStub.incomeDetails.periodEndDate || "")}`],
+              [stubCount === 1 ? "Pay date" : "Most recent pay date", String(latestStub.incomeDetails.periodPayDate || "")],
               ["Pay stubs", stubCount],
             ]} />
 
@@ -481,7 +482,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
           <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1, textAlign: "center" }}>
             {stubCount === 1
               ? "This is exactly what will print."
-              : `This is exactly what will print — ${stubCount} pay stubs, one per page, covering ${stubCount} consecutive pay periods. Use the arrows to see each one.`}
+              : `This is exactly what will print — ${stubCount} pay stubs, one per page, covering ${stubCount} consecutive pay periods, most recent first. Use the arrows to see each one.`}
           </Typography>
         </Grid>
       </Grid>

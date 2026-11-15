@@ -166,15 +166,40 @@ export interface PayPeriod {
     payDate: string;
 }
 
-// Expand a starting date into `count` CONSECUTIVE pay periods of the given frequency.
-// Each period begins the day after the previous one ended, so the run is gapless.
-//
-// The date the user enters is period #1; the run advances forward from there. That matches the
-// rest of the form, where the check number and pay stub number are both "starting" values that
-// increment across the run.
+// The start of the pay period that ENDS on `endDate`: the inverse of calculateEndDate, used to
+// walk a run of stubs back in time. Weekly and Bi-Weekly count days; the calendar frequencies
+// start on the 1st (or the 16th, for the second half of a Semi-Monthly month) of the block the
+// end date closes, so `calculateEndDate(periodStartForEnd(e, t), t) === e` for any end date
+// calculateEndDate can produce.
+export const periodStartForEnd = (endDate: unknown, periodType: string): string => {
+    const iso = toISODate(endDate);
+    if (!iso || !periodType) return "";
+
+    const end = parseLocalDate(iso);
+    const y = end.getFullYear();
+    const m = end.getMonth();
+    const d = end.getDate();
+
+    switch (periodType) {
+        case "Weekly": return formatLocalDate(new Date(y, m, d - 6));
+        case "Bi-Weekly": return formatLocalDate(new Date(y, m, d - 13));
+        case "Semi-Monthly": return formatLocalDate(new Date(y, m, d <= 15 ? 1 : 16));
+        case "Monthly": return formatLocalDate(new Date(y, m, 1));
+        case "Quarterly": return formatLocalDate(new Date(y, m - 2, 1));
+        case "Semiannually": return formatLocalDate(new Date(y, m - 5, 1));
+        case "Annually": return formatLocalDate(new Date(y, m - 11, 1));
+        default: return "";
+    }
+};
+
+// Expand a starting date into `count` CONSECUTIVE pay periods of the given frequency, MOST
+// RECENT FIRST. The date the user enters is period #1, the latest one; each further period is
+// the one before it, ending the day before the previous entry starts, so the run is gapless.
+// (A run that walked forward could reach periods that have not ended yet; one that walks back
+// from a finished period never can.)
 //
 // `payGapDays` is the distance from each period's end to its pay date. The user picks the pay
-// date for period #1 only; every later stub keeps that same gap after its own end date.
+// date for period #1 only; every earlier stub keeps that same gap after its own end date.
 export const buildPayPeriods = (
     startDate: unknown,
     periodType: string,
@@ -185,20 +210,20 @@ export const buildPayPeriods = (
 
     let currentStart = toISODate(startDate);
     if (!currentStart || !periodType) return periods;
+    let currentEnd = calculateEndDate(currentStart, periodType);
 
     const total = Math.max(1, Math.floor(count) || 1);
 
     for (let i = 0; i < total; i++) {
-        const endDate = calculateEndDate(currentStart, periodType);
-        if (!endDate) break;
+        if (!currentStart || !currentEnd) break;
 
-        periods.push({ startDate: currentStart, endDate, payDate: calculatePayDate(endDate, payGapDays) });
+        periods.push({ startDate: currentStart, endDate: currentEnd, payDate: calculatePayDate(currentEnd, payGapDays) });
 
-        // The next period starts the day after this one ends. Step in UTC so the run can't
-        // drift a day in timezones behind GMT.
-        const nextStart = new Date(`${endDate}T00:00:00Z`);
-        nextStart.setUTCDate(nextStart.getUTCDate() + 1);
-        currentStart = nextStart.toISOString().slice(0, 10);
+        // The period before ends the day before this one starts.
+        const previousEnd = parseLocalDate(currentStart);
+        previousEnd.setDate(previousEnd.getDate() - 1);
+        currentEnd = formatLocalDate(previousEnd);
+        currentStart = periodStartForEnd(currentEnd, periodType);
     }
 
     return periods;
