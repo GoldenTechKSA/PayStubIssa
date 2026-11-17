@@ -9,8 +9,9 @@ template for that audience is designed; see CLAUDE.md for how templates are buil
 Still shipping: Standard Employee Paystub (simple), Modern, Earnings Statement — Classic
 Ruled / Banded Panels / Payroll Register, Statement of Earnings and Deductions — Typewriter,
 Independent Contractor Invoice & Earnings Statement (kept as a stopgap: it is the only
-no-withholding layout), and Temporary Assignment Paystub (`template-ledger-classic`, built
-2026-10-18 from the entry below).
+no-withholding layout), Temporary Assignment Paystub (`template-ledger-classic`, built
+2026-10-18 from the entry below), and Small Business Paystub — Logo Header
+(`template-logo-header`, built 2026-11-16 from a reference layout, not from this backlog).
 
 Each entry notes the retired template id, the visual skin it used, and the audience
 specific block it tried to add. Those blocks were static placeholders (rendered as dashes)

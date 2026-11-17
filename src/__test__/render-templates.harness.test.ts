@@ -23,9 +23,19 @@ import type { PayStubDetails } from '../assets/data/pay-stub-details';
  * hides column-width and wrapping problems, so the harness fills in a typical bi-weekly
  * hourly employee in a state with income tax.
  */
+// A neutral stand-in logo, so templates with a logo slot are measured at their tallest
+// (a stub with no logo is shorter, never longer) and gallery thumbnails show where it goes.
+const SAMPLE_LOGO = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">' +
+  '<rect x="3" y="3" width="114" height="114" rx="14" fill="#f3f4f6" stroke="#9ca3af" stroke-width="3" stroke-dasharray="9 7"/>' +
+  '<text x="60" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="bold" fill="#6b7280">YOUR</text>' +
+  '<text x="60" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="bold" fill="#6b7280">LOGO</text>' +
+  '</svg>'
+);
+
 const SAMPLE: PayStubDetails = {
   ...initialState,
-  companyInfo: { ...initialState.companyInfo, companyState: 'California', companyCity: 'Los Angeles', companyZipCode: '90016' },
+  companyInfo: { ...initialState.companyInfo, companyLogo: SAMPLE_LOGO, companyState: 'California', companyCity: 'Los Angeles', companyZipCode: '90016' },
   employeeInfo: { ...initialState.employeeInfo, employeeState: 'California', employeeCity: 'Los Angeles', employeeZipCode: '90016' },
   incomeDetails: {
     ...initialState.incomeDetails,

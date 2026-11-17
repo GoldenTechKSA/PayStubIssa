@@ -40,7 +40,7 @@ const STEPS = [
 
 const INCLUDED = [
   "Federal, state, Social Security and Medicare calculated for you",
-  `${TEMPLATE_COUNT} templates — standard employee, classic earnings statements, payroll register, independent contractor and temporary assignment`,
+  `${TEMPLATE_COUNT} templates — standard employee, classic earnings statements, payroll register, small business with a logo header, independent contractor and temporary assignment`,
   "Your company logo on the stub",
   "Live preview before you pay",
   "Print-ready US Letter PDF, one page per stub",

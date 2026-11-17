@@ -1,0 +1,1399 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Small Business Paystub (logo-header). The employer's logo sits beside the EMPLOYER block
+    above a green rule; below it the stub is two columns: employee and pay period, PAY and
+    DEDUCTIONS, TAXES and a boxed SUMMARY. Designed for the 720 x 960 px printable area of a
+    US Letter sheet (see CLAUDE.md, "one stub, one sheet"). Ledger rows print without a
+    currency symbol; the summary and net pay carry one.
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#111111</color>
+    <fontSize>12px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>8px 12px 0</padding>
+  </style>
+  <!-- Section lh-header: logo slot (left) and EMPLOYER block, closed by the green rule -->
+  <section id="lh-header">
+    <style>
+      <alignItems>flex-end</alignItems>
+      <borderBottom>3px solid #2E9E3A</borderBottom>
+      <paddingBottom>12px</paddingBottom>
+      <marginBottom>18px</marginBottom>
+    </style>
+    <column id="lh-logo-col" width="auto">
+      <style>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="lh-logo">
+        <cells>
+          <rowcells>
+            <cell id="lh-logo-img" type="image">
+              <style>
+                <maxHeight>96px</maxHeight>
+                <maxWidth>150px</maxWidth>
+                <display>block</display>
+                <marginRight>16px</marginRight>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{companyInfo.companyLogo}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lh-employer-col" width="auto">
+      <style>
+        <flexGrow>1</flexGrow>
+      </style>
+      <table id="lh-employer">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-employer-cap" type="static">
+              <style>
+                <fontSize>13px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+              </style>
+              <value>EMPLOYER</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-employer-name" type="substitute">
+              <style>
+                <fontSize>13px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-employer-addr1" type="substitute">
+              <style>
+                <fontSize>13px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyAddress2">
+            <cell id="lh-employer-addr2" type="substitute">
+              <style>
+                <fontSize>13px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-employer-city" type="substitute">
+              <style>
+                <fontSize>13px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lh-identity: EMPLOYEE, DETAILS and PAYMENT (left) / PAY PERIOD and NET PAY (right) -->
+  <section id="lh-identity">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>flex-start</alignItems>
+      <marginBottom>22px</marginBottom>
+    </style>
+    <column id="lh-employee-col" width="47%">
+      <table id="lh-employee">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-emp-cap" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-emp-name" type="substitute">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-emp-addr1" type="substitute">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeAddress2">
+            <cell id="lh-emp-addr2" type="substitute">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-emp-city" type="substitute">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lh-details">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>14px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-det-cap" type="static" colspan="2">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+              </style>
+              <value>DETAILS</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-det-ssn-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <width>32%</width>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="lh-det-ssn-val" type="substitute">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-det-filing-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <width>32%</width>
+              </style>
+              <value>Filing Status</value>
+            </cell>
+            <cell id="lh-det-filing-val" type="substitute">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="lh-det-id-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <width>32%</width>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="lh-det-id-val" type="substitute" format="text">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-det-check-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <width>32%</width>
+              </style>
+              <value>Check No.</value>
+            </cell>
+            <cell id="lh-det-check-val" type="substitute" format="text">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lh-payment">
+        <style>
+          <width>100%</width>
+          <marginTop>14px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-pay-cap" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0 8px 0 0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+                <width>1%</width>
+                <whiteSpace>nowrap</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>PAYMENT:</value>
+            </cell>
+            <cell id="lh-pay-method" type="substitute">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lh-period-col" width="45%">
+      <table id="lh-period">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-per-cap" type="static" colspan="2">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+              </style>
+              <value>PAY PERIOD</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-per-begin-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Period Beginning:</value>
+            </cell>
+            <cell id="lh-per-begin-val" type="substitute" format="date">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+              </style>
+              <value>{incomeDetails.periodStartDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-per-end-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Period Ending:</value>
+            </cell>
+            <cell id="lh-per-end-val" type="substitute" format="date">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+              </style>
+              <value>{incomeDetails.periodEndDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-per-paydate-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Pay Date:</value>
+            </cell>
+            <cell id="lh-per-paydate-val" type="substitute" format="date">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="lh-per-hours-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Total Hours:</value>
+            </cell>
+            <cell id="lh-per-hours-val" type="calculated" format="number">
+              <style>
+                <fontSize>12px</fontSize>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+              </style>
+              <formula>({incomeDetails.hoursWorked} + 0) + ({incomeDetails.overtimeHours} + 0)</formula>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lh-netpay-top">
+        <style>
+          <width>100%</width>
+          <marginTop>14px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-net-top-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+              </style>
+              <value>NET PAY:</value>
+            </cell>
+            <cell id="lh-net-top-value" type="substitute" format="currency">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lh-pay-deductions: PAY ledger (left) / DEDUCTIONS ledger (right, hidden when there are none) -->
+  <section id="lh-pay-deductions">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>flex-start</alignItems>
+      <marginBottom>26px</marginBottom>
+    </style>
+    <column id="lh-pay-col" width="47%">
+      <table id="lh-pay">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="lh-pay-h-desc">
+              <style>
+                <width>34%</width>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>PAY</label>
+            </hd>
+            <hd id="lh-pay-h-hours">
+              <style>
+                <width>13%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>Hours</label>
+            </hd>
+            <hd id="lh-pay-h-rate">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>Rate</label>
+            </hd>
+            <hd id="lh-pay-h-cur">
+              <style>
+                <width>19%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lh-pay-h-ytd">
+              <style>
+                <width>19%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lh-pay-gap" type="static" colspan="5">
+              <style>
+                <padding>0</padding>
+                <height>9px</height>
+                <fontSize>1px</fontSize>
+                <lineHeight>1px</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="lh-pay-regular-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="lh-pay-regular-hours" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="lh-pay-regular-rate" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="lh-pay-regular-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="lh-pay-regular-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="lh-pay-salary-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="lh-pay-salary-blank0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lh-pay-salary-blank1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lh-pay-salary-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="lh-pay-salary-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePay">
+            <cell id="lh-pay-overtime-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime Pay</value>
+            </cell>
+            <cell id="lh-pay-overtime-hours" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="lh-pay-overtime-rate" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="lh-pay-overtime-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="lh-pay-overtime-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarnings">
+            <cell id="lh-pay-bonus-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="lh-pay-bonus-blank0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lh-pay-bonus-blank1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="lh-pay-bonus-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="lh-pay-bonus-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lh-deductions-col" width="45%" renderIf="totalDeductions">
+      <table id="lh-deductions">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="lh-ded-h-desc">
+              <style>
+                <width>56%</width>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>DEDUCTIONS</label>
+            </hd>
+            <hd id="lh-ded-h-cur">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lh-ded-h-ytd">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lh-ded-gap" type="static" colspan="3">
+              <style>
+                <padding>0</padding>
+                <height>9px</height>
+                <fontSize>1px</fontSize>
+                <lineHeight>1px</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="medical">
+            <cell id="lh-ded-medical-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medical Insurance</value>
+            </cell>
+            <cell id="lh-ded-medical-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="lh-ded-medical-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dental">
+            <cell id="lh-ded-dental-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Dental Insurance</value>
+            </cell>
+            <cell id="lh-ded-dental-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="lh-ded-dental-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="vision">
+            <cell id="lh-ded-vision-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Vision Insurance</value>
+            </cell>
+            <cell id="lh-ded-vision-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="lh-ded-vision-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401k">
+            <cell id="lh-ded-401k-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="lh-ded-401k-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="lh-ded-401k-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductions">
+            <cell id="lh-ded-other-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="lh-ded-other-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="lh-ded-other-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lh-taxes-summary: TAXES ledger (left) / boxed SUMMARY with NET PAY beneath it (right) -->
+  <section id="lh-taxes-summary">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="lh-taxes-col" width="47%">
+      <table id="lh-taxes">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="lh-tax-h-desc">
+              <style>
+                <width>52%</width>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>TAXES</label>
+            </hd>
+            <hd id="lh-tax-h-cur">
+              <style>
+                <width>24%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lh-tax-h-ytd">
+              <style>
+                <width>24%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lh-tax-gap" type="static" colspan="3">
+              <style>
+                <padding>0</padding>
+                <height>9px</height>
+                <fontSize>1px</fontSize>
+                <lineHeight>1px</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-tax-federal-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="lh-tax-federal-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="lh-tax-federal-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-tax-ss-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="lh-tax-ss-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="lh-tax-ss-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-tax-medicare-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="lh-tax-medicare-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="lh-tax-medicare-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTax">
+            <cell id="lh-tax-state-desc" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="lh-tax-state-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="lh-tax-state-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="lh-tax-leave-desc" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="lh-tax-leave-cur" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="lh-tax-leave-ytd" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="lh-summary-col" width="45%">
+      <style>
+        <paddingTop>18px</paddingTop>
+      </style>
+      <table id="lh-summary">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <borderCollapse>separate</borderCollapse>
+          <borderSpacing>0</borderSpacing>
+          <border>1.5px solid #111111</border>
+          <borderRadius>3px</borderRadius>
+          <padding>8px 6px 6px</padding>
+        </style>
+        <header>
+          <hdata>
+            <hd id="lh-sum-h-desc">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>SUMMARY</label>
+            </hd>
+            <hd id="lh-sum-h-cur">
+              <style>
+                <width>30%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="lh-sum-h-ytd">
+              <style>
+                <width>30%</width>
+                <textAlign>right</textAlign>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#111111</color>
+                <padding>0 0 3px</padding>
+                <borderBottom>1.5px solid #111111</borderBottom>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="lh-sum-gap" type="static" colspan="3">
+              <style>
+                <padding>0</padding>
+                <height>9px</height>
+                <fontSize>1px</fontSize>
+                <lineHeight>1px</lineHeight>
+              </style>
+              <value> </value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-sum-gross-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Total Pay</value>
+            </cell>
+            <cell id="lh-sum-gross-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="lh-sum-gross-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-sum-taxes-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Taxes</value>
+            </cell>
+            <cell id="lh-sum-taxes-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="lh-sum-taxes-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="lh-sum-ded-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Deductions</value>
+            </cell>
+            <cell id="lh-sum-ded-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="lh-sum-ded-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>10.5px</fontSize>
+                <padding>0</padding>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="lh-netpay">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>10px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-net-label" type="static">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>left</textAlign>
+                <padding>0 0 0 7px</padding>
+                <letterSpacing>0.2px</letterSpacing>
+                <width>40%</width>
+              </style>
+              <value>NET PAY:</value>
+            </cell>
+            <cell id="lh-net-value" type="substitute" format="currency">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+                <width>30%</width>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="lh-net-ytd" type="substitute" format="currency">
+              <style>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <textAlign>right</textAlign>
+                <padding>0 7px 0 0</padding>
+                <letterSpacing>0.2px</letterSpacing>
+                <width>30%</width>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section lh-footer: one-line disclaimer -->
+  <section id="lh-footer">
+    <style>
+      <marginTop>34px</marginTop>
+      <borderTop>1px solid #d1d5db</borderTop>
+      <paddingTop>6px</paddingTop>
+    </style>
+    <column id="lh-footer-col" width="100%">
+      <table id="lh-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="lh-footer-text" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#6b7280</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>
