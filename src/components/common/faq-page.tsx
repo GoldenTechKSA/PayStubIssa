@@ -66,7 +66,8 @@ const faqData = [
             <br />
             <br />
             <strong>A choice of layouts.</strong> We offer {TEMPLATE_COUNT} templates: standard employee pay stubs in
-            two styles, classic earnings statements including a payroll-register layout, an independent contractor
+            two styles, classic earnings statements including a payroll-register layout, a small-business stub with a logo
+            header, an independent contractor
             statement that shows no withholding, and a temporary assignment stub.
             <br />
             <br />

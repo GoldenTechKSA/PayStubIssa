@@ -54,5 +54,12 @@
     "imageName": "paystub-ledger-classic.png",
     "title": "Temporary Assignment Paystub",
     "description": "This paystub is tailored for employees hired through a staffing agency or for a specific, short-term assignment. It may include details about the hiring agency, client company, and the assignment period."
+  },
+  {
+    "imageFile": "templates/thumb-logo-header.png",
+    "configFile": "/configs/template-logo-header/paystub-config.xml",
+    "imageName": "paystub-logo-header.png",
+    "title": "Small Business Paystub — Logo Header",
+    "description": "A clean two-column stub for a small business: your logo beside the employer block above a green rule, employee and pay period side by side, then pay and deductions, taxes and a boxed summary with net pay. Upload a logo on the Company step and it prints in the header; without one the employer block simply moves to the left edge."
   }
 ]
