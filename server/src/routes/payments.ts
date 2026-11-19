@@ -61,7 +61,7 @@ export function paymentsRouter(config: Config, orders: OrderService, telemetry: 
     const ids = readTelemetryIds(req);
     let result;
     try {
-      result = await orders.createOrder({ items: body.items, couponCode: body.couponCode }, meta);
+      result = await orders.createOrder({ items: body.items, couponCode: body.couponCode }, meta, body.fingerprint);
     } catch (err) {
       telemetry.log(S.PAYMENTS_ORDER_CREATE_FAILED, { code: errorCode(err) }, ids);
       throw err;

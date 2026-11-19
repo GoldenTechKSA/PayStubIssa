@@ -9,6 +9,8 @@ export interface UnlockClaims {
   qty: number;
   currency: string;
   totalCents: number;
+  /** Content fingerprint of the stubs this order paid for (JWT claim `fp`); absent on older orders. */
+  fingerprint?: string;
 }
 
 export interface IssuedToken {
@@ -37,7 +39,15 @@ export function issueUnlockToken(
   const iat = Math.floor(now.getTime() / 1000);
   const exp = iat + opts.ttlMinutes * 60;
   const token = jwt.sign(
-    { scope: SCOPE, qty: claims.qty, cur: claims.currency, amt: claims.totalCents, iat, exp },
+    {
+      scope: SCOPE,
+      qty: claims.qty,
+      cur: claims.currency,
+      amt: claims.totalCents,
+      ...(claims.fingerprint ? { fp: claims.fingerprint } : {}),
+      iat,
+      exp,
+    },
     opts.secret,
     { algorithm: 'HS256', subject: claims.orderId, issuer: TOKEN_ISSUER, audience: TOKEN_AUDIENCE },
   );
@@ -63,6 +73,7 @@ export function verifyUnlockToken(token: string, secret: string): VerifiedUnlock
     qty: Number(payload.qty),
     currency: String(payload.cur),
     totalCents: Number(payload.amt),
+    ...(typeof payload.fp === 'string' ? { fingerprint: payload.fp } : {}),
     issuedAt: new Date(payload.iat * 1000).toISOString(),
     expiresAt: new Date(payload.exp * 1000).toISOString(),
   };

@@ -81,6 +81,13 @@ describe('HTTP API', () => {
     expect(forged.body.error.code).toBe('TOKEN_INVALID');
   });
 
+  it('rejects a malformed fingerprint with VALIDATION', async () => {
+    const { app } = boot();
+    const res = await request(app).post('/api/payments/orders').send({ items: [{ type: 'paystub', qty: 1 }], fingerprint: 'xyz' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION');
+  });
+
   it('rejects unknown meta fields and bad order ids', async () => {
     const { app } = boot();
     const extra = await request(app).post('/api/payments/orders').send({ items: [{ type: 'paystub', qty: 1 }], meta: { amount: 0.01 } });

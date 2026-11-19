@@ -20,6 +20,8 @@ export interface OrderRow {
   created_at: string;
   captured_at: string | null;
   updated_at: string;
+  content_fp: string | null;
+  corrects_order_id: string | null;
 }
 
 const MIGRATIONS: string[] = [
@@ -77,6 +79,19 @@ const MIGRATIONS: string[] = [
    FROM telemetry_events
    WHERE session_id IS NOT NULL
    GROUP BY session_id;`,
+
+  // 3 — paid stub lock: a content fingerprint per order, and single-use correction codes.
+  `ALTER TABLE orders ADD COLUMN content_fp TEXT;
+   ALTER TABLE orders ADD COLUMN corrects_order_id TEXT;
+   CREATE TABLE correction_codes (
+     code             TEXT PRIMARY KEY,
+     order_id         TEXT NOT NULL,
+     max_qty          INTEGER NOT NULL,
+     created_at       TEXT NOT NULL,
+     expires_at       TEXT NOT NULL,
+     used_at          TEXT,
+     used_by_order_id TEXT
+   );`,
 ];
 
 /** Open (creating if needed) the SQLite file and bring the schema up to date. */

@@ -36,6 +36,7 @@ export interface CapturedOrderResult extends IssuedToken {
   orderId: string;
   status: 'COMPLETED';
   quote: Quote;
+  fingerprint?: string;
 }
 
 export interface OrderServiceDeps {
@@ -47,6 +48,10 @@ export interface OrderServiceDeps {
   /** Days an order row is kept before prune() deletes it. Omit to never prune. */
   retentionDays?: number;
   now?: () => Date;
+}
+
+function fingerprintOf(row: OrderRow): { fingerprint?: string } {
+  return row.content_fp ? { fingerprint: row.content_fp } : {};
 }
 
 export class OrderService {
@@ -67,7 +72,7 @@ export class OrderService {
     }
   }
 
-  async createOrder(cart: CartInput, meta: ClientMeta = {}): Promise<CreatedOrderResult> {
+  async createOrder(cart: CartInput, meta: ClientMeta = {}, fingerprint?: string): Promise<CreatedOrderResult> {
     const quote = this.quote(cart);
     const description = quote.lines.map(l => l.description).join(', ');
 
@@ -82,8 +87,8 @@ export class OrderService {
     this.deps.db
       .prepare(
         `INSERT INTO orders (id, status, paypal_env, currency, total_cents, quote_json, coupon_code,
-                             client_meta_json, created_at, updated_at)
-         VALUES (@id, 'CREATED', @env, @currency, @total, @quote, @coupon, @meta, @ts, @ts)`,
+                             client_meta_json, content_fp, created_at, updated_at)
+         VALUES (@id, 'CREATED', @env, @currency, @total, @quote, @coupon, @meta, @fp, @ts, @ts)`,
       )
       .run({
         id: created.id,
@@ -93,6 +98,7 @@ export class OrderService {
         quote: JSON.stringify(quote),
         coupon: normalizeCouponCode(cart.couponCode) ?? null,
         meta: Object.keys(meta).length ? JSON.stringify(meta) : null,
+        fp: fingerprint ?? null,
         ts,
       });
 
@@ -114,7 +120,7 @@ export class OrderService {
 
     if (row.status === 'COMPLETED') {
       // Replay-safe: the money already moved; just hand back a fresh unlock.
-      return { orderId, status: 'COMPLETED', quote, ...this.issue(row) };
+      return { orderId, status: 'COMPLETED', quote, ...this.issue(row), ...fingerprintOf(row) };
     }
     if (row.status === 'FAILED') {
       throw conflict('ORDER_FAILED', row.failure_reason ?? 'This order can no longer be captured');
@@ -158,7 +164,8 @@ export class OrderService {
       )
       .run({ id: orderId, captureId: result.captureId, cents: result.capturedCents, raw: JSON.stringify(result.raw), ts });
 
-    return { orderId, status: 'COMPLETED', quote, ...this.issue(this.getRow(orderId)!) };
+    const done = this.getRow(orderId)!;
+    return { orderId, status: 'COMPLETED', quote, ...this.issue(done), ...fingerprintOf(done) };
   }
 
   verifyUnlock(token: string): VerifiedUnlock {
@@ -208,7 +215,7 @@ export class OrderService {
     const quote = JSON.parse(row.quote_json) as Quote;
     const qty = quote.lines.reduce((sum, l) => sum + l.qty, 0);
     return issueUnlockToken(
-      { orderId: row.id, qty, currency: row.currency, totalCents: row.total_cents },
+      { orderId: row.id, qty, currency: row.currency, totalCents: row.total_cents, fingerprint: row.content_fp ?? undefined },
       { secret: this.deps.jwtSecret, ttlMinutes: this.deps.tokenTtlMinutes, now: this.now() },
     );
   }

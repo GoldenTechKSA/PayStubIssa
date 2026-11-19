@@ -15,6 +15,8 @@ export const cartSchema = z.object({
 });
 
 export const createOrderSchema = cartSchema.extend({
+  /** SHA-256 hex of the pay stub content, computed in the browser. The stub data itself never arrives. */
+  fingerprint: z.string().regex(/^[0-9a-f]{64}$/).optional(),
   meta: z
     .object({
       attestedAt: z.string().datetime({ offset: true }).optional(),
