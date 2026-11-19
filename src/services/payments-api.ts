@@ -10,6 +10,7 @@
  */
 
 import { telemetry } from './telemetry-service';
+import type { PaidSnapshot } from 'utils/paid-lock';
 
 export type ItemType = 'paystub';
 
@@ -82,6 +83,12 @@ export interface Unlock {
   orderId: string;
   expiresAt: string;
   qty: number;
+  /** Fingerprint of the content that was paid for, its salt and a copy of that content. */
+  fingerprint?: string;
+  salt?: string;
+  snapshot?: PaidSnapshot;
+  /** True once the customer has released the paid content to edit it. */
+  released?: boolean;
 }
 
 export class PaymentsApiError extends Error {
@@ -173,8 +180,9 @@ export const unlockStorage = {
       return null;
     }
   },
-  save(unlock: Unlock): void {
-    try { sessionStorage.setItem(UNLOCK_KEY, JSON.stringify(unlock)); } catch { /* storage unavailable */ }
+  /** Returns false when storage refused the write. */
+  save(unlock: Unlock): boolean {
+    try { sessionStorage.setItem(UNLOCK_KEY, JSON.stringify(unlock)); return true; } catch { return false; }
   },
   clear(): void {
     try { sessionStorage.removeItem(UNLOCK_KEY); } catch { /* ignore */ }
