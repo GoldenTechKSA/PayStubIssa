@@ -62,6 +62,19 @@ describe('legal copy: a paid document is final, corrections come by code', () =>
     expect(t).toMatch(/cleared when the tab closes/);
   });
 
+  it('the FAQ no longer contradicts a final stub', () => {
+    const t = textOf(<FAQPage />);
+    expect(t).not.toMatch(/nothing is "locked"/);
+    expect(t).not.toMatch(/nothing for us to reopen/);
+    expect(t).not.toMatch(/do our best to help/);
+  });
+
+  it('the Privacy Policy only offers self-correction before you pay', () => {
+    const t = textOf(<PrivacyPolicy />);
+    expect(t).not.toMatch(/at any time\./);
+    expect(t).toMatch(/at any time before you pay\. After payment, a correction is made with a correction code/);
+  });
+
   it('the policy date and version moved together', () => {
     expect(POLICIES_LAST_UPDATED).toBe('November 18, 2026');
     expect(POLICIES_VERSION).toBe('2026-11-18');

@@ -355,7 +355,7 @@ const faqData = [
             step in the wizard and change it; the preview updates.
             <br />
             <br />
-            After that, there is no account and no saved order, so there is nothing for us to reopen. Whatever draft is
+            After that, there is no account and we do not keep your document, so we cannot reopen it for you. Whatever draft is
             still in your browser is all that exists. If you spot a mistake after downloading, email{" "}
             <SupportEmailLink />; we will send you a correction code so you can fix it and download it again free of
             charge. Under our {REFUND_WINDOW_DAYS}-day guarantee we will always sort out a document that went wrong.
@@ -376,9 +376,10 @@ const faqData = [
             wizard. Once you pay, the document is final.
             <br />
             <br />
-            There is no account and no server-side copy, so nothing is "locked" by us — but equally, nothing is kept by
-            us. Once you leave the site, the only version that exists is the draft in your browser and the PDF you saved.
-            If you need a correction after that, reach out to <SupportEmailLink /> and we will do our best to help.
+            There is no account and we keep no copy of your document; your details stay in your browser. Once you leave
+            the site, the only version that exists is the draft in your browser and the PDF you saved. If you need a
+            correction after that, email <SupportEmailLink />; we will send you a correction code so you can fix it and
+            download it again free of charge.
           </>
         ),
       },

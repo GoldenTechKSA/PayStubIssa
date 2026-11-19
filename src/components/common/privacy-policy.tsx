@@ -96,10 +96,10 @@ const PrivacyPolicy = () => (
           <td>
             The number of stubs ordered, the amount, any discount code you entered, the template you chose, the
             time you ticked the checkout confirmation and the version of the Terms you agreed to, your IP
-            address and browser type, a one-way fingerprint of your document, which lets us confirm that what
-            you download is what you paid for and cannot be turned back into its contents, if an order is a free
-            correction, which earlier order it corrects, and PayPal's confirmation of the payment, which carries
-            the PayPal order id and the name and email address on your PayPal account
+            address and browser type, a one-way fingerprint of your document (it lets us confirm that what you
+            download is what you paid for, and it cannot be turned back into its contents), for a free correction,
+            which earlier order it corrects, and PayPal's confirmation of the payment, which carries the PayPal
+            order id and the name and email address on your PayPal account
           </td>
           <td>
             <strong>Yes</strong> — on our server, for three years (see Data Retention).
@@ -254,7 +254,9 @@ const PrivacyPolicy = () => (
       </li>
       <li>
         <strong>Correction.</strong> You may ask us to correct anything inaccurate in the information we hold
-        about you. Pay stub data you can correct yourself, in the app, at any time.
+        about you. Pay stub data you can correct yourself, in the app, at any time before you pay. After
+        payment, a correction is made with a correction code from support: email{" "}
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </li>
       <li>
         <strong>Deletion of correspondence and order records.</strong> You may ask us to delete the support
