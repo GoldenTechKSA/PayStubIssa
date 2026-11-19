@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Container, Stepper, Step, StepLabel, Box, Typography, LinearProgress, useMediaQuery, useTheme,
@@ -18,15 +18,19 @@ import { telemetry } from "../../services/telemetry-service";
 import { T } from "../../telemetry/codes";
 import { isDevUnlock } from "../../utils/dev-flags";
 import { normalizeStubCount } from "../../constants/pricing";
+import { lockStatus, restorePayloads } from "../../utils/paid-lock";
+import { paymentsApi, unlockStorage, PaymentsApiError } from "../../services/payments-api";
 
 const STEPS = ["Company", "Employee", "Pay period", "Earnings", "Template", "Review"];
 const DRAFT_KEY = "paystubissa.draft.v1";
 // Template selection moves to its own step in a later phase; default to the
 // reference template so the existing review/preview handoff renders.
 const DEFAULT_CONFIG = "/configs/template-simple/paystub-config.xml";
+const REVIEW = STEPS.length - 1;
 
 const PaystubWizard = () => {
   const dispatch = useDispatch();
+  const store = useStore<PayStubDetails>();
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -43,8 +47,15 @@ const PaystubWizard = () => {
   const activeRef = useRef(active);
   activeRef.current = active;
 
+  // A payment stored in this tab is checked with the server before the wizard is shown, so a
+  // reload neither flashes step 1 nor unlocks anything the server no longer stands behind.
+  const [restoring, setRestoring] = useState(
+    () => !store.getState().appSettings.unlock && !!unlockStorage.load(),
+  );
+
   // Hydrate any saved draft once, and default the template so the downstream preview renders.
   useEffect(() => {
+    let cancelled = false;
     let draftRestored = false;
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
@@ -55,6 +66,9 @@ const PaystubWizard = () => {
         if (d.employeeInfo) dispatch(saveEmployeeInfo(d.employeeInfo));
         if (d.incomeDetails) dispatch(saveIncomeDetails(d.incomeDetails));
         if (d.generalInfo) dispatch(saveGeneralInfo(d.generalInfo));
+        if (d.template?.configPath) {
+          dispatch(updateAppSettings({ configPath: d.template.configPath, templateId: d.template.templateId ?? 0 }));
+        }
       }
     } catch {
       /* ignore malformed draft */
@@ -73,18 +87,56 @@ const PaystubWizard = () => {
       const rest = params.toString();
       navigate({ pathname: location.pathname, search: rest ? `?${rest}` : "" }, { replace: true });
     }
-    if (!appSettings.configPath) {
+    // Read the store, not the render's selector values: the draft's template was applied above.
+    if (!store.getState().appSettings.configPath) {
       dispatch(updateAppSettings({ configPath: DEFAULT_CONFIG, templateId: 0 }));
     }
     // Local testing shortcut (never in production builds): `?dev=unlock` goes straight to
     // Review with print/PDF unlocked. The draft above still wins over the dev seed.
     if (isDevUnlock(location.search)) {
       dispatch(updateAppSettings({ canPrint: true }));
-      setActive(STEPS.length - 1);
+      setActive(REVIEW);
     }
     hydrated.current = true;
     telemetry.emit(T.WIZARD_ENTERED, { draftRestored });
+
+    // A reload should not lose a payment: bring the stored unlock back once the server confirms
+    // the token. An unreleased paid stub is put back exactly as it was paid for (this replaces
+    // the draft and the template default above) and the wizard opens on Review.
+    const stored = store.getState().appSettings.unlock ? null : unlockStorage.load();
+    if (stored) {
+      setRestoring(true);
+      paymentsApi.verifyUnlock(stored.token)
+        .then(v => {
+          if (cancelled) return;
+          // The server's fingerprint wins over whatever the browser kept (or lost).
+          const unlock = { ...stored, qty: v.qty, expiresAt: v.expiresAt, fingerprint: v.fingerprint ?? stored.fingerprint };
+          unlockStorage.save(unlock);
+          if (!unlock.released && unlock.snapshot) {
+            const p = restorePayloads(store.getState(), unlock.snapshot);
+            dispatch(saveCompanyInfo(p.companyInfo));
+            dispatch(saveEmployeeInfo(p.employeeInfo));
+            dispatch(saveIncomeDetails(p.incomeDetails));
+            dispatch(saveGeneralInfo(p.generalInfo));
+            dispatch(updateAppSettings({ ...p.template, canPrint: true, unlock }));
+            setActive(REVIEW);
+            telemetry.emit(T.UNLOCK_RESTORED, { orderId: unlock.orderId });
+          } else {
+            dispatch(updateAppSettings({ unlock }));
+          }
+        })
+        .catch((err: unknown) => {
+          if (cancelled) return;
+          // A token the server rejects is gone for good; any other failure (offline, API down)
+          // keeps it for the next visit but unlocks nothing now.
+          if (err instanceof PaymentsApiError && err.status === 401) unlockStorage.clear();
+        })
+        .finally(() => { if (!cancelled) setRestoring(false); });
+    } else {
+      setRestoring(false);
+    }
     return () => {
+      cancelled = true;
       telemetry.emit(T.WIZARD_EXITED, { lastStep: activeRef.current });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,12 +148,29 @@ const PaystubWizard = () => {
     try {
       localStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ companyInfo: company, employeeInfo: employee, incomeDetails: income, generalInfo: general }),
+        JSON.stringify({
+          companyInfo: company, employeeInfo: employee, incomeDetails: income, generalInfo: general,
+          template: { configPath: appSettings.configPath, templateId: appSettings.templateId },
+        }),
       );
     } catch {
       /* storage may be unavailable */
     }
-  }, [company, employee, income, general]);
+  }, [company, employee, income, general, appSettings.configPath, appSettings.templateId]);
+
+  // While the stub on screen is the one paid for (and the customer has not chosen to make
+  // another), the wizard stays on Review and cannot be navigated away from it.
+  const unlock = appSettings.unlock;
+  const status = useMemo(
+    () => lockStatus({ appSettings, companyInfo: company, employeeInfo: employee, incomeDetails: income, generalInfo: general }, unlock),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [company, employee, income, general, appSettings.configPath, appSettings.templateId, unlock],
+  );
+  const frozen = status === "match" && !unlock?.released && !isDevUnlock(location.search);
+  useEffect(() => {
+    if (frozen && active !== REVIEW) setActive(REVIEW);
+  }, [frozen, active]);
+  const step = frozen ? REVIEW : active;
 
   // Scroll to top when changing step, and report which step is now on screen.
   useEffect(() => {
@@ -115,12 +184,14 @@ const PaystubWizard = () => {
     if (active < STEPS.length - 1) setActive(a => a + 1);
   };
   const goBack = () => {
+    if (frozen) return;
     telemetry.emit(T.WIZARD_STEP_BACK, { step: active });
     if (active > 0) setActive(a => a - 1);
     else navigate("/");
   };
   // Stepper label click or a Review "Edit" button: a non-linear move.
   const jumpTo = (to: number) => {
+    if (frozen) return;
     telemetry.emit(T.WIZARD_STEP_JUMPED, { from: active, to });
     setActive(to);
   };
@@ -128,7 +199,7 @@ const PaystubWizard = () => {
   const stepProps = { onNext: goNext, onBack: goBack };
 
   return (
-    <Container maxWidth={active >= 4 ? "lg" : "md"} sx={{ py: { xs: 3, sm: 5 } }}>
+    <Container maxWidth={step >= 4 ? "lg" : "md"} sx={{ py: { xs: 3, sm: 5 } }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Create your pay stub
       </Typography>
@@ -136,31 +207,40 @@ const PaystubWizard = () => {
       {isMobile ? (
         <Box sx={{ mb: 3 }}>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Step {active + 1} of {STEPS.length}: {STEPS[active]}
+            Step {step + 1} of {STEPS.length}: {STEPS[step]}
           </Typography>
-          <LinearProgress variant="determinate" value={((active + 1) / STEPS.length) * 100} sx={{ borderRadius: 1, height: 6 }} />
+          <LinearProgress variant="determinate" value={((step + 1) / STEPS.length) * 100} sx={{ borderRadius: 1, height: 6 }} />
         </Box>
       ) : (
-        <Stepper activeStep={active} sx={{ mb: 4 }}>
-          {STEPS.map((label, i) => (
-            <Step key={label} completed={i < active}>
-              <StepLabel
-                onClick={() => { if (i < active) jumpTo(i); }}
-                sx={{ cursor: i < active ? "pointer" : "default" }}
-              >
-                {label}
-              </StepLabel>
-            </Step>
-          ))}
+        <Stepper activeStep={step} sx={{ mb: 4 }}>
+          {STEPS.map((label, i) => {
+            const clickable = !frozen && i < step;
+            return (
+              <Step key={label} completed={i < step}>
+                <StepLabel
+                  onClick={() => { if (clickable) jumpTo(i); }}
+                  sx={{ cursor: clickable ? "pointer" : "default" }}
+                >
+                  {label}
+                </StepLabel>
+              </Step>
+            );
+          })}
         </Stepper>
       )}
 
-      {active === 0 && <CompanyStep {...stepProps} />}
-      {active === 1 && <EmployeeStep {...stepProps} />}
-      {active === 2 && <PayPeriodStep {...stepProps} />}
-      {active === 3 && <EarningsStep {...stepProps} />}
-      {active === 4 && <TemplateStep {...stepProps} />}
-      {active === 5 && <ReviewStep onBack={goBack} onEdit={jumpTo} />}
+      {restoring ? (
+        <LinearProgress aria-label="Checking your payment" sx={{ my: 4 }} />
+      ) : (
+        <>
+          {step === 0 && <CompanyStep {...stepProps} />}
+          {step === 1 && <EmployeeStep {...stepProps} />}
+          {step === 2 && <PayPeriodStep {...stepProps} />}
+          {step === 3 && <EarningsStep {...stepProps} />}
+          {step === 4 && <TemplateStep {...stepProps} />}
+          {step === 5 && <ReviewStep onBack={goBack} onEdit={jumpTo} frozen={frozen} />}
+        </>
+      )}
     </Container>
   );
 };

@@ -71,6 +71,7 @@ export const T = {
   COUPON_REJECTED: { code: 1310, name: 'coupon.rejected', level: 'info', props: ['code'] },
   UNLOCK_CONTENT_MISMATCH: { code: 1311, name: 'unlock.content_mismatch', level: 'info', props: ['orderId'] },
   UNLOCK_PAID_RESTORED: { code: 1312, name: 'unlock.paid_restored', level: 'info', props: ['orderId'] },
+  UNLOCK_RELEASED: { code: 1313, name: 'unlock.released', level: 'info', props: ['orderId'] },
 
   // 14xx — print / PDF
   PRINT_CLICKED: { code: 1401, name: 'print.clicked', level: 'info' },

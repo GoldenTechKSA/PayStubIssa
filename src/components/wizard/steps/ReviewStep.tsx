@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import {
   Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, AlertTitle, Link, Chip,
-  Checkbox, FormControlLabel,
+  Checkbox, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
@@ -35,6 +35,8 @@ import "../print.css";
 interface StepProps {
   onBack: () => void;
   onEdit: (stepIndex: number) => void;
+  /** The paid stub is on screen and not released: no way back into the steps from here. */
+  frozen?: boolean;
 }
 
 const maskSSN = (ssn: string) => {
@@ -46,12 +48,12 @@ const maskEIN = (ein: string) => {
   return d.length >= 2 ? `${d.slice(0, 2)}-${"X".repeat(Math.max(0, d.length - 2))}` : "";
 };
 
-const SummarySection: React.FC<{ title: string; onEdit: () => void; rows: Array<[string, React.ReactNode]> }> = ({ title, onEdit, rows }) => (
+const SummarySection: React.FC<{ title: string; onEdit?: () => void; rows: Array<[string, React.ReactNode]> }> = ({ title, onEdit, rows }) => (
   <Card variant="outlined" sx={{ borderColor: "divider" }}>
     <CardContent>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, minHeight: 30 }}>
         <Typography variant="subtitle1" fontWeight={600}>{title}</Typography>
-        <Button size="small" startIcon={<EditIcon />} onClick={onEdit}>Edit</Button>
+        {onEdit && <Button size="small" startIcon={<EditIcon />} onClick={onEdit}>Edit</Button>}
       </Stack>
       <Stack spacing={0.5}>
         {rows.filter(([, v]) => v !== "" && v != null).map(([label, value]) => (
@@ -65,7 +67,7 @@ const SummarySection: React.FC<{ title: string; onEdit: () => void; rows: Array<
   </Card>
 );
 
-const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
+const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => {
   const dispatch = useDispatch();
   const fullState = useSelector((s: PayStubDetails) => s);
   const { companyInfo, employeeInfo, incomeDetails, generalInfo, appSettings } = fullState;
@@ -176,24 +178,6 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     : unitCents !== null ? centsToDollars(unitCents * stubCount) : null;
   const money = (v: number | null) => (v === null ? "—" : formatCurrency(v));
 
-  // A reload on this step should not lose a payment just made: restore the session unlock,
-  // but only after the server confirms the token is genuine and its order really completed.
-  useEffect(() => {
-    if (appSettings.canPrint) return;
-    const stored = unlockStorage.load();
-    if (!stored) return;
-    let cancelled = false;
-    paymentsApi.verifyUnlock(stored.token)
-      .then(v => {
-        if (cancelled) return;
-        dispatch(updateAppSettings({ canPrint: true, unlock: { ...stored, qty: v.qty, expiresAt: v.expiresAt } }));
-        telemetry.emit(T.UNLOCK_RESTORED, { orderId: stored.orderId });
-      })
-      .catch(() => { if (!cancelled) unlockStorage.clear(); });
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Stubs are most recent first, so the run spans from the LAST model's period start (the
   // earliest period) to the first model's period end.
   const latestStub = models[0];
@@ -230,6 +214,19 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     unlockStorage.save(restored);
     telemetry.emit(T.UNLOCK_PAID_RESTORED, { orderId: unlock.orderId });
   };
+
+  // "Make another pay stub": after a confirmation, the paid stub stops holding the wizard on
+  // this step. The unlock is kept, so the paid stub can be restored while it lasts.
+  const [releaseOpen, setReleaseOpen] = useState(false);
+  const releasePaid = () => {
+    setReleaseOpen(false);
+    if (!unlock) return;
+    const released = { ...unlock, released: true };
+    dispatch(updateAppSettings({ unlock: released }));
+    unlockStorage.save(released);
+    telemetry.emit(T.UNLOCK_RELEASED, { orderId: unlock.orderId });
+  };
+  const editStep = (i: number) => (frozen ? undefined : () => onEdit(i));
 
   const handlePaymentSuccess = (result: CapturedOrder) => {
     const paidQty = result.quote.lines.reduce((sum, l) => sum + l.qty, 0);
@@ -297,20 +294,20 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
         {/* Left: summary + pay + notes + payment */}
         <Grid size={{ xs: 12, md: 5 }}>
           <Stack spacing={2}>
-            <SummarySection title="Company" onEdit={() => onEdit(0)} rows={[
+            <SummarySection title="Company" onEdit={editStep(0)} rows={[
               ["Name", companyInfo.companyName],
               ["Address", [companyInfo.companyAddress1, companyInfo.companyCity, companyInfo.companyState, companyInfo.companyZipCode].filter(Boolean).join(", ")],
               ["EIN", maskEIN(companyInfo.companyEIN)],
             ]} />
 
-            <SummarySection title="Employee" onEdit={() => onEdit(1)} rows={[
+            <SummarySection title="Employee" onEdit={editStep(1)} rows={[
               ["Name", employeeName],
               ["Address", [employeeInfo.employeeAddress1, employeeInfo.employeeCity, employeeInfo.employeeState, employeeInfo.employeeZipCode].filter(Boolean).join(", ")],
               ["SSN", maskSSN(employeeInfo.employeeSSN)],
               ["Filing status", employeeInfo.employeeMarriedStatus],
             ]} />
 
-            <SummarySection title="Pay period" onEdit={() => onEdit(2)} rows={[
+            <SummarySection title="Pay period" onEdit={editStep(2)} rows={[
               ["Frequency", incomeDetails.periodType],
               // With a run of stubs, show the span the whole run covers, not just the first period.
               [stubCount === 1 ? "Period" : "Periods covered",
@@ -319,7 +316,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
               ["Pay stubs", stubCount],
             ]} />
 
-            <SummarySection title="Earnings" onEdit={() => onEdit(3)} rows={[
+            <SummarySection title="Earnings" onEdit={editStep(3)} rows={[
               ["Wage type", incomeDetails.wageType],
               ["Pay", earningsValue],
             ]} />
@@ -370,7 +367,9 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                 {canPrint ? (
                   <>
                     <Alert severity="success" sx={{ mb: 2 }}>
-                      Payment complete — your {stubCount === 1 ? "pay stub is" : `${stubCount} pay stubs are`} unlocked.
+                      {stubCount === 1
+                        ? "Payment complete: your pay stub is ready."
+                        : `Payment complete: your ${stubCount} pay stubs are ready.`}
                     </Alert>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                       <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint}>
@@ -378,6 +377,26 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                       </Button>
                       <PDFDownloadButton targetId="pdf-content" fileName="paystub" buttonText="Download PDF" />
                     </Stack>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
+                      This is your final document. Save the PDF now; it stays available in this browser tab for about an hour.
+                    </Typography>
+                    {frozen && (
+                      <Button variant="text" onClick={() => setReleaseOpen(true)} sx={{ mt: 1, px: 0 }}>
+                        Make another pay stub
+                      </Button>
+                    )}
+                    <Dialog open={releaseOpen} onClose={() => setReleaseOpen(false)} aria-labelledby="release-paid-title">
+                      <DialogTitle id="release-paid-title">Make another pay stub?</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText>
+                          Your details stay filled in so you can change them. A changed pay stub needs a new purchase. You can come back to the one you just bought for as long as it is available in this tab.
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => setReleaseOpen(false)} color="inherit">Cancel</Button>
+                        <Button onClick={releasePaid} variant="contained">Continue</Button>
+                      </DialogActions>
+                    </Dialog>
                   </>
                 ) : (
                   <>
@@ -554,13 +573,18 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
         </Grid>
       </Grid>
 
-      <Divider sx={{ my: 3 }} />
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Button onClick={onBack} color="inherit">Back</Button>
-        <Link component="button" type="button" onClick={() => onEdit(0)} underline="hover" sx={{ alignSelf: "center" }}>
-          Start over from Company
-        </Link>
-      </Box>
+      {/* While frozen there is nowhere to go back to; "Make another pay stub" is the way out. */}
+      {!frozen && (
+        <>
+          <Divider sx={{ my: 3 }} />
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Button onClick={onBack} color="inherit">Back</Button>
+            <Link component="button" type="button" onClick={() => onEdit(0)} underline="hover" sx={{ alignSelf: "center" }}>
+              Start over from Company
+            </Link>
+          </Box>
+        </>
+      )}
     </Box>
   );
 };
