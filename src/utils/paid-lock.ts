@@ -33,12 +33,25 @@ export function contentOf(state: PayStubDetails): PaidSnapshot {
 }
 
 /** JSON with keys sorted at every depth and empty values (null, undefined, '') left out. */
+/**
+ * "Empty" values mean the same as absent: null, undefined, '', an empty object, an empty array
+ * (a missing per-stub override entry is read as no overrides). Trailing empty array entries are
+ * dropped; empty entries in the middle stay, because the position in the run matters.
+ */
+const EMPTY = new Set(['null', '""', '{}', '[]']);
+
 function canonical(value: any): string {
-  if (Array.isArray(value)) return `[${value.map(v => (v === undefined ? 'null' : canonical(v))).join(',')}]`;
-  if (value && typeof value === 'object') {
+  if (value === null || value === undefined) return 'null';
+  if (Array.isArray(value)) {
+    const items = value.map(canonical);
+    while (items.length && EMPTY.has(items[items.length - 1])) items.pop();
+    return `[${items.join(',')}]`;
+  }
+  if (typeof value === 'object') {
     const parts = Object.keys(value).sort()
-      .filter(k => value[k] !== null && value[k] !== undefined && value[k] !== '')
-      .map(k => `${JSON.stringify(k)}:${canonical(value[k])}`);
+      .map(k => [k, canonical(value[k])] as const)
+      .filter(([, c]) => !EMPTY.has(c))
+      .map(([k, c]) => `${JSON.stringify(k)}:${c}`);
     return `{${parts.join(',')}}`;
   }
   return JSON.stringify(value) ?? 'null';
@@ -68,8 +81,11 @@ export type LockStatus = 'unpaid' | 'match' | 'mismatch';
 export function lockStatus(state: PayStubDetails, unlock: Unlock | undefined | null): LockStatus {
   if (!unlock) return 'unpaid';
   const covered = unlock.qty >= normalizeStubCount(state.generalInfo?.payStubCount);
-  if (unlock.fingerprint && unlock.salt) {
+  if (unlock.fingerprint) {
+    // A fingerprint without its salt cannot be checked, so it never unlocks.
+    if (!unlock.salt) return 'mismatch';
     return covered && fingerprintOf(contentOf(state), unlock.salt) === unlock.fingerprint ? 'match' : 'mismatch';
   }
+  // No fingerprint at all: stored by an older build, the quantity rule applies.
   return covered ? 'match' : 'mismatch';
 }

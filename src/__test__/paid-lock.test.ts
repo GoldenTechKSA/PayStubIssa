@@ -107,6 +107,28 @@ describe('paid-lock fingerprint', () => {
     expect(fp(a)).toBe(fp(b));
   });
 
+  it('treats trailing empty stub overrides as absent', () => {
+    const withOverrides = (o?: any[]) => {
+      const s: any = makeState();
+      if (o === undefined) delete s.incomeDetails.stubOverrides;
+      else s.incomeDetails.stubOverrides = o;
+      return fp(s);
+    };
+    expect(withOverrides([{}])).toBe(withOverrides([]));
+    expect(withOverrides([])).toBe(withOverrides(undefined));
+    expect(withOverrides([{}, {}, {}])).toBe(withOverrides(undefined));
+    expect(withOverrides([{ bonusAmount: 100 }, {}])).toBe(withOverrides([{ bonusAmount: 100 }]));
+  });
+
+  it('keeps the position of an override', () => {
+    const withOverrides = (o: any[]) => {
+      const s: any = makeState();
+      s.incomeDetails.stubOverrides = o;
+      return fp(s);
+    };
+    expect(withOverrides([{}, { bonusAmount: 100 }])).not.toBe(withOverrides([{ bonusAmount: 100 }]));
+  });
+
   it('is independent of key order', () => {
     const a = makeState();
     const b: any = makeState();
@@ -153,6 +175,12 @@ describe('lockStatus', () => {
     expect(lockStatus(s, old)).toBe('match');
     s.generalInfo.payStubCount = 4;
     expect(lockStatus(s, old)).toBe('mismatch');
+  });
+
+  it('a fingerprint without a salt is a mismatch', () => {
+    const s = makeState();
+    const { salt, ...noSalt } = unlockFor(s);
+    expect(lockStatus(s, noSalt as Unlock)).toBe('mismatch');
   });
 
   it('is a mismatch when the count exceeds the paid quantity', () => {
