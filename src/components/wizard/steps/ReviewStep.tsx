@@ -14,7 +14,7 @@ import { PayStubDetails } from "assets/data/pay-stub-details";
 import {
   updateAppSettings, saveGeneralInfo, saveCompanyInfo, saveEmployeeInfo, saveIncomeDetails,
 } from "../../../redux/actions";
-import { contentOf, fingerprintOf, newSalt, lockStatus, type PaidSnapshot } from "../../../utils/paid-lock";
+import { contentOf, fingerprintOf, newSalt, lockStatus, restorePayloads, type PaidSnapshot } from "../../../utils/paid-lock";
 import { isDevUnlock } from "../../../utils/dev-flags";
 import { buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
@@ -221,11 +221,12 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     const snap = unlock?.snapshot;
     if (!unlock || !snap) return;
     const restored = { ...unlock, released: false };
-    dispatch(saveCompanyInfo(snap.companyInfo));
-    dispatch(saveEmployeeInfo(snap.employeeInfo));
-    dispatch(saveIncomeDetails(snap.incomeDetails));
-    dispatch(saveGeneralInfo(snap.generalInfo));
-    dispatch(updateAppSettings({ configPath: snap.configPath, templateId: snap.templateId, unlock: restored }));
+    const p = restorePayloads(fullState, snap);
+    dispatch(saveCompanyInfo(p.companyInfo));
+    dispatch(saveEmployeeInfo(p.employeeInfo));
+    dispatch(saveIncomeDetails(p.incomeDetails));
+    dispatch(saveGeneralInfo(p.generalInfo));
+    dispatch(updateAppSettings({ ...p.template, unlock: restored }));
     unlockStorage.save(restored);
     telemetry.emit(T.UNLOCK_PAID_RESTORED, { orderId: unlock.orderId });
   };
@@ -233,6 +234,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   const handlePaymentSuccess = (result: CapturedOrder) => {
     const paidQty = result.quote.lines.reduce((sum, l) => sum + l.qty, 0);
     const paid = pending.current;
+    pending.current = null; // a checkout is used once
     const nextUnlock = {
       token: result.token, orderId: result.orderId, expiresAt: result.expiresAt, qty: paidQty,
       ...(paid ? {

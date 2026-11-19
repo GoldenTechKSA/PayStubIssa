@@ -8,7 +8,7 @@ import { paymentsApi, type Cart, type CapturedOrder, type Quote } from '../servi
 import { telemetry } from '../services/telemetry-service';
 import { T } from '../telemetry/codes';
 import { FINAL_ONCE_PAID } from '../constants/business-info';
-import { saveEmployeeInfo, updateAppSettings } from '../redux/actions';
+import { saveEmployeeInfo, saveGeneralInfo, saveIncomeDetails, updateAppSettings } from '../redux/actions';
 
 function fakeQuote(cart: Cart): Quote {
   const qty = cart.items.reduce((n, i) => n + i.qty, 0);
@@ -147,6 +147,22 @@ describe('Review step paid lock', () => {
     expect(screen.queryByText(NOTICE_TITLE)).toBeNull();
     expect(emit).toHaveBeenCalledWith(T.UNLOCK_PAID_RESTORED, { orderId: 'ORDER1' });
     expect(JSON.parse(sessionStorage.getItem('paystubissa.unlock.v1') as string).released).toBe(false);
+  });
+
+  it('Restore brings back the paid stub after a field that was empty at payment was filled in', async () => {
+    const { store } = await openCheckout();
+    expect(store.getState().generalInfo.payStubCount).toBe(1);
+    expect(store.getState().incomeDetails.stubOverrides).toBeUndefined();
+    await clickPay();
+    await screen.findByRole('button', { name: /print pay stub/i });
+    act(() => {
+      store.dispatch(saveGeneralInfo({ payStubCount: 3 }));
+      store.dispatch(saveIncomeDetails({ stubOverrides: [{}, { overtimeHours: 5 }] }));
+    });
+    await userEvent.click(await screen.findByRole('button', { name: 'Restore my paid stub' }));
+    expect(await screen.findByRole('button', { name: /print pay stub/i })).toBeTruthy();
+    expect(store.getState().generalInfo.payStubCount).toBe(1);
+    expect(screen.queryByText(NOTICE_TITLE)).toBeNull();
   });
 
   it('an edit made between order creation and capture is not what was paid for', async () => {

@@ -2,7 +2,7 @@ import { createAppStore } from 'redux/store';
 import { prodInitialState } from 'assets/data/production-initial-state';
 import { PayStubDetails } from 'assets/data/pay-stub-details';
 import { saveCompanyInfo, saveEmployeeInfo, saveGeneralInfo, saveIncomeDetails, updateAppSettings } from 'redux/actions';
-import { contentOf, fingerprintOf, lockStatus, newSalt } from 'utils/paid-lock';
+import { contentOf, fingerprintOf, lockStatus, newSalt, restorePayloads } from 'utils/paid-lock';
 import { Unlock } from 'services/payments-api';
 
 const SALT = '00112233445566778899aabbccddeeff';
@@ -187,5 +187,41 @@ describe('lockStatus', () => {
     const s = makeState();
     const unlock = unlockFor(s, 2);
     expect(lockStatus(s, unlock)).toBe('mismatch');
+  });
+});
+
+describe('restorePayloads', () => {
+  const dispatchAll = (store: any, p: ReturnType<typeof restorePayloads>) => {
+    store.dispatch(saveCompanyInfo(p.companyInfo));
+    store.dispatch(saveEmployeeInfo(p.employeeInfo));
+    store.dispatch(saveIncomeDetails(p.incomeDetails));
+    store.dispatch(saveGeneralInfo(p.generalInfo));
+    store.dispatch(updateAppSettings(p.template));
+  };
+
+  it('restorePayloads clears keys the paid content did not have', () => {
+    const paid = makeState();
+    delete (paid.incomeDetails as any).stubOverrides;
+    const unlock = unlockFor(paid, 3);
+    const edited: any = JSON.parse(JSON.stringify(paid));
+    edited.incomeDetails.stubOverrides = [{}, { overtimeHours: 5 }];
+    edited.employeeInfo.employeeMiddleInitial = 'Q';
+    edited.generalInfo.payStubCount = 5;
+    const store = createAppStore(edited);
+    expect(lockStatus(store.getState() as any, unlock)).toBe('mismatch');
+    dispatchAll(store, restorePayloads(store.getState() as any, unlock.snapshot!));
+    expect(lockStatus(store.getState() as any, unlock)).toBe('match');
+  });
+
+  it('restorePayloads keeps the internal notes', () => {
+    const paid = makeState();
+    const unlock = unlockFor(paid, 3);
+    const edited: any = JSON.parse(JSON.stringify(paid));
+    edited.generalInfo.extraNotes = 'changed after payment';
+    edited.employeeInfo.employeeFirstName = 'Other';
+    const store = createAppStore(edited);
+    dispatchAll(store, restorePayloads(store.getState() as any, unlock.snapshot!));
+    expect(store.getState().generalInfo.extraNotes).toBe('changed after payment');
+    expect(lockStatus(store.getState() as any, unlock)).toBe('match');
   });
 });

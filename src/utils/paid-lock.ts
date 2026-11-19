@@ -89,3 +89,24 @@ export function lockStatus(state: PayStubDetails, unlock: Unlock | undefined | n
   // No fingerprint at all: stored by an older build, the quantity rule applies.
   return covered ? 'match' : 'mismatch';
 }
+
+/**
+ * The four slice payloads that put the stub back exactly as it was paid for. Reducers merge
+ * their payload, so a key the paid content did not have is set to undefined here; otherwise a
+ * field filled in after payment would survive the restore. `extraNotes` is not part of the
+ * paid content and is left as it is.
+ */
+export function restorePayloads(state: PayStubDetails, snapshot: PaidSnapshot) {
+  const replace = (current: any, paid: any, keep: string[] = []) => {
+    const cleared: Record<string, undefined> = {};
+    Object.keys(current || {}).forEach(k => { if (!keep.includes(k) && !(paid && k in paid)) cleared[k] = undefined; });
+    return { ...cleared, ...(paid || {}) };
+  };
+  return {
+    companyInfo: replace(state.companyInfo, snapshot.companyInfo),
+    employeeInfo: replace(state.employeeInfo, snapshot.employeeInfo),
+    incomeDetails: replace(state.incomeDetails, snapshot.incomeDetails),
+    generalInfo: replace(state.generalInfo, snapshot.generalInfo, ['extraNotes']),
+    template: { configPath: snapshot.configPath, templateId: snapshot.templateId },
+  };
+}
