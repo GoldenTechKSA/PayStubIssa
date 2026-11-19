@@ -80,7 +80,7 @@ const MIGRATIONS: string[] = [
    WHERE session_id IS NOT NULL
    GROUP BY session_id;`,
 
-  // 3 — paid stub lock: a content fingerprint per order, and single-use correction codes.
+  // 3 â€” paid stub lock: a content fingerprint per order, and single-use correction codes.
   `ALTER TABLE orders ADD COLUMN content_fp TEXT;
    ALTER TABLE orders ADD COLUMN corrects_order_id TEXT;
    CREATE TABLE correction_codes (
