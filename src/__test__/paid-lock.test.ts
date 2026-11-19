@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import { createAppStore } from 'redux/store';
 import { prodInitialState } from 'assets/data/production-initial-state';
 import { PayStubDetails } from 'assets/data/pay-stub-details';
@@ -63,14 +64,15 @@ describe('paid-lock fingerprint', () => {
     expect(fp(reloadedStore.getState() as PayStubDetails)).toBe(fp(o));
   });
 
-  it.each<[string, (s: any) => void]>([
+  const contentChanges: Array<[string, (s: any) => void]> = [
     ['an employee name', s => { s.employeeInfo.employeeFirstName = 'Jon'; }],
     ['an hourly rate', s => { s.incomeDetails.hourlyRate = 31; }],
     ['a pay date', s => { s.incomeDetails.periodPayDate = '2026-11-20'; }],
     ['the stub count', s => { s.generalInfo.payStubCount = 4; }],
     ['a per-stub override', s => { s.incomeDetails.stubOverrides[1] = { bonus: 100 }; }],
     ['the template', s => { s.appSettings.configPath = '/configs/template-modern/paystub-config.xml'; }],
-  ])('changes when %s changes', (_n, mutate) => {
+  ];
+  it.each(contentChanges)('changes when %s changes', (_n, mutate) => {
     const s = makeState();
     const before = fp(s);
     mutate(s);
