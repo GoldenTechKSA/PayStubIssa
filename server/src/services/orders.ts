@@ -99,6 +99,9 @@ export class OrderService {
     if (quote.totalCents === 0) {
       // Only a correction code may make an order free; anything else would be a pricing bug.
       if (!correction) throw badRequest('INVALID_COUPON', 'That coupon code cannot be used for this order');
+      // The fingerprint is what the unlock is bound to. Without one (an older or broken client)
+      // refuse before the code is spent, so the customer can retry with it still good.
+      if (!fingerprint) throw badRequest('FINGERPRINT_REQUIRED', 'Please reload the page and try again.');
       return this.completeCorrection(quote, correction, meta, fingerprint);
     }
     const description = quote.lines.map(l => l.description).join(', ');

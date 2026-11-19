@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -10,6 +10,7 @@ import { issueCorrectionCode, findCorrectionCode } from '../src/services/correct
 import { FakePayPal, JWT_SECRET, makeService, rules } from './helpers';
 
 const twoStubs = { items: [{ type: 'paystub' as const, qty: 2 }] };
+const FP = 'c'.repeat(64);
 
 async function completedOrder() {
   // Real clock: verifyUnlock checks the JWT against the real time.
@@ -119,22 +120,55 @@ describe('redeeming a correction code', () => {
 
   it('a code works once', async () => {
     const { service, code } = await withCode();
-    await service.createOrder({ ...twoStubs, couponCode: code });
-    await expectInvalidCoupon(service.createOrder({ ...twoStubs, couponCode: code }), /already been used/);
+    await service.createOrder({ ...twoStubs, couponCode: code }, {}, FP);
+    await expectInvalidCoupon(service.createOrder({ ...twoStubs, couponCode: code }, {}, FP), /already been used/);
   });
 
   it('two simultaneous redemptions complete exactly one order', async () => {
     const { service, db, code } = await withCode();
     const c = { ...twoStubs, couponCode: code };
-    const results = await Promise.allSettled([service.createOrder(c, {}), service.createOrder(c, {})]);
+    const results = await Promise.allSettled([service.createOrder(c, {}, FP), service.createOrder(c, {}, FP)]);
     expect(results.filter(r => r.status === 'fulfilled')).toHaveLength(1);
+    const loser = results.find(r => r.status === 'rejected') as PromiseRejectedResult;
+    await expectInvalidCoupon(Promise.reject(loser.reason), /already been used/);
     expect(db.prepare("SELECT COUNT(*) AS n FROM orders WHERE paypal_env = 'none'").get()).toEqual({ n: 1 });
+  });
+
+  it('the guarded update refuses a code spent after the quote saw it unused', async () => {
+    const { service, db, code } = await withCode();
+    const c = { ...twoStubs, couponCode: code };
+    // Read the quote (with the row still unused), then spend the code for real.
+    const stale = service['quoteWithCode'](c);
+    expect(stale.correction!.used_at).toBeNull();
+    await service.createOrder(c, {}, FP);
+    // A second redemption that got past the quote-time check with the stale row.
+    const spy = vi.spyOn(service as any, 'quoteWithCode').mockReturnValue(stale);
+    try {
+      await expectInvalidCoupon(service.createOrder(c, {}, FP), /already been used/);
+    } finally {
+      spy.mockRestore();
+    }
+    expect(db.prepare("SELECT COUNT(*) AS n FROM orders WHERE paypal_env = 'none'").get()).toEqual({ n: 1 });
+  });
+
+  it('refuses a free corrected order that carries no fingerprint, and leaves the code unused', async () => {
+    const { service, db, code } = await withCode();
+    try {
+      await service.createOrder({ ...twoStubs, couponCode: code }, {});
+      throw new Error('expected FINGERPRINT_REQUIRED');
+    } catch (err) {
+      expect(err).toBeInstanceOf(HttpError);
+      expect((err as HttpError).status).toBe(400);
+      expect((err as HttpError).code).toBe('FINGERPRINT_REQUIRED');
+    }
+    expect(findCorrectionCode(db, code)!.used_at).toBeNull();
+    expect(db.prepare("SELECT COUNT(*) AS n FROM orders WHERE paypal_env = 'none'").get()).toEqual({ n: 0 });
   });
 
   it('refuses a code already marked used in the database', async () => {
     const { service, db, code } = await withCode();
     db.prepare("UPDATE correction_codes SET used_at = '2026-01-01T00:00:00Z' WHERE code = ?").run(code);
-    await expectInvalidCoupon(service.createOrder({ ...twoStubs, couponCode: code }), /already been used/);
+    await expectInvalidCoupon(service.createOrder({ ...twoStubs, couponCode: code }, {}, FP), /already been used/);
   });
 
   it('an env coupon can never produce a zero-total order', async () => {
