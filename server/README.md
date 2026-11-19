@@ -103,7 +103,8 @@ nothing sends it automatically. The customer types it into the Review step's "Co
 field: it quotes to zero, and the server completes the order itself with no PayPal call
 (`paypal_env = 'none'`, `corrects_order_id` pointing at the original order, logged as
 `[2105]`). Only a correction code may produce a zero-total order; `COUPONS` stay 1–99%.
-Unused expired codes are deleted by the daily prune.
+The daily prune deletes a code, used or not, once its expiry is more than
+`ORDER_RETENTION_DAYS` in the past.
 
 ## Data
 

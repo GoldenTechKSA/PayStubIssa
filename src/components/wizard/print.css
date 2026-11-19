@@ -124,7 +124,8 @@
  * Anti-bypass: never let an UNPAID paystub preview reach the printer. The
  * template-step preview and the pre-payment Review preview carry
  * `paystub-locked-preview`; the paid Review print path uses #pdf-content instead
- * (which is never marked locked once `canPrint` is true), so it still prints.
+ * (which is not marked locked while ReviewStep's derived `canPrint` holds, i.e.
+ * `lockStatus(...) === 'match'`; not the `appSettings.canPrint` flag), so it still prints.
  */
 @media print {
   .paystub-locked-preview {
