@@ -24,7 +24,10 @@ function fakeQuote(cart: Cart): Quote {
 }
 
 const NOTICE_TITLE = 'This is not the pay stub you paid for';
-const NOTICE_BODY = 'You changed it after payment. Pay again for the new version, or go back to the one you bought.';
+const KEPT_CAPTION = 'This is your final document. Save the PDF now; it stays available in this browser tab for about an hour.';
+const NOT_KEPT_CAPTION =
+  'This is your final document. Save the PDF now and do not reload this page: your browser would not let us keep it for you.';
+const NOTICE_BODY ='You changed it after payment. Pay again for the new version, or go back to the one you bought.';
 
 describe('Review step paid lock', () => {
   let spies: Array<{ mockRestore: () => void }>;
@@ -102,6 +105,27 @@ describe('Review step paid lock', () => {
       expect.objectContaining({ termsVersion: expect.any(String) }),
       expect.stringMatching(/^[0-9a-f]{64}$/),
     );
+  });
+
+  it('says the stub stays in this tab only when the browser kept it', async () => {
+    await openCheckout();
+    await clickPay();
+    await screen.findByRole('button', { name: /print pay stub/i });
+    expect(screen.getByText(KEPT_CAPTION)).toBeTruthy();
+    expect(screen.queryByText(NOT_KEPT_CAPTION)).toBeNull();
+  });
+
+  it('warns not to reload when the browser refused to keep the paid stub', async () => {
+    const realSetItem = Storage.prototype.setItem;
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key: string, value: string) {
+      if (key === 'paystubissa.unlock.v1') throw new Error('QuotaExceededError');
+      return realSetItem.call(this, key, value);
+    });
+    await openCheckout();
+    await clickPay();
+    await screen.findByRole('button', { name: /print pay stub/i });
+    expect(screen.getByText(NOT_KEPT_CAPTION)).toBeTruthy();
+    expect(screen.queryByText(KEPT_CAPTION)).toBeNull();
   });
 
   it('unlocks Print and Download after payment', async () => {

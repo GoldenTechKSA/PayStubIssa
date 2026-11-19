@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import {
   Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, AlertTitle, Link, Chip,
-  Checkbox, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
+  Checkbox, FormControlLabel, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
@@ -37,6 +37,8 @@ interface StepProps {
   onEdit: (stepIndex: number) => void;
   /** The paid stub is on screen and not released: no way back into the steps from here. */
   frozen?: boolean;
+  /** A payment stored in this tab could not be confirmed yet: offer no new payment meanwhile. */
+  paymentPaused?: boolean;
 }
 
 const maskSSN = (ssn: string) => {
@@ -67,7 +69,7 @@ const SummarySection: React.FC<{ title: string; onEdit?: () => void; rows: Array
   </Card>
 );
 
-const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => {
+const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false, paymentPaused = false }) => {
   const dispatch = useDispatch();
   const fullState = useSelector((s: PayStubDetails) => s);
   const { companyInfo, employeeInfo, incomeDetails, generalInfo, appSettings } = fullState;
@@ -147,13 +149,21 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
   // unreachable) the site-wide server price from PriceProvider stands in; with neither, the
   // amounts show as a dash rather than a guess.
   const unitCents = usePrice().priceFor(stubCount);
-  const [quote, setQuote] = useState<Quote | null>(null);
+  // A quote is only ever used for the cart it was asked for (stub count + applied code): an
+  // answer for an earlier cart is not shown and never decides which payment control is offered.
+  const cartKey = `${stubCount}|${couponCode ?? ""}`;
+  const [quoted, setQuoted] = useState<{ key: string; quote: Quote } | null>(null);
+  const [quoteFailedKey, setQuoteFailedKey] = useState<string | null>(null);
+  const [quoteAttempt, setQuoteAttempt] = useState(0);
+  const quote = quoted?.key === cartKey ? quoted.quote : null;
   useEffect(() => {
     let cancelled = false;
+    const key = cartKey;
+    setQuoteFailedKey(null);
     paymentsApi.quote(cart)
       .then(q => {
         if (cancelled) return;
-        setQuote(q);
+        setQuoted({ key, quote: q });
         if (couponCode) telemetry.emit(T.COUPON_APPLIED, { amountCents: q.discountCents });
       })
       .catch((err: unknown) => {
@@ -165,11 +175,16 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
           setCouponCode(null);
           return;
         }
-        setQuote(null);
+        setQuoteFailedKey(key);
       });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stubCount, couponCode]);
+  }, [stubCount, couponCode, quoteAttempt]);
+  // With a code applied, payment waits until the server has priced this exact cart: the code
+  // could make the order free, and PayPal must not be offered for an order that is not.
+  const couponUnresolved = !!couponCode && !quote;
+  const couponCheckFailed = couponUnresolved && quoteFailedKey === cartKey;
+  const retryQuote = () => setQuoteAttempt(n => n + 1);
   const unitPrice = quote
     ? centsToDollars(quote.lines[0]?.unitCents ?? 0)
     : unitCents !== null ? centsToDollars(unitCents) : null;
@@ -200,6 +215,10 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
     return fingerprint;
   };
 
+  // Whether the browser let us keep the unlock in this tab's storage on the last write. When it
+  // refused, the paid stub lives only in memory and a reload would lose it.
+  const [unlockKept, setUnlockKept] = useState(true);
+
   // Put the stub back exactly as it was when it was paid for.
   const restorePaid = () => {
     const snap = unlock?.snapshot;
@@ -211,7 +230,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
     dispatch(saveIncomeDetails(p.incomeDetails));
     dispatch(saveGeneralInfo(p.generalInfo));
     dispatch(updateAppSettings({ ...p.template, unlock: restored }));
-    unlockStorage.save(restored);
+    setUnlockKept(unlockStorage.save(restored));
     telemetry.emit(T.UNLOCK_PAID_RESTORED, { orderId: unlock.orderId });
   };
 
@@ -223,7 +242,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
     if (!unlock) return;
     const released = { ...unlock, released: true };
     dispatch(updateAppSettings({ unlock: released }));
-    unlockStorage.save(released);
+    setUnlockKept(unlockStorage.save(released));
     telemetry.emit(T.UNLOCK_RELEASED, { orderId: unlock.orderId });
   };
   const editStep = (i: number) => (frozen ? undefined : () => onEdit(i));
@@ -241,7 +260,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
         released: false,
       } : {}),
     };
-    unlockStorage.save(nextUnlock);
+    setUnlockKept(unlockStorage.save(nextUnlock));
     dispatch(updateAppSettings({ canPrint: true, unlock: nextUnlock }));
     telemetry.emit(T.PAYMENT_SUCCEEDED, {
       orderId: result.orderId,
@@ -401,7 +420,9 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
                       <PDFDownloadButton targetId="pdf-content" fileName="paystub" buttonText="Download PDF" />
                     </Stack>
                     <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
-                      This is your final document. Save the PDF now; it stays available in this browser tab for about an hour.
+                      {unlockKept
+                        ? "This is your final document. Save the PDF now; it stays available in this browser tab for about an hour."
+                        : "This is your final document. Save the PDF now and do not reload this page: your browser would not let us keep it for you."}
                     </Typography>
                     {frozen && (
                       <Button variant="text" onClick={() => setReleaseOpen(true)} sx={{ mt: 1, px: 0 }}>
@@ -515,7 +536,28 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
                       </Typography>
                     </Box>
 
-                    {attested && quote?.totalCents === 0 ? (
+                    {paymentPaused ? (
+                      <Typography variant="body2" color="text.secondary">
+                        Payment is not offered until we can confirm your earlier payment.
+                      </Typography>
+                    ) : attested && couponCheckFailed ? (
+                      <Alert
+                        severity="warning"
+                        action={
+                          <Stack direction="row" spacing={1}>
+                            <Button color="inherit" size="small" onClick={retryQuote}>Try again</Button>
+                            <Button color="inherit" size="small" onClick={removeCoupon}>Remove code</Button>
+                          </Stack>
+                        }
+                      >
+                        We could not check that code. Try again.
+                      </Alert>
+                    ) : attested && couponUnresolved ? (
+                      <Stack direction="row" spacing={1.5} alignItems="center">
+                        <CircularProgress size={20} />
+                        <Typography variant="body2" color="text.secondary">Checking your code…</Typography>
+                      </Stack>
+                    ) : attested && quote?.totalCents === 0 ? (
                       <>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                           Your correction code covers this order. Nothing will be charged.

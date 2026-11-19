@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  Container, Stepper, Step, StepLabel, Box, Typography, LinearProgress, useMediaQuery, useTheme,
+  Container, Stepper, Step, StepLabel, Box, Typography, LinearProgress, Alert, Button, useMediaQuery, useTheme,
 } from "@mui/material";
 import { PayStubDetails } from "assets/data/pay-stub-details";
 import {
@@ -19,7 +19,7 @@ import { T } from "../../telemetry/codes";
 import { isDevUnlock } from "../../utils/dev-flags";
 import { normalizeStubCount } from "../../constants/pricing";
 import { lockStatus, restorePayloads } from "../../utils/paid-lock";
-import { paymentsApi, unlockStorage, PaymentsApiError } from "../../services/payments-api";
+import { paymentsApi, unlockStorage, PaymentsApiError, type Unlock } from "../../services/payments-api";
 
 const STEPS = ["Company", "Employee", "Pay period", "Earnings", "Template", "Review"];
 const DRAFT_KEY = "paystubissa.draft.v1";
@@ -52,6 +52,57 @@ const PaystubWizard = () => {
   const [restoring, setRestoring] = useState(
     () => !store.getState().appSettings.unlock && !!unlockStorage.load(),
   );
+
+  // Set when the server could not be asked about a stored payment (offline, API down): the
+  // unlock is kept, the customer is told, and no new payment is offered until a retry settles it.
+  const [restoreFailed, setRestoreFailed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  // Bumped on unmount, so an answer that arrives after the wizard is gone is dropped.
+  const generation = useRef(0);
+
+  /** Check a stored unlock with the server and, if it stands, bring the paid stub back. */
+  const verifyAndRestore = (stored: Unlock): Promise<void> => {
+    const gen = generation.current;
+    return paymentsApi.verifyUnlock(stored.token)
+      .then(v => {
+        if (gen !== generation.current) return;
+        setRestoreFailed(false);
+        // The server's fingerprint wins over whatever the browser kept (or lost).
+        const unlock = { ...stored, qty: v.qty, expiresAt: v.expiresAt, fingerprint: v.fingerprint ?? stored.fingerprint };
+        unlockStorage.save(unlock);
+        if (!unlock.released && unlock.snapshot) {
+          const p = restorePayloads(store.getState(), unlock.snapshot);
+          dispatch(saveCompanyInfo(p.companyInfo));
+          dispatch(saveEmployeeInfo(p.employeeInfo));
+          dispatch(saveIncomeDetails(p.incomeDetails));
+          dispatch(saveGeneralInfo(p.generalInfo));
+          dispatch(updateAppSettings({ ...p.template, canPrint: true, unlock }));
+          setActive(REVIEW);
+          telemetry.emit(T.UNLOCK_RESTORED, { orderId: unlock.orderId });
+        } else {
+          dispatch(updateAppSettings({ unlock }));
+        }
+      })
+      .catch((err: unknown) => {
+        if (gen !== generation.current) return;
+        // A token the server rejects is gone for good; any other failure (offline, API down)
+        // keeps it for the next visit but unlocks nothing now.
+        if (err instanceof PaymentsApiError && err.status === 401) {
+          unlockStorage.clear();
+          setRestoreFailed(false);
+        } else {
+          setRestoreFailed(true);
+        }
+      });
+  };
+
+  const retryRestore = () => {
+    const stored = unlockStorage.load();
+    if (!stored) { setRestoreFailed(false); return; }
+    setRetrying(true);
+    const gen = generation.current;
+    verifyAndRestore(stored).finally(() => { if (gen === generation.current) setRetrying(false); });
+  };
 
   // Hydrate any saved draft once, and default the template so the downstream preview renders.
   useEffect(() => {
@@ -106,37 +157,13 @@ const PaystubWizard = () => {
     const stored = store.getState().appSettings.unlock ? null : unlockStorage.load();
     if (stored) {
       setRestoring(true);
-      paymentsApi.verifyUnlock(stored.token)
-        .then(v => {
-          if (cancelled) return;
-          // The server's fingerprint wins over whatever the browser kept (or lost).
-          const unlock = { ...stored, qty: v.qty, expiresAt: v.expiresAt, fingerprint: v.fingerprint ?? stored.fingerprint };
-          unlockStorage.save(unlock);
-          if (!unlock.released && unlock.snapshot) {
-            const p = restorePayloads(store.getState(), unlock.snapshot);
-            dispatch(saveCompanyInfo(p.companyInfo));
-            dispatch(saveEmployeeInfo(p.employeeInfo));
-            dispatch(saveIncomeDetails(p.incomeDetails));
-            dispatch(saveGeneralInfo(p.generalInfo));
-            dispatch(updateAppSettings({ ...p.template, canPrint: true, unlock }));
-            setActive(REVIEW);
-            telemetry.emit(T.UNLOCK_RESTORED, { orderId: unlock.orderId });
-          } else {
-            dispatch(updateAppSettings({ unlock }));
-          }
-        })
-        .catch((err: unknown) => {
-          if (cancelled) return;
-          // A token the server rejects is gone for good; any other failure (offline, API down)
-          // keeps it for the next visit but unlocks nothing now.
-          if (err instanceof PaymentsApiError && err.status === 401) unlockStorage.clear();
-        })
-        .finally(() => { if (!cancelled) setRestoring(false); });
+      verifyAndRestore(stored).finally(() => { if (!cancelled) setRestoring(false); });
     } else {
       setRestoring(false);
     }
     return () => {
       cancelled = true;
+      generation.current += 1;
       telemetry.emit(T.WIZARD_EXITED, { lastStep: activeRef.current });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -233,12 +260,25 @@ const PaystubWizard = () => {
         <LinearProgress aria-label="Checking your payment" sx={{ my: 4 }} />
       ) : (
         <>
+          {restoreFailed && (
+            <Alert
+              severity="warning"
+              sx={{ mb: 3 }}
+              action={
+                <Button color="inherit" size="small" onClick={retryRestore} disabled={retrying}>
+                  Try again
+                </Button>
+              }
+            >
+              We could not confirm your payment just now. You do not need to pay again.
+            </Alert>
+          )}
           {step === 0 && <CompanyStep {...stepProps} />}
           {step === 1 && <EmployeeStep {...stepProps} />}
           {step === 2 && <PayPeriodStep {...stepProps} />}
           {step === 3 && <EarningsStep {...stepProps} />}
           {step === 4 && <TemplateStep {...stepProps} />}
-          {step === 5 && <ReviewStep onBack={goBack} onEdit={jumpTo} frozen={frozen} />}
+          {step === 5 && <ReviewStep onBack={goBack} onEdit={jumpTo} frozen={frozen} paymentPaused={restoreFailed} />}
         </>
       )}
     </Container>

@@ -56,6 +56,7 @@ const storedUnlock = (): Unlock | null => {
 };
 
 const PRINT = /print (pay stub|\d+ pay stubs)/i;
+const RESTORE_FAILED = 'We could not confirm your payment just now. You do not need to pay again.';
 const stepLabel = (name: string) => screen.getByText(name, { selector: '.MuiStepLabel-label' });
 /** The cursor over a stepper label; its `sx` sits on the StepLabel root around the text. */
 const stepCursor = (name: string) =>
@@ -157,15 +158,49 @@ describe('wizard paid state', () => {
     expect(store.getState().appSettings.unlock).toBeUndefined();
   });
 
-  it('a network failure keeps the stored unlock', async () => {
+  it('a network failure keeps the stored unlock, says so on every step, offers no payment, and can retry', async () => {
     const u = paidUnlock(paidContent());
     storeUnlock(u);
     verify.mockImplementation(async () => { throw new PaymentsApiError('Offline', 'NETWORK', 0); });
     const { store } = open();
     expect(await screen.findByText('Company information')).toBeTruthy();
+    expect(screen.getByText(RESTORE_FAILED)).toBeTruthy();
     expect(storedUnlock()?.token).toBe('tok');
     expect(store.getState().appSettings.unlock).toBeUndefined();
     expect(screen.queryByRole('button', { name: PRINT })).toBeNull();
+
+    // Walk to Review: the notice stays, and no way to pay is offered.
+    for (const next of ['Continue', 'Continue', 'Continue', 'Choose a template', 'Continue to review']) {
+      await userEvent.click(await screen.findByRole('button', { name: next }));
+      expect(screen.getByText(RESTORE_FAILED)).toBeTruthy();
+    }
+    expect(await screen.findByText('Review & finalize')).toBeTruthy();
+    expect(screen.getByText(RESTORE_FAILED)).toBeTruthy();
+    await userEvent.click(screen.getByRole('checkbox', { name: /terms of use/i }));
+    expect(screen.queryByText(/secure checkout via paypal/i)).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Get my corrected pay stub' })).toBeNull();
+    expect(screen.queryByText('Pay to unlock')).toBeTruthy();
+
+    // Try again: this time the server answers, and the paid stub comes back.
+    verifyAnswers(u);
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByRole('button', { name: PRINT })).toBeTruthy();
+    expect(screen.queryByText(RESTORE_FAILED)).toBeNull();
+    expect(store.getState().employeeInfo.employeeFirstName).toBe('Paidname');
+    expect(store.getState().appSettings.unlock?.orderId).toBe('ORDER1');
+  });
+
+  it('Try again after a failed check clears the notice when the server rejects the token', async () => {
+    storeUnlock(paidUnlock(paidContent()));
+    verify.mockImplementation(async () => { throw new PaymentsApiError('Offline', 'NETWORK', 0); });
+    const { store } = open();
+    expect(await screen.findByText(RESTORE_FAILED)).toBeTruthy();
+    verify.mockImplementation(async () => { throw new PaymentsApiError('Invalid token', 'INVALID_TOKEN', 401); });
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(screen.queryByText(RESTORE_FAILED)).toBeNull());
+    expect(sessionStorage.getItem(UNLOCK_KEY)).toBeNull();
+    expect(store.getState().appSettings.unlock).toBeUndefined();
+    expect(screen.getByText('Company information')).toBeTruthy();
   });
 
   it('does not pull a released customer back to Review', async () => {
