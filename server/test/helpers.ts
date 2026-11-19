@@ -34,6 +34,7 @@ export const testConfig: Config = {
   PAYPAL_WEBHOOK_ID: undefined,
   JWT_SECRET,
   UNLOCK_TOKEN_TTL_MINUTES: 60,
+  CORRECTION_CODE_TTL_DAYS: 14,
   CURRENCY: 'USD',
   priceTiers: rules.tiers.paystub,
   MAX_STUBS_PER_ORDER: 12,
@@ -102,6 +103,7 @@ export function makeService(overrides: Partial<{ paypal: PayPalClient; now: () =
     pricing: rules,
     jwtSecret: JWT_SECRET,
     tokenTtlMinutes: 60,
+    correctionCodeTtlDays: 14,
     retentionDays: overrides.retentionDays,
     now: overrides.now,
   });

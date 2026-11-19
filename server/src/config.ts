@@ -20,6 +20,8 @@ const schema = z.object({
 
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   UNLOCK_TOKEN_TTL_MINUTES: z.coerce.number().int().positive().default(60),
+  // How long a correction code (support's free re-issue) stays redeemable.
+  CORRECTION_CODE_TTL_DAYS: z.coerce.number().int().positive().default(14),
 
   CURRENCY: z.string().length(3).transform(s => s.toUpperCase()).default('USD'),
   // `MINQTY:CENTS,...` — the price of ONE pay stub, by how many are in the order. Every stub

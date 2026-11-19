@@ -67,6 +67,7 @@ export function paymentsRouter(config: Config, orders: OrderService, telemetry: 
       throw err;
     }
     telemetry.log(S.PAYMENTS_ORDER_CREATED, { orderId: result.orderId, totalCents: result.quote.totalCents }, ids);
+    if (result.completed) telemetry.log(S.PAYMENTS_CORRECTION_REDEEMED, { orderId: result.orderId }, ids);
     res.status(201).json(result);
   });
 

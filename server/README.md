@@ -87,6 +87,24 @@ Review step has a "Coupon code" field that re-quotes with the code and sends it 
 order. Adding or revoking a code is a `.env` edit plus `pm2 restart <app> --update-env`;
 a fixed-amount kind and a coupons table can slot into the same registry later.
 
+### Correction codes
+
+When a customer's pay stub had a mistake, support can give them one free re-issue. On the VPS:
+
+```bash
+node scripts/correction-code.js <orderId>
+# FIX-ABCDE23456  covers up to 2 pay stubs, expires 2026-12-02
+```
+
+The order must be a `COMPLETED` one (otherwise the command prints a one-line message and
+exits 1). The code is single use, covers at most as many stubs as that order did, and
+expires after `CORRECTION_CODE_TTL_DAYS` (default 14). Email it to the customer by hand;
+nothing sends it automatically. The customer types it into the Review step's "Coupon code"
+field: it quotes to zero, and the server completes the order itself with no PayPal call
+(`paypal_env = 'none'`, `corrects_order_id` pointing at the original order, logged as
+`[2105]`). Only a correction code may produce a zero-total order; `COUPONS` stay 1–99%.
+Unused expired codes are deleted by the daily prune.
+
 ## Data
 
 `DATABASE_PATH` (default `server/data/orders.sqlite`, gitignored). The `orders` table
