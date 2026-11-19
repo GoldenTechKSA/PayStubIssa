@@ -96,8 +96,10 @@ const PrivacyPolicy = () => (
           <td>
             The number of stubs ordered, the amount, any discount code you entered, the template you chose, the
             time you ticked the checkout confirmation and the version of the Terms you agreed to, your IP
-            address and browser type, and PayPal's confirmation of the payment, which carries the PayPal order
-            id and the name and email address on your PayPal account
+            address and browser type, a one-way fingerprint of your document, which lets us confirm that what
+            you download is what you paid for and cannot be turned back into its contents, if an order is a free
+            correction, which earlier order it corrects, and PayPal's confirmation of the payment, which carries
+            the PayPal order id and the name and email address on your PayPal account
           </td>
           <td>
             <strong>Yes</strong> — on our server, for three years (see Data Retention).
@@ -180,7 +182,8 @@ const PrivacyPolicy = () => (
       The Service uses your browser's local storage to hold your pay stub draft on your device. That draft is
       functional storage that makes the app work; it is not tracking, and it is never sent to us. We also keep a
       random analytics identifier in your browser (see below), which is sent to us, and, after you pay, a
-      short-lived unlock token in session storage so that reloading the page does not lose your purchase.
+      short-lived unlock token and a copy of the paid document in session storage so that reloading the page does
+      not lose your purchase. Session storage is cleared when the tab closes.
     </p>
     <p>
       <strong>Analytics</strong><br />
