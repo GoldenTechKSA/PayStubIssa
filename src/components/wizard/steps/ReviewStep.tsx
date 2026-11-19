@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import {
-  Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, Link, Chip,
+  Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, AlertTitle, Link, Chip,
   Checkbox, FormControlLabel,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -10,13 +11,17 @@ import LockIcon from "@mui/icons-material/Lock";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { PayStubDetails } from "assets/data/pay-stub-details";
-import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
+import {
+  updateAppSettings, saveGeneralInfo, saveCompanyInfo, saveEmployeeInfo, saveIncomeDetails,
+} from "../../../redux/actions";
+import { contentOf, fingerprintOf, newSalt, lockStatus, type PaidSnapshot } from "../../../utils/paid-lock";
+import { isDevUnlock } from "../../../utils/dev-flags";
 import { buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
 import { normalizeStubCount } from "constants/pricing";
 import { usePrice } from "contexts/price-context";
 import { paymentsApi, unlockStorage, centsToDollars, PaymentsApiError, type CapturedOrder, type Quote } from "services/payments-api";
-import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING, POLICIES_VERSION } from "constants/business-info";
+import { ATTESTATION_TEXT, CORE_DISCLAIMER, FINAL_ONCE_PAID, FRAUD_WARNING, POLICIES_VERSION } from "constants/business-info";
 import { telemetry } from "../../../services/telemetry-service";
 import { T } from "../../../telemetry/codes";
 import TemplateManager from "../../../templates/components/templatemanager";
@@ -64,9 +69,16 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   const dispatch = useDispatch();
   const fullState = useSelector((s: PayStubDetails) => s);
   const { companyInfo, employeeInfo, incomeDetails, generalInfo, appSettings } = fullState;
+  const location = useLocation();
   // Paid state. `canPrint` is set only after the server captured and verified the payment;
-  // the unlock records how many stubs were paid for so bumping the count re-locks the gate.
+  // the unlock records a fingerprint of the content that was paid for, so any change to the
+  // stub (or a larger count) re-locks the gate until the paid content is back.
   const unlock = appSettings.unlock;
+  const status = useMemo(
+    () => lockStatus(fullState, unlock),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [companyInfo, employeeInfo, incomeDetails, generalInfo, appSettings.configPath, appSettings.templateId, unlock],
+  );
 
   const [extraNotes, setExtraNotes] = useState(generalInfo.extraNotes || "");
 
@@ -99,8 +111,17 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     touchStartX.current = null;
     if (Math.abs(dx) > 50) goToStub(active + (dx < 0 ? 1 : -1));
   };
-  const canPrint = !!appSettings.canPrint && (!unlock || unlock.qty >= stubCount);
-  const paidForFewer = !!appSettings.canPrint && !!unlock && unlock.qty < stubCount;
+  const canPrint = status === "match" || (isDevUnlock(location.search) && !!appSettings.canPrint);
+
+  // Report each time the stub stops being the one that was paid for.
+  const prevStatus = useRef<string | null>(null);
+  useEffect(() => {
+    if (status === "mismatch" && prevStatus.current !== "mismatch") {
+      telemetry.emit(T.UNLOCK_CONTENT_MISMATCH, { orderId: unlock?.orderId ?? null });
+    }
+    prevStatus.current = status;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   // Coupon: the customer types a code and applies it; only the applied code is sent with the
   // quote and the order. The server is the only judge of what a code is worth.
@@ -184,9 +205,43 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     telemetry.emit(T.REVIEW_ATTESTED, { attested: checked });
   };
 
+  // What the customer is paying for, fixed at the moment they click the PayPal button. The
+  // snapshot and salt stay in the browser; only the fingerprint goes to the server.
+  const pending = useRef<{ salt: string; fingerprint: string; snapshot: PaidSnapshot } | null>(null);
+  const beginCheckout = (): string => {
+    const salt = newSalt();
+    const snapshot = contentOf(fullState);
+    const fingerprint = fingerprintOf(snapshot, salt);
+    pending.current = { salt, fingerprint, snapshot };
+    return fingerprint;
+  };
+
+  // Put the stub back exactly as it was when it was paid for.
+  const restorePaid = () => {
+    const snap = unlock?.snapshot;
+    if (!unlock || !snap) return;
+    const restored = { ...unlock, released: false };
+    dispatch(saveCompanyInfo(snap.companyInfo));
+    dispatch(saveEmployeeInfo(snap.employeeInfo));
+    dispatch(saveIncomeDetails(snap.incomeDetails));
+    dispatch(saveGeneralInfo(snap.generalInfo));
+    dispatch(updateAppSettings({ configPath: snap.configPath, templateId: snap.templateId, unlock: restored }));
+    unlockStorage.save(restored);
+    telemetry.emit(T.UNLOCK_PAID_RESTORED, { orderId: unlock.orderId });
+  };
+
   const handlePaymentSuccess = (result: CapturedOrder) => {
     const paidQty = result.quote.lines.reduce((sum, l) => sum + l.qty, 0);
-    const nextUnlock = { token: result.token, orderId: result.orderId, expiresAt: result.expiresAt, qty: paidQty };
+    const paid = pending.current;
+    const nextUnlock = {
+      token: result.token, orderId: result.orderId, expiresAt: result.expiresAt, qty: paidQty,
+      ...(paid ? {
+        fingerprint: result.fingerprint ?? paid.fingerprint,
+        salt: paid.salt,
+        snapshot: paid.snapshot,
+        released: false,
+      } : {}),
+    };
     unlockStorage.save(nextUnlock);
     dispatch(updateAppSettings({ canPrint: true, unlock: nextUnlock }));
     telemetry.emit(T.PAYMENT_SUCCEEDED, {
@@ -325,10 +380,16 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                 ) : (
                   <>
                     <Typography variant="subtitle1" fontWeight={600} gutterBottom>Pay to unlock</Typography>
-                    {paidForFewer && unlock && (
-                      <Alert severity="info" sx={{ mb: 2 }}>
-                        Your payment covered {unlock.qty} pay stub{unlock.qty === 1 ? "" : "s"}. Reduce the count on the
-                        Pay period step to print, or pay for {stubCount} below.
+                    {status === "mismatch" && (
+                      <Alert
+                        severity="warning"
+                        sx={{ mb: 2 }}
+                        action={unlock?.snapshot ? (
+                          <Button color="inherit" size="small" onClick={restorePaid}>Restore my paid stub</Button>
+                        ) : undefined}
+                      >
+                        <AlertTitle>This is not the pay stub you paid for</AlertTitle>
+                        You changed it after payment. Pay again for the new version, or go back to the one you bought.
                       </Alert>
                     )}
 
@@ -416,8 +477,12 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                           Secure checkout via PayPal. After payment you can print and download your
                           pay stub{stubCount === 1 ? "" : "s"} as a PDF.
                         </Typography>
+                        <Typography variant="body2" fontWeight={600} sx={{ mb: 2 }}>
+                          {FINAL_ONCE_PAID}
+                        </Typography>
                         <PayPal
                           cart={cart}
+                          getFingerprint={beginCheckout}
                           meta={{ attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId, termsVersion: POLICIES_VERSION }}
                           onPaymentSuccess={handlePaymentSuccess}
                           onPaymentError={handlePaymentError}

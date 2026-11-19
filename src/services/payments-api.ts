@@ -67,6 +67,8 @@ export interface PaymentConfig {
 export interface CreatedOrder {
   orderId: string;
   quote: Quote;
+  /** Present when the order needed no PayPal step (a free corrected order): already captured. */
+  completed?: CapturedOrder;
 }
 
 export interface CapturedOrder {
@@ -75,6 +77,8 @@ export interface CapturedOrder {
   token: string;
   expiresAt: string;
   quote: Quote;
+  /** Fingerprint stored on the order, when it has one. */
+  fingerprint?: string;
 }
 
 /** What the browser keeps after a successful payment. */
@@ -144,14 +148,18 @@ export const paymentsApi = {
   quote: (cart: Cart) =>
     request<{ quote: Quote }>('/quote', { method: 'POST', body: JSON.stringify(cart) }).then(r => r.quote),
 
-  createOrder: (cart: Cart, meta?: OrderMeta) =>
-    request<CreatedOrder>('/orders', { method: 'POST', body: JSON.stringify({ ...cart, meta }) }),
+  // `fingerprint` is top-level, never inside `meta`; an API that predates it ignores the field.
+  createOrder: (cart: Cart, meta?: OrderMeta, fingerprint?: string) =>
+    request<CreatedOrder>('/orders', {
+      method: 'POST',
+      body: JSON.stringify({ ...cart, meta, ...(fingerprint ? { fingerprint } : {}) }),
+    }),
 
   captureOrder: (orderId: string) =>
     request<CapturedOrder>(`/orders/${encodeURIComponent(orderId)}/capture`, { method: 'POST' }),
 
   verifyUnlock: (token: string) =>
-    request<{ valid: true; orderId: string; qty: number; expiresAt: string }>('/unlock/verify', {
+    request<{ valid: true; orderId: string; qty: number; expiresAt: string; fingerprint?: string }>('/unlock/verify', {
       method: 'POST',
       body: JSON.stringify({ token }),
     }),

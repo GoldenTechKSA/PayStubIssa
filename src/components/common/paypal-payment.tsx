@@ -9,6 +9,8 @@ interface PayPalProps {
     cart: Cart;
     /** Optional audit fields recorded with the order (attestation time, template). */
     meta?: OrderMeta;
+    /** Called at click time, inside createOrder: the fingerprint of the content being paid for. */
+    getFingerprint?: () => string;
     onPaymentSuccess: (result: CapturedOrder) => void;
     onPaymentError: (error: unknown) => void;
 }
@@ -35,16 +37,18 @@ function loadPayPalSdk(clientId: string, currency: string): Promise<void> {
 
 type Status = "loading" | "ready" | "failed";
 
-const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPaymentError }) => {
+const PayPal: React.FC<PayPalProps> = ({ cart, meta, getFingerprint, onPaymentSuccess, onPaymentError }) => {
     const paypalRef = useRef<HTMLDivElement | null>(null);
     // Latest props without re-rendering the (mount-once) buttons: createOrder reads
     // these at click time, so changing the stub count is picked up for free.
     const cartRef = useRef(cart);
     const metaRef = useRef(meta);
+    const fingerprintRef = useRef(getFingerprint);
     const successRef = useRef(onPaymentSuccess);
     const errorRef = useRef(onPaymentError);
     cartRef.current = cart;
     metaRef.current = meta;
+    fingerprintRef.current = getFingerprint;
     successRef.current = onPaymentSuccess;
     errorRef.current = onPaymentError;
 
@@ -68,7 +72,7 @@ const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPayment
 
                     // The server quotes the cart and creates the PayPal order; we only relay its id.
                     createOrder: async () => {
-                        const { orderId } = await paymentsApi.createOrder(cartRef.current, metaRef.current);
+                        const { orderId } = await paymentsApi.createOrder(cartRef.current, metaRef.current, fingerprintRef.current?.());
                         telemetry.emit(T.PAYMENT_ORDER_CREATED, { orderId });
                         return orderId;
                     },

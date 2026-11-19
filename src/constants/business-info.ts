@@ -69,6 +69,10 @@ export const CORE_DISCLAIMER =
   'you enter, is not a payroll provider, accountant, or tax advisor, and does not file ' +
   'anything with the IRS or any state agency on your behalf.';
 
+/** Shown directly above the payment buttons: a paid stub is the one that was reviewed. */
+export const FINAL_ONCE_PAID =
+  'Pay stubs are final once paid. Check every detail now; a change after payment needs a new purchase.';
+
 /** The prohibited-use warning. Shown alongside the core disclaimer at checkout. */
 export const FRAUD_WARNING =
   'Using this tool to misrepresent income to a lender, landlord, employer, government ' +
