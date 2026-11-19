@@ -260,6 +260,29 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
     alert(error instanceof PaymentsApiError ? message : "There was an error processing your payment. Please try again.");
   };
 
+  // A correction code can bring the order to nothing: there is no PayPal step, the server
+  // completes the order when it is created.
+  const [freeBusy, setFreeBusy] = useState(false);
+  const completeFreeOrder = async () => {
+    if (freeBusy) return;
+    setFreeBusy(true);
+    try {
+      const fingerprint = beginCheckout();
+      const created = await paymentsApi.createOrder(
+        cart,
+        { attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId, termsVersion: POLICIES_VERSION },
+        fingerprint,
+      );
+      if (!created.completed) throw new PaymentsApiError("This code could not be applied. Please try again.", "NOT_COMPLETED", 502);
+      handlePaymentSuccess(created.completed);
+    } catch (error) {
+      pending.current = null;
+      handlePaymentError(error);
+    } finally {
+      setFreeBusy(false);
+    }
+  };
+
   const handlePrint = () => {
     telemetry.emit(T.PRINT_CLICKED);
     document.body.classList.add("print-paystub");
@@ -492,7 +515,19 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false }) => 
                       </Typography>
                     </Box>
 
-                    {attested ? (
+                    {attested && quote?.totalCents === 0 ? (
+                      <>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          Your correction code covers this order. Nothing will be charged.
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600} sx={{ mb: 2 }}>
+                          {FINAL_ONCE_PAID}
+                        </Typography>
+                        <Button variant="contained" onClick={completeFreeOrder} disabled={freeBusy}>
+                          Get my corrected pay stub
+                        </Button>
+                      </>
+                    ) : attested ? (
                       <>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                           Secure checkout via PayPal. After payment you can print and download your
