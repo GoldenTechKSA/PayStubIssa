@@ -11,6 +11,12 @@ export interface AppSettings {
         expiresAt: string;
         /** Number of pay stubs the payment covered. */
         qty: number;
+        /** Fingerprint of the content that was paid for, its salt and a copy of that content. */
+        fingerprint?: string;
+        salt?: string;
+        snapshot?: any;
+        /** True once the customer has released the paid content to edit it. */
+        released?: boolean;
     } | null;
 }
 export interface CompanyInfo {

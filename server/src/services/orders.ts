@@ -13,8 +13,9 @@ import type Database from 'better-sqlite3';
 import type { OrderRow, OrderStatus } from '../db';
 import { conflict, notFound, paymentRequired, badGateway, badRequest, unauthorized } from '../lib/errors';
 import { issueUnlockToken, verifyUnlockToken, TokenError, type IssuedToken, type VerifiedUnlock } from '../lib/token';
-import { quoteCart, PricingError, normalizeCouponCode, type CartInput, type Quote, type PricingRules } from './pricing';
+import { quoteCart, PricingError, normalizeCouponCode, type CartInput, type Quote, type PricingRules, type Coupon } from './pricing';
 import { PayPalError, type PayPalClient } from './paypal';
+import { findCorrectionCode, randomChars, type CorrectionCodeRow } from './correction-codes';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -30,12 +31,15 @@ export interface ClientMeta {
 export interface CreatedOrderResult {
   orderId: string;
   quote: Quote;
+  /** Set when a correction code made the order free: it is already complete, nothing to capture. */
+  completed?: CapturedOrderResult;
 }
 
 export interface CapturedOrderResult extends IssuedToken {
   orderId: string;
   status: 'COMPLETED';
   quote: Quote;
+  fingerprint?: string;
 }
 
 export interface OrderServiceDeps {
@@ -44,9 +48,15 @@ export interface OrderServiceDeps {
   pricing: PricingRules;
   jwtSecret: string;
   tokenTtlMinutes: number;
+  /** Days a correction code stays redeemable after support issues it. */
+  correctionCodeTtlDays: number;
   /** Days an order row is kept before prune() deletes it. Omit to never prune. */
   retentionDays?: number;
   now?: () => Date;
+}
+
+function fingerprintOf(row: OrderRow): { fingerprint?: string } {
+  return row.content_fp ? { fingerprint: row.content_fp } : {};
 }
 
 export class OrderService {
@@ -59,16 +69,41 @@ export class OrderService {
   }
 
   quote(cart: CartInput): Quote {
+    return this.quoteWithCode(cart).quote;
+  }
+
+  /** The quote, plus the correction code row when the coupon field held one. */
+  private quoteWithCode(cart: CartInput): { quote: Quote; correction?: CorrectionCodeRow } {
+    const code = normalizeCouponCode(cart.couponCode);
+    const correction = code ? findCorrectionCode(this.deps.db, code) : undefined;
     try {
-      return quoteCart(cart, this.deps.pricing);
+      if (!correction) return { quote: quoteCart(cart, this.deps.pricing) };
+
+      if (correction.used_at) throw badRequest('INVALID_COUPON', 'That correction code has already been used');
+      if (correction.expires_at <= this.now().toISOString()) throw badRequest('INVALID_COUPON', 'That correction code has expired');
+      const synthetic: Coupon = { code: correction.code, description: 'Correction', kind: 'percent', value: 100 };
+      const quote = quoteCart(cart, { ...this.deps.pricing, coupons: { [correction.code]: synthetic } });
+      const qty = quote.lines.reduce((sum, l) => sum + l.qty, 0);
+      if (qty > correction.max_qty) {
+        throw badRequest('INVALID_COUPON', `That correction code covers at most ${correction.max_qty} pay stub${correction.max_qty === 1 ? '' : 's'}`);
+      }
+      return { quote, correction };
     } catch (err) {
       if (err instanceof PricingError) throw badRequest(err.code, err.message);
       throw err;
     }
   }
 
-  async createOrder(cart: CartInput, meta: ClientMeta = {}): Promise<CreatedOrderResult> {
-    const quote = this.quote(cart);
+  async createOrder(cart: CartInput, meta: ClientMeta = {}, fingerprint?: string): Promise<CreatedOrderResult> {
+    const { quote, correction } = this.quoteWithCode(cart);
+    if (quote.totalCents === 0) {
+      // Only a correction code may make an order free; anything else would be a pricing bug.
+      if (!correction) throw badRequest('INVALID_COUPON', 'That coupon code cannot be used for this order');
+      // The fingerprint is what the unlock is bound to. Without one (an older or broken client)
+      // refuse before the code is spent, so the customer can retry with it still good.
+      if (!fingerprint) throw badRequest('FINGERPRINT_REQUIRED', 'Please reload the page and try again.');
+      return this.completeCorrection(quote, correction, meta, fingerprint);
+    }
     const description = quote.lines.map(l => l.description).join(', ');
 
     let created;
@@ -82,8 +117,8 @@ export class OrderService {
     this.deps.db
       .prepare(
         `INSERT INTO orders (id, status, paypal_env, currency, total_cents, quote_json, coupon_code,
-                             client_meta_json, created_at, updated_at)
-         VALUES (@id, 'CREATED', @env, @currency, @total, @quote, @coupon, @meta, @ts, @ts)`,
+                             client_meta_json, content_fp, created_at, updated_at)
+         VALUES (@id, 'CREATED', @env, @currency, @total, @quote, @coupon, @meta, @fp, @ts, @ts)`,
       )
       .run({
         id: created.id,
@@ -93,10 +128,42 @@ export class OrderService {
         quote: JSON.stringify(quote),
         coupon: normalizeCouponCode(cart.couponCode) ?? null,
         meta: Object.keys(meta).length ? JSON.stringify(meta) : null,
+        fp: fingerprint ?? null,
         ts,
       });
 
     return { orderId: created.id, quote };
+  }
+
+  /** Free corrected order: no PayPal call; the code is spent and the order inserted in one transaction. */
+  private completeCorrection(quote: Quote, correction: CorrectionCodeRow, meta: ClientMeta, fingerprint?: string): CreatedOrderResult {
+    const { db } = this.deps;
+    const orderId = `C-${randomChars(16)}`;
+    const ts = this.now().toISOString();
+
+    db.transaction(() => {
+      const used = db
+        .prepare('UPDATE correction_codes SET used_at = ?, used_by_order_id = ? WHERE code = ? AND used_at IS NULL')
+        .run(ts, orderId, correction.code);
+      if (used.changes !== 1) throw badRequest('INVALID_COUPON', 'That correction code has already been used');
+      db.prepare(
+        `INSERT INTO orders (id, status, paypal_env, currency, total_cents, quote_json, coupon_code, client_meta_json,
+                             captured_cents, captured_at, corrects_order_id, content_fp, created_at, updated_at)
+         VALUES (@id, 'COMPLETED', 'none', @currency, 0, @quote, @coupon, @meta, 0, @ts, @corrects, @fp, @ts, @ts)`,
+      ).run({
+        id: orderId,
+        currency: quote.currency,
+        quote: JSON.stringify(quote),
+        coupon: correction.code,
+        meta: Object.keys(meta).length ? JSON.stringify(meta) : null,
+        corrects: correction.order_id,
+        fp: fingerprint ?? null,
+        ts,
+      });
+    })();
+
+    const row = this.getRow(orderId)!;
+    return { orderId, quote, completed: { orderId, status: 'COMPLETED', quote, ...this.issue(row), ...fingerprintOf(row) } };
   }
 
   captureOrder(orderId: string): Promise<CapturedOrderResult> {
@@ -114,7 +181,7 @@ export class OrderService {
 
     if (row.status === 'COMPLETED') {
       // Replay-safe: the money already moved; just hand back a fresh unlock.
-      return { orderId, status: 'COMPLETED', quote, ...this.issue(row) };
+      return { orderId, status: 'COMPLETED', quote, ...this.issue(row), ...fingerprintOf(row) };
     }
     if (row.status === 'FAILED') {
       throw conflict('ORDER_FAILED', row.failure_reason ?? 'This order can no longer be captured');
@@ -158,7 +225,8 @@ export class OrderService {
       )
       .run({ id: orderId, captureId: result.captureId, cents: result.capturedCents, raw: JSON.stringify(result.raw), ts });
 
-    return { orderId, status: 'COMPLETED', quote, ...this.issue(this.getRow(orderId)!) };
+    const done = this.getRow(orderId)!;
+    return { orderId, status: 'COMPLETED', quote, ...this.issue(done), ...fingerprintOf(done) };
   }
 
   verifyUnlock(token: string): VerifiedUnlock {
@@ -187,6 +255,7 @@ export class OrderService {
     const days = this.deps.retentionDays;
     if (!days) return 0;
     const cutoff = new Date(this.now().getTime() - days * DAY_MS).toISOString();
+    this.deps.db.prepare('DELETE FROM correction_codes WHERE expires_at < ?').run(cutoff);
     return this.deps.db.prepare('DELETE FROM orders WHERE created_at < ?').run(cutoff).changes;
   }
 
@@ -208,7 +277,7 @@ export class OrderService {
     const quote = JSON.parse(row.quote_json) as Quote;
     const qty = quote.lines.reduce((sum, l) => sum + l.qty, 0);
     return issueUnlockToken(
-      { orderId: row.id, qty, currency: row.currency, totalCents: row.total_cents },
+      { orderId: row.id, qty, currency: row.currency, totalCents: row.total_cents, fingerprint: row.content_fp ?? undefined },
       { secret: this.deps.jwtSecret, ttlMinutes: this.deps.tokenTtlMinutes, now: this.now() },
     );
   }

@@ -46,7 +46,7 @@ const STEPS = [
     items: [
       `Choose from ${TEMPLATE_COUNT} templates — standard employee pay stubs, classic earnings statements, a payroll-register layout, a small-business stub with a logo header, an independent contractor statement and a temporary assignment stub`,
       "See a live preview of your pay stub as you go, before you pay",
-      "Go back and change anything — edits are free and unlimited",
+      "Go back and change anything — edits are free and unlimited until you pay",
     ],
   },
   {

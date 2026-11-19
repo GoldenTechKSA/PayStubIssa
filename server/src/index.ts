@@ -34,6 +34,7 @@ function main(): void {
     },
     jwtSecret: config.JWT_SECRET,
     tokenTtlMinutes: config.UNLOCK_TOKEN_TTL_MINUTES,
+    correctionCodeTtlDays: config.CORRECTION_CODE_TTL_DAYS,
     retentionDays: config.ORDER_RETENTION_DAYS,
   });
 

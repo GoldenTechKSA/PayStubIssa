@@ -5,6 +5,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   BRAND_NAME,
+  FINAL_ONCE_PAID,
   FRAUD_WARNING,
   REFUND_WINDOW_DAYS,
   SUPPORT_EMAIL,
@@ -235,7 +236,8 @@ const faqData = [
         answer: (
           <>
             Instantly, in your browser. As soon as your PayPal payment succeeds, the <strong>Print</strong> and{" "}
-            <strong>Download PDF</strong> buttons unlock on the review screen and the preview watermark disappears.
+            <strong>Download PDF</strong> buttons unlock on the review screen and the preview watermark disappears.{" "}
+            {FINAL_ONCE_PAID}
             <br />
             <br />
             You get a US Letter PDF with one page per pay stub. That is the whole delivery. There is no email, no
@@ -309,7 +311,8 @@ const faqData = [
             <br />
             <br />
             If the problem is a typo in the data you entered, a refund is at our discretion — but{" "}
-            <strong>we will always give you a free corrected document.</strong> Just tell us what was wrong.
+            <strong>we will always give you a free corrected document.</strong> Email us what was wrong and we will
+            send you a one-time correction code that lets you fix the document and download it again at no charge.
           </>
         ),
       },
@@ -347,15 +350,15 @@ const faqData = [
         question: "Can I revise my paystub after downloading it?",
         answer: (
           <>
-            You can make unlimited free edits while your browser session is active and before you download or print —
+            You can make unlimited free edits while your browser session is active and before you pay —
             fixing typos, changing deduction amounts, uploading a different logo, or switching templates. Go back to any
             step in the wizard and change it; the preview updates.
             <br />
             <br />
-            After that, there is no account and no saved order, so there is nothing for us to reopen. Whatever draft is
-            still in your browser is all that exists. If you spot a mistake after downloading and the draft is still there,
-            correct it and print again. If it’s gone, contact <SupportEmailLink /> — under our {REFUND_WINDOW_DAYS}-day
-            guarantee we will always sort out a document that went wrong.
+            After that, there is no account and we do not keep your document, so we cannot reopen it for you. Whatever draft is
+            still in your browser is all that exists. If you spot a mistake after downloading, email{" "}
+            <SupportEmailLink />; we will send you a correction code so you can fix it and download it again free of
+            charge. Under our {REFUND_WINDOW_DAYS}-day guarantee we will always sort out a document that went wrong.
           </>
         ),
       },
@@ -368,14 +371,15 @@ const faqData = [
         question: "How long do I have to edit my pay stub before it's finalized?",
         answer: (
           <>
-            As long as your browser session lasts. Edits are unlimited and free right up until you download or print —
+            As long as your browser session lasts. Edits are unlimited and free right up until you pay —
             adjust pay amounts, deductions, company information, or the template as many times as you like during the
-            wizard.
+            wizard. Once you pay, the document is final.
             <br />
             <br />
-            There is no account and no server-side copy, so nothing is "locked" by us — but equally, nothing is kept by
-            us. Once you leave the site, the only version that exists is the draft in your browser and the PDF you saved.
-            If you need a correction after that, reach out to <SupportEmailLink /> and we will do our best to help.
+            There is no account and we keep no copy of your document; your details stay in your browser. Once you leave
+            the site, the only version that exists is the draft in your browser and the PDF you saved. If you need a
+            correction after that, email <SupportEmailLink />; we will send you a correction code so you can fix it and
+            download it again free of charge.
           </>
         ),
       },

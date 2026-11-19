@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { HttpError } from '../src/lib/errors';
 import { PayPalError } from '../src/services/paypal';
+import Database from 'better-sqlite3';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { openDatabase } from '../src/db';
 import { makeService } from './helpers';
 
 const cart = { items: [{ type: 'paystub' as const, qty: 3 }] };
@@ -32,6 +37,56 @@ describe('OrderService', () => {
     expect(row.status).toBe('CREATED');
     expect(row.total_cents).toBe(2397);
     expect(JSON.parse(row.client_meta_json!)).toMatchObject({ attestedAt: '2026-10-10T10:00:00Z', templateId: 0, termsVersion: '2026-11-01' });
+  });
+
+  it('stores the fingerprint and returns it from capture, replayed capture and verify', async () => {
+    const fp = 'b'.repeat(64);
+    const { service } = makeService();
+    const { orderId } = await service.createOrder(cart, {}, fp);
+    expect(service.getRow(orderId)!.content_fp).toBe(fp);
+    const first = await service.captureOrder(orderId);
+    const replay = await service.captureOrder(orderId);
+    expect(first.fingerprint).toBe(fp);
+    expect(replay.fingerprint).toBe(fp);
+    expect(service.verifyUnlock(first.token).fingerprint).toBe(fp);
+  });
+
+  it('an order without a fingerprint behaves as before', async () => {
+    const { service } = makeService();
+    const { orderId } = await service.createOrder(cart);
+    const r = await service.captureOrder(orderId);
+    expect(r.fingerprint).toBeUndefined();
+  });
+
+  it('migrates a version 2 database in place', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'psi-mig-'));
+    const file = path.join(dir, 'old.db');
+    let db: ReturnType<typeof openDatabase> | undefined;
+    try {
+      const old = new Database(file);
+      old.exec(`CREATE TABLE orders (
+        id TEXT PRIMARY KEY, status TEXT NOT NULL CHECK (status IN ('CREATED','COMPLETED','FAILED')),
+        paypal_env TEXT NOT NULL, currency TEXT NOT NULL, total_cents INTEGER NOT NULL, quote_json TEXT NOT NULL,
+        coupon_code TEXT, client_meta_json TEXT, capture_id TEXT, captured_cents INTEGER, capture_json TEXT,
+        failure_reason TEXT, created_at TEXT NOT NULL, captured_at TEXT, updated_at TEXT NOT NULL);
+        CREATE TABLE telemetry_events (id INTEGER PRIMARY KEY, received_at TEXT NOT NULL, ts TEXT NOT NULL,
+        source TEXT NOT NULL, visitor_id TEXT, session_id TEXT, code INTEGER NOT NULL, name TEXT NOT NULL,
+        level TEXT NOT NULL, props_json TEXT, user_agent TEXT);
+        CREATE TABLE schema_version (version INTEGER NOT NULL);
+        INSERT INTO schema_version (version) VALUES (2);
+        INSERT INTO orders (id, status, paypal_env, currency, total_cents, quote_json, created_at, updated_at)
+        VALUES ('OLD1', 'COMPLETED', 'sandbox', 'USD', 899, '{}', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z');`);
+      old.close();
+
+      db = openDatabase(file);
+      const row = db.prepare('SELECT * FROM orders WHERE id = ?').get('OLD1') as { content_fp: string | null; corrects_order_id: string | null };
+      expect(row.content_fp).toBeNull();
+      expect(row.corrects_order_id).toBeNull();
+      expect(db.prepare("SELECT name FROM sqlite_master WHERE name = 'correction_codes'").get()).toBeDefined();
+    } finally {
+      db?.close();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   // The Privacy Policy promises order records are deleted after three years; prune() is that promise.

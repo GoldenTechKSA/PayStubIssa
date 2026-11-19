@@ -35,14 +35,14 @@ export const LEGAL_EMAIL = `legal@${SITE_DOMAIN}`;
 export const ACCESSIBILITY_EMAIL = `accessibility@${SITE_DOMAIN}`;
 
 /** Date the current Terms / Privacy / Accessibility revisions took effect. Bump POLICIES_VERSION with it. */
-export const POLICIES_LAST_UPDATED = 'November 13, 2026';
+export const POLICIES_LAST_UPDATED = 'November 18, 2026';
 
 /**
  * Machine-readable version of the policies above (the ISO date of POLICIES_LAST_UPDATED). It is
  * recorded with every order next to the attestation time, so each purchase shows which Terms
  * the customer agreed to.
  */
-export const POLICIES_VERSION = '2026-11-13';
+export const POLICIES_VERSION = '2026-11-18';
 
 /** Window, in days, of the satisfaction guarantee. Terms and FAQ must agree. */
 export const REFUND_WINDOW_DAYS = 30;
@@ -68,6 +68,10 @@ export const CORE_DISCLAIMER =
   `actually earned and paid. ${BRAND_NAME} does not verify, audit, or endorse any information ` +
   'you enter, is not a payroll provider, accountant, or tax advisor, and does not file ' +
   'anything with the IRS or any state agency on your behalf.';
+
+/** Shown directly above the payment buttons: a paid stub is the one that was reviewed. */
+export const FINAL_ONCE_PAID =
+  'Pay stubs are final once paid. Check every detail now; a change after payment needs a new purchase.';
 
 /** The prohibited-use warning. Shown alongside the core disclaimer at checkout. */
 export const FRAUD_WARNING =

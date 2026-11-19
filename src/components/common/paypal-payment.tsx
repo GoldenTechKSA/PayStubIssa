@@ -9,6 +9,8 @@ interface PayPalProps {
     cart: Cart;
     /** Optional audit fields recorded with the order (attestation time, template). */
     meta?: OrderMeta;
+    /** Called at click time, inside createOrder: the fingerprint of the content being paid for. */
+    getFingerprint?: () => string;
     onPaymentSuccess: (result: CapturedOrder) => void;
     onPaymentError: (error: unknown) => void;
 }
@@ -35,18 +37,25 @@ function loadPayPalSdk(clientId: string, currency: string): Promise<void> {
 
 type Status = "loading" | "ready" | "failed";
 
-const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPaymentError }) => {
+/** The rejection createOrder uses to abandon the SDK's flow for an order that needs no payment. */
+const COMPLETED_WITHOUT_PAYPAL = "Order completed without a PayPal payment";
+
+const PayPal: React.FC<PayPalProps> = ({ cart, meta, getFingerprint, onPaymentSuccess, onPaymentError }) => {
     const paypalRef = useRef<HTMLDivElement | null>(null);
     // Latest props without re-rendering the (mount-once) buttons: createOrder reads
     // these at click time, so changing the stub count is picked up for free.
     const cartRef = useRef(cart);
     const metaRef = useRef(meta);
+    const fingerprintRef = useRef(getFingerprint);
     const successRef = useRef(onPaymentSuccess);
     const errorRef = useRef(onPaymentError);
     cartRef.current = cart;
     metaRef.current = meta;
+    fingerprintRef.current = getFingerprint;
     successRef.current = onPaymentSuccess;
     errorRef.current = onPaymentError;
+    // Set when createOrder stopped the PayPal flow because the order was already complete.
+    const completedRef = useRef(false);
 
     const [status, setStatus] = useState<Status>("loading");
     const [failure, setFailure] = useState<string>("");
@@ -68,8 +77,16 @@ const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPayment
 
                     // The server quotes the cart and creates the PayPal order; we only relay its id.
                     createOrder: async () => {
-                        const { orderId } = await paymentsApi.createOrder(cartRef.current, metaRef.current);
+                        const { orderId, completed } = await paymentsApi.createOrder(cartRef.current, metaRef.current, fingerprintRef.current?.());
                         telemetry.emit(T.PAYMENT_ORDER_CREATED, { orderId });
+                        if (completed) {
+                            // A correction code made the order free and the server already completed
+                            // it: there is nothing for PayPal to do. Deliver the unlock, then reject so
+                            // the SDK abandons its flow; onError knows this stop was deliberate.
+                            completedRef.current = true;
+                            successRef.current(completed);
+                            throw new Error(COMPLETED_WITHOUT_PAYPAL);
+                        }
                         return orderId;
                     },
 
@@ -90,7 +107,10 @@ const PayPal: React.FC<PayPalProps> = ({ cart, meta, onPaymentSuccess, onPayment
 
                     onCancel: (data: any) => telemetry.emit(T.PAYMENT_CANCELLED, { orderId: data?.orderID ?? null }),
 
-                    onError: (err: unknown) => errorRef.current(err),
+                    onError: (err: unknown) => {
+                        if (completedRef.current) { completedRef.current = false; return; }
+                        errorRef.current(err);
+                    },
                 });
 
                 if (!buttons.isEligible || buttons.isEligible()) {

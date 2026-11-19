@@ -16,6 +16,17 @@ describe('unlock token', () => {
     expect(verified).toMatchObject({ ...claims, issuedAt: now.toISOString(), expiresAt: issued.expiresAt });
   });
 
+  it('round-trips the fingerprint claim', () => {
+    const fp = 'a'.repeat(64);
+    const { token } = issueUnlockToken({ ...claims, fingerprint: fp }, { secret: JWT_SECRET, ttlMinutes: 30 });
+    expect(verifyUnlockToken(token, JWT_SECRET).fingerprint).toBe(fp);
+  });
+
+  it('omits the fingerprint when the order has none', () => {
+    const { token } = issueUnlockToken(claims, { secret: JWT_SECRET, ttlMinutes: 30 });
+    expect(verifyUnlockToken(token, JWT_SECRET).fingerprint).toBeUndefined();
+  });
+
   it('rejects tampering, wrong secret and expiry', () => {
     const issued = issueUnlockToken(claims, { secret: JWT_SECRET, ttlMinutes: 30 });
     expect(() => verifyUnlockToken(issued.token, 'another-secret-that-is-also-32-chars-long')).toThrow(TokenError);

@@ -31,6 +31,7 @@ export const S = {
   PAYMENTS_ORDER_CAPTURED: { code: 2102, name: 'payments.order.captured', level: 'info' },
   PAYMENTS_CAPTURE_FAILED: { code: 2103, name: 'payments.capture.failed', level: 'error' },
   PAYMENTS_ORDER_CREATE_FAILED: { code: 2104, name: 'payments.order.create_failed', level: 'error' },
+  PAYMENTS_CORRECTION_REDEEMED: { code: 2105, name: 'payments.correction.redeemed', level: 'info' },
 } as const satisfies Record<string, SiteCode>;
 
 /** `[2102] payments.order.captured {"orderId":"X"}` — the one line format used everywhere. */

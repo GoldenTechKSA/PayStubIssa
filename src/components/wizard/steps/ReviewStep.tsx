@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import {
-  Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, Link, Chip,
-  Checkbox, FormControlLabel,
+  Grid, Box, Card, CardContent, Typography, Stack, Button, Divider, TextField, Alert, AlertTitle, Link, Chip,
+  Checkbox, FormControlLabel, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PrintIcon from "@mui/icons-material/Print";
@@ -10,13 +11,17 @@ import LockIcon from "@mui/icons-material/Lock";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { PayStubDetails } from "assets/data/pay-stub-details";
-import { updateAppSettings, saveGeneralInfo } from "../../../redux/actions";
+import {
+  updateAppSettings, saveGeneralInfo, saveCompanyInfo, saveEmployeeInfo, saveIncomeDetails,
+} from "../../../redux/actions";
+import { contentOf, fingerprintOf, newSalt, lockStatus, restorePayloads, type PaidSnapshot } from "../../../utils/paid-lock";
+import { isDevUnlock } from "../../../utils/dev-flags";
 import { buildPaystubModels } from "../../../templates/utils/buildPaystubModel";
 import { formatCurrency } from "../../../utils/util";
 import { normalizeStubCount } from "constants/pricing";
 import { usePrice } from "contexts/price-context";
 import { paymentsApi, unlockStorage, centsToDollars, PaymentsApiError, type CapturedOrder, type Quote } from "services/payments-api";
-import { ATTESTATION_TEXT, CORE_DISCLAIMER, FRAUD_WARNING, POLICIES_VERSION } from "constants/business-info";
+import { ATTESTATION_TEXT, CORE_DISCLAIMER, FINAL_ONCE_PAID, FRAUD_WARNING, POLICIES_VERSION } from "constants/business-info";
 import { telemetry } from "../../../services/telemetry-service";
 import { T } from "../../../telemetry/codes";
 import TemplateManager from "../../../templates/components/templatemanager";
@@ -30,6 +35,10 @@ import "../print.css";
 interface StepProps {
   onBack: () => void;
   onEdit: (stepIndex: number) => void;
+  /** The paid stub is on screen and not released: no way back into the steps from here. */
+  frozen?: boolean;
+  /** A payment stored in this tab could not be confirmed yet: offer no new payment meanwhile. */
+  paymentPaused?: boolean;
 }
 
 const maskSSN = (ssn: string) => {
@@ -41,12 +50,12 @@ const maskEIN = (ein: string) => {
   return d.length >= 2 ? `${d.slice(0, 2)}-${"X".repeat(Math.max(0, d.length - 2))}` : "";
 };
 
-const SummarySection: React.FC<{ title: string; onEdit: () => void; rows: Array<[string, React.ReactNode]> }> = ({ title, onEdit, rows }) => (
+const SummarySection: React.FC<{ title: string; onEdit?: () => void; rows: Array<[string, React.ReactNode]> }> = ({ title, onEdit, rows }) => (
   <Card variant="outlined" sx={{ borderColor: "divider" }}>
     <CardContent>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, minHeight: 30 }}>
         <Typography variant="subtitle1" fontWeight={600}>{title}</Typography>
-        <Button size="small" startIcon={<EditIcon />} onClick={onEdit}>Edit</Button>
+        {onEdit && <Button size="small" startIcon={<EditIcon />} onClick={onEdit}>Edit</Button>}
       </Stack>
       <Stack spacing={0.5}>
         {rows.filter(([, v]) => v !== "" && v != null).map(([label, value]) => (
@@ -60,13 +69,20 @@ const SummarySection: React.FC<{ title: string; onEdit: () => void; rows: Array<
   </Card>
 );
 
-const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
+const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit, frozen = false, paymentPaused = false }) => {
   const dispatch = useDispatch();
   const fullState = useSelector((s: PayStubDetails) => s);
   const { companyInfo, employeeInfo, incomeDetails, generalInfo, appSettings } = fullState;
+  const location = useLocation();
   // Paid state. `canPrint` is set only after the server captured and verified the payment;
-  // the unlock records how many stubs were paid for so bumping the count re-locks the gate.
+  // the unlock records a fingerprint of the content that was paid for, so any change to the
+  // stub (or a larger count) re-locks the gate until the paid content is back.
   const unlock = appSettings.unlock;
+  const status = useMemo(
+    () => lockStatus(fullState, unlock),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [companyInfo, employeeInfo, incomeDetails, generalInfo, appSettings.configPath, appSettings.templateId, unlock],
+  );
 
   const [extraNotes, setExtraNotes] = useState(generalInfo.extraNotes || "");
 
@@ -99,8 +115,17 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     touchStartX.current = null;
     if (Math.abs(dx) > 50) goToStub(active + (dx < 0 ? 1 : -1));
   };
-  const canPrint = !!appSettings.canPrint && (!unlock || unlock.qty >= stubCount);
-  const paidForFewer = !!appSettings.canPrint && !!unlock && unlock.qty < stubCount;
+  const canPrint = status === "match" || (isDevUnlock(location.search) && !!appSettings.canPrint);
+
+  // Report each time the stub stops being the one that was paid for.
+  const prevStatus = useRef<string | null>(null);
+  useEffect(() => {
+    if (status === "mismatch" && prevStatus.current !== "mismatch") {
+      telemetry.emit(T.UNLOCK_CONTENT_MISMATCH, { orderId: unlock?.orderId ?? null });
+    }
+    prevStatus.current = status;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   // Coupon: the customer types a code and applies it; only the applied code is sent with the
   // quote and the order. The server is the only judge of what a code is worth.
@@ -124,13 +149,21 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
   // unreachable) the site-wide server price from PriceProvider stands in; with neither, the
   // amounts show as a dash rather than a guess.
   const unitCents = usePrice().priceFor(stubCount);
-  const [quote, setQuote] = useState<Quote | null>(null);
+  // A quote is only ever used for the cart it was asked for (stub count + applied code): an
+  // answer for an earlier cart is not shown and never decides which payment control is offered.
+  const cartKey = `${stubCount}|${couponCode ?? ""}`;
+  const [quoted, setQuoted] = useState<{ key: string; quote: Quote } | null>(null);
+  const [quoteFailedKey, setQuoteFailedKey] = useState<string | null>(null);
+  const [quoteAttempt, setQuoteAttempt] = useState(0);
+  const quote = quoted?.key === cartKey ? quoted.quote : null;
   useEffect(() => {
     let cancelled = false;
+    const key = cartKey;
+    setQuoteFailedKey(null);
     paymentsApi.quote(cart)
       .then(q => {
         if (cancelled) return;
-        setQuote(q);
+        setQuoted({ key, quote: q });
         if (couponCode) telemetry.emit(T.COUPON_APPLIED, { amountCents: q.discountCents });
       })
       .catch((err: unknown) => {
@@ -142,11 +175,16 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
           setCouponCode(null);
           return;
         }
-        setQuote(null);
+        setQuoteFailedKey(key);
       });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stubCount, couponCode]);
+  }, [stubCount, couponCode, quoteAttempt]);
+  // With a code applied, payment waits until the server has priced this exact cart: the code
+  // could make the order free, and PayPal must not be offered for an order that is not.
+  const couponUnresolved = !!couponCode && !quote;
+  const couponCheckFailed = couponUnresolved && quoteFailedKey === cartKey;
+  const retryQuote = () => setQuoteAttempt(n => n + 1);
   const unitPrice = quote
     ? centsToDollars(quote.lines[0]?.unitCents ?? 0)
     : unitCents !== null ? centsToDollars(unitCents) : null;
@@ -154,24 +192,6 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     ? centsToDollars(quote.totalCents)
     : unitCents !== null ? centsToDollars(unitCents * stubCount) : null;
   const money = (v: number | null) => (v === null ? "—" : formatCurrency(v));
-
-  // A reload on this step should not lose a payment just made: restore the session unlock,
-  // but only after the server confirms the token is genuine and its order really completed.
-  useEffect(() => {
-    if (appSettings.canPrint) return;
-    const stored = unlockStorage.load();
-    if (!stored) return;
-    let cancelled = false;
-    paymentsApi.verifyUnlock(stored.token)
-      .then(v => {
-        if (cancelled) return;
-        dispatch(updateAppSettings({ canPrint: true, unlock: { ...stored, qty: v.qty, expiresAt: v.expiresAt } }));
-        telemetry.emit(T.UNLOCK_RESTORED, { orderId: stored.orderId });
-      })
-      .catch(() => { if (!cancelled) unlockStorage.clear(); });
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Stubs are most recent first, so the run spans from the LAST model's period start (the
   // earliest period) to the first model's period end.
@@ -184,10 +204,63 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
     telemetry.emit(T.REVIEW_ATTESTED, { attested: checked });
   };
 
+  // What the customer is paying for, fixed at the moment they click the PayPal button. The
+  // snapshot and salt stay in the browser; only the fingerprint goes to the server.
+  const pending = useRef<{ salt: string; fingerprint: string; snapshot: PaidSnapshot } | null>(null);
+  const beginCheckout = (): string => {
+    const salt = newSalt();
+    const snapshot = contentOf(fullState);
+    const fingerprint = fingerprintOf(snapshot, salt);
+    pending.current = { salt, fingerprint, snapshot };
+    return fingerprint;
+  };
+
+  // Whether the browser let us keep the unlock in this tab's storage on the last write. When it
+  // refused, the paid stub lives only in memory and a reload would lose it.
+  const [unlockKept, setUnlockKept] = useState(true);
+
+  // Put the stub back exactly as it was when it was paid for.
+  const restorePaid = () => {
+    const snap = unlock?.snapshot;
+    if (!unlock || !snap) return;
+    const restored = { ...unlock, released: false };
+    const p = restorePayloads(fullState, snap);
+    dispatch(saveCompanyInfo(p.companyInfo));
+    dispatch(saveEmployeeInfo(p.employeeInfo));
+    dispatch(saveIncomeDetails(p.incomeDetails));
+    dispatch(saveGeneralInfo(p.generalInfo));
+    dispatch(updateAppSettings({ ...p.template, unlock: restored }));
+    setUnlockKept(unlockStorage.save(restored));
+    telemetry.emit(T.UNLOCK_PAID_RESTORED, { orderId: unlock.orderId });
+  };
+
+  // "Make another pay stub": after a confirmation, the paid stub stops holding the wizard on
+  // this step. The unlock is kept, so the paid stub can be restored while it lasts.
+  const [releaseOpen, setReleaseOpen] = useState(false);
+  const releasePaid = () => {
+    setReleaseOpen(false);
+    if (!unlock) return;
+    const released = { ...unlock, released: true };
+    dispatch(updateAppSettings({ unlock: released }));
+    setUnlockKept(unlockStorage.save(released));
+    telemetry.emit(T.UNLOCK_RELEASED, { orderId: unlock.orderId });
+  };
+  const editStep = (i: number) => (frozen ? undefined : () => onEdit(i));
+
   const handlePaymentSuccess = (result: CapturedOrder) => {
     const paidQty = result.quote.lines.reduce((sum, l) => sum + l.qty, 0);
-    const nextUnlock = { token: result.token, orderId: result.orderId, expiresAt: result.expiresAt, qty: paidQty };
-    unlockStorage.save(nextUnlock);
+    const paid = pending.current;
+    pending.current = null; // a checkout is used once
+    const nextUnlock = {
+      token: result.token, orderId: result.orderId, expiresAt: result.expiresAt, qty: paidQty,
+      ...(paid ? {
+        fingerprint: result.fingerprint ?? paid.fingerprint,
+        salt: paid.salt,
+        snapshot: paid.snapshot,
+        released: false,
+      } : {}),
+    };
+    setUnlockKept(unlockStorage.save(nextUnlock));
     dispatch(updateAppSettings({ canPrint: true, unlock: nextUnlock }));
     telemetry.emit(T.PAYMENT_SUCCEEDED, {
       orderId: result.orderId,
@@ -204,6 +277,29 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
       : (error as any)?.message || String(error);
     telemetry.emit(T.PAYMENT_FAILED, { code: error instanceof PaymentsApiError ? error.code : null, message });
     alert(error instanceof PaymentsApiError ? message : "There was an error processing your payment. Please try again.");
+  };
+
+  // A correction code can bring the order to nothing: there is no PayPal step, the server
+  // completes the order when it is created.
+  const [freeBusy, setFreeBusy] = useState(false);
+  const completeFreeOrder = async () => {
+    if (freeBusy) return;
+    setFreeBusy(true);
+    try {
+      const fingerprint = beginCheckout();
+      const created = await paymentsApi.createOrder(
+        cart,
+        { attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId, termsVersion: POLICIES_VERSION },
+        fingerprint,
+      );
+      if (!created.completed) throw new PaymentsApiError("This code could not be applied. Please try again.", "NOT_COMPLETED", 502);
+      handlePaymentSuccess(created.completed);
+    } catch (error) {
+      pending.current = null;
+      handlePaymentError(error);
+    } finally {
+      setFreeBusy(false);
+    }
   };
 
   const handlePrint = () => {
@@ -240,20 +336,20 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
         {/* Left: summary + pay + notes + payment */}
         <Grid size={{ xs: 12, md: 5 }}>
           <Stack spacing={2}>
-            <SummarySection title="Company" onEdit={() => onEdit(0)} rows={[
+            <SummarySection title="Company" onEdit={editStep(0)} rows={[
               ["Name", companyInfo.companyName],
               ["Address", [companyInfo.companyAddress1, companyInfo.companyCity, companyInfo.companyState, companyInfo.companyZipCode].filter(Boolean).join(", ")],
               ["EIN", maskEIN(companyInfo.companyEIN)],
             ]} />
 
-            <SummarySection title="Employee" onEdit={() => onEdit(1)} rows={[
+            <SummarySection title="Employee" onEdit={editStep(1)} rows={[
               ["Name", employeeName],
               ["Address", [employeeInfo.employeeAddress1, employeeInfo.employeeCity, employeeInfo.employeeState, employeeInfo.employeeZipCode].filter(Boolean).join(", ")],
               ["SSN", maskSSN(employeeInfo.employeeSSN)],
               ["Filing status", employeeInfo.employeeMarriedStatus],
             ]} />
 
-            <SummarySection title="Pay period" onEdit={() => onEdit(2)} rows={[
+            <SummarySection title="Pay period" onEdit={editStep(2)} rows={[
               ["Frequency", incomeDetails.periodType],
               // With a run of stubs, show the span the whole run covers, not just the first period.
               [stubCount === 1 ? "Period" : "Periods covered",
@@ -262,7 +358,7 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
               ["Pay stubs", stubCount],
             ]} />
 
-            <SummarySection title="Earnings" onEdit={() => onEdit(3)} rows={[
+            <SummarySection title="Earnings" onEdit={editStep(3)} rows={[
               ["Wage type", incomeDetails.wageType],
               ["Pay", earningsValue],
             ]} />
@@ -313,7 +409,9 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                 {canPrint ? (
                   <>
                     <Alert severity="success" sx={{ mb: 2 }}>
-                      Payment complete — your {stubCount === 1 ? "pay stub is" : `${stubCount} pay stubs are`} unlocked.
+                      {stubCount === 1
+                        ? "Payment complete: your pay stub is ready."
+                        : `Payment complete: your ${stubCount} pay stubs are ready.`}
                     </Alert>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                       <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint}>
@@ -321,14 +419,42 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                       </Button>
                       <PDFDownloadButton targetId="pdf-content" fileName="paystub" buttonText="Download PDF" />
                     </Stack>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
+                      {unlockKept
+                        ? "This is your final document. Save the PDF now; it stays available in this browser tab for about an hour."
+                        : "This is your final document. Save the PDF now and do not reload this page: your browser would not let us keep it for you."}
+                    </Typography>
+                    {frozen && (
+                      <Button variant="text" onClick={() => setReleaseOpen(true)} sx={{ mt: 1, px: 0 }}>
+                        Make another pay stub
+                      </Button>
+                    )}
+                    <Dialog open={releaseOpen} onClose={() => setReleaseOpen(false)} aria-labelledby="release-paid-title">
+                      <DialogTitle id="release-paid-title">Make another pay stub?</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText>
+                          Your details stay filled in so you can change them. A changed pay stub needs a new purchase. You can come back to the one you just bought for as long as it is available in this tab.
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => setReleaseOpen(false)} color="inherit">Cancel</Button>
+                        <Button onClick={releasePaid} variant="contained">Continue</Button>
+                      </DialogActions>
+                    </Dialog>
                   </>
                 ) : (
                   <>
                     <Typography variant="subtitle1" fontWeight={600} gutterBottom>Pay to unlock</Typography>
-                    {paidForFewer && unlock && (
-                      <Alert severity="info" sx={{ mb: 2 }}>
-                        Your payment covered {unlock.qty} pay stub{unlock.qty === 1 ? "" : "s"}. Reduce the count on the
-                        Pay period step to print, or pay for {stubCount} below.
+                    {status === "mismatch" && (
+                      <Alert
+                        severity="warning"
+                        sx={{ mb: 2 }}
+                        action={unlock?.snapshot ? (
+                          <Button color="inherit" size="small" onClick={restorePaid}>Restore my paid stub</Button>
+                        ) : undefined}
+                      >
+                        <AlertTitle>This is not the pay stub you paid for</AlertTitle>
+                        You changed it after payment. Pay again for the new version, or go back to the one you bought.
                       </Alert>
                     )}
 
@@ -410,14 +536,51 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
                       </Typography>
                     </Box>
 
-                    {attested ? (
+                    {paymentPaused ? (
+                      <Typography variant="body2" color="text.secondary">
+                        Payment is not offered until we can confirm your earlier payment.
+                      </Typography>
+                    ) : attested && couponCheckFailed ? (
+                      <Alert
+                        severity="warning"
+                        action={
+                          <Stack direction="row" spacing={1}>
+                            <Button color="inherit" size="small" onClick={retryQuote}>Try again</Button>
+                            <Button color="inherit" size="small" onClick={removeCoupon}>Remove code</Button>
+                          </Stack>
+                        }
+                      >
+                        We could not check that code. Try again.
+                      </Alert>
+                    ) : attested && couponUnresolved ? (
+                      <Stack direction="row" spacing={1.5} alignItems="center">
+                        <CircularProgress size={20} />
+                        <Typography variant="body2" color="text.secondary">Checking your code…</Typography>
+                      </Stack>
+                    ) : attested && quote?.totalCents === 0 ? (
+                      <>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          Your correction code covers this order. Nothing will be charged.
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600} sx={{ mb: 2 }}>
+                          {FINAL_ONCE_PAID}
+                        </Typography>
+                        <Button variant="contained" onClick={completeFreeOrder} disabled={freeBusy}>
+                          Get my corrected pay stub
+                        </Button>
+                      </>
+                    ) : attested ? (
                       <>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                           Secure checkout via PayPal. After payment you can print and download your
                           pay stub{stubCount === 1 ? "" : "s"} as a PDF.
                         </Typography>
+                        <Typography variant="body2" fontWeight={600} sx={{ mb: 2 }}>
+                          {FINAL_ONCE_PAID}
+                        </Typography>
                         <PayPal
                           cart={cart}
+                          getFingerprint={beginCheckout}
                           meta={{ attestedAt: attestedAt ?? undefined, templateId: appSettings.templateId, termsVersion: POLICIES_VERSION }}
                           onPaymentSuccess={handlePaymentSuccess}
                           onPaymentError={handlePaymentError}
@@ -487,13 +650,18 @@ const ReviewStep: React.FC<StepProps> = ({ onBack, onEdit }) => {
         </Grid>
       </Grid>
 
-      <Divider sx={{ my: 3 }} />
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Button onClick={onBack} color="inherit">Back</Button>
-        <Link component="button" type="button" onClick={() => onEdit(0)} underline="hover" sx={{ alignSelf: "center" }}>
-          Start over from Company
-        </Link>
-      </Box>
+      {/* While frozen there is nowhere to go back to; "Make another pay stub" is the way out. */}
+      {!frozen && (
+        <>
+          <Divider sx={{ my: 3 }} />
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Button onClick={onBack} color="inherit">Back</Button>
+            <Link component="button" type="button" onClick={() => onEdit(0)} underline="hover" sx={{ alignSelf: "center" }}>
+              Start over from Company
+            </Link>
+          </Box>
+        </>
+      )}
     </Box>
   );
 };

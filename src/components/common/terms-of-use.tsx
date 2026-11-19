@@ -224,7 +224,9 @@ const TermsOfUse = () => (
     </p>
     <p>
       <strong>Delivery</strong><br />
-      Once payment succeeds, the Service unlocks the download and print functions in your browser. The document is
+      Once payment succeeds, the Service unlocks the download and print functions in your browser. The unlock
+      applies to the document as it was when you paid. A document is final once paid: if you change it afterwards,
+      the changed document is a new purchase. The document is
       delivered as a PDF download or a browser print. Nothing is emailed to you and nothing is stored for later
       retrieval. Save your file before you close the tab.
     </p>
@@ -237,7 +239,8 @@ const TermsOfUse = () => (
     </p>
     <p>
       If the problem is an error in the data you entered, a refund is at our discretion — but we will always give
-      you a free corrected document. Just tell us what was wrong.
+      you a free corrected document. Email us what was wrong and we will send you a one-time correction code that
+      lets you fix the document and download it again at no charge.
     </p>
     <p>
       <strong>Billing Disputes</strong><br />
