@@ -53,7 +53,7 @@ export const REFUND_WINDOW_DAYS = 30;
  * allow-listed in the wizard's Template step. If you add or remove a template, update this —
  * template-configs.test.ts fails when the two disagree.
  */
-export const TEMPLATE_COUNT = 20;
+export const TEMPLATE_COUNT = 30;
 
 /**
  * The core disclaimer. This is the load-bearing sentence of our legal posture:

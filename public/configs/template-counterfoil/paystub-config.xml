@@ -1,0 +1,1666 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub with Counterfoil (counterfoil). The page is split by a dashed perforation: the full stub on the
+    left (logo, employer, particulars, Earnings, Taxes, Deductions, net pay) and a narrow counterfoil on the
+    right that repeats only the essentials (who, when, gross, taxes, deductions, net) as the record to keep.
+    IBM Plex Sans, charcoal with one red accent. The logo slot collapses when no logo is uploaded.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#44403C</color>
+    <fontSize>10.5px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section cf-body: the stub (left) / dashed perforation / the counterfoil (right) -->
+  <section id="cf-body">
+    <style>
+      <alignItems>stretch</alignItems>
+    </style>
+    <column id="cf-main" width="71%">
+      <style>
+        <paddingRight>20px</paddingRight>
+      </style>
+      <table id="cf-logo">
+        <cells>
+          <rowcells>
+            <cell id="cf-logo-r0c0" type="image">
+              <style>
+                <maxHeight>44px</maxHeight>
+                <maxWidth>150px</maxWidth>
+                <display>block</display>
+                <marginBottom>6px</marginBottom>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{companyInfo.companyLogo}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-head">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-head-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>16px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+            <cell id="cf-head-r0c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>16px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>3px</letterSpacing>
+                <color>#B91C1C</color>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>PAY STUB</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-head-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+            <cell id="cf-head-r1c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+              </style>
+              <value>No. {stubNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="cf-head-r2c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-who">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+          <borderTop>2px solid #1C1917</borderTop>
+          <borderBottom>1px solid #E7E5E4</borderBottom>
+          <paddingTop>4px</paddingTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-who-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Employee</value>
+            </cell>
+            <cell id="cf-who-r0c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+            <cell id="cf-who-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Pay period</value>
+            </cell>
+            <cell id="cf-who-r0c3" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-who-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Address</value>
+            </cell>
+            <cell id="cf-who-r1c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+            <cell id="cf-who-r1c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="cf-who-r1c3" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-who-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value/>
+            </cell>
+            <cell id="cf-who-r2c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+            <cell id="cf-who-r2c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Schedule</value>
+            </cell>
+            <cell id="cf-who-r2c3" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-who-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="cf-who-r3c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+            <cell id="cf-who-r3c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Check no.</value>
+            </cell>
+            <cell id="cf-who-r3c3" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-who-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="cf-who-r4c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+            <cell id="cf-who-r4c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Stub no.</value>
+            </cell>
+            <cell id="cf-who-r4c3" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{stubNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="cf-who-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="cf-who-r5c1" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+            <cell id="cf-who-r5c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 8px 1.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#78716C</color>
+                <width>1%</width>
+              </style>
+              <value/>
+            </cell>
+            <cell id="cf-who-r5c3" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 12px 1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-earn-cap">
+        <style>
+          <width>100%</width>
+          <marginTop>15px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-earn-cap-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#B91C1C</color>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-earn">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="cf-earn-h0">
+              <style>
+                <width>26%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>DESCRIPTION</label>
+            </hd>
+            <hd id="cf-earn-h1">
+              <style>
+                <width>13%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>HOURS</label>
+            </hd>
+            <hd id="cf-earn-h2">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>RATE</label>
+            </hd>
+            <hd id="cf-earn-h3">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="cf-earn-h4">
+              <style>
+                <width>24%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="cf-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="cf-earn-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="cf-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="cf-earn-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="cf-earn-r0c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="cf-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="cf-earn-r1c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="cf-earn-r1c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="cf-earn-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="cf-earn-r1c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="cf-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="cf-earn-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="cf-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="cf-earn-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="cf-earn-r2c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="cf-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="cf-earn-r3c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="cf-earn-r3c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="cf-earn-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="cf-earn-r3c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-earn-r4c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="cf-earn-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="cf-earn-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-tax-cap">
+        <style>
+          <width>100%</width>
+          <marginTop>15px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-tax-cap-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#B91C1C</color>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>TAXES</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-tax">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="cf-tax-h0">
+              <style>
+                <width>54%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>DESCRIPTION</label>
+            </hd>
+            <hd id="cf-tax-h1">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="cf-tax-h2">
+              <style>
+                <width>24%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="cf-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="cf-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="cf-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="cf-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="cf-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="cf-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="cf-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="cf-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="cf-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="cf-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="cf-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="cf-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="cf-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-tax-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="cf-tax-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="cf-tax-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-ded-cap" renderIf="totalDeductionsYTD">
+        <style>
+          <width>100%</width>
+          <marginTop>15px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-ded-cap-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#B91C1C</color>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-ded" renderIf="totalDeductionsYTD">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="cf-ded-h0">
+              <style>
+                <width>54%</width>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>DESCRIPTION</label>
+            </hd>
+            <hd id="cf-ded-h1">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="cf-ded-h2">
+              <style>
+                <width>24%</width>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#78716C</color>
+                <borderBottom>1px solid #1C1917</borderBottom>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="cf-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="cf-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="cf-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="cf-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="cf-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="cf-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="cf-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="cf-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="cf-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="cf-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="cf-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="cf-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="cf-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="cf-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="cf-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E7E5E4</borderBottom>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-ded-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="cf-ded-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="cf-ded-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-net">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-net-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>9px 10px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1C1917</backgroundColor>
+                <width>54%</width>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+            <cell id="cf-net-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>14px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#1C1917</backgroundColor>
+                <width>22%</width>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="cf-net-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 10px 9px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#D6D3D1</color>
+                <backgroundColor>#1C1917</backgroundColor>
+                <width>24%</width>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="cf-foil" width="29%">
+      <style>
+        <borderLeft>2px dashed #A8A29E</borderLeft>
+        <paddingLeft>18px</paddingLeft>
+      </style>
+      <table id="cf-foil-head">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-foil-head-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#B91C1C</color>
+              </style>
+              <value>EMPLOYEE RECORD</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-head-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#78716C</color>
+              </style>
+              <value>Detach and keep.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-foil-who">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-foil-who-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#78716C</color>
+                <paddingTop>7px</paddingTop>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r1c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r2c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#78716C</color>
+                <paddingTop>7px</paddingTop>
+              </style>
+              <value>EMPLOYER</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r3c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r4c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#78716C</color>
+                <paddingTop>7px</paddingTop>
+              </style>
+              <value>PAY PERIOD</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r5c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r6c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#78716C</color>
+                <paddingTop>7px</paddingTop>
+              </style>
+              <value>PAY DATE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r7c0" type="substitute" format="date" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r8c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#78716C</color>
+                <paddingTop>7px</paddingTop>
+              </style>
+              <value>CHECK NO.</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-who-r9c0" type="substitute" format="text" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-foil-money">
+        <style>
+          <width>100%</width>
+          <marginTop>14px</marginTop>
+          <borderTop>1px solid #1C1917</borderTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-foil-money-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>Gross pay</value>
+            </cell>
+            <cell id="cf-foil-money-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-money-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>Taxes</value>
+            </cell>
+            <cell id="cf-foil-money-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-money-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>Deductions</value>
+            </cell>
+            <cell id="cf-foil-money-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-foil-net">
+        <style>
+          <width>100%</width>
+          <marginTop>6px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-foil-net-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>8px 10px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#B91C1C</color>
+                <border>2px solid #1C1917</border>
+                <borderBottom>none</borderBottom>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-net-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 10px 8px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>19px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1C1917</color>
+                <border>2px solid #1C1917</border>
+                <borderTop>none</borderTop>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="cf-foil-ytd">
+        <style>
+          <width>100%</width>
+          <marginTop>6px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-foil-ytd-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#78716C</color>
+                <paddingTop>7px</paddingTop>
+              </style>
+              <value>YEAR TO DATE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-ytd-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>Gross pay</value>
+            </cell>
+            <cell id="cf-foil-ytd-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-ytd-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>Net pay</value>
+            </cell>
+            <cell id="cf-foil-ytd-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>400</fontWeight>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-ytd-r3c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#78716C</color>
+                <paddingTop>7px</paddingTop>
+              </style>
+              <value>PAID BY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="cf-foil-ytd-r4c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <color>#1C1917</color>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section cf-footer: one-line disclaimer -->
+  <section id="cf-footer">
+    <style>
+      <marginTop>22px</marginTop>
+    </style>
+    <column id="cf-footer-col" width="100%">
+      <table id="cf-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="cf-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#78716C</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

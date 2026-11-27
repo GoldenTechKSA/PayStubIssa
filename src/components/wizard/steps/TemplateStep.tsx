@@ -50,6 +50,16 @@ const AVAILABLE_CONFIGS = new Set<string>([
   "/configs/template-margin-labels/paystub-config.xml",
   "/configs/template-slip/paystub-config.xml",
   "/configs/template-spine/paystub-config.xml",
+  "/configs/template-counterfoil/paystub-config.xml",
+  "/configs/template-duplicate/paystub-config.xml",
+  "/configs/template-quadrants/paystub-config.xml",
+  "/configs/template-statement/paystub-config.xml",
+  "/configs/template-greenbar/paystub-config.xml",
+  "/configs/template-center-axis/paystub-config.xml",
+  "/configs/template-banded/paystub-config.xml",
+  "/configs/template-alternating/paystub-config.xml",
+  "/configs/template-broadsheet/paystub-config.xml",
+  "/configs/template-timeline/paystub-config.xml",
 ]);
 
 const FALLBACK_THUMB = `${process.env.PUBLIC_URL}/images/thumb0.png`;

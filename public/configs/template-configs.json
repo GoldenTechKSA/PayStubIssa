@@ -138,5 +138,75 @@
     "imageName": "paystub-spine.png",
     "title": "Pay Stub — Center Spine",
     "description": "A dark spine down the middle of the page carries the employee and four boxed totals (earnings, taxes, deductions and net pay in gold) above your logo and company name, with earnings and pay details to its left and taxes and deductions to its right."
+  },
+  {
+    "imageFile": "templates/thumb-counterfoil.png",
+    "configFile": "/configs/template-counterfoil/paystub-config.xml",
+    "imageName": "paystub-counterfoil.png",
+    "title": "Pay Stub — With Counterfoil",
+    "description": "A dashed perforation splits the page: the full stub on the left with your logo, earnings, taxes, deductions and net pay, and a narrow counterfoil on the right that repeats only the essentials as the record to keep. Charcoal with one red accent."
+  },
+  {
+    "imageFile": "templates/thumb-duplicate.png",
+    "configFile": "/configs/template-duplicate/paystub-config.xml",
+    "imageName": "paystub-duplicate.png",
+    "title": "Pay Stub — In Duplicate",
+    "description": "Two compact copies of the same stub on one sheet, an Employee Copy and an Employer Copy, separated by a dashed cut line. Each is a short ruled frame with earnings, taxes and deductions in three columns and a black net pay bar. Black and gray only."
+  },
+  {
+    "imageFile": "templates/thumb-quadrants.png",
+    "configFile": "/configs/template-quadrants/paystub-config.xml",
+    "imageName": "paystub-quadrants.png",
+    "title": "Pay Stub — Four Quadrants",
+    "description": "A two-by-two grid of equal, numbered boxes (1 Earnings, 2 Taxes, 3 Deductions, 4 Summary) under your logo and a tinted employee strip, so the fourth box answers the first three. Purple accent."
+  },
+  {
+    "imageFile": "templates/thumb-statement.png",
+    "configFile": "/configs/template-statement/paystub-config.xml",
+    "imageName": "paystub-statement.png",
+    "title": "Statement of Pay — Running Balance",
+    "description": "Set out like an account statement: the employee name and address in the window-envelope position, a boxed statement summary, and one ledger with Earnings and Withheld columns and a running balance that ends at net pay. Your logo heads the page; dark green accent."
+  },
+  {
+    "imageFile": "templates/thumb-greenbar.png",
+    "configFile": "/configs/template-greenbar/paystub-config.xml",
+    "imageName": "paystub-greenbar.png",
+    "title": "Payroll Ledger — Green Bar",
+    "description": "Drawn like columnar ledger paper: pale green bars, red-brown column rules and a single table in which every line posts its amount to the Earnings, Taxes or Deductions column, footed by a Totals line and a green Net Pay line. Monospaced figures."
+  },
+  {
+    "imageFile": "templates/thumb-center-axis.png",
+    "configFile": "/configs/template-center-axis/paystub-config.xml",
+    "imageName": "paystub-center-axis.png",
+    "title": "Pay Stub — Centre Axis",
+    "description": "Everything hangs from one hairline down the middle of the page, the way film credits are set: labels end at the axis, amounts start from it and year-to-date figures sit at the far right, with net pay centred in large light figures beneath. Black with a brown accent."
+  },
+  {
+    "imageFile": "templates/thumb-banded.png",
+    "configFile": "/configs/template-banded/paystub-config.xml",
+    "imageName": "paystub-banded.png",
+    "title": "Pay Stub — Banded Totals",
+    "description": "Four full-width copper bands, darkening down the page (Earnings, Taxes, Deductions, Net Pay), each carrying its own total inside the band with the detail lines beneath. Your logo and company name head the page."
+  },
+  {
+    "imageFile": "templates/thumb-alternating.png",
+    "configFile": "/configs/template-alternating/paystub-config.xml",
+    "imageName": "paystub-alternating.png",
+    "title": "Pay Stub — Alternating Rows",
+    "description": "Each ledger shares its row with a tinted card holding its total, and the card changes sides from row to row: gross pay to the right of earnings, total taxes to the left of taxes, then deductions, closing on a full-width cyan Net Pay bar."
+  },
+  {
+    "imageFile": "templates/thumb-broadsheet.png",
+    "configFile": "/configs/template-broadsheet/paystub-config.xml",
+    "imageName": "paystub-broadsheet.png",
+    "title": "Pay Stub — Broadsheet",
+    "description": "Composed like a newspaper front: the employer name as a heavy serif nameplate, a dateline between rules, then three columns of print divided by hairlines for the people and the payment, earnings and deductions, and taxes and net pay. Black only."
+  },
+  {
+    "imageFile": "templates/thumb-timeline.png",
+    "configFile": "/configs/template-timeline/paystub-config.xml",
+    "imageName": "paystub-timeline.png",
+    "title": "Pay Stub — Four Steps",
+    "description": "Tells the pay as a path: a vertical line with numbered dots (you earned, taxes were withheld, deductions were taken, you were paid), each step showing its total beside its title and its detail beneath, ending in a tinted net pay panel. Your logo heads the page; sky blue accent."
   }
 ]

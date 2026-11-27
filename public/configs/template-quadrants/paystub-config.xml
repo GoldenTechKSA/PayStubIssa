@@ -1,0 +1,1651 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Four Quadrants (quadrants). The body is a two-by-two grid of equal, numbered boxes:
+    1 Earnings, 2 Taxes, 3 Deductions, 4 Summary, read left to right and top to bottom, so the fourth box
+    is the answer to the first three. Logo and employer at the top left, pay period at the top right, the
+    employee on a tinted strip. IBM Plex Sans, purple accent. The logo slot collapses when no logo is uploaded.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#3F3F46</color>
+    <fontSize>10.5px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section qd-header: logo and employer (left) / title and pay period (right) -->
+  <section id="qd-header">
+    <style>
+      <alignItems>flex-start</alignItems>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="qd-logo-col" width="auto">
+      <style>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="qd-logo">
+        <cells>
+          <rowcells>
+            <cell id="qd-logo-r0c0" type="image">
+              <style>
+                <maxHeight>56px</maxHeight>
+                <maxWidth>140px</maxWidth>
+                <display>block</display>
+                <marginRight>12px</marginRight>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{companyInfo.companyLogo}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="qd-company-col" width="auto">
+      <style>
+        <flexGrow>1</flexGrow>
+      </style>
+      <table id="qd-company">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-company-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>16px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-company-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="qd-company-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#71717A</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="qd-title-col" width="34%">
+      <style>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="qd-title">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-title-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>20px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>3px</letterSpacing>
+                <color>#5B21B6</color>
+                <lineHeight>1.1</lineHeight>
+                <paddingBottom>4px</paddingBottom>
+              </style>
+              <value>PAY STUB</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="qd-period">
+        <style>
+          <marginLeft>auto</marginLeft>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-period-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#71717A</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Pay period</value>
+            </cell>
+            <cell id="qd-period-r0c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-period-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#71717A</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="qd-period-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-period-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#71717A</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Check / stub</value>
+            </cell>
+            <cell id="qd-period-r2c1" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{checkNumber} / {stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section qd-employee: tinted employee strip: name and address / identification / pay arrangement -->
+  <section id="qd-employee">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <backgroundColor>#F5F3FF</backgroundColor>
+      <padding>12px 14px</padding>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="qd-emp-a" width="38%">
+      <table id="qd-emp-a-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-emp-a-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#5B21B6</color>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-emp-a-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-emp-a-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-emp-a-t-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="qd-emp-b" width="30%">
+      <table id="qd-emp-b-t">
+        <cells>
+          <rowcells>
+            <cell id="qd-emp-b-t-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#5B21B6</color>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>IDENTIFICATION</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-emp-b-t-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#71717A</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="qd-emp-b-t-r1c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="qd-emp-b-t-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#71717A</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="qd-emp-b-t-r2c1" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-emp-b-t-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#71717A</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="qd-emp-b-t-r3c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="qd-emp-c" width="30%">
+      <table id="qd-emp-c-t">
+        <cells>
+          <rowcells>
+            <cell id="qd-emp-c-t-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#5B21B6</color>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>PAY ARRANGEMENT</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-emp-c-t-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#71717A</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Schedule</value>
+            </cell>
+            <cell id="qd-emp-c-t-r1c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-emp-c-t-r2c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#3F3F46</color>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section qd-top: quadrant 1 Earnings / quadrant 2 Taxes -->
+  <section id="qd-top">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>stretch</alignItems>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="qd-q1" width="49%">
+      <style>
+        <border>2px solid #5B21B6</border>
+      </style>
+      <table id="qd-q1-title">
+        <style>
+          <width>100%</width>
+          <backgroundColor>#5B21B6</backgroundColor>
+          <border>2px solid #5B21B6</border>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-q1-title-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>6px 0</padding>
+                <fontSize>13px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#5B21B6</color>
+                <backgroundColor>#ffffff</backgroundColor>
+                <width>30px</width>
+              </style>
+              <value>1</value>
+            </cell>
+            <cell id="qd-q1-title-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#ffffff</color>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="qd-earn">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="qd-earn-h0">
+              <style>
+                <width>30%</width>
+                <textAlign>left</textAlign>
+                <padding>8px 4px 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="qd-earn-h1">
+              <style>
+                <width>13%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>HOURS</label>
+            </hd>
+            <hd id="qd-earn-h2">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>RATE</label>
+            </hd>
+            <hd id="qd-earn-h3">
+              <style>
+                <width>19%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="qd-earn-h4">
+              <style>
+                <width>23%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="qd-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="qd-earn-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="qd-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="qd-earn-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="qd-earn-r0c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="qd-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="qd-earn-r1c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="qd-earn-r1c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="qd-earn-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="qd-earn-r1c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="qd-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="qd-earn-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="qd-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="qd-earn-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="qd-earn-r2c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="qd-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="qd-earn-r3c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="qd-earn-r3c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="qd-earn-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="qd-earn-r3c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-earn-r4c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="qd-earn-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="qd-earn-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="qd-q2" width="49%">
+      <style>
+        <border>2px solid #5B21B6</border>
+      </style>
+      <table id="qd-q2-title">
+        <style>
+          <width>100%</width>
+          <backgroundColor>#5B21B6</backgroundColor>
+          <border>2px solid #5B21B6</border>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-q2-title-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>6px 0</padding>
+                <fontSize>13px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#5B21B6</color>
+                <backgroundColor>#ffffff</backgroundColor>
+                <width>30px</width>
+              </style>
+              <value>2</value>
+            </cell>
+            <cell id="qd-q2-title-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#ffffff</color>
+              </style>
+              <value>TAXES</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="qd-tax">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="qd-tax-h0">
+              <style>
+                <width>44%</width>
+                <textAlign>left</textAlign>
+                <padding>8px 4px 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="qd-tax-h1">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="qd-tax-h2">
+              <style>
+                <width>30%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="qd-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="qd-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="qd-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="qd-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="qd-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="qd-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="qd-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="qd-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="qd-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="qd-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="qd-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="qd-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="qd-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-tax-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="qd-tax-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="qd-tax-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section qd-bottom: quadrant 3 Deductions / quadrant 4 Summary -->
+  <section id="qd-bottom">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>stretch</alignItems>
+    </style>
+    <column id="qd-q3" width="49%">
+      <style>
+        <border>2px solid #5B21B6</border>
+      </style>
+      <table id="qd-q3-title">
+        <style>
+          <width>100%</width>
+          <backgroundColor>#5B21B6</backgroundColor>
+          <border>2px solid #5B21B6</border>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-q3-title-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>6px 0</padding>
+                <fontSize>13px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#5B21B6</color>
+                <backgroundColor>#ffffff</backgroundColor>
+                <width>30px</width>
+              </style>
+              <value>3</value>
+            </cell>
+            <cell id="qd-q3-title-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#ffffff</color>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="qd-ded">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="qd-ded-h0">
+              <style>
+                <width>44%</width>
+                <textAlign>left</textAlign>
+                <padding>8px 4px 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="qd-ded-h1">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="qd-ded-h2">
+              <style>
+                <width>30%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="qd-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="qd-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="qd-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="qd-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="qd-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="qd-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="qd-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="qd-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="qd-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="qd-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="qd-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="qd-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="qd-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="qd-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="qd-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="!totalDeductionsYTD">
+            <cell id="qd-ded-r5c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+                <color>#71717A</color>
+                <fontStyle>italic</fontStyle>
+              </style>
+              <value>No deductions</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-ded-r6c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="qd-ded-r6c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="qd-ded-r6c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="qd-q4" width="49%">
+      <style>
+        <border>2px solid #5B21B6</border>
+        <backgroundColor>#F5F3FF</backgroundColor>
+      </style>
+      <table id="qd-q4-title">
+        <style>
+          <width>100%</width>
+          <backgroundColor>#5B21B6</backgroundColor>
+          <border>2px solid #5B21B6</border>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-q4-title-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>6px 0</padding>
+                <fontSize>13px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#5B21B6</color>
+                <backgroundColor>#ffffff</backgroundColor>
+                <width>30px</width>
+              </style>
+              <value>4</value>
+            </cell>
+            <cell id="qd-q4-title-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#ffffff</color>
+              </style>
+              <value>SUMMARY</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="qd-sum">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="qd-sum-h0">
+              <style>
+                <width>44%</width>
+                <textAlign>left</textAlign>
+                <padding>8px 4px 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="qd-sum-h1">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="qd-sum-h2">
+              <style>
+                <width>30%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 12px 3px 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#71717A</color>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="qd-sum-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="qd-sum-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="qd-sum-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-sum-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Less Taxes</value>
+            </cell>
+            <cell id="qd-sum-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="qd-sum-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-sum-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 4px 5px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Less Deductions</value>
+            </cell>
+            <cell id="qd-sum-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="qd-sum-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 12px 5px 4px</padding>
+                <fontSize>10.5px</fontSize>
+                <borderTop>1px solid #DDD6FE</borderTop>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-sum-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>Net Pay</value>
+            </cell>
+            <cell id="qd-sum-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="qd-sum-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 12px 8px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <borderTop>2px solid #5B21B6</borderTop>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="qd-net">
+        <style>
+          <width>100%</width>
+          <backgroundColor>#F5F3FF</backgroundColor>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-net-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>8px 12px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#5B21B6</color>
+              </style>
+              <value>NET PAY THIS PERIOD</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="qd-net-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 12px 8px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>24px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#2E1065</color>
+                <lineHeight>1.15</lineHeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section qd-footer: one-line disclaimer -->
+  <section id="qd-footer">
+    <style>
+      <marginTop>22px</marginTop>
+    </style>
+    <column id="qd-footer-col" width="100%">
+      <table id="qd-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="qd-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#71717A</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

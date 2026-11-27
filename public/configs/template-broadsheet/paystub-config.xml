@@ -1,0 +1,1422 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Broadsheet (broadsheet). Composed like the front of a newspaper: the employer's name as a heavy
+    serif nameplate, a dateline between rules (pay period, pay date, schedule, numbers), then three columns of
+    print divided by hairlines. The first column is the people and the payment, the second Earnings and
+    Deductions, the third Taxes and the Net Pay. Georgia serif with small sans captions, black only, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>Georgia, 'Times New Roman', 'Liberation Serif', serif</fontFamily>
+    <color>#111111</color>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section bs-nameplate: the nameplate: employer name, address beneath, Pay Stub at the right -->
+  <section id="bs-nameplate">
+    <style>
+      <alignItems>flex-end</alignItems>
+      <paddingBottom>8px</paddingBottom>
+      <borderBottom>4px solid #111111</borderBottom>
+    </style>
+    <column id="bs-name-col" width="72%">
+      <table id="bs-name">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-name-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>27px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111111</color>
+                <lineHeight>1.1</lineHeight>
+                <letterSpacing>-0.3px</letterSpacing>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-name-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <paddingTop>3px</paddingTop>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bs-kind-col" width="28%">
+      <table id="bs-kind">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-kind-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>17px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#111111</color>
+              </style>
+              <value>Pay Stub</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-kind-r1c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#555555</color>
+              </style>
+              <value>No. {stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bs-dateline: the dateline between rules -->
+  <section id="bs-dateline">
+    <style>
+      <marginTop>2px</marginTop>
+      <borderTop>1px solid #111111</borderTop>
+      <borderBottom>1px solid #111111</borderBottom>
+      <marginBottom>20px</marginBottom>
+    </style>
+    <column id="bs-dateline-col" width="100%">
+      <table id="bs-dateline-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-dateline-t-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 5px 5px 8px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>Pay period</value>
+            </cell>
+            <cell id="bs-dateline-t-r0c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+            <cell id="bs-dateline-t-r0c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 5px 5px 8px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <borderLeft>1px solid #BBBBBB</borderLeft>
+              </style>
+              <value>Paid</value>
+            </cell>
+            <cell id="bs-dateline-t-r0c3" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+            <cell id="bs-dateline-t-r0c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 5px 5px 8px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <borderLeft>1px solid #BBBBBB</borderLeft>
+              </style>
+              <value>Schedule</value>
+            </cell>
+            <cell id="bs-dateline-t-r0c5" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+            <cell id="bs-dateline-t-r0c6" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 5px 5px 8px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <borderLeft>1px solid #BBBBBB</borderLeft>
+              </style>
+              <value>Check No.</value>
+            </cell>
+            <cell id="bs-dateline-t-r0c7" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bs-columns: three columns of print: people and payment / earnings and deductions / taxes and net pay -->
+  <section id="bs-columns">
+    <style>
+      <alignItems>stretch</alignItems>
+    </style>
+    <column id="bs-c1" width="28%">
+      <style>
+        <paddingRight>14px</paddingRight>
+      </style>
+      <table id="bs-emp-h">
+        <style>
+          <width>100%</width>
+          <marginTop>0</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-emp-h-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <fontVariant>small-caps</fontVariant>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#111111</color>
+                <borderBottom>1px solid #111111</borderBottom>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>The Employee</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-emp">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-emp-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-emp-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-emp-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-emp-kv">
+        <style>
+          <width>100%</width>
+          <marginTop>5px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-emp-kv-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="bs-emp-kv-r0c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="bs-emp-kv-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="bs-emp-kv-r1c1" type="substitute" format="text">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-emp-kv-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="bs-emp-kv-r2c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-er-h">
+        <style>
+          <width>100%</width>
+          <marginTop>22px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-er-h-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <fontVariant>small-caps</fontVariant>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#111111</color>
+                <borderBottom>1px solid #111111</borderBottom>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>The Employer</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-er">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-er-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-er-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="bs-er-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-pay-h">
+        <style>
+          <width>100%</width>
+          <marginTop>22px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-pay-h-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <fontVariant>small-caps</fontVariant>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#111111</color>
+                <borderBottom>1px solid #111111</borderBottom>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>The Payment</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-pay">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-pay-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-hours" renderIf="isHourly">
+        <style>
+          <width>100%</width>
+          <marginTop>5px</marginTop>
+        </style>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="bs-hours-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+              </style>
+              <value>Regular hours</value>
+            </cell>
+            <cell id="bs-hours-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="bs-hours-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+              </style>
+              <value>Hourly rate</value>
+            </cell>
+            <cell id="bs-hours-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePay">
+            <cell id="bs-hours-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+              </style>
+              <value>Overtime hours</value>
+            </cell>
+            <cell id="bs-hours-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePay">
+            <cell id="bs-hours-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+              </style>
+              <value>Overtime rate</value>
+            </cell>
+            <cell id="bs-hours-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bs-c2" width="36%">
+      <style>
+        <padding>0 14px</padding>
+        <borderLeft>1px solid #BBBBBB</borderLeft>
+      </style>
+      <table id="bs-earn-h">
+        <style>
+          <width>100%</width>
+          <marginTop>0</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-earn-h-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <fontVariant>small-caps</fontVariant>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#111111</color>
+                <borderBottom>1px solid #111111</borderBottom>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>Earnings</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-earn">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="bs-earn-h0">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label/>
+            </hd>
+            <hd id="bs-earn-h1">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="bs-earn-h2">
+              <style>
+                <width>32%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="bs-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="bs-earn-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="bs-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="bs-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="bs-earn-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="bs-earn-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="bs-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="bs-earn-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="bs-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="bs-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="bs-earn-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="bs-earn-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-earn-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="bs-earn-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="bs-earn-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-ded-h">
+        <style>
+          <width>100%</width>
+          <marginTop>22px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-ded-h-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <fontVariant>small-caps</fontVariant>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#111111</color>
+                <borderBottom>1px solid #111111</borderBottom>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>Deductions</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-ded">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="bs-ded-h0">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label/>
+            </hd>
+            <hd id="bs-ded-h1">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="bs-ded-h2">
+              <style>
+                <width>32%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="bs-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="bs-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="bs-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="bs-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="bs-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="bs-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="bs-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="bs-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="bs-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="bs-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="bs-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="bs-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="bs-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="bs-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="bs-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="!totalDeductionsYTD">
+            <cell id="bs-ded-r5c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+              </style>
+              <value>None this period</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-ded-r6c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="bs-ded-r6c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="bs-ded-r6c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bs-c3" width="36%">
+      <style>
+        <paddingLeft>14px</paddingLeft>
+        <borderLeft>1px solid #BBBBBB</borderLeft>
+      </style>
+      <table id="bs-tax-h">
+        <style>
+          <width>100%</width>
+          <marginTop>0</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-tax-h-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <fontVariant>small-caps</fontVariant>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#111111</color>
+                <borderBottom>1px solid #111111</borderBottom>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>Taxes</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-tax">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="bs-tax-h0">
+              <style>
+                <width>40%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label/>
+            </hd>
+            <hd id="bs-tax-h1">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="bs-tax-h2">
+              <style>
+                <width>32%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 0 2px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#555555</color>
+                <fontWeight>400</fontWeight>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="bs-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="bs-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="bs-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="bs-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="bs-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="bs-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="bs-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="bs-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="bs-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="bs-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="bs-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3.5px 0</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="bs-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="bs-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3.5px 0 3.5px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-tax-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="bs-tax-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="bs-tax-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>1px solid #BBBBBB</borderTop>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-net-h">
+        <style>
+          <width>100%</width>
+          <marginTop>22px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-net-h-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <fontVariant>small-caps</fontVariant>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#111111</color>
+                <borderBottom>1px solid #111111</borderBottom>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>Net Pay</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bs-net">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-net-r0c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>32px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111111</color>
+                <lineHeight>1.2</lineHeight>
+                <paddingTop>6px</paddingTop>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bs-net-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2.5px 8px 2.5px 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#555555</color>
+                <width>1%</width>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="bs-net-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2.5px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bs-footer: one-line disclaimer -->
+  <section id="bs-footer">
+    <style>
+      <marginTop>20px</marginTop>
+      <borderTop>1px solid #111111</borderTop>
+      <paddingTop>6px</paddingTop>
+    </style>
+    <column id="bs-footer-col" width="100%">
+      <table id="bs-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bs-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#555555</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontStyle>italic</fontStyle>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>
