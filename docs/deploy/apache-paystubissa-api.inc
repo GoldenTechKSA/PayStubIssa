@@ -17,3 +17,8 @@ ProxyPassReverse /api  http://127.0.0.1:4000/api
 
 # Hand the real scheme to Express (`trust proxy` = 1).
 RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+
+# Cache and security headers for the static files (index.html must be re-checked on every
+# visit, /static may be kept for a year). Pulled in from here because this file is already
+# included by both vhosts, so the certbot-written :443 vhost needs no further hand edit.
+Include /etc/apache2/sites-available/paystubissa-headers.inc

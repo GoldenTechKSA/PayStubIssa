@@ -160,6 +160,57 @@ routes such as `/create` can never 404 on their assets. The earlier `"."` was a
 leftover from the old subfolder FTP hosting. If the site ever moves under a
 path prefix, set `homepage` to that prefix.
 
+## Cache and security headers (sudo, once)
+
+Apache sends the static site with no `Cache-Control` and no security headers until
+[apache-paystubissa-headers.inc](apache-paystubissa-headers.inc) is installed. The file is
+shared by staging and production and explains each header in its comments. In short:
+
+- `index.html` and the other un-hashed files are re-checked with the server on every visit,
+  so a deploy reaches returning visitors at once; `/static/*` (hashed names) is kept for a year.
+- HTTPS only, no MIME guessing, no framing by other sites, a short referrer, no camera /
+  microphone / location, and a small enforced Content-Security-Policy.
+- A full Content-Security-Policy runs **report-only**: it blocks nothing and only logs to the
+  browser console what it would block.
+
+The deploy user has no sudo and `AllowOverride None` rules out `.htaccess`, so this is a
+manual step. Nothing changes until an `Include` line points at the file; staging gets it first.
+
+```bash
+# 1. Put the headers file on the server (paste the repo file's contents, save).
+sudo nano /etc/apache2/sites-available/paystubissa-headers.inc
+
+# 2. STAGING: add the Include to the API include both staging vhosts already load.
+echo 'Include /etc/apache2/sites-available/paystubissa-headers.inc' \
+  | sudo tee -a /etc/apache2/sites-available/paystubissa-api-staging.inc
+sudo apache2ctl configtest          # must print "Syntax OK"; if not, do NOT reload
+sudo systemctl reload apache2
+
+# 3. Check staging.
+curl -sI https://staging.paystubissa.com/ | grep -iE 'cache-control|strict-transport|content-security|x-frame|x-content|referrer|permissions'
+#   expect Cache-Control: no-cache and the security headers
+curl -sI https://staging.paystubissa.com/create | grep -i cache-control        # no-cache (served from index.html)
+JS=$(curl -s https://staging.paystubissa.com/ | grep -o '/static/js/main[^"]*')
+curl -sI "https://staging.paystubissa.com$JS" | grep -i cache-control
+#   expect public, max-age=31536000, immutable
+curl -sI https://staging.paystubissa.com/api/health | grep -ic content-security-policy
+#   expect 1: the API's own header, not a second copy
+
+# 4. PRODUCTION, once staging is right: same line into the production include.
+echo 'Include /etc/apache2/sites-available/paystubissa-headers.inc' \
+  | sudo tee -a /etc/apache2/sites-available/paystubissa-api.inc
+sudo apache2ctl configtest && sudo systemctl reload apache2
+```
+
+**Roll back** by deleting that `Include` line from the `.inc` file and reloading Apache.
+
+**Making the full policy enforcing.** On staging, open the browser's developer console, make a
+complete sandbox purchase and download the PDF. If the console shows no
+`Content-Security-Policy-Report-Only` messages, move the report-only rules into the enforced
+`Content-Security-Policy` header in the file and delete the report-only one. If it does, add
+the reported address to the matching rule first. A wrong enforced list breaks the PayPal
+buttons, which is why it starts report-only.
+
 ---
 
 ## Backend (Node API)
