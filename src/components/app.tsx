@@ -16,6 +16,7 @@ import OffersPage from "./common/offers-page";
 import { PriceProvider } from "../contexts/price-context";
 import TelemetryErrorBoundary from "./common/telemetry-error-boundary";
 import { RouteTelemetry } from "./common/route-telemetry";
+import { RouteMeta } from "./common/route-meta";
 import PaystubWizard from "./wizard/PaystubWizard";
 
 const NotFound: React.FC = () => (
@@ -41,6 +42,7 @@ const App: React.FC = () => {
   return (
     <TelemetryProvider config={TELEMETRY_CONFIG}>
       <RouteTelemetry />
+      <RouteMeta />
       <PriceProvider>
       <TelemetryErrorBoundary componentName="App">
         <div className="app-root">
