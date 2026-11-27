@@ -10,6 +10,12 @@ import { T } from '../telemetry/codes';
 import { createAppStore } from '../redux/store';
 import { contentOf, fingerprintOf, newSalt, type PaidSnapshot } from '../utils/paid-lock';
 
+// These tests render the whole wizard and click through it. On the deploy runner the longest
+// one ("Make another pay stub reopens editing…") ran past Jest's default 5 s twice on
+// 2026-11-27 and blocked a deploy, while passing in ~1–2 s locally. The limit is raised for
+// this file only; a real hang still fails, just later.
+jest.setTimeout(20000);
+
 const DRAFT_KEY = 'paystubissa.draft.v1';
 const UNLOCK_KEY = 'paystubissa.unlock.v1';
 const SIMPLE = '/configs/template-simple/paystub-config.xml';
