@@ -169,9 +169,9 @@ shared by staging and production and explains each header in its comments. In sh
 - `index.html` and the other un-hashed files are re-checked with the server on every visit,
   so a deploy reaches returning visitors at once; `/static/*` (hashed names) is kept for a year.
 - HTTPS only, no MIME guessing, no framing by other sites, a short referrer, no camera /
-  microphone / location, and a small enforced Content-Security-Policy.
-- A full Content-Security-Policy runs **report-only**: it blocks nothing and only logs to the
-  browser console what it would block.
+  microphone / location.
+- An enforced Content-Security-Policy: scripts, images, connections and frames may come only
+  from the site itself and PayPal.
 
 The deploy user has no sudo and `AllowOverride None` rules out `.htaccess`, so this is a
 manual step. Nothing changes until an `Include` line points at the file; staging gets it first.
@@ -204,12 +204,22 @@ sudo apache2ctl configtest && sudo systemctl reload apache2
 
 **Roll back** by deleting that `Include` line from the `.inc` file and reloading Apache.
 
-**Making the full policy enforcing.** On staging, open the browser's developer console, make a
-complete sandbox purchase and download the PDF. If the console shows no
-`Content-Security-Policy-Report-Only` messages, move the report-only rules into the enforced
-`Content-Security-Policy` header in the file and delete the report-only one. If it does, add
-the reported address to the matching rule first. A wrong enforced list breaks the PayPal
-buttons, which is why it starts report-only.
+**Updating the file later.** Staging and production share it, so a paste changes both at
+once. Replace the whole file, then check syntax before reloading:
+
+```bash
+sudo truncate -s 0 /etc/apache2/sites-available/paystubissa-headers.inc
+sudo nano /etc/apache2/sites-available/paystubissa-headers.inc
+sudo apache2ctl configtest && sudo systemctl reload apache2
+```
+
+**Changing the content policy.** A wrong list breaks the PayPal buttons, so never change the
+enforced list blind. Either send the new list as a second header,
+`Content-Security-Policy-Report-Only` (it blocks nothing; the browser console shows what it
+would block), or enforce it on staging only with a second
+`<DirectoryMatch "^/var/www/staging\.paystubissa\.com(/|$)">` section placed after the main
+one. Then make a sandbox purchase on staging with the console open, download the PDF, and only
+then give production the same list. This is how the list was first enforced on 2026-11-27.
 
 ---
 
