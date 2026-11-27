@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Every public page of the site, for search engines. One <url> per <Route> in
+     src/components/app.tsx (the "*" not-found route excluded); sitemap.test.ts fails when the
+     two lists differ. Addresses are case-sensitive and must match the route exactly. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://paystubissa.com/</loc></url>
+  <url><loc>https://paystubissa.com/create</loc></url>
+  <url><loc>https://paystubissa.com/offers</loc></url>
+  <url><loc>https://paystubissa.com/FAQPage</loc></url>
+  <url><loc>https://paystubissa.com/aboutUsPage</loc></url>
+  <url><loc>https://paystubissa.com/contactUsPage</loc></url>
+  <url><loc>https://paystubissa.com/terms</loc></url>
+  <url><loc>https://paystubissa.com/privacy</loc></url>
+  <url><loc>https://paystubissa.com/accessibility</loc></url>
+</urlset>
