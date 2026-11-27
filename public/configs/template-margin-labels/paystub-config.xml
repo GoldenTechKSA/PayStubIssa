@@ -1,0 +1,1298 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Minimal (margin-labels). No boxes and no fills: black hairlines, generous space and light type.
+    Each band of the page has its name in the left margin (Employer, Employee, Pay period, Earnings, Taxes,
+    Deductions, Net pay) and its content to the right, the way a typeset statement or a resume is laid out.
+    Net pay closes the page in large light figures. IBM Plex Sans, black and gray only, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#262626</color>
+    <fontSize>11.5px</fontSize>
+    <lineHeight>1.4</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>10px 0 0</padding>
+  </style>
+  <!-- Section ml-title: document title (left) / stub number (right) -->
+  <section id="ml-title">
+    <style>
+      <alignItems>flex-end</alignItems>
+      <paddingBottom>16px</paddingBottom>
+    </style>
+    <column id="ml-title-left" width="60%">
+      <table id="ml-title-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-title-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>34px</fontSize>
+                <fontWeight>300</fontWeight>
+                <color>#111111</color>
+                <lineHeight>1.1</lineHeight>
+                <letterSpacing>-0.5px</letterSpacing>
+              </style>
+              <value>Pay Stub</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-title-right" width="40%">
+      <table id="ml-title-no">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-title-no-r0c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 0 6px</padding>
+                <fontSize>11px</fontSize>
+                <color>#737373</color>
+              </style>
+              <value>No. {stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-employer: Employer -->
+  <section id="ml-employer">
+    <style>
+      <borderTop>1px solid #111111</borderTop>
+      <padding>11px 0 15px</padding>
+    </style>
+    <column id="ml-employer-label" width="19%">
+      <table id="ml-employer-label-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-employer-label-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#737373</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>EMPLOYER</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-employer-col" width="81%">
+      <table id="ml-employer-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-employer-t-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>13px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-employer-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="ml-employer-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-employee: Employee -->
+  <section id="ml-employee">
+    <style>
+      <borderTop>1px solid #111111</borderTop>
+      <padding>11px 0 15px</padding>
+    </style>
+    <column id="ml-employee-label" width="19%">
+      <table id="ml-employee-label-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-employee-label-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#737373</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-employee-col" width="45%">
+      <table id="ml-employee-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-employee-t-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>13px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-employee-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-employee-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-employee-ids" width="36%">
+      <table id="ml-employee-ids-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-employee-ids-t-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>SSN {employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="ml-employee-ids-t-r1c0" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Employee ID {employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-employee-ids-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-period: Pay period -->
+  <section id="ml-period">
+    <style>
+      <borderTop>1px solid #111111</borderTop>
+      <padding>11px 0 15px</padding>
+    </style>
+    <column id="ml-period-label" width="19%">
+      <table id="ml-period-label-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-period-label-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#737373</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>PAY PERIOD</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-period-col" width="81%">
+      <table id="ml-period-t">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-period-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+                <width>34%</width>
+              </style>
+              <value>PERIOD</value>
+            </cell>
+            <cell id="ml-period-t-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+                <width>22%</width>
+              </style>
+              <value>PAY DATE</value>
+            </cell>
+            <cell id="ml-period-t-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+                <width>22%</width>
+              </style>
+              <value>SCHEDULE</value>
+            </cell>
+            <cell id="ml-period-t-r0c3" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+                <width>22%</width>
+              </style>
+              <value>CHECK NO.</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-period-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+            <cell id="ml-period-t-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+            <cell id="ml-period-t-r1c2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+            <cell id="ml-period-t-r1c3" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingBottom>2px</paddingBottom>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-earnings: Earnings -->
+  <section id="ml-earnings">
+    <style>
+      <borderTop>1px solid #111111</borderTop>
+      <padding>11px 0 15px</padding>
+    </style>
+    <column id="ml-earnings-label" width="19%">
+      <table id="ml-earnings-label-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-earnings-label-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#737373</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-earnings-col" width="81%">
+      <table id="ml-earn">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="ml-earn-h0">
+              <style>
+                <width>28%</width>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="ml-earn-h1">
+              <style>
+                <width>13%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>HOURS</label>
+            </hd>
+            <hd id="ml-earn-h2">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>RATE</label>
+            </hd>
+            <hd id="ml-earn-h3">
+              <style>
+                <width>21%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="ml-earn-h4">
+              <style>
+                <width>23%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="ml-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="ml-earn-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="ml-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="ml-earn-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="ml-earn-r0c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="ml-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="ml-earn-r1c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="ml-earn-r1c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="ml-earn-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="ml-earn-r1c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="ml-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="ml-earn-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="ml-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="ml-earn-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="ml-earn-r2c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="ml-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="ml-earn-r3c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="ml-earn-r3c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="ml-earn-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="ml-earn-r3c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-earn-r4c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>Gross pay</value>
+            </cell>
+            <cell id="ml-earn-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="ml-earn-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-taxes: Taxes -->
+  <section id="ml-taxes">
+    <style>
+      <borderTop>1px solid #111111</borderTop>
+      <padding>11px 0 15px</padding>
+    </style>
+    <column id="ml-taxes-label" width="19%">
+      <table id="ml-taxes-label-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-taxes-label-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#737373</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>TAXES</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-taxes-col" width="81%">
+      <table id="ml-tax">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="ml-tax-h0">
+              <style>
+                <width>56%</width>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="ml-tax-h1">
+              <style>
+                <width>21%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="ml-tax-h2">
+              <style>
+                <width>23%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="ml-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="ml-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="ml-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="ml-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="ml-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="ml-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="ml-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="ml-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="ml-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="ml-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="ml-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="ml-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="ml-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-tax-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>Total taxes</value>
+            </cell>
+            <cell id="ml-tax-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="ml-tax-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-deductions: Deductions (hidden when the employee has none) -->
+  <section id="ml-deductions" renderIf="totalDeductionsYTD">
+    <style>
+      <borderTop>1px solid #111111</borderTop>
+      <padding>11px 0 15px</padding>
+    </style>
+    <column id="ml-deductions-label" width="19%">
+      <table id="ml-deductions-label-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-deductions-label-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#737373</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-deductions-col" width="81%">
+      <table id="ml-ded">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="ml-ded-h0">
+              <style>
+                <width>56%</width>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="ml-ded-h1">
+              <style>
+                <width>21%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="ml-ded-h2">
+              <style>
+                <width>23%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>400</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="ml-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="ml-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="ml-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="ml-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="ml-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="ml-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="ml-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="ml-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="ml-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="ml-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="ml-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="ml-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="ml-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="ml-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="ml-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 0</padding>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-ded-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>Total deductions</value>
+            </cell>
+            <cell id="ml-ded-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="ml-ded-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px 0 0</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111111</color>
+                <borderTop>1px solid #D4D4D4</borderTop>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-net: Net pay in large light figures, with how it was paid and the year-to-date net -->
+  <section id="ml-net">
+    <style>
+      <borderTop>3px solid #111111</borderTop>
+      <padding>11px 0 15px</padding>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="ml-net-label" width="19%">
+      <table id="ml-net-label-t">
+        <cells>
+          <rowcells>
+            <cell id="ml-net-label-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#737373</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-net-how" width="41%">
+      <table id="ml-net-how-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-net-how-t-r0c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ml-net-how-t-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <paddingRight>6px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="ml-net-how-t-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="ml-net-amt" width="40%">
+      <table id="ml-net-amt-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-net-amt-t-r0c0" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <fontSize>34px</fontSize>
+                <fontWeight>300</fontWeight>
+                <color>#111111</color>
+                <lineHeight>1.05</lineHeight>
+                <letterSpacing>-0.5px</letterSpacing>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ml-footer: one-line disclaimer -->
+  <section id="ml-footer">
+    <style>
+      <marginTop>14px</marginTop>
+      <borderTop>1px solid #D4D4D4</borderTop>
+      <paddingTop>6px</paddingTop>
+    </style>
+    <column id="ml-footer-col" width="100%">
+      <table id="ml-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ml-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <color>#737373</color>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

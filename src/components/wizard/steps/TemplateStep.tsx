@@ -39,6 +39,17 @@ const AVAILABLE_CONFIGS = new Set<string>([
   "/configs/template-contractor/paystub-config.xml",
   "/configs/template-ledger-classic/paystub-config.xml",
   "/configs/template-logo-header/paystub-config.xml",
+  "/configs/template-blue-panels/paystub-config.xml",
+  "/configs/template-sidebar/paystub-config.xml",
+  "/configs/template-letterhead/paystub-config.xml",
+  "/configs/template-net-first/paystub-config.xml",
+  "/configs/template-tri-column/paystub-config.xml",
+  "/configs/template-period-ytd/paystub-config.xml",
+  "/configs/template-box-form/paystub-config.xml",
+  "/configs/template-tiles/paystub-config.xml",
+  "/configs/template-margin-labels/paystub-config.xml",
+  "/configs/template-slip/paystub-config.xml",
+  "/configs/template-spine/paystub-config.xml",
 ]);
 
 const FALLBACK_THUMB = `${process.env.PUBLIC_URL}/images/thumb0.png`;

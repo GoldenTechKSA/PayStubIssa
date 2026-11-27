@@ -11,7 +11,13 @@ Ruled / Banded Panels / Payroll Register, Statement of Earnings and Deductions �
 Independent Contractor Invoice & Earnings Statement (kept as a stopgap: it is the only
 no-withholding layout), Temporary Assignment Paystub (`template-ledger-classic`, built
 2026-10-18 from the entry below), and Small Business Paystub — Logo Header
-(`template-logo-header`, built 2026-11-16 from a reference layout, not from this backlog).
+(`template-logo-header`, built 2026-11-16 from a reference layout, not from this backlog),
+and Earnings Statement — Blue Panels (`template-blue-panels`, built 2026-11-19 the same way).
+
+Ten design-led templates were added on 2026-11-26 (`template-sidebar`, `-letterhead`, `-net-first`,
+`-tri-column`, `-period-ytd`, `-box-form`, `-tiles`, `-margin-labels`, `-slip`, `-spine`). They are
+general-purpose stubs that differ in page structure, not in audience, so none of the entries below
+is covered by them.
 
 Each entry notes the retired template id, the visual skin it used, and the audience
 specific block it tried to add. Those blocks were static placeholders (rendered as dashes)

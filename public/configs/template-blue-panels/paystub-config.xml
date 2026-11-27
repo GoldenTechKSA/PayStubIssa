@@ -1,0 +1,1286 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Earnings Statement, Blue Panels (blue-panels). Set in Roboto with one blue accent: the
+    company name, two gray identity panels with a blue bar, blue-banded Earnings and
+    Taxes / Deductions ledgers, and two bordered totals tables (year to date, this period)
+    closing on a blue Net Pay band. The logo slot collapses when no logo is uploaded.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md,
+    "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>Roboto, 'Helvetica Neue', Arial, sans-serif</fontFamily>
+    <color>#333333</color>
+    <fontSize>12px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>10px 0 0</padding>
+  </style>
+  <!-- Section bp-header: logo slot and company (left) / Earnings Statement, check and stub numbers (right) -->
+  <section id="bp-header">
+    <style>
+      <alignItems>center</alignItems>
+      <marginBottom>22px</marginBottom>
+    </style>
+    <column id="bp-logo-col" width="auto">
+      <style>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="bp-logo">
+        <cells>
+          <rowcells>
+            <cell id="bp-logo-img" type="image">
+              <style>
+                <maxHeight>72px</maxHeight>
+                <maxWidth>140px</maxWidth>
+                <display>block</display>
+                <marginRight>14px</marginRight>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{companyInfo.companyLogo}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bp-company-col" width="auto">
+      <style>
+        <flexGrow>1</flexGrow>
+      </style>
+      <table id="bp-company">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bp-co-name" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>17px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="bp-co-ein" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>13px</fontSize>
+                <fontStyle>italic</fontStyle>
+              </style>
+              <value>({companyInfo.companyEIN})</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-co-addr1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyAddress2">
+            <cell id="bp-co-addr2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-co-city" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bp-statement-col" width="36%">
+      <style>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="bp-statement">
+        <cells>
+          <rowcells>
+            <cell id="bp-st-title" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 3px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>Earnings Statement</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-st-check-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 5px 0 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Check Number:</value>
+            </cell>
+            <cell id="bp-st-check" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-st-stub-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 5px 0 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Stub Number:</value>
+            </cell>
+            <cell id="bp-st-stub" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>bold</fontWeight>
+              </style>
+              <value>{stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bp-identity: employee panel (left) / pay date, schedule, period and payment panel (right) -->
+  <section id="bp-identity">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <marginBottom>22px</marginBottom>
+    </style>
+    <column id="bp-employee-col" width="54.6%">
+      <style>
+        <backgroundColor>#EEEEEE</backgroundColor>
+        <borderLeft>9px solid #1D5BBF</borderLeft>
+        <padding>14px 14px 14px 16px</padding>
+      </style>
+      <table id="bp-employee">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bp-emp-name" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>13px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-emp-ssn" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontStyle>italic</fontStyle>
+              </style>
+              <value>({employeeSSNMasked})</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-emp-addr1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeInfo.employeeAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeAddress2">
+            <cell id="bp-emp-addr2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-emp-city" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bp-employee-more">
+        <style>
+          <marginTop>8px</marginTop>
+        </style>
+        <cells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="bp-emp-id-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 10px 0 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="bp-emp-id" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-emp-filing-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 10px 0 0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Filing Status</value>
+            </cell>
+            <cell id="bp-emp-filing" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bp-period-col" width="44.2%">
+      <style>
+        <backgroundColor>#EEEEEE</backgroundColor>
+        <borderLeft>9px solid #1D5BBF</borderLeft>
+        <padding>14px 14px 14px 16px</padding>
+      </style>
+      <table id="bp-period">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bp-per-paydate-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Pay Date</value>
+            </cell>
+            <cell id="bp-per-schedule-label" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Pay Schedule</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-per-paydate" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+            <cell id="bp-per-schedule" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-per-period-label" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>9px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Pay Period</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-per-period" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-per-method-label" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>9px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+              </style>
+              <value>Payment</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-per-method" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bp-ledgers: Earnings ledger (left) / Taxes and Deductions ledger (right) -->
+  <section id="bp-ledgers">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>flex-start</alignItems>
+      <marginBottom>22px</marginBottom>
+    </style>
+    <column id="bp-earnings-col" width="54.6%">
+      <table id="bp-earnings">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="bp-earn-h-desc">
+              <style>
+                <width>30%</width>
+                <textAlign>left</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 9px</padding>
+              </style>
+              <label>Earnings</label>
+            </hd>
+            <hd id="bp-earn-h-rate">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 4px</padding>
+              </style>
+              <label>Rate</label>
+            </hd>
+            <hd id="bp-earn-h-hours">
+              <style>
+                <width>13%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 4px</padding>
+              </style>
+              <label>Hours</label>
+            </hd>
+            <hd id="bp-earn-h-cur">
+              <style>
+                <width>20%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 4px</padding>
+              </style>
+              <label>Total</label>
+            </hd>
+            <hd id="bp-earn-h-ytd">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 9px 5px 4px</padding>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="bp-earn-regular-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Regular Earnings</value>
+            </cell>
+            <cell id="bp-earn-regular-rate" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="bp-earn-regular-hours" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="bp-earn-regular-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="bp-earn-regular-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px 5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="bp-earn-salary-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="bp-earn-salary-blank0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="bp-earn-salary-blank1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="bp-earn-salary-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="bp-earn-salary-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px 5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePay">
+            <cell id="bp-earn-overtime-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="bp-earn-overtime-rate" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="bp-earn-overtime-hours" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="bp-earn-overtime-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="bp-earn-overtime-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px 5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarnings">
+            <cell id="bp-earn-bonus-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="bp-earn-bonus-blank0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="bp-earn-bonus-blank1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value> </value>
+            </cell>
+            <cell id="bp-earn-bonus-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="bp-earn-bonus-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px 5px 4px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bp-taxes-col" width="44.2%">
+      <table id="bp-taxes">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="bp-tax-h-desc">
+              <style>
+                <width>48%</width>
+                <textAlign>left</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 9px</padding>
+              </style>
+              <label>Taxes / Deductions</label>
+            </hd>
+            <hd id="bp-tax-h-cur">
+              <style>
+                <width>24%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 9px</padding>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="bp-tax-h-ytd">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <fontSize>12px</fontSize>
+                <fontWeight>bold</fontWeight>
+                <padding>5px 9px</padding>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="bp-tax-federal-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Federal</value>
+            </cell>
+            <cell id="bp-tax-federal-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="bp-tax-federal-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-tax-medicare-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="bp-tax-medicare-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="bp-tax-medicare-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-tax-ss-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="bp-tax-ss-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="bp-tax-ss-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTax">
+            <cell id="bp-tax-state-desc" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="bp-tax-state-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="bp-tax-state-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="bp-tax-leave-desc" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="bp-tax-leave-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="bp-tax-leave-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="medical">
+            <cell id="bp-ded-medical-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="bp-ded-medical-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="bp-ded-medical-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dental">
+            <cell id="bp-ded-dental-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="bp-ded-dental-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="bp-ded-dental-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="vision">
+            <cell id="bp-ded-vision-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="bp-ded-vision-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="bp-ded-vision-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401k">
+            <cell id="bp-ded-401k-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="bp-ded-401k-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="bp-ded-401k-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductions">
+            <cell id="bp-ded-other-desc" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="bp-ded-other-cur" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="bp-ded-other-ytd" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <backgroundColor>#E8E8E8</backgroundColor>
+                <borderBottom>1px solid #9A9A9A</borderBottom>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bp-totals: year-to-date totals (left) / this period's totals with Net Pay band (right) -->
+  <section id="bp-totals">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>flex-start</alignItems>
+    </style>
+    <column id="bp-ytd-col" width="54.6%">
+      <table id="bp-ytd">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bp-ytd-gross-label" type="static">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>left</textAlign>
+                <borderRight>none</borderRight>
+              </style>
+              <value>YTD Gross</value>
+            </cell>
+            <cell id="bp-ytd-gross-val" type="substitute" format="currency">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-ytd-taxded-label" type="static">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>left</textAlign>
+                <borderRight>none</borderRight>
+              </style>
+              <value>YTD Taxes / Deductions</value>
+            </cell>
+            <cell id="bp-ytd-taxded-val" type="calculated" format="currency">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderLeft>none</borderLeft>
+              </style>
+              <formula>{totalTaxesYTD} + {totalDeductionsYTD}</formula>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-ytd-net-label" type="static">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>left</textAlign>
+                <borderRight>none</borderRight>
+                <backgroundColor>#EEEEEE</backgroundColor>
+              </style>
+              <value>YTD Net Pay</value>
+            </cell>
+            <cell id="bp-ytd-net-val" type="substitute" format="currency">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderLeft>none</borderLeft>
+                <backgroundColor>#EEEEEE</backgroundColor>
+                <color>#1D5BBF</color>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bp-current-col" width="44.2%">
+      <table id="bp-current">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bp-cur-gross-label" type="static">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>left</textAlign>
+                <borderRight>none</borderRight>
+              </style>
+              <value>Gross</value>
+            </cell>
+            <cell id="bp-cur-gross-val" type="substitute" format="currency">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-cur-taxded-label" type="static">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>left</textAlign>
+                <borderRight>none</borderRight>
+              </style>
+              <value>Taxes / Deductions</value>
+            </cell>
+            <cell id="bp-cur-taxded-val" type="calculated" format="currency">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderLeft>none</borderLeft>
+              </style>
+              <formula>{totalTaxes} + {totalDeductions}</formula>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bp-cur-net-label" type="static">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>left</textAlign>
+                <borderRight>none</borderRight>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <borderColor>#1D5BBF</borderColor>
+              </style>
+              <value>Net Pay</value>
+            </cell>
+            <cell id="bp-cur-net-val" type="substitute" format="currency">
+              <style>
+                <fontSize>11.5px</fontSize>
+                <padding>5px 9px</padding>
+                <border>1px solid #9A9A9A</border>
+                <textAlign>right</textAlign>
+                <fontWeight>bold</fontWeight>
+                <borderLeft>none</borderLeft>
+                <backgroundColor>#1D5BBF</backgroundColor>
+                <color>#ffffff</color>
+                <borderColor>#1D5BBF</borderColor>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bp-footer: one-line disclaimer -->
+  <section id="bp-footer">
+    <style>
+      <marginTop>34px</marginTop>
+      <borderTop>1px solid #d1d5db</borderTop>
+      <paddingTop>6px</paddingTop>
+    </style>
+    <column id="bp-footer-col" width="100%">
+      <table id="bp-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bp-footer-text" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#6b7280</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>
