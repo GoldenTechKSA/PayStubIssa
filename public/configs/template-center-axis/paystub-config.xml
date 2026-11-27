@@ -1,0 +1,1310 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Centre Axis (center-axis). Everything hangs from one vertical hairline down the middle of the
+    page, the way film credits are set: each label ends at the axis and its value starts from it, with the
+    year-to-date figure at the far right. Employer, employee, pay period, earnings, taxes and deductions follow
+    one another down the axis and net pay sits centred beneath it. IBM Plex Sans, black with a brown accent, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#171717</color>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>8px 0 0</padding>
+  </style>
+  <!-- Section ca-title: centred title and employer name -->
+  <section id="ca-title">
+    <style>
+      <paddingBottom>10px</paddingBottom>
+      <borderBottom>1px solid #171717</borderBottom>
+    </style>
+    <column id="ca-title-col" width="100%">
+      <table id="ca-title-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ca-title-t-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>8px</letterSpacing>
+                <color>#92400E</color>
+                <paddingLeft>8px</paddingLeft>
+              </style>
+              <value>PAY STUB</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-title-t-r1c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>22px</fontSize>
+                <fontWeight>300</fontWeight>
+                <color>#171717</color>
+                <lineHeight>1.25</lineHeight>
+                <paddingTop>4px</paddingTop>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-title-t-r2c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="ca-title-t-r3c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ca-axis: the axis: employee, pay period, earnings, taxes, deductions -->
+  <section id="ca-axis">
+    <style>
+      <justifyContent>center</justifyContent>
+      <paddingBottom>10px</paddingBottom>
+    </style>
+    <column id="ca-axis-col" width="84%">
+      <table id="ca-axis-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ca-axis-t-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px 3px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#92400E</color>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+            <cell id="ca-axis-t-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="ca-axis-t-r0c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r1c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Name</value>
+            </cell>
+            <cell id="ca-axis-t-r1c1" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r2c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Address</value>
+            </cell>
+            <cell id="ca-axis-t-r2c1" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2} {employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r3c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Social Security number</value>
+            </cell>
+            <cell id="ca-axis-t-r3c1" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="ca-axis-t-r4c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="ca-axis-t-r4c1" type="substitute" format="text" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r5c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="ca-axis-t-r5c1" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r6c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px 3px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#92400E</color>
+              </style>
+              <value>PAY PERIOD</value>
+            </cell>
+            <cell id="ca-axis-t-r6c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="ca-axis-t-r6c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r7c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Period</value>
+            </cell>
+            <cell id="ca-axis-t-r7c1" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r8c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="ca-axis-t-r8c1" type="substitute" format="date" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r9c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Schedule</value>
+            </cell>
+            <cell id="ca-axis-t-r9c1" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r10c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Check number</value>
+            </cell>
+            <cell id="ca-axis-t-r10c1" type="substitute" format="text" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="ca-axis-t-r11c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Regular hours</value>
+            </cell>
+            <cell id="ca-axis-t-r11c1" type="substitute" format="number" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="ca-axis-t-r12c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Hourly rate</value>
+            </cell>
+            <cell id="ca-axis-t-r12c1" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePay">
+            <cell id="ca-axis-t-r13c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime hours</value>
+            </cell>
+            <cell id="ca-axis-t-r13c1" type="substitute" format="number" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePay">
+            <cell id="ca-axis-t-r14c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime rate</value>
+            </cell>
+            <cell id="ca-axis-t-r14c1" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r15c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px 3px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#92400E</color>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+            <cell id="ca-axis-t-r15c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+              </style>
+              <value>THIS PERIOD</value>
+            </cell>
+            <cell id="ca-axis-t-r15c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <value>YEAR TO DATE</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="ca-axis-t-r16c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="ca-axis-t-r16c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="ca-axis-t-r16c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="ca-axis-t-r17c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="ca-axis-t-r17c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="ca-axis-t-r17c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="ca-axis-t-r18c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="ca-axis-t-r18c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="ca-axis-t-r18c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="ca-axis-t-r19c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="ca-axis-t-r19c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="ca-axis-t-r19c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r20c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>Gross pay</value>
+            </cell>
+            <cell id="ca-axis-t-r20c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="ca-axis-t-r20c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#171717</color>
+                <width>20%</width>
+                <fontWeight>600</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r21c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px 3px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#92400E</color>
+              </style>
+              <value>TAXES</value>
+            </cell>
+            <cell id="ca-axis-t-r21c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+              </style>
+              <value>THIS PERIOD</value>
+            </cell>
+            <cell id="ca-axis-t-r21c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <value>YEAR TO DATE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r22c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="ca-axis-t-r22c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="ca-axis-t-r22c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r23c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="ca-axis-t-r23c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="ca-axis-t-r23c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r24c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="ca-axis-t-r24c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="ca-axis-t-r24c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="ca-axis-t-r25c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="ca-axis-t-r25c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="ca-axis-t-r25c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="ca-axis-t-r26c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="ca-axis-t-r26c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="ca-axis-t-r26c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-axis-t-r27c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>Total taxes</value>
+            </cell>
+            <cell id="ca-axis-t-r27c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="ca-axis-t-r27c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#171717</color>
+                <width>20%</width>
+                <fontWeight>600</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="ca-axis-t-r28c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px 3px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#92400E</color>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+            <cell id="ca-axis-t-r28c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px 12px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+              </style>
+              <value>THIS PERIOD</value>
+            </cell>
+            <cell id="ca-axis-t-r28c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#737373</color>
+              </style>
+              <value>YEAR TO DATE</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="ca-axis-t-r29c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="ca-axis-t-r29c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="ca-axis-t-r29c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="ca-axis-t-r30c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="ca-axis-t-r30c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="ca-axis-t-r30c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="ca-axis-t-r31c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="ca-axis-t-r31c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="ca-axis-t-r31c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="ca-axis-t-r32c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="ca-axis-t-r32c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="ca-axis-t-r32c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="ca-axis-t-r33c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="ca-axis-t-r33c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <width>30%</width>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="ca-axis-t-r33c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#737373</color>
+                <width>20%</width>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="ca-axis-t-r34c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 12px 1px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <width>50%</width>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>Total deductions</value>
+            </cell>
+            <cell id="ca-axis-t-r34c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0 1px 12px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+                <borderLeft>1px solid #D4D4D4</borderLeft>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="ca-axis-t-r34c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#171717</color>
+                <width>20%</width>
+                <fontWeight>600</fontWeight>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ca-net: net pay, centred beneath the axis -->
+  <section id="ca-net">
+    <style>
+      <borderTop>1px solid #171717</borderTop>
+    </style>
+    <column id="ca-net-col" width="100%">
+      <table id="ca-net-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ca-net-t-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>6px</letterSpacing>
+                <color>#92400E</color>
+                <paddingTop>10px</paddingTop>
+                <paddingLeft>6px</paddingLeft>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-net-t-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>32px</fontSize>
+                <fontWeight>300</fontWeight>
+                <color>#171717</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="ca-net-t-r2c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="ca-net-ytd">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ca-net-ytd-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 8px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#737373</color>
+                <width>50%</width>
+              </style>
+              <value>Net pay, year to date</value>
+            </cell>
+            <cell id="ca-net-ytd-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2px 0 0 8px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#171717</color>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section ca-footer: one-line disclaimer -->
+  <section id="ca-footer">
+    <style>
+      <marginTop>12px</marginTop>
+    </style>
+    <column id="ca-footer-col" width="100%">
+      <table id="ca-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="ca-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#737373</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

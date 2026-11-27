@@ -7,7 +7,8 @@ import "./index.css";
 // Fonts ship with the build instead of loading from Google Fonts, so no third party sees a
 // visitor's IP address on page load (Privacy Policy, "Third-party resources"). The weights match
 // what the theme and the templates use: IBM Plex Sans (UI + most stubs), IBM Plex Mono
-// (statement-mono, box-form figures), Roboto (ledger-classic, blue-panels, tri-column, slip).
+// (statement-mono, box-form and greenbar figures), Roboto (ledger-classic, blue-panels,
+// tri-column, slip, duplicate).
 import "@fontsource/ibm-plex-sans/300.css";
 import "@fontsource/ibm-plex-sans/400.css";
 import "@fontsource/ibm-plex-sans/500.css";

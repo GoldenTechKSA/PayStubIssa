@@ -17,7 +17,9 @@ and Earnings Statement — Blue Panels (`template-blue-panels`, built 2026-11-19
 Ten design-led templates were added on 2026-11-26 (`template-sidebar`, `-letterhead`, `-net-first`,
 `-tri-column`, `-period-ytd`, `-box-form`, `-tiles`, `-margin-labels`, `-slip`, `-spine`). They are
 general-purpose stubs that differ in page structure, not in audience, so none of the entries below
-is covered by them.
+is covered by them. Ten more of the same kind followed on 2026-11-27 (`template-counterfoil`,
+`-duplicate`, `-quadrants`, `-statement`, `-greenbar`, `-center-axis`, `-banded`, `-alternating`,
+`-broadsheet`, `-timeline`).
 
 Each entry notes the retired template id, the visual skin it used, and the audience
 specific block it tried to add. Those blocks were static placeholders (rendered as dashes)

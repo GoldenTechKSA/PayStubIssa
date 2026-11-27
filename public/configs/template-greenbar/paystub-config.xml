@@ -1,0 +1,1963 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Payroll Ledger, Green Bar (greenbar). Drawn like columnar ledger paper: pale green bars across the
+    full width, red-brown column rules, and ONE table in which every line posts its amount to the column of its
+    kind (Earnings, Taxes or Deductions) with the year to date at the right. The Totals line foots each column
+    and the Net Pay line closes the ledger. Monospaced figures, green ink, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#1F2937</color>
+    <fontSize>10.5px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section gb-head: employer (left) / ledger title (right) -->
+  <section id="gb-head">
+    <style>
+      <alignItems>flex-end</alignItems>
+      <marginBottom>12px</marginBottom>
+    </style>
+    <column id="gb-head-left" width="58%">
+      <table id="gb-company">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="gb-company-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>16px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#166534</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-company-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#4B5563</color>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="gb-company-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#4B5563</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="gb-head-right" width="42%">
+      <table id="gb-title">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="gb-title-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>17px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>3px</letterSpacing>
+                <color>#166534</color>
+              </style>
+              <value>PAYROLL LEDGER</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-title-r1c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#4B5563</color>
+              </style>
+              <value>Employee earnings record</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section gb-ids: two ruled strips: employee / pay period -->
+  <section id="gb-ids">
+    <style>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="gb-ids-col" width="100%">
+      <table id="gb-emp">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <borderTop>2px solid #166534</borderTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="gb-emp-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+            <cell id="gb-emp-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>ADDRESS</value>
+            </cell>
+            <cell id="gb-emp-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="gb-emp-r0c3" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>FILING STATUS</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-emp-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>none</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+            <cell id="gb-emp-r1c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2} {employeeAddressLine}</value>
+            </cell>
+            <cell id="gb-emp-r1c2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+            <cell id="gb-emp-r1c3" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="gb-per">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <borderTop>1px solid #B98A7A</borderTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="gb-per-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>PAY PERIOD</value>
+            </cell>
+            <cell id="gb-per-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>PAY DATE</value>
+            </cell>
+            <cell id="gb-per-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>SCHEDULE</value>
+            </cell>
+            <cell id="gb-per-r0c3" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>CHECK NO. / STUB NO.</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-per-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>none</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+            <cell id="gb-per-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+            <cell id="gb-per-r1c2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+            <cell id="gb-per-r1c3" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{checkNumber} / {stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section gb-ledger: the columnar ledger: description, hours, rate, then Earnings / Taxes / Deductions columns and year to date -->
+  <section id="gb-ledger">
+    <style>
+      <marginBottom>12px</marginBottom>
+    </style>
+    <column id="gb-ledger-col" width="100%">
+      <table id="gb-ledger-t">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="gb-ledger-t-h0">
+              <style>
+                <width>24%</width>
+                <textAlign>left</textAlign>
+                <padding>6px 7px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <borderLeft>none</borderLeft>
+              </style>
+              <label>DESCRIPTION</label>
+            </hd>
+            <hd id="gb-ledger-t-h1">
+              <style>
+                <width>9%</width>
+                <textAlign>right</textAlign>
+                <padding>6px 7px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <label>HOURS</label>
+            </hd>
+            <hd id="gb-ledger-t-h2">
+              <style>
+                <width>10%</width>
+                <textAlign>right</textAlign>
+                <padding>6px 7px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <label>RATE</label>
+            </hd>
+            <hd id="gb-ledger-t-h3">
+              <style>
+                <width>14%</width>
+                <textAlign>right</textAlign>
+                <padding>6px 7px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <label>EARNINGS</label>
+            </hd>
+            <hd id="gb-ledger-t-h4">
+              <style>
+                <width>14%</width>
+                <textAlign>right</textAlign>
+                <padding>6px 7px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <label>TAXES</label>
+            </hd>
+            <hd id="gb-ledger-t-h5">
+              <style>
+                <width>14%</width>
+                <textAlign>right</textAlign>
+                <padding>6px 7px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <label>DEDUCTIONS</label>
+            </hd>
+            <hd id="gb-ledger-t-h6">
+              <style>
+                <width>15%</width>
+                <textAlign>right</textAlign>
+                <padding>6px 7px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="gb-ledger-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="gb-ledger-t-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="gb-ledger-t-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="gb-ledger-t-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="gb-ledger-t-r0c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r0c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r0c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="gb-ledger-t-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="gb-ledger-t-r1c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r1c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="gb-ledger-t-r1c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r1c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r1c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="gb-ledger-t-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="gb-ledger-t-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="gb-ledger-t-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="gb-ledger-t-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="gb-ledger-t-r2c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r2c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r2c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="gb-ledger-t-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="gb-ledger-t-r3c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r3c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="gb-ledger-t-r3c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r3c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r3c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ledger-t-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="gb-ledger-t-r4c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r4c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r4c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r4c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="gb-ledger-t-r4c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r4c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ledger-t-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="gb-ledger-t-r5c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r5c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r5c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r5c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="gb-ledger-t-r5c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r5c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ledger-t-r6c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="gb-ledger-t-r6c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r6c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r6c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r6c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="gb-ledger-t-r6c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r6c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="gb-ledger-t-r7c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="gb-ledger-t-r7c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r7c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r7c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r7c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="gb-ledger-t-r7c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r7c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="gb-ledger-t-r8c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="gb-ledger-t-r8c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r8c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r8c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r8c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="gb-ledger-t-r8c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r8c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="gb-ledger-t-r9c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="gb-ledger-t-r9c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r9c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r9c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r9c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r9c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="gb-ledger-t-r9c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="gb-ledger-t-r10c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="gb-ledger-t-r10c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r10c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r10c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r10c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r10c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="gb-ledger-t-r10c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="gb-ledger-t-r11c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="gb-ledger-t-r11c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r11c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r11c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r11c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r11c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="gb-ledger-t-r11c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="gb-ledger-t-r12c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="gb-ledger-t-r12c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r12c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r12c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r12c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r12c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="gb-ledger-t-r12c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="gb-ledger-t-r13c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="gb-ledger-t-r13c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r13c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r13c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r13c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r13c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="gb-ledger-t-r13c6" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <color>#4B5563</color>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ledger-t-r14c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <height>25px</height>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r14c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r14c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r14c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r14c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r14c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r14c6" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ledger-t-r15c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <height>25px</height>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r15c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r15c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r15c3" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r15c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r15c5" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+            <cell id="gb-ledger-t-r15c6" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#E3F1E3</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ledger-t-r16c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <fontWeight>700</fontWeight>
+                <color>#1F2937</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+                <letterSpacing>1px</letterSpacing>
+              </style>
+              <value>TOTALS</value>
+            </cell>
+            <cell id="gb-ledger-t-r16c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <fontWeight>700</fontWeight>
+                <color>#1F2937</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="gb-ledger-t-r16c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <fontWeight>700</fontWeight>
+                <color>#1F2937</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="gb-ledger-t-r16c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <fontWeight>700</fontWeight>
+                <color>#1F2937</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="gb-ledger-t-r16c4" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <fontWeight>700</fontWeight>
+                <color>#1F2937</color>
+                <borderTop>2px solid #166534</borderTop>
+                <borderBottom>3px double #166534</borderBottom>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ledger-t-r17c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>8px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#166534</backgroundColor>
+                <color>#ffffff</color>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>NET PAY  (earnings less taxes and deductions)</value>
+            </cell>
+            <cell id="gb-ledger-t-r17c1" type="substitute" format="currency" colspan="3">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>8px 7px</padding>
+                <fontSize>13px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#166534</backgroundColor>
+                <borderLeft>none</borderLeft>
+                <color>#ffffff</color>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="gb-ledger-t-r17c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>8px 7px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <backgroundColor>#166534</backgroundColor>
+                <borderLeft>none</borderLeft>
+                <color>#ffffff</color>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section gb-ytd: year-to-date footings and how the net pay was paid -->
+  <section id="gb-ytd">
+    <column id="gb-ytd-col" width="100%">
+      <table id="gb-ytd-t">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <borderTop>1px solid #B98A7A</borderTop>
+          <borderBottom>2px solid #166534</borderBottom>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="gb-ytd-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>GROSS, YEAR TO DATE</value>
+            </cell>
+            <cell id="gb-ytd-t-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>TAXES, YEAR TO DATE</value>
+            </cell>
+            <cell id="gb-ytd-t-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>DEDUCTIONS, YEAR TO DATE</value>
+            </cell>
+            <cell id="gb-ytd-t-r0c3" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 8px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#166534</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+              </style>
+              <value>PAID BY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="gb-ytd-t-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>none</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+            <cell id="gb-ytd-t-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+            <cell id="gb-ytd-t-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+            <cell id="gb-ytd-t-r1c3" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 8px 5px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#1F2937</color>
+                <borderLeft>1px solid #B98A7A</borderLeft>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section gb-footer: one-line disclaimer -->
+  <section id="gb-footer">
+    <style>
+      <marginTop>20px</marginTop>
+    </style>
+    <column id="gb-footer-col" width="100%">
+      <table id="gb-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="gb-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#4B5563</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

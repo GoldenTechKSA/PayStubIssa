@@ -1,0 +1,1369 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Alternating Rows (alternating). Each ledger shares its row with a tinted card holding that
+    ledger's total, and the card changes sides on every row: Earnings with Gross Pay on the right, Total Taxes
+    on the left of Taxes, Deductions with their total on the right, then a full-width Net Pay bar. Employer and
+    employee head the page over a dark period strip. IBM Plex Sans, cyan accent, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#334155</color>
+    <fontSize>10.5px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section al-parties: employer (left) / employee (right) -->
+  <section id="al-parties">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="al-employer" width="48%">
+      <table id="al-employer-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-employer-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#0E7490</color>
+              </style>
+              <value>FROM</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-employer-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#0F172A</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-employer-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#0F172A</color>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="al-employer-t-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#64748B</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="al-employee" width="48%">
+      <table id="al-employee-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-employee-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#0E7490</color>
+              </style>
+              <value>TO</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-employee-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#0F172A</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-employee-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#0F172A</color>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2} {employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="al-employee-kv">
+        <cells>
+          <rowcells>
+            <cell id="al-employee-kv-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#64748B</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="al-employee-kv-r0c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#0F172A</color>
+                <paddingRight>14px</paddingRight>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+            <cell id="al-employee-kv-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#64748B</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="al-employee-kv-r0c3" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#0F172A</color>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="al-employee-id" renderIf="employeeInfo.employeeID">
+        <cells>
+          <rowcells>
+            <cell id="al-employee-id-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#64748B</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="al-employee-id-r0c1" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#0F172A</color>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section al-strip: dark strip: pay period, pay date, schedule, check and stub numbers -->
+  <section id="al-strip">
+    <style>
+      <backgroundColor>#164E63</backgroundColor>
+      <marginBottom>22px</marginBottom>
+    </style>
+    <column id="al-strip-col" width="100%">
+      <table id="al-strip-t">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-strip-t-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 6px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#A5F3FC</color>
+                <borderLeft>none</borderLeft>
+                <width>28%</width>
+              </style>
+              <value>PAY PERIOD</value>
+            </cell>
+            <cell id="al-strip-t-r0c1" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 6px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#A5F3FC</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+                <width>18%</width>
+              </style>
+              <value>PAY DATE</value>
+            </cell>
+            <cell id="al-strip-t-r0c2" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 6px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#A5F3FC</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+                <width>18%</width>
+              </style>
+              <value>SCHEDULE</value>
+            </cell>
+            <cell id="al-strip-t-r0c3" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 6px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#A5F3FC</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+                <width>18%</width>
+              </style>
+              <value>CHECK NO.</value>
+            </cell>
+            <cell id="al-strip-t-r0c4" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 6px 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#A5F3FC</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+                <width>18%</width>
+              </style>
+              <value>STUB NO.</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-strip-t-r1c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0 6px 7px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#ffffff</color>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+            <cell id="al-strip-t-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0 6px 7px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#ffffff</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+            <cell id="al-strip-t-r1c2" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0 6px 7px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#ffffff</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+            <cell id="al-strip-t-r1c3" type="substitute" format="text">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0 6px 7px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#ffffff</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+            <cell id="al-strip-t-r1c4" type="substitute" format="text">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0 6px 7px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>11px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#ffffff</color>
+                <borderLeft>1px solid #155E75</borderLeft>
+              </style>
+              <value>{stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section al-earn-row: Earnings ledger (left) / Gross Pay card (right) -->
+  <section id="al-earn-row">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>stretch</alignItems>
+      <marginBottom>18px</marginBottom>
+    </style>
+    <column id="al-earn-col" width="65%">
+      <table id="al-earn">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="al-earn-h0">
+              <style>
+                <width>26%</width>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>10px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#164E63</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>EARNINGS</label>
+            </hd>
+            <hd id="al-earn-h1">
+              <style>
+                <width>12%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>HOURS</label>
+            </hd>
+            <hd id="al-earn-h2">
+              <style>
+                <width>14%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>RATE</label>
+            </hd>
+            <hd id="al-earn-h3">
+              <style>
+                <width>23%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="al-earn-h4">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="al-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="al-earn-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="al-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="al-earn-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="al-earn-r0c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="al-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="al-earn-r1c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="al-earn-r1c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="al-earn-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="al-earn-r1c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="al-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="al-earn-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="al-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="al-earn-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="al-earn-r2c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="al-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="al-earn-r3c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="al-earn-r3c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="al-earn-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="al-earn-r3c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="al-gross-col" width="31%">
+      <style>
+        <backgroundColor>#ECFEFF</backgroundColor>
+        <border>1px solid #CFFAFE</border>
+        <padding>14px 8px</padding>
+        <display>flex</display>
+        <flexDirection>column</flexDirection>
+        <justifyContent>center</justifyContent>
+      </style>
+      <table id="al-gross">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-gross-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#0E7490</color>
+              </style>
+              <value>GROSS PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-gross-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>21px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#164E63</color>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-gross-r2c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 5px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#64748B</color>
+                <width>50%</width>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="al-gross-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#334155</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section al-tax-row: Total Taxes card (left) / Taxes ledger (right) -->
+  <section id="al-tax-row">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>stretch</alignItems>
+      <marginBottom>18px</marginBottom>
+    </style>
+    <column id="al-taxes-col" width="31%">
+      <style>
+        <backgroundColor>#ECFEFF</backgroundColor>
+        <border>1px solid #CFFAFE</border>
+        <padding>14px 8px</padding>
+        <display>flex</display>
+        <flexDirection>column</flexDirection>
+        <justifyContent>center</justifyContent>
+      </style>
+      <table id="al-taxes">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-taxes-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#0E7490</color>
+              </style>
+              <value>TOTAL TAXES</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-taxes-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>21px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#164E63</color>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-taxes-r2c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 5px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#64748B</color>
+                <width>50%</width>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="al-taxes-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#334155</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="al-tax-col" width="65%">
+      <table id="al-tax">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="al-tax-h0">
+              <style>
+                <width>52%</width>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>10px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#164E63</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>TAXES</label>
+            </hd>
+            <hd id="al-tax-h1">
+              <style>
+                <width>23%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="al-tax-h2">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="al-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="al-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="al-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="al-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="al-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="al-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="al-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="al-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="al-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="al-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="al-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="al-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="al-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section al-ded-row: Deductions ledger (left) / Total Deductions card (right); hidden when the employee has none -->
+  <section id="al-ded-row" renderIf="totalDeductionsYTD">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>stretch</alignItems>
+      <marginBottom>18px</marginBottom>
+    </style>
+    <column id="al-ded-col" width="65%">
+      <table id="al-ded">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="al-ded-h0">
+              <style>
+                <width>52%</width>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>10px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#164E63</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>DEDUCTIONS</label>
+            </hd>
+            <hd id="al-ded-h1">
+              <style>
+                <width>23%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="al-ded-h2">
+              <style>
+                <width>25%</width>
+                <textAlign>right</textAlign>
+                <padding>0 0 4px</padding>
+                <fontSize>8.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#64748B</color>
+                <borderBottom>2px solid #0E7490</borderBottom>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="al-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="al-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="al-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="al-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="al-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="al-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="al-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="al-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="al-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="al-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="al-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="al-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="al-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="al-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="al-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <borderBottom>1px solid #E2E8F0</borderBottom>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="al-deds-col" width="31%">
+      <style>
+        <backgroundColor>#ECFEFF</backgroundColor>
+        <border>1px solid #CFFAFE</border>
+        <padding>14px 8px</padding>
+        <display>flex</display>
+        <flexDirection>column</flexDirection>
+        <justifyContent>center</justifyContent>
+      </style>
+      <table id="al-deds">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-deds-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#0E7490</color>
+              </style>
+              <value>TOTAL DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-deds-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>21px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#164E63</color>
+                <lineHeight>1.3</lineHeight>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-deds-r2c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 5px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#64748B</color>
+                <width>50%</width>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="al-deds-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#334155</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section al-net: full-width Net Pay bar -->
+  <section id="al-net">
+    <style>
+      <backgroundColor>#0E7490</backgroundColor>
+      <padding>14px 18px</padding>
+      <alignItems>center</alignItems>
+    </style>
+    <column id="al-net-left" width="55%">
+      <table id="al-net-how">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-net-how-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>3px</letterSpacing>
+                <color>#ffffff</color>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-net-how-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#A5F3FC</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="al-net-right" width="45%">
+      <table id="al-net-amt">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-net-amt-r0c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>24px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <lineHeight>1.1</lineHeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="al-net-amt-r1c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#A5F3FC</color>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="al-net-amt-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10px</fontSize>
+                <color>#ffffff</color>
+                <paddingTop>2px</paddingTop>
+                <width>1%</width>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section al-footer: one-line disclaimer -->
+  <section id="al-footer">
+    <style>
+      <marginTop>22px</marginTop>
+    </style>
+    <column id="al-footer-col" width="100%">
+      <table id="al-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="al-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#64748B</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>
