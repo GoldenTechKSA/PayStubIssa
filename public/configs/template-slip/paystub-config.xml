@@ -1,0 +1,1138 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Slip, Compact (slip). One narrow, centred slip inside a single outline, read top to bottom like a
+    till receipt: employer, the slip's particulars as label / value pairs, earnings, taxes, deductions, and a
+    boxed net pay, with dashed rules between the parts. Every amount is in one right-hand column, with year
+    to date beside it. Roboto, black and gray only, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>Roboto, 'Helvetica Neue', Arial, sans-serif</fontFamily>
+    <color>#1A1A1A</color>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>8px 0 0</padding>
+  </style>
+  <!-- Section sl-slip: the whole slip in one outlined, centred column -->
+  <section id="sl-slip">
+    <style>
+      <justifyContent>center</justifyContent>
+    </style>
+    <column id="sl-col" width="60%">
+      <style>
+        <border>1px solid #1A1A1A</border>
+        <padding>18px 26px 14px</padding>
+      </style>
+      <table id="sl-head">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sl-head-r0c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>16px</fontSize>
+                <fontWeight>700</fontWeight>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-head-r1c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B6B6B</color>
+                <paddingTop>2px</paddingTop>
+              </style>
+              <value>{companyInfo.companyAddress1} {companyInfo.companyAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-head-r2c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B6B6B</color>
+              </style>
+              <value>{companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="sl-head-r3c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B6B6B</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-head-r4c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>13px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>6px</letterSpacing>
+                <paddingTop>10px</paddingTop>
+              </style>
+              <value>PAY SLIP</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-who">
+        <style>
+          <width>100%</width>
+          <borderTop>1px dashed #6B6B6B</borderTop>
+          <marginTop>8px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sl-who-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+                <paddingTop>8px</paddingTop>
+              </style>
+              <value>Employee</value>
+            </cell>
+            <cell id="sl-who-r0c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+                <paddingTop>8px</paddingTop>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-who-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Address</value>
+            </cell>
+            <cell id="sl-who-r1c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-who-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sl-who-r2c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-who-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="sl-who-r3c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="sl-who-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="sl-who-r4c1" type="substitute" format="text">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-who-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="sl-who-r5c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-when">
+        <style>
+          <width>100%</width>
+          <borderTop>1px dashed #6B6B6B</borderTop>
+          <marginTop>8px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sl-when-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+                <paddingTop>8px</paddingTop>
+              </style>
+              <value>Pay period</value>
+            </cell>
+            <cell id="sl-when-r0c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+                <paddingTop>8px</paddingTop>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-when-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="sl-when-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-when-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Pay schedule</value>
+            </cell>
+            <cell id="sl-when-r2c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-when-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Check no.</value>
+            </cell>
+            <cell id="sl-when-r3c1" type="substitute" format="text">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-earn">
+        <style>
+          <width>100%</width>
+          <borderTop>1px dashed #6B6B6B</borderTop>
+          <marginTop>8px</marginTop>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sl-earn-h0">
+              <style>
+                <width>24%</width>
+                <textAlign>left</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>EARNINGS</label>
+            </hd>
+            <hd id="sl-earn-h1">
+              <style>
+                <width>12%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>HRS</label>
+            </hd>
+            <hd id="sl-earn-h2">
+              <style>
+                <width>16%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>RATE</label>
+            </hd>
+            <hd id="sl-earn-h3">
+              <style>
+                <width>22%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="sl-earn-h4">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="sl-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="sl-earn-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="sl-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="sl-earn-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="sl-earn-r0c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="sl-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="sl-earn-r1c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sl-earn-r1c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sl-earn-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="sl-earn-r1c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="sl-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="sl-earn-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="sl-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="sl-earn-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="sl-earn-r2c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="sl-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="sl-earn-r3c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sl-earn-r3c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sl-earn-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="sl-earn-r3c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-earn-r4c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>Gross pay</value>
+            </cell>
+            <cell id="sl-earn-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="sl-earn-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-tax">
+        <style>
+          <width>100%</width>
+          <borderTop>1px dashed #6B6B6B</borderTop>
+          <marginTop>8px</marginTop>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sl-tax-h0">
+              <style>
+                <width>46%</width>
+                <textAlign>left</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>TAXES</label>
+            </hd>
+            <hd id="sl-tax-h1">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="sl-tax-h2">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="sl-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="sl-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="sl-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="sl-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="sl-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="sl-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="sl-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="sl-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="sl-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="sl-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="sl-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="sl-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="sl-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-tax-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>Total taxes</value>
+            </cell>
+            <cell id="sl-tax-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="sl-tax-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-ded" renderIf="totalDeductionsYTD">
+        <style>
+          <width>100%</width>
+          <borderTop>1px dashed #6B6B6B</borderTop>
+          <marginTop>8px</marginTop>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sl-ded-h0">
+              <style>
+                <width>46%</width>
+                <textAlign>left</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>DEDUCTIONS</label>
+            </hd>
+            <hd id="sl-ded-h1">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="sl-ded-h2">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>8px 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#1A1A1A</color>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="sl-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="sl-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="sl-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="sl-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="sl-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="sl-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="sl-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="sl-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="sl-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="sl-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="sl-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="sl-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="sl-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="sl-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="sl-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1.5px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-ded-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>Total deductions</value>
+            </cell>
+            <cell id="sl-ded-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="sl-ded-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-net">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sl-net-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 12px</padding>
+                <fontSize>13px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <borderTop>2px solid #1A1A1A</borderTop>
+                <borderBottom>2px solid #1A1A1A</borderBottom>
+                <borderLeft>2px solid #1A1A1A</borderLeft>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+            <cell id="sl-net-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px</padding>
+                <fontSize>20px</fontSize>
+                <fontWeight>700</fontWeight>
+                <borderTop>2px solid #1A1A1A</borderTop>
+                <borderBottom>2px solid #1A1A1A</borderBottom>
+                <borderRight>2px solid #1A1A1A</borderRight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-paid">
+        <style>
+          <width>100%</width>
+          <marginTop>8px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sl-paid-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Paid by</value>
+            </cell>
+            <cell id="sl-paid-r0c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sl-paid-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#6B6B6B</color>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>Net pay, year to date</value>
+            </cell>
+            <cell id="sl-paid-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>1px 0</padding>
+                <fontSize>11px</fontSize>
+                <color>#1A1A1A</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sl-foot">
+        <style>
+          <width>100%</width>
+          <borderTop>1px dashed #6B6B6B</borderTop>
+          <marginTop>12px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sl-foot-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <color>#6B6B6B</color>
+                <paddingTop>10px</paddingTop>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

@@ -1,0 +1,1766 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Statement, Numbered Boxes (box-form). Laid out like a government wage form: every fact sits in its
+    own ruled box with a small caption, lettered boxes (a-l) for who and when, numbered boxes (1-19) for
+    money. Each money box shows this period in monospaced figures with the year-to-date amount beneath.
+    Earnings, taxes and deductions are each one row of boxes under a black band. Black and gray only, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#111111</color>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.3</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section bf-title: form title (left) / form caption (right) -->
+  <section id="bf-title">
+    <style>
+      <alignItems>flex-end</alignItems>
+      <borderBottom>3px solid #111111</borderBottom>
+      <paddingBottom>6px</paddingBottom>
+      <marginBottom>10px</marginBottom>
+    </style>
+    <column id="bf-title-left" width="60%">
+      <table id="bf-title-t">
+        <cells>
+          <rowcells>
+            <cell id="bf-title-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>22px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#111111</color>
+              </style>
+              <value>PAY STATEMENT</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="bf-title-right" width="40%">
+      <table id="bf-title-c">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-title-c-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <fontSize>9.5px</fontSize>
+                <color>#555555</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Statement of wages paid and amounts withheld</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-title-c-r1c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <fontSize>9.5px</fontSize>
+                <color>#555555</color>
+              </style>
+              <value>Stub no. {stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bf-form: the whole form: identity boxes, then Earnings, Taxes Withheld, Deductions and Net Pay rows of boxes -->
+  <section id="bf-form">
+    <column id="bf-form-col" width="100%">
+      <table id="bf-employer">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-employer-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>a  Employer name</value>
+            </cell>
+            <cell id="bf-employer-r0c1" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>b  Employer address</value>
+            </cell>
+            <cell id="bf-employer-r0c2" type="static" colspan="1">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>c  Employer identification number (EIN)</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-employer-r1c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <paddingBottom>6px</paddingBottom>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+            <cell id="bf-employer-r1c1" type="substitute" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <paddingBottom>6px</paddingBottom>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+            <cell id="bf-employer-r1c2" type="substitute" format="text" colspan="1">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <paddingBottom>6px</paddingBottom>
+              </style>
+              <value>{companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-employee">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>-1px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-employee-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>d  Employee name</value>
+            </cell>
+            <cell id="bf-employee-r0c1" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>e  Employee address</value>
+            </cell>
+            <cell id="bf-employee-r0c2" type="static" colspan="1">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>f  Social Security number</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-employee-r1c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <paddingBottom>6px</paddingBottom>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+            <cell id="bf-employee-r1c1" type="substitute" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <paddingBottom>6px</paddingBottom>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2} {employeeAddressLine}</value>
+            </cell>
+            <cell id="bf-employee-r1c2" type="substitute" colspan="1">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <paddingBottom>6px</paddingBottom>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-period">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>-1px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-period-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>g  Pay period</value>
+            </cell>
+            <cell id="bf-period-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>h  Pay date</value>
+            </cell>
+            <cell id="bf-period-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>i  Pay schedule</value>
+            </cell>
+            <cell id="bf-period-r0c3" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>j  Filing status</value>
+            </cell>
+            <cell id="bf-period-r0c4" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>k  Employee ID</value>
+            </cell>
+            <cell id="bf-period-r0c5" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>l  Check number</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-period-r1c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+            <cell id="bf-period-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+            <cell id="bf-period-r1c2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+            <cell id="bf-period-r1c3" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+            <cell id="bf-period-r1c4" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+            <cell id="bf-period-r1c5" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-earn-band">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-earn-band-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 7px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#111111</backgroundColor>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-hours" renderIf="isHourly">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-hours-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>Regular hours</value>
+            </cell>
+            <cell id="bf-hours-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>Hourly rate</value>
+            </cell>
+            <cell id="bf-hours-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>Overtime hours</value>
+            </cell>
+            <cell id="bf-hours-r0c3" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>Overtime rate</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-hours-r1c0" type="substitute" format="number">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="bf-hours-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="bf-hours-r1c2" type="substitute" format="number">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="bf-hours-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>1px 6px 4px</padding>
+                <fontSize>11.5px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-earn">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>-1px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-earn-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>1  Regular wages or salary</value>
+            </cell>
+            <cell id="bf-earn-r0c1" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>2  Overtime pay</value>
+            </cell>
+            <cell id="bf-earn-r0c2" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>3  Bonus</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-earn-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="bf-earn-r1c1" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="bf-earn-r1c2" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-earn-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+            <cell id="bf-earn-r2c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-earn-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+            <cell id="bf-earn-r2c4" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-earn-r2c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-gross">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>-1px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-gross-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>4  Gross pay (boxes 1 + 2 + 3)</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-gross-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <backgroundColor>#F2F2F2</backgroundColor>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-gross-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-gross-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-tax-band">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-tax-band-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 7px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#111111</backgroundColor>
+              </style>
+              <value>TAXES WITHHELD</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-tax">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-tax-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>5  Federal income tax</value>
+            </cell>
+            <cell id="bf-tax-r0c1" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>6  Social Security tax</value>
+            </cell>
+            <cell id="bf-tax-r0c2" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>7  Medicare tax</value>
+            </cell>
+            <cell id="bf-tax-r0c3" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>8  State income tax</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-tax-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="bf-tax-r1c1" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="bf-tax-r1c2" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="bf-tax-r1c3" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+            <cell id="bf-tax-r2c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-tax-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+            <cell id="bf-tax-r2c4" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-tax-r2c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+            <cell id="bf-tax-r2c6" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-tax-r2c7" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-tax-leave" renderIf="paidLeave">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>-1px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-tax-leave-r0c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>9  State paid leave: {paidLeaveLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-tax-leave-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-tax-leave-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-tax-leave-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-tax-total">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>-1px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-tax-total-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>10  Total taxes withheld (boxes 5 through 9)</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-tax-total-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <backgroundColor>#F2F2F2</backgroundColor>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-tax-total-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-tax-total-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-ded-band">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-ded-band-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 7px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#111111</backgroundColor>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-ded">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-ded-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>11  Medical</value>
+            </cell>
+            <cell id="bf-ded-r0c1" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>12  Dental</value>
+            </cell>
+            <cell id="bf-ded-r0c2" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>13  Vision</value>
+            </cell>
+            <cell id="bf-ded-r0c3" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>14  401(k)</value>
+            </cell>
+            <cell id="bf-ded-r0c4" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+              </style>
+              <value>15  Other</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-ded-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="bf-ded-r1c1" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="bf-ded-r1c2" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="bf-ded-r1c3" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="bf-ded-r1c4" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+            <cell id="bf-ded-r2c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-ded-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+            <cell id="bf-ded-r2c4" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-ded-r2c5" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+            <cell id="bf-ded-r2c6" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-ded-r2c7" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+            <cell id="bf-ded-r2c8" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-ded-r2c9" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-ded-total">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginTop>-1px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-ded-total-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>1px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>16  Total deductions (boxes 11 through 15)</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-ded-total-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>none</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <backgroundColor>#F2F2F2</backgroundColor>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-ded-total-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 4px 6px</padding>
+                <fontSize>8px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderBottom>1px solid #111111</borderBottom>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>YTD</value>
+            </cell>
+            <cell id="bf-ded-total-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0 6px 4px 0</padding>
+                <fontSize>9.5px</fontSize>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <color>#555555</color>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>1px solid #111111</borderBottom>
+                <backgroundColor>#F2F2F2</backgroundColor>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-net-band">
+        <style>
+          <width>100%</width>
+          <marginTop>12px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-net-band-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 7px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#111111</backgroundColor>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="bf-net">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-net-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>3px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>3px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <width>40%</width>
+              </style>
+              <value>17  Net pay (box 4 less boxes 10 and 16)</value>
+            </cell>
+            <cell id="bf-net-r0c1" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderTop>3px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <width>24%</width>
+              </style>
+              <value>18  Net pay, year to date</value>
+            </cell>
+            <cell id="bf-net-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px 0</padding>
+                <fontSize>8.5px</fontSize>
+                <color>#555555</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>3px solid #111111</borderRight>
+                <borderTop>3px solid #111111</borderTop>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <width>36%</width>
+              </style>
+              <value>19  Paid by</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="bf-net-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 8px 6px</padding>
+                <fontSize>22px</fontSize>
+                <color>#111111</color>
+                <borderLeft>3px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>3px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>top</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="bf-net-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 8px 8px</padding>
+                <fontSize>13px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>1px solid #111111</borderRight>
+                <borderBottom>3px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>bottom</verticalAlign>
+                <fontFamily>'IBM Plex Mono', Consolas, 'DejaVu Sans Mono', monospace</fontFamily>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+            <cell id="bf-net-r1c2" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2px 8px 8px</padding>
+                <fontSize>11px</fontSize>
+                <color>#111111</color>
+                <borderLeft>1px solid #111111</borderLeft>
+                <borderRight>3px solid #111111</borderRight>
+                <borderBottom>3px solid #111111</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <verticalAlign>bottom</verticalAlign>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section bf-footer: one-line disclaimer -->
+  <section id="bf-footer">
+    <style>
+      <marginTop>14px</marginTop>
+    </style>
+    <column id="bf-footer-col" width="100%">
+      <table id="bf-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="bf-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#555555</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

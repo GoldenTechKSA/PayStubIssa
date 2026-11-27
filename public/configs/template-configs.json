@@ -61,5 +61,82 @@
     "imageName": "paystub-logo-header.png",
     "title": "Small Business Paystub — Logo Header",
     "description": "A clean two-column stub for a small business: your logo beside the employer block above a green rule, employee and pay period side by side, then pay and deductions, taxes and a boxed summary with net pay. Upload a logo on the Company step and it prints in the header; without one the employer block simply moves to the left edge."
+  },
+  {
+    "imageFile": "templates/thumb-blue-panels.png",
+    "configFile": "/configs/template-blue-panels/paystub-config.xml",
+    "imageName": "paystub-blue-panels.png",
+    "title": "Earnings Statement — Blue Panels",
+    "description": "A blue-accented statement: your logo and company name at the top, gray employee and pay-period panels with a blue bar, blue-banded earnings and taxes / deductions tables side by side, and boxed year-to-date and current totals closing on a blue Net Pay band. Shows the pay schedule and payment method."
+  },
+  {
+    "imageFile": "templates/thumb-sidebar.png",
+    "configFile": "/configs/template-sidebar/paystub-config.xml",
+    "imageName": "paystub-sidebar.png",
+    "title": "Pay Stub — Dark Sidebar",
+    "description": "A full-height slate sidebar carries your logo, the employer, the pay period, the employee and the net pay, while the white area beside it lists earnings, taxes and deductions with this-period and year-to-date columns. One teal accent; the logo slot closes up when no logo is uploaded."
+  },
+  {
+    "imageFile": "templates/thumb-letterhead.png",
+    "configFile": "/configs/template-letterhead/paystub-config.xml",
+    "imageName": "paystub-letterhead.png",
+    "title": "Statement of Earnings — Centered Letterhead",
+    "description": "A formal serif statement: your logo and company name centred over a double wine-red rule, two ruled strips for the employee and the pay period, then full-width earnings, taxes and deductions ledgers that close on a gross-less-taxes-less-deductions reckoning of net pay."
+  },
+  {
+    "imageFile": "templates/thumb-net-first.png",
+    "configFile": "/configs/template-net-first/paystub-config.xml",
+    "imageName": "paystub-net-first.png",
+    "title": "Pay Stub — Take-Home First",
+    "description": "Leads with the number the employee looks for: net pay in large green figures, then an equation strip (gross − taxes − deductions = net) and one running ledger that walks from earnings through taxes and deductions down to a green Net Pay band. Employer and employee details sit at the foot."
+  },
+  {
+    "imageFile": "templates/thumb-tri-column.png",
+    "configFile": "/configs/template-tri-column/paystub-config.xml",
+    "imageName": "paystub-tri-column.png",
+    "title": "Pay Stub — Three Columns",
+    "description": "Earnings, taxes and deductions as three equal navy-headed cards in a single row, each with its total directly beneath, under a navy PAY STUB block with a four-cell period strip and closing on a full-width Net Pay band. Hours and rates print on one line for hourly employees."
+  },
+  {
+    "imageFile": "templates/thumb-period-ytd.png",
+    "configFile": "/configs/template-period-ytd/paystub-config.xml",
+    "imageName": "paystub-period-ytd.png",
+    "title": "Earnings Statement — This Period & Year to Date",
+    "description": "Split by time instead of by category: a white This Period panel and an indigo-tinted Year to Date panel side by side, each listing earnings, taxes and deductions and ending in its own Net Pay bar, with the rows lined up across. Your logo and company name head the page."
+  },
+  {
+    "imageFile": "templates/thumb-box-form.png",
+    "configFile": "/configs/template-box-form/paystub-config.xml",
+    "imageName": "paystub-box-form.png",
+    "title": "Pay Statement — Numbered Boxes",
+    "description": "Laid out like a government wage form: every fact in its own ruled, captioned box, lettered for who and when and numbered for money, with this-period figures in monospaced type and the year-to-date amount beneath each. Black and gray only."
+  },
+  {
+    "imageFile": "templates/thumb-tiles.png",
+    "configFile": "/configs/template-tiles/paystub-config.xml",
+    "imageName": "paystub-tiles.png",
+    "title": "Pay Stub — Summary Tiles",
+    "description": "Opens with four rounded tiles (gross pay, taxes, deductions and a solid teal net pay), each with its year-to-date figure, above rounded cards for earnings, taxes, deductions and the pay details. Your logo and company sit at the top left, the employee at the top right."
+  },
+  {
+    "imageFile": "templates/thumb-margin-labels.png",
+    "configFile": "/configs/template-margin-labels/paystub-config.xml",
+    "imageName": "paystub-margin-labels.png",
+    "title": "Pay Stub — Minimal",
+    "description": "No boxes and no fills: black hairlines, light type and plenty of space, with the name of each part (Employer, Employee, Pay period, Earnings, Taxes, Deductions, Net pay) set in the left margin and net pay closing the page in large figures. Black and gray only."
+  },
+  {
+    "imageFile": "templates/thumb-slip.png",
+    "configFile": "/configs/template-slip/paystub-config.xml",
+    "imageName": "paystub-slip.png",
+    "title": "Pay Slip — Compact",
+    "description": "One narrow, centred slip inside a single outline, read top to bottom: employer, the particulars as label and value pairs, earnings, taxes, deductions and a boxed net pay, separated by dashed rules. Black and gray only."
+  },
+  {
+    "imageFile": "templates/thumb-spine.png",
+    "configFile": "/configs/template-spine/paystub-config.xml",
+    "imageName": "paystub-spine.png",
+    "title": "Pay Stub — Center Spine",
+    "description": "A dark spine down the middle of the page carries the employee and four boxed totals (earnings, taxes, deductions and net pay in gold) above your logo and company name, with earnings and pay details to its left and taxes and deductions to its right."
   }
 ]

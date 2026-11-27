@@ -1,0 +1,1388 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Three Columns (tri-column). A navy PAY STUB block beside a four-cell period strip, the
+    employer and employee side by side, then the three things a stub must show (Earnings, Taxes,
+    Deductions) as three equal cards in one row, each with its total directly beneath, and a full-width
+    navy Net Pay band. Hours and rates sit in one line under the cards. Roboto, navy accent, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>Roboto, 'Helvetica Neue', Arial, sans-serif</fontFamily>
+    <color>#1F2933</color>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section tc-head: navy PAY STUB block (left) / period start, period end, pay date, check number strip (right) -->
+  <section id="tc-head">
+    <style>
+      <alignItems>stretch</alignItems>
+      <marginBottom>22px</marginBottom>
+    </style>
+    <column id="tc-head-block" width="27%">
+      <style>
+        <backgroundColor>#1E3A5F</backgroundColor>
+      </style>
+      <table id="tc-block">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-block-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>15px 6px</padding>
+                <fontSize>19px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>4px</letterSpacing>
+                <color>#ffffff</color>
+              </style>
+              <value>PAY STUB</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="tc-head-strip" width="73%">
+      <style>
+        <borderLeft>2px solid #ffffff</borderLeft>
+      </style>
+      <table id="tc-strip">
+        <style>
+          <width>100%</width>
+          <height>100%</height>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-strip-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>5px 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#1E3A5F</color>
+                <backgroundColor>#C9D6E5</backgroundColor>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>PERIOD START</value>
+            </cell>
+            <cell id="tc-strip-r0c1" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>5px 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#1E3A5F</color>
+                <backgroundColor>#C9D6E5</backgroundColor>
+                <borderLeft>2px solid #ffffff</borderLeft>
+              </style>
+              <value>PERIOD END</value>
+            </cell>
+            <cell id="tc-strip-r0c2" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>5px 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#1E3A5F</color>
+                <backgroundColor>#C9D6E5</backgroundColor>
+                <borderLeft>2px solid #ffffff</borderLeft>
+              </style>
+              <value>PAY DATE</value>
+            </cell>
+            <cell id="tc-strip-r0c3" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>5px 4px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#1E3A5F</color>
+                <backgroundColor>#C9D6E5</backgroundColor>
+                <borderLeft>2px solid #ffffff</borderLeft>
+              </style>
+              <value>CHECK NO.</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-strip-r1c0" type="substitute" format="date">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>8px 4px</padding>
+                <fontSize>12px</fontSize>
+                <fontWeight>500</fontWeight>
+                <color>#1F2933</color>
+                <backgroundColor>#E8EEF5</backgroundColor>
+                <borderLeft>none</borderLeft>
+              </style>
+              <value>{incomeDetails.periodStartDate}</value>
+            </cell>
+            <cell id="tc-strip-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>8px 4px</padding>
+                <fontSize>12px</fontSize>
+                <fontWeight>500</fontWeight>
+                <color>#1F2933</color>
+                <backgroundColor>#E8EEF5</backgroundColor>
+                <borderLeft>2px solid #ffffff</borderLeft>
+              </style>
+              <value>{incomeDetails.periodEndDate}</value>
+            </cell>
+            <cell id="tc-strip-r1c2" type="substitute" format="date">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>8px 4px</padding>
+                <fontSize>12px</fontSize>
+                <fontWeight>500</fontWeight>
+                <color>#1F2933</color>
+                <backgroundColor>#E8EEF5</backgroundColor>
+                <borderLeft>2px solid #ffffff</borderLeft>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+            <cell id="tc-strip-r1c3" type="substitute" format="text">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>8px 4px</padding>
+                <fontSize>12px</fontSize>
+                <fontWeight>500</fontWeight>
+                <color>#1F2933</color>
+                <backgroundColor>#E8EEF5</backgroundColor>
+                <borderLeft>2px solid #ffffff</borderLeft>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section tc-parties: employer (left) / employee (right) -->
+  <section id="tc-parties">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <marginBottom>26px</marginBottom>
+    </style>
+    <column id="tc-employer" width="48%">
+      <table id="tc-employer-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-employer-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#1E3A5F</color>
+              </style>
+              <value>EMPLOYER</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-employer-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>14px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-employer-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress1}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyAddress2">
+            <cell id="tc-employer-t-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyInfo.companyAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-employer-t-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="tc-employer-t-r5c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+                <color>#52606D</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="tc-employee" width="48%">
+      <table id="tc-employee-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-employee-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0 0 3px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#1E3A5F</color>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-employee-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>14px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-employee-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-employee-t-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="tc-employee-kv">
+        <style>
+          <marginTop>4px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-employee-kv-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+                <color>#52606D</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="tc-employee-kv-r0c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="tc-employee-kv-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+                <color>#52606D</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="tc-employee-kv-r1c1" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-employee-kv-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>nowrap</whiteSpace>
+                <color>#52606D</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="tc-employee-kv-r2c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section tc-cards: Earnings card / Taxes card / Deductions card -->
+  <section id="tc-cards">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>stretch</alignItems>
+    </style>
+    <column id="tc-earn-col" width="32.4%">
+      <style>
+        <border>1px solid #C9D6E5</border>
+      </style>
+      <table id="tc-earn">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="tc-earn-h0">
+              <style>
+                <width>41%</width>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>EARNINGS</label>
+            </hd>
+            <hd id="tc-earn-h1">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="tc-earn-h2">
+              <style>
+                <width>31%</width>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="tc-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="tc-earn-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="tc-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="tc-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="tc-earn-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="tc-earn-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="tc-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="tc-earn-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="tc-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="tc-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="tc-earn-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="tc-earn-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="tc-tax-col" width="32.4%">
+      <style>
+        <border>1px solid #C9D6E5</border>
+      </style>
+      <table id="tc-tax">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="tc-tax-h0">
+              <style>
+                <width>41%</width>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>TAXES</label>
+            </hd>
+            <hd id="tc-tax-h1">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="tc-tax-h2">
+              <style>
+                <width>31%</width>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="tc-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Federal Tax</value>
+            </cell>
+            <cell id="tc-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="tc-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="tc-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="tc-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="tc-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="tc-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="tc-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="tc-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="tc-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="tc-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="tc-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="tc-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="tc-ded-col" width="32.4%">
+      <style>
+        <border>1px solid #C9D6E5</border>
+      </style>
+      <table id="tc-ded">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <header>
+          <hdata>
+            <hd id="tc-ded-h0">
+              <style>
+                <width>41%</width>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>DEDUCTIONS</label>
+            </hd>
+            <hd id="tc-ded-h1">
+              <style>
+                <width>28%</width>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>CURRENT</label>
+            </hd>
+            <hd id="tc-ded-h2">
+              <style>
+                <width>31%</width>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#1E3A5F</backgroundColor>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="tc-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="tc-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="tc-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="tc-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="tc-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="tc-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="tc-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="tc-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="tc-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="tc-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="tc-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="tc-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F5F7FA</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="tc-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="tc-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="tc-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="!totalDeductionsYTD">
+            <cell id="tc-ded-r5c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>7px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <whiteSpace>normal</whiteSpace>
+                <color>#52606D</color>
+                <fontStyle>italic</fontStyle>
+              </style>
+              <value>No deductions</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section tc-totals: the total of each card, in the same three columns -->
+  <section id="tc-totals">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <marginBottom>18px</marginBottom>
+    </style>
+    <column id="tc-earn-tot" width="32.4%">
+      <style>
+        <backgroundColor>#E8EEF5</backgroundColor>
+        <borderTop>2px solid #1E3A5F</borderTop>
+      </style>
+      <table id="tc-gross">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-gross-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>41%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="tc-gross-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>28%</width>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="tc-gross-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>31%</width>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="tc-tax-tot" width="32.4%">
+      <style>
+        <backgroundColor>#E8EEF5</backgroundColor>
+        <borderTop>2px solid #1E3A5F</borderTop>
+      </style>
+      <table id="tc-taxes">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-taxes-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>41%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="tc-taxes-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>28%</width>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="tc-taxes-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>31%</width>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="tc-ded-tot" width="32.4%">
+      <style>
+        <backgroundColor>#E8EEF5</backgroundColor>
+        <borderTop>2px solid #1E3A5F</borderTop>
+      </style>
+      <table id="tc-deds">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-deds-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>41%</width>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Total Deducted</value>
+            </cell>
+            <cell id="tc-deds-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>28%</width>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="tc-deds-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>9px 5px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E3A5F</color>
+                <width>31%</width>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section tc-hours: hours and rates behind the earnings (hourly employees only) -->
+  <section id="tc-hours" renderIf="isHourly">
+    <style>
+      <marginBottom>20px</marginBottom>
+      <borderBottom>1px solid #C9D6E5</borderBottom>
+      <paddingBottom>10px</paddingBottom>
+    </style>
+    <column id="tc-hours-col" width="100%">
+      <table id="tc-hours-t">
+        <cells>
+          <rowcells>
+            <cell id="tc-hours-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#52606D</color>
+              </style>
+              <value>Regular hours</value>
+            </cell>
+            <cell id="tc-hours-t-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 26px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#1F2933</color>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="tc-hours-t-r0c2" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#52606D</color>
+              </style>
+              <value>Hourly rate</value>
+            </cell>
+            <cell id="tc-hours-t-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 26px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#1F2933</color>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="tc-hours-t-r0c4" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#52606D</color>
+              </style>
+              <value>Overtime hours</value>
+            </cell>
+            <cell id="tc-hours-t-r0c5" type="substitute" format="number">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 26px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#1F2933</color>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="tc-hours-t-r0c6" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#52606D</color>
+              </style>
+              <value>Overtime rate</value>
+            </cell>
+            <cell id="tc-hours-t-r0c7" type="substitute" format="currency">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 26px 4px 0</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#1F2933</color>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section tc-net: navy Net Pay band with the payment method and year-to-date net -->
+  <section id="tc-net">
+    <style>
+      <backgroundColor>#1E3A5F</backgroundColor>
+      <padding>18px 20px</padding>
+      <alignItems>center</alignItems>
+    </style>
+    <column id="tc-net-left" width="58%">
+      <table id="tc-net-how">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-net-how-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>2px</letterSpacing>
+                <color>#ffffff</color>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-net-how-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>2px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#C9D6E5</color>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paymentMethodLabel}  ·  {incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="tc-net-right" width="42%">
+      <table id="tc-net-amt">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-net-amt-r0c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <fontSize>24px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <lineHeight>1.1</lineHeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="tc-net-amt-r1c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 6px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#C9D6E5</color>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="tc-net-amt-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>2px 0 0</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#ffffff</color>
+                <width>1%</width>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section tc-footer: one-line disclaimer -->
+  <section id="tc-footer">
+    <style>
+      <marginTop>26px</marginTop>
+      <borderTop>1px solid #C9D6E5</borderTop>
+      <paddingTop>6px</paddingTop>
+    </style>
+    <column id="tc-footer-col" width="100%">
+      <table id="tc-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="tc-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#52606D</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

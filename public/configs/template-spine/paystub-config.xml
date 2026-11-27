@@ -1,0 +1,1724 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Center Spine (spine). A dark spine runs down the middle of the page and carries the story in
+    four boxes (total earnings, total taxes, total deductions, and net pay in gold) with the employee's name
+    above and the logo and employer beneath. Earnings and the pay details sit to its left, taxes and deductions
+    to its right. IBM Plex Sans with a serif title. The logo slot collapses when no logo is uploaded.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#3F3F46</color>
+    <fontSize>10.5px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+  </style>
+  <!-- Section sp-body: earnings and pay details (left) / dark spine with the four totals, logo and employer (centre) / taxes and deductions (right) -->
+  <section id="sp-body">
+    <style>
+      <alignItems>stretch</alignItems>
+      <justifyContent>space-between</justifyContent>
+    </style>
+    <column id="sp-left" width="36.5%">
+      <style>
+        <paddingTop>18px</paddingTop>
+      </style>
+      <table id="sp-earn">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginBottom>18px</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sp-earn-h0">
+              <style>
+                <width>34%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Earnings</label>
+            </hd>
+            <hd id="sp-earn-h1">
+              <style>
+                <width>19%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Hours</label>
+            </hd>
+            <hd id="sp-earn-h2">
+              <style>
+                <width>21%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Rate</label>
+            </hd>
+            <hd id="sp-earn-h3">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Current</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="sp-earn-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="sp-earn-r0c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="sp-earn-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="sp-earn-r0c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="sp-earn-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="sp-earn-r1c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sp-earn-r1c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sp-earn-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="sp-earn-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="sp-earn-r2c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="sp-earn-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="sp-earn-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="sp-earn-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="sp-earn-r3c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sp-earn-r3c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value/>
+            </cell>
+            <cell id="sp-earn-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-earn-r4c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>Total Earnings</value>
+            </cell>
+            <cell id="sp-earn-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-earn-ytd">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginBottom>18px</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sp-earn-ytd-h0">
+              <style>
+                <width>60%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Earnings, Year to Date</label>
+            </hd>
+            <hd id="sp-earn-ytd-h1">
+              <style>
+                <width>40%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="isHourly">
+            <cell id="sp-earn-ytd-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="sp-earn-ytd-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="sp-earn-ytd-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="sp-earn-ytd-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="sp-earn-ytd-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="sp-earn-ytd-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="sp-earn-ytd-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="sp-earn-ytd-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-earn-ytd-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>Total Earnings</value>
+            </cell>
+            <cell id="sp-earn-ytd-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-pay">
+        <style>
+          <width>100%</width>
+          <tableLayout>auto</tableLayout>
+          <marginBottom>18px</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sp-pay-h0" colspan="2">
+              <style>
+                <width>100%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Pay Details</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="sp-pay-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#71717A</color>
+                <whiteSpace>nowrap</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>Pay period</value>
+            </cell>
+            <cell id="sp-pay-r0c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-pay-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#71717A</color>
+                <whiteSpace>nowrap</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="sp-pay-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-pay-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#71717A</color>
+                <whiteSpace>nowrap</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>Pay schedule</value>
+            </cell>
+            <cell id="sp-pay-r2c1" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-pay-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#71717A</color>
+                <whiteSpace>nowrap</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>Check number</value>
+            </cell>
+            <cell id="sp-pay-r3c1" type="substitute" format="text">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>{checkNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-pay-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#71717A</color>
+                <whiteSpace>nowrap</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>Stub number</value>
+            </cell>
+            <cell id="sp-pay-r4c1" type="substitute" format="text">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>{stubNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-paid">
+        <style>
+          <width>100%</width>
+          <tableLayout>auto</tableLayout>
+          <marginBottom>0</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sp-paid-h0">
+              <style>
+                <width>100%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Paid By</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="sp-paid-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="sp-spine" width="25%">
+      <style>
+        <backgroundColor>#27272A</backgroundColor>
+        <padding>22px 14px 24px</padding>
+        <margin>0 1.5%</margin>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="sp-title">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-title-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontFamily>Georgia, 'Times New Roman', serif</fontFamily>
+                <fontSize>21px</fontSize>
+                <letterSpacing>9px</letterSpacing>
+                <color>#ffffff</color>
+                <lineHeight>1.25</lineHeight>
+                <paddingLeft>9px</paddingLeft>
+              </style>
+              <value>PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-title-r1c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontFamily>Georgia, 'Times New Roman', serif</fontFamily>
+                <fontSize>21px</fontSize>
+                <letterSpacing>9px</letterSpacing>
+                <color>#ffffff</color>
+                <lineHeight>1.25</lineHeight>
+                <paddingLeft>9px</paddingLeft>
+              </style>
+              <value>STUB</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-rule-1">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-rule-1-r0c0" type="static">
+              <style>
+                <padding>0</padding>
+                <borderTop>1px solid #52525B</borderTop>
+                <fontSize>1px</fontSize>
+                <lineHeight>1px</lineHeight>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-who">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-who-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#D4D4D8</color>
+                <paddingBottom>4px</paddingBottom>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-who-r1c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>6px 4px</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#000000</backgroundColor>
+                <border>1px solid #52525B</border>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-who-r2c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#D4D4D8</color>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>SSN {employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="sp-who-r3c0" type="substitute" format="text">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#D4D4D8</color>
+              </style>
+              <value>ID {employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-who-r4c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <fontStyle>italic</fontStyle>
+                <color>#D4D4D8</color>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-rule-2">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-rule-2-r0c0" type="static">
+              <style>
+                <padding>0</padding>
+                <borderTop>1px solid #52525B</borderTop>
+                <fontSize>1px</fontSize>
+                <lineHeight>1px</lineHeight>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-t-earn">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-t-earn-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#D4D4D8</color>
+                <paddingBottom>4px</paddingBottom>
+              </style>
+              <value>TOTAL EARNINGS</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-t-earn-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 4px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#000000</backgroundColor>
+                <border>1px solid #52525B</border>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-t-tax">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-t-tax-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#D4D4D8</color>
+                <paddingBottom>4px</paddingBottom>
+              </style>
+              <value>TOTAL TAXES</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-t-tax-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 4px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#000000</backgroundColor>
+                <border>1px solid #52525B</border>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-t-ded">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-t-ded-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#D4D4D8</color>
+                <paddingBottom>4px</paddingBottom>
+              </style>
+              <value>TOTAL DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-t-ded-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>7px 4px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#000000</backgroundColor>
+                <border>1px solid #52525B</border>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-t-net">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-t-net-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>8.5px</fontSize>
+                <letterSpacing>1.6px</letterSpacing>
+                <color>#C9A227</color>
+                <paddingBottom>4px</paddingBottom>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-t-net-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>9px 4px</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>19px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#27272A</color>
+                <backgroundColor>#C9A227</backgroundColor>
+                <border>1px solid #C9A227</border>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-t-netytd">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-t-netytd-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#D4D4D8</color>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>Year to date</value>
+            </cell>
+            <cell id="sp-t-netytd-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#ffffff</color>
+                <paddingTop>5px</paddingTop>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-rule-3">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-rule-3-r0c0" type="static">
+              <style>
+                <padding>0</padding>
+                <borderTop>1px solid #52525B</borderTop>
+                <fontSize>1px</fontSize>
+                <lineHeight>1px</lineHeight>
+              </style>
+              <value/>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-logo">
+        <style>
+          <width>100%</width>
+          <marginTop>16px</marginTop>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-logo-r0c0" type="image">
+              <style>
+                <maxHeight>54px</maxHeight>
+                <maxWidth>120px</maxWidth>
+                <display>inline-block</display>
+                <backgroundColor>#ffffff</backgroundColor>
+                <padding>5px</padding>
+                <borderRadius>5px</borderRadius>
+                <textAlign>center</textAlign>
+              </style>
+              <value>{companyInfo.companyLogo}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-company">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-company-r0c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#ffffff</color>
+                <paddingTop>8px</paddingTop>
+                <lineHeight>1.25</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-company-r1c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#D4D4D8</color>
+                <paddingTop>3px</paddingTop>
+              </style>
+              <value>{companyInfo.companyAddress1} {companyInfo.companyAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-company-r2c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#D4D4D8</color>
+              </style>
+              <value>{companyCityStateZip}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="sp-company-r3c0" type="substitute">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9.5px</fontSize>
+                <color>#D4D4D8</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="sp-right" width="35.5%">
+      <style>
+        <paddingTop>18px</paddingTop>
+      </style>
+      <table id="sp-tax">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginBottom>18px</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sp-tax-h0">
+              <style>
+                <width>44%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Taxes</label>
+            </hd>
+            <hd id="sp-tax-h1">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="sp-tax-h2">
+              <style>
+                <width>30%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="sp-tax-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="sp-tax-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="sp-tax-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-tax-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="sp-tax-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="sp-tax-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-tax-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="sp-tax-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="sp-tax-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="sp-tax-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="sp-tax-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="sp-tax-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="sp-tax-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="sp-tax-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="sp-tax-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-tax-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="sp-tax-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="sp-tax-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-ded">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <marginBottom>18px</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sp-ded-h0">
+              <style>
+                <width>44%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Deductions</label>
+            </hd>
+            <hd id="sp-ded-h1">
+              <style>
+                <width>26%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Current</label>
+            </hd>
+            <hd id="sp-ded-h2">
+              <style>
+                <width>30%</width>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>YTD</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="sp-ded-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="sp-ded-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="sp-ded-r0c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="sp-ded-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="sp-ded-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="sp-ded-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="sp-ded-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="sp-ded-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="sp-ded-r2c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="sp-ded-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="sp-ded-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="sp-ded-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#F4F4F5</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="sp-ded-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="sp-ded-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="sp-ded-r4c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>nowrap</whiteSpace>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="!totalDeductionsYTD">
+            <cell id="sp-ded-r5c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <backgroundColor>#ffffff</backgroundColor>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <whiteSpace>normal</whiteSpace>
+                <color>#71717A</color>
+                <fontStyle>italic</fontStyle>
+              </style>
+              <value>No deductions</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-ded-r6c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="sp-ded-r6c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="sp-ded-r6c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>6px</padding>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#18181B</color>
+                <borderBottom>2px solid #27272A</borderBottom>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="sp-addr">
+        <style>
+          <width>100%</width>
+          <tableLayout>auto</tableLayout>
+          <marginBottom>0</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="sp-addr-h0">
+              <style>
+                <width>100%</width>
+                <textAlign>left</textAlign>
+                <padding>5px 6px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.6px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#52525B</backgroundColor>
+              </style>
+              <label>Employee Address</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="sp-addr-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-addr-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>none</borderBottom>
+                <paddingBottom>0</paddingBottom>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="sp-addr-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>3px 6px</padding>
+                <fontSize>10.5px</fontSize>
+                <color>#18181B</color>
+                <whiteSpace>normal</whiteSpace>
+                <borderBottom>1px solid #D4D4D8</borderBottom>
+                <paddingTop>0</paddingTop>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section sp-footer: one-line disclaimer -->
+  <section id="sp-footer">
+    <column id="sp-footer-col" width="100%">
+      <table id="sp-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="sp-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#71717A</color>
+                <padding>10px 0 0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

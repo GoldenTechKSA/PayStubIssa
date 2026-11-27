@@ -1,0 +1,1601 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Earnings Statement, This Period and Year to Date (period-ytd). Organised by time instead of by
+    category: after a logo header and three identity blocks, the page splits into two matching panels,
+    THIS PERIOD on white and YEAR TO DATE on an indigo tint. Each lists earnings, taxes and deductions and
+    ends in its own Net Pay bar, and the rows line up across the two panels. IBM Plex Sans, indigo accent.
+    The logo slot collapses when no logo is uploaded.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#374151</color>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section py-header: logo and company (left) / Earnings Statement title (right) -->
+  <section id="py-header">
+    <style>
+      <alignItems>center</alignItems>
+      <paddingBottom>14px</paddingBottom>
+      <borderBottom>3px solid #3730A3</borderBottom>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="py-logo-col" width="auto">
+      <style>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="py-logo">
+        <cells>
+          <rowcells>
+            <cell id="py-logo-r0c0" type="image">
+              <style>
+                <maxHeight>58px</maxHeight>
+                <maxWidth>150px</maxWidth>
+                <display>block</display>
+                <marginRight>14px</marginRight>
+                <textAlign>left</textAlign>
+              </style>
+              <value>{companyInfo.companyLogo}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="py-company-col" width="auto">
+      <style>
+        <flexGrow>1</flexGrow>
+      </style>
+      <table id="py-company">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-company-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>17px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <lineHeight>1.2</lineHeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-company-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="py-company-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="py-title-col" width="auto">
+      <style>
+        <flexShrink>0</flexShrink>
+      </style>
+      <table id="py-title">
+        <cells>
+          <rowcells>
+            <cell id="py-title-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <fontSize>20px</fontSize>
+                <fontWeight>300</fontWeight>
+                <letterSpacing>4px</letterSpacing>
+                <color>#3730A3</color>
+                <lineHeight>1.1</lineHeight>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-title-r1c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <fontSize>20px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>4px</letterSpacing>
+                <color>#3730A3</color>
+                <lineHeight>1.1</lineHeight>
+              </style>
+              <value>STATEMENT</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section py-identity: employee / pay details / payment -->
+  <section id="py-identity">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <marginBottom>18px</marginBottom>
+    </style>
+    <column id="py-emp" width="36%">
+      <table id="py-emp-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-emp-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <paddingBottom>3px</paddingBottom>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-emp-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#1E1B4B</color>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-emp-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-emp-t-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="py-ids" width="30%">
+      <table id="py-ids-t">
+        <cells>
+          <rowcells>
+            <cell id="py-ids-t-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <paddingBottom>3px</paddingBottom>
+              </style>
+              <value>IDENTIFICATION</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ids-t-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>SSN</value>
+            </cell>
+            <cell id="py-ids-t-r1c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{employeeSSNMasked}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="employeeInfo.employeeID">
+            <cell id="py-ids-t-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Employee ID</value>
+            </cell>
+            <cell id="py-ids-t-r2c1" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{employeeInfo.employeeID}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ids-t-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Filing status</value>
+            </cell>
+            <cell id="py-ids-t-r3c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="py-pay" width="30%">
+      <table id="py-pay-t">
+        <cells>
+          <rowcells>
+            <cell id="py-pay-t-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <paddingBottom>3px</paddingBottom>
+              </style>
+              <value>PAYMENT</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-pay-t-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Pay date</value>
+            </cell>
+            <cell id="py-pay-t-r1c1" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-pay-t-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Schedule</value>
+            </cell>
+            <cell id="py-pay-t-r2c1" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-pay-t-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+                <paddingRight>8px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Check / stub</value>
+            </cell>
+            <cell id="py-pay-t-r3c1" type="substitute" format="text">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{checkNumber} / {stubNumber}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-pay-t-r4c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section py-panels: THIS PERIOD panel (left) / YEAR TO DATE panel (right) -->
+  <section id="py-panels">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <alignItems>stretch</alignItems>
+    </style>
+    <column id="py-cur-col" width="54%">
+      <style>
+        <padding>14px 16px 16px</padding>
+        <border>1px solid #C7D2FE</border>
+        <borderTop>4px solid #3730A3</borderTop>
+      </style>
+      <table id="py-cur-title">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-cur-title-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+              </style>
+              <value>This Period</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-cur-title-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="py-cur">
+        <style>
+          <width>100%</width>
+          <marginBottom>14px</marginBottom>
+        </style>
+        <header>
+          <hdata>
+            <hd id="py-cur-h0">
+              <style>
+                <width>42%</width>
+                <padding>0</padding>
+              </style>
+              <label/>
+            </hd>
+            <hd id="py-cur-h1">
+              <style>
+                <width>16%</width>
+                <padding>0</padding>
+              </style>
+              <label/>
+            </hd>
+            <hd id="py-cur-h2">
+              <style>
+                <width>18%</width>
+                <padding>0</padding>
+              </style>
+              <label/>
+            </hd>
+            <hd id="py-cur-h3">
+              <style>
+                <width>24%</width>
+                <padding>0</padding>
+              </style>
+              <label/>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="py-cur-r0c0" type="static" colspan="4">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <borderBottom>1px solid #C7D2FE</borderBottom>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="py-cur-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="py-cur-r1c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="py-cur-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="py-cur-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="py-cur-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="py-cur-r2c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r2c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="py-cur-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="py-cur-r3c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="py-cur-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="py-cur-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="py-cur-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="py-cur-r4c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r4c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r4c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-cur-r5c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="py-cur-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-cur-r6c0" type="static" colspan="4">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <borderBottom>1px solid #C7D2FE</borderBottom>
+              </style>
+              <value>TAXES</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-cur-r7c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="py-cur-r7c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r7c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r7c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-cur-r8c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="py-cur-r8c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r8c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r8c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-cur-r9c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="py-cur-r9c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r9c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r9c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="py-cur-r10c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="py-cur-r10c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r10c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r10c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="py-cur-r11c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="py-cur-r11c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r11c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r11c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-cur-r12c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="py-cur-r12c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="py-cur-r13c0" type="static" colspan="4">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <borderBottom>1px solid #C7D2FE</borderBottom>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="py-cur-r14c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="py-cur-r14c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r14c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r14c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medical}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="py-cur-r15c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="py-cur-r15c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r15c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r15c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{dental}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="py-cur-r16c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="py-cur-r16c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r16c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r16c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{vision}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="py-cur-r17c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="py-cur-r17c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r17c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r17c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="py-cur-r18c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="py-cur-r18c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r18c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>10px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value/>
+            </cell>
+            <cell id="py-cur-r18c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="py-cur-r19c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="py-cur-r19c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="py-cur-net">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-cur-net-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 12px</padding>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#ffffff</color>
+                <backgroundColor>#3730A3</backgroundColor>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+            <cell id="py-cur-net-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px</padding>
+                <fontSize>17px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#3730A3</backgroundColor>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="py-ytd-col" width="43%">
+      <style>
+        <padding>14px 16px 16px</padding>
+        <backgroundColor>#EEF2FF</backgroundColor>
+        <border>1px solid #C7D2FE</border>
+        <borderTop>4px solid #C7D2FE</borderTop>
+      </style>
+      <table id="py-ytd-title">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-ytd-title-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+              </style>
+              <value>Year to Date</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ytd-title-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>This calendar year, including this period</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="py-ytd">
+        <style>
+          <width>100%</width>
+          <marginBottom>14px</marginBottom>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-ytd-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <borderBottom>1px solid #C7D2FE</borderBottom>
+              </style>
+              <value>EARNINGS</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="py-ytd-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="py-ytd-r1c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="py-ytd-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="py-ytd-r2c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="py-ytd-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="py-ytd-r3c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="py-ytd-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="py-ytd-r4c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ytd-r5c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="py-ytd-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ytd-r6c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <borderBottom>1px solid #C7D2FE</borderBottom>
+              </style>
+              <value>TAXES</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ytd-r7c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="py-ytd-r7c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ytd-r8c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="py-ytd-r8c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ytd-r9c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="py-ytd-r9c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="py-ytd-r10c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="py-ytd-r10c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="py-ytd-r11c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="py-ytd-r11c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="py-ytd-r12c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="py-ytd-r12c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="py-ytd-r13c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 0 3px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#3730A3</color>
+                <borderBottom>1px solid #C7D2FE</borderBottom>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="py-ytd-r14c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="py-ytd-r14c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="py-ytd-r15c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="py-ytd-r15c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="py-ytd-r16c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="py-ytd-r16c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="py-ytd-r17c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="py-ytd-r17c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="py-ytd-r18c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="py-ytd-r18c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 0</padding>
+                <fontSize>11px</fontSize>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="py-ytd-r19c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="py-ytd-r19c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 0</padding>
+                <fontSize>11px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#1E1B4B</color>
+                <borderTop>1px solid #C7D2FE</borderTop>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+      <table id="py-ytd-net">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-ytd-net-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px 12px</padding>
+                <fontSize>12px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1px</letterSpacing>
+                <color>#3730A3</color>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+            <cell id="py-ytd-net-r0c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px 12px</padding>
+                <fontSize>17px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#3730A3</color>
+                <backgroundColor>#ffffff</backgroundColor>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section py-footer: one-line disclaimer -->
+  <section id="py-footer">
+    <style>
+      <marginTop>24px</marginTop>
+    </style>
+    <column id="py-footer-col" width="100%">
+      <table id="py-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="py-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#6B7280</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>

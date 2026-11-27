@@ -1,0 +1,1496 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paystub>
+  <!--
+    Pay Stub, Take-Home First (net-first). Reads the way an employee reads a stub: a green panel with the
+    net pay in large figures, an equation strip (gross - taxes - deductions = net), then ONE running
+    ledger that walks from earnings through taxes and deductions down to a green Net Pay band. The
+    employer and employee particulars sit at the foot. IBM Plex Sans, no logo.
+    Designed for the 720 x 960 px printable area of a US Letter sheet (see CLAUDE.md, "one stub, one sheet").
+  -->
+  <style>
+    <fontFamily>'IBM Plex Sans', Arial, Helvetica, sans-serif</fontFamily>
+    <color>#374151</color>
+    <fontSize>11px</fontSize>
+    <lineHeight>1.35</lineHeight>
+    <backgroundColor>#ffffff</backgroundColor>
+    <padding>6px 0 0</padding>
+  </style>
+  <!-- Section nf-top: company name (left) / document name, stub and check numbers (right) -->
+  <section id="nf-top">
+    <style>
+      <alignItems>flex-end</alignItems>
+      <marginBottom>10px</marginBottom>
+    </style>
+    <column id="nf-top-left" width="60%">
+      <table id="nf-company">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-company-r0c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>15px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="nf-top-right" width="40%">
+      <table id="nf-docno">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-docno-r0c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#6B7280</color>
+              </style>
+              <value>Pay stub {stubNumber}  ·  Check {checkNumber}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section nf-hero: net pay panel: amount, pay date and method (left) / employee and period (right) -->
+  <section id="nf-hero">
+    <style>
+      <backgroundColor>#ECFDF5</backgroundColor>
+      <borderLeft>7px solid #047857</borderLeft>
+      <padding>14px 22px</padding>
+      <alignItems>center</alignItems>
+      <marginBottom>14px</marginBottom>
+    </style>
+    <column id="nf-hero-left" width="56%">
+      <table id="nf-hero-net">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-hero-net-r0c0" type="static" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.5px</letterSpacing>
+                <color>#047857</color>
+              </style>
+              <value>YOUR NET PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-hero-net-r1c0" type="substitute" format="currency" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>36px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#064E3B</color>
+                <lineHeight>1.15</lineHeight>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-hero-net-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>nowrap</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+                <paddingRight>5px</paddingRight>
+                <width>1%</width>
+              </style>
+              <value>Paid on</value>
+            </cell>
+            <cell id="nf-hero-net-r2c1" type="substitute" format="date">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{incomeDetails.periodPayDate}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-hero-net-r3c0" type="substitute" colspan="2">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+              </style>
+              <value>{paymentMethodLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="nf-hero-right" width="44%">
+      <table id="nf-hero-who">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-hero-who-r0c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#047857</color>
+              </style>
+              <value>PAID TO</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-hero-who-r1c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>14px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111827</color>
+                <paddingBottom>8px</paddingBottom>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-hero-who-r2c0" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#047857</color>
+              </style>
+              <value>FOR THE PAY PERIOD</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-hero-who-r3c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>12px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{payPeriodLabel}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-hero-who-r4c0" type="substitute">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+              </style>
+              <value>{incomeDetails.periodType}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section nf-equation: gross pay - taxes - deductions = net pay -->
+  <section id="nf-equation">
+    <style>
+      <marginBottom>16px</marginBottom>
+    </style>
+    <column id="nf-equation-col" width="100%">
+      <table id="nf-eq">
+        <style>
+          <width>100%</width>
+          <tableLayout>fixed</tableLayout>
+          <borderCollapse>separate</borderCollapse>
+          <borderSpacing>0</borderSpacing>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-eq-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>9px 4px 0</padding>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#6B7280</color>
+                <border>1px solid #D1D5DB</border>
+                <borderBottom>none</borderBottom>
+                <width>21%</width>
+              </style>
+              <value>GROSS PAY</value>
+            </cell>
+            <cell id="nf-eq-r0c1" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <fontSize>18px</fontSize>
+                <color>#6B7280</color>
+                <width>5.33%</width>
+                <paddingTop>8px</paddingTop>
+              </style>
+              <value>−</value>
+            </cell>
+            <cell id="nf-eq-r0c2" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>9px 4px 0</padding>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#6B7280</color>
+                <border>1px solid #D1D5DB</border>
+                <borderBottom>none</borderBottom>
+                <width>21%</width>
+              </style>
+              <value>TAXES</value>
+            </cell>
+            <cell id="nf-eq-r0c3" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <fontSize>18px</fontSize>
+                <color>#6B7280</color>
+                <width>5.33%</width>
+                <paddingTop>8px</paddingTop>
+              </style>
+              <value>−</value>
+            </cell>
+            <cell id="nf-eq-r0c4" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>9px 4px 0</padding>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#6B7280</color>
+                <border>1px solid #D1D5DB</border>
+                <borderBottom>none</borderBottom>
+                <width>21%</width>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+            <cell id="nf-eq-r0c5" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <fontSize>18px</fontSize>
+                <color>#6B7280</color>
+                <width>5.33%</width>
+                <paddingTop>8px</paddingTop>
+              </style>
+              <value>=</value>
+            </cell>
+            <cell id="nf-eq-r0c6" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>9px 4px 0</padding>
+                <fontSize>9px</fontSize>
+                <letterSpacing>1px</letterSpacing>
+                <color>#047857</color>
+                <border>1px solid #D1D5DB</border>
+                <borderBottom>none</borderBottom>
+                <width>21%</width>
+                <borderColor>#047857</borderColor>
+                <fontWeight>700</fontWeight>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-eq-r1c0" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>1px 4px 9px</padding>
+                <fontSize>15px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111827</color>
+                <border>1px solid #D1D5DB</border>
+                <borderTop>none</borderTop>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="nf-eq-r1c1" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <fontSize>18px</fontSize>
+                <color>#6B7280</color>
+                <width>5.33%</width>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-eq-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>1px 4px 9px</padding>
+                <fontSize>15px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111827</color>
+                <border>1px solid #D1D5DB</border>
+                <borderTop>none</borderTop>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="nf-eq-r1c3" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <fontSize>18px</fontSize>
+                <color>#6B7280</color>
+                <width>5.33%</width>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-eq-r1c4" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>1px 4px 9px</padding>
+                <fontSize>15px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#111827</color>
+                <border>1px solid #D1D5DB</border>
+                <borderTop>none</borderTop>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="nf-eq-r1c5" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>0</padding>
+                <fontSize>18px</fontSize>
+                <color>#6B7280</color>
+                <width>5.33%</width>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-eq-r1c6" type="substitute" format="currency">
+              <style>
+                <textAlign>center</textAlign>
+                <padding>1px 4px 9px</padding>
+                <fontSize>15px</fontSize>
+                <fontWeight>600</fontWeight>
+                <color>#064E3B</color>
+                <border>1px solid #D1D5DB</border>
+                <borderTop>none</borderTop>
+                <borderColor>#047857</borderColor>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section nf-ledger: one running ledger: earnings, gross, taxes, deductions, net pay band -->
+  <section id="nf-ledger">
+    <style>
+      <marginBottom>16px</marginBottom>
+    </style>
+    <column id="nf-ledger-col" width="100%">
+      <table id="nf-run">
+        <style>
+          <width>100%</width>
+        </style>
+        <header>
+          <hdata>
+            <hd id="nf-run-h0">
+              <style>
+                <width>38%</width>
+                <textAlign>left</textAlign>
+                <padding>0 10px 5px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#6B7280</color>
+              </style>
+              <label/>
+            </hd>
+            <hd id="nf-run-h1">
+              <style>
+                <width>12%</width>
+                <textAlign>right</textAlign>
+                <padding>0 10px 5px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#6B7280</color>
+              </style>
+              <label>HOURS</label>
+            </hd>
+            <hd id="nf-run-h2">
+              <style>
+                <width>14%</width>
+                <textAlign>right</textAlign>
+                <padding>0 10px 5px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#6B7280</color>
+              </style>
+              <label>RATE</label>
+            </hd>
+            <hd id="nf-run-h3">
+              <style>
+                <width>17%</width>
+                <textAlign>right</textAlign>
+                <padding>0 10px 5px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#6B7280</color>
+              </style>
+              <label>THIS PERIOD</label>
+            </hd>
+            <hd id="nf-run-h4">
+              <style>
+                <width>19%</width>
+                <textAlign>right</textAlign>
+                <padding>0 10px 5px</padding>
+                <fontSize>9px</fontSize>
+                <fontWeight>600</fontWeight>
+                <letterSpacing>0.8px</letterSpacing>
+                <color>#6B7280</color>
+              </style>
+              <label>YEAR TO DATE</label>
+            </hd>
+          </hdata>
+        </header>
+        <cells>
+          <rowcells>
+            <cell id="nf-run-r0c0" type="static" colspan="5">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 10px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#064E3B</color>
+                <backgroundColor>#ECFDF5</backgroundColor>
+              </style>
+              <value>WHAT YOU EARNED</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isHourly">
+            <cell id="nf-run-r1c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Regular Pay</value>
+            </cell>
+            <cell id="nf-run-r1c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{incomeDetails.hoursWorked}</value>
+            </cell>
+            <cell id="nf-run-r1c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{incomeDetails.hourlyRate}</value>
+            </cell>
+            <cell id="nf-run-r1c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="nf-run-r1c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="isSalaried">
+            <cell id="nf-run-r2c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Salary</value>
+            </cell>
+            <cell id="nf-run-r2c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r2c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r2c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{regularPay}</value>
+            </cell>
+            <cell id="nf-run-r2c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{regularPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="overtimePayYTD">
+            <cell id="nf-run-r3c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Overtime</value>
+            </cell>
+            <cell id="nf-run-r3c1" type="substitute" format="number">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeHours}</value>
+            </cell>
+            <cell id="nf-run-r3c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{incomeDetails.overtimeRate}</value>
+            </cell>
+            <cell id="nf-run-r3c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{overtimePay}</value>
+            </cell>
+            <cell id="nf-run-r3c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{overtimePayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherEarningsYTD">
+            <cell id="nf-run-r4c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Bonus</value>
+            </cell>
+            <cell id="nf-run-r4c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r4c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r4c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{otherEarnings}</value>
+            </cell>
+            <cell id="nf-run-r4c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{otherEarningsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-run-r5c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>Gross Pay</value>
+            </cell>
+            <cell id="nf-run-r5c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{grossPay}</value>
+            </cell>
+            <cell id="nf-run-r5c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{grossPayYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-run-r6c0" type="static" colspan="5">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 10px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#064E3B</color>
+                <backgroundColor>#ECFDF5</backgroundColor>
+              </style>
+              <value>TAXES WITHHELD</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-run-r7c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Federal Income Tax</value>
+            </cell>
+            <cell id="nf-run-r7c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r7c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r7c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{federalTax}</value>
+            </cell>
+            <cell id="nf-run-r7c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{federalTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-run-r8c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Social Security</value>
+            </cell>
+            <cell id="nf-run-r8c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r8c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r8c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{socialSecurity}</value>
+            </cell>
+            <cell id="nf-run-r8c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{socialSecurityYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-run-r9c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Medicare</value>
+            </cell>
+            <cell id="nf-run-r9c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r9c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r9c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{medicare}</value>
+            </cell>
+            <cell id="nf-run-r9c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{medicareYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="stateTaxYTD">
+            <cell id="nf-run-r10c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{stateTaxLabel}</value>
+            </cell>
+            <cell id="nf-run-r10c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r10c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r10c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{stateTax}</value>
+            </cell>
+            <cell id="nf-run-r10c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{stateTaxYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="paidLeave">
+            <cell id="nf-run-r11c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{paidLeaveLabel}</value>
+            </cell>
+            <cell id="nf-run-r11c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r11c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r11c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{paidLeave}</value>
+            </cell>
+            <cell id="nf-run-r11c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{paidLeaveYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-run-r12c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>Total Taxes</value>
+            </cell>
+            <cell id="nf-run-r12c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{totalTaxes}</value>
+            </cell>
+            <cell id="nf-run-r12c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{totalTaxesYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="nf-run-r13c0" type="static" colspan="5">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 10px</padding>
+                <fontSize>9.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#064E3B</color>
+                <backgroundColor>#ECFDF5</backgroundColor>
+              </style>
+              <value>DEDUCTIONS</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="medicalYTD">
+            <cell id="nf-run-r14c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Medical</value>
+            </cell>
+            <cell id="nf-run-r14c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r14c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r14c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{medical}</value>
+            </cell>
+            <cell id="nf-run-r14c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{medicalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="dentalYTD">
+            <cell id="nf-run-r15c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Dental</value>
+            </cell>
+            <cell id="nf-run-r15c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r15c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r15c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{dental}</value>
+            </cell>
+            <cell id="nf-run-r15c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{dentalYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="visionYTD">
+            <cell id="nf-run-r16c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Vision</value>
+            </cell>
+            <cell id="nf-run-r16c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r16c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r16c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{vision}</value>
+            </cell>
+            <cell id="nf-run-r16c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{visionYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="retirement401kYTD">
+            <cell id="nf-run-r17c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>401(k)</value>
+            </cell>
+            <cell id="nf-run-r17c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r17c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r17c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{retirement401k}</value>
+            </cell>
+            <cell id="nf-run-r17c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{retirement401kYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="otherDeductionsYTD">
+            <cell id="nf-run-r18c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>4px 10px 4px 22px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>Other</value>
+            </cell>
+            <cell id="nf-run-r18c1" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r18c2" type="static">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value/>
+            </cell>
+            <cell id="nf-run-r18c3" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{otherDeductions}</value>
+            </cell>
+            <cell id="nf-run-r18c4" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>4px 10px</padding>
+                <fontSize>11px</fontSize>
+                <borderBottom>1px solid #F3F4F6</borderBottom>
+              </style>
+              <value>{otherDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="totalDeductionsYTD">
+            <cell id="nf-run-r19c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>Total Deductions</value>
+            </cell>
+            <cell id="nf-run-r19c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{totalDeductions}</value>
+            </cell>
+            <cell id="nf-run-r19c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>5px 10px 8px</padding>
+                <fontSize>11.5px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#111827</color>
+              </style>
+              <value>{totalDeductionsYTD}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-run-r20c0" type="static" colspan="3">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>10px</padding>
+                <fontSize>14px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#047857</backgroundColor>
+                <letterSpacing>1.5px</letterSpacing>
+              </style>
+              <value>NET PAY</value>
+            </cell>
+            <cell id="nf-run-r20c1" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px</padding>
+                <fontSize>14px</fontSize>
+                <fontWeight>700</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#047857</backgroundColor>
+              </style>
+              <value>{netPay}</value>
+            </cell>
+            <cell id="nf-run-r20c2" type="substitute" format="currency">
+              <style>
+                <textAlign>right</textAlign>
+                <padding>10px</padding>
+                <fontSize>12px</fontSize>
+                <fontWeight>500</fontWeight>
+                <color>#ffffff</color>
+                <backgroundColor>#047857</backgroundColor>
+              </style>
+              <value>{netPayYTD}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section nf-parties: employer particulars (left) / employee particulars (right) -->
+  <section id="nf-parties">
+    <style>
+      <justifyContent>space-between</justifyContent>
+      <borderTop>1px solid #D1D5DB</borderTop>
+      <paddingTop>12px</paddingTop>
+    </style>
+    <column id="nf-employer" width="48%">
+      <table id="nf-employer-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-employer-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#6B7280</color>
+                <paddingBottom>3px</paddingBottom>
+              </style>
+              <value>EMPLOYER</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-employer-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#111827</color>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{companyInfo.companyName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-employer-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+              </style>
+              <value>{companyAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells renderIf="companyInfo.companyEIN">
+            <cell id="nf-employer-t-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+              </style>
+              <value>EIN {companyInfo.companyEIN}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+    <column id="nf-employee" width="48%">
+      <table id="nf-employee-t">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-employee-t-r0c0" type="static">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>9px</fontSize>
+                <fontWeight>700</fontWeight>
+                <letterSpacing>1.2px</letterSpacing>
+                <color>#6B7280</color>
+                <paddingBottom>3px</paddingBottom>
+              </style>
+              <value>EMPLOYEE</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-employee-t-r1c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#111827</color>
+                <fontWeight>600</fontWeight>
+              </style>
+              <value>{employeeInfo.employeeFirstName} {employeeInfo.employeeMiddleInitial} {employeeInfo.employeeLastName}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-employee-t-r2c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+              </style>
+              <value>{employeeInfo.employeeAddress1} {employeeInfo.employeeAddress2}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-employee-t-r3c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+              </style>
+              <value>{employeeAddressLine}</value>
+            </cell>
+          </rowcells>
+          <rowcells>
+            <cell id="nf-employee-t-r4c0" type="substitute">
+              <style>
+                <textAlign>left</textAlign>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+                <fontSize>10.5px</fontSize>
+                <color>#374151</color>
+              </style>
+              <value>SSN {employeeSSNMasked}  ·  {filingStatusLabel}</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+  <!-- Section nf-footer: one-line disclaimer -->
+  <section id="nf-footer">
+    <style>
+      <marginTop>14px</marginTop>
+    </style>
+    <column id="nf-footer-col" width="100%">
+      <table id="nf-footer-table">
+        <style>
+          <width>100%</width>
+        </style>
+        <cells>
+          <rowcells>
+            <cell id="nf-footer-table-r0c0" type="static">
+              <style>
+                <textAlign>center</textAlign>
+                <fontSize>9px</fontSize>
+                <color>#6B7280</color>
+                <padding>0</padding>
+                <whiteSpace>normal</whiteSpace>
+              </style>
+              <value>Prepared from information supplied by the employer. For informational purposes only; not a negotiable instrument.</value>
+            </cell>
+          </rowcells>
+        </cells>
+      </table>
+    </column>
+  </section>
+</paystub>
