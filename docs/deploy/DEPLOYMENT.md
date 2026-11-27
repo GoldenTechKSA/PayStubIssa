@@ -160,6 +160,67 @@ routes such as `/create` can never 404 on their assets. The earlier `"."` was a
 leftover from the old subfolder FTP hosting. If the site ever moves under a
 path prefix, set `homepage` to that prefix.
 
+## Cache and security headers (sudo, once)
+
+Apache sends the static site with no `Cache-Control` and no security headers until
+[apache-paystubissa-headers.inc](apache-paystubissa-headers.inc) is installed. The file is
+shared by staging and production and explains each header in its comments. In short:
+
+- `index.html` and the other un-hashed files are re-checked with the server on every visit,
+  so a deploy reaches returning visitors at once; `/static/*` (hashed names) is kept for a year.
+- HTTPS only, no MIME guessing, no framing by other sites, a short referrer, no camera /
+  microphone / location.
+- An enforced Content-Security-Policy: scripts, images, connections and frames may come only
+  from the site itself and PayPal.
+
+The deploy user has no sudo and `AllowOverride None` rules out `.htaccess`, so this is a
+manual step. Nothing changes until an `Include` line points at the file; staging gets it first.
+
+```bash
+# 1. Put the headers file on the server (paste the repo file's contents, save).
+sudo nano /etc/apache2/sites-available/paystubissa-headers.inc
+
+# 2. STAGING: add the Include to the API include both staging vhosts already load.
+echo 'Include /etc/apache2/sites-available/paystubissa-headers.inc' \
+  | sudo tee -a /etc/apache2/sites-available/paystubissa-api-staging.inc
+sudo apache2ctl configtest          # must print "Syntax OK"; if not, do NOT reload
+sudo systemctl reload apache2
+
+# 3. Check staging.
+curl -sI https://staging.paystubissa.com/ | grep -iE 'cache-control|strict-transport|content-security|x-frame|x-content|referrer|permissions'
+#   expect Cache-Control: no-cache and the security headers
+curl -sI https://staging.paystubissa.com/create | grep -i cache-control        # no-cache (served from index.html)
+JS=$(curl -s https://staging.paystubissa.com/ | grep -o '/static/js/main[^"]*')
+curl -sI "https://staging.paystubissa.com$JS" | grep -i cache-control
+#   expect public, max-age=31536000, immutable
+curl -sI https://staging.paystubissa.com/api/health | grep -ic content-security-policy
+#   expect 1: the API's own header, not a second copy
+
+# 4. PRODUCTION, once staging is right: same line into the production include.
+echo 'Include /etc/apache2/sites-available/paystubissa-headers.inc' \
+  | sudo tee -a /etc/apache2/sites-available/paystubissa-api.inc
+sudo apache2ctl configtest && sudo systemctl reload apache2
+```
+
+**Roll back** by deleting that `Include` line from the `.inc` file and reloading Apache.
+
+**Updating the file later.** Staging and production share it, so a paste changes both at
+once. Replace the whole file, then check syntax before reloading:
+
+```bash
+sudo truncate -s 0 /etc/apache2/sites-available/paystubissa-headers.inc
+sudo nano /etc/apache2/sites-available/paystubissa-headers.inc
+sudo apache2ctl configtest && sudo systemctl reload apache2
+```
+
+**Changing the content policy.** A wrong list breaks the PayPal buttons, so never change the
+enforced list blind. Either send the new list as a second header,
+`Content-Security-Policy-Report-Only` (it blocks nothing; the browser console shows what it
+would block), or enforce it on staging only with a second
+`<DirectoryMatch "^/var/www/staging\.paystubissa\.com(/|$)">` section placed after the main
+one. Then make a sandbox purchase on staging with the console open, download the PDF, and only
+then give production the same list. This is how the list was first enforced on 2026-11-27.
+
 ---
 
 ## Backend (Node API)
