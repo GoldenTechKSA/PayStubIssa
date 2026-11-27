@@ -196,7 +196,7 @@ const payYearOf = (store: PayStubDetails): number | undefined =>
 const figuresForPeriod = (store: PayStubDetails): PeriodFigures => {
   const { incomeDetails, employeeInfo } = store;
 
-  // The wizard stores a full state NAME; STATE_TAX_DATA is keyed by postal code, so the
+  // The wizard stores a full state NAME; the state tax data is keyed by postal code, so the
   // engine must be handed the code — passing 'Virginia' misses the table and silently
   // yields 0 state tax.
   const stateCode = resolveStateCode(employeeInfo.employeeState);
