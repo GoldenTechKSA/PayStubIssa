@@ -76,7 +76,7 @@ describe('legal copy: a paid document is final, corrections come by code', () =>
   });
 
   it('the policy date and version moved together', () => {
-    expect(POLICIES_LAST_UPDATED).toBe('November 18, 2026');
-    expect(POLICIES_VERSION).toBe('2026-11-18');
+    expect(POLICIES_LAST_UPDATED).toBe('November 27, 2026');
+    expect(POLICIES_VERSION).toBe('2026-11-27');
   });
 });

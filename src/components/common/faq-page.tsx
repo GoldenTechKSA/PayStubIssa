@@ -307,7 +307,9 @@ const faqData = [
             <br />
             If, within {REFUND_WINDOW_DAYS} days of your purchase, the document is defective — it won’t download or
             print, it’s corrupted, or our calculations are wrong — email <SupportEmailLink /> and we will refund you in
-            full. You don’t have to argue with us about it.
+            full. Tell us what went wrong and we will look into it promptly. Our tax figures follow published
+            federal and state rates and can differ from an employer’s payroll system; a difference of that kind is
+            not by itself a calculation error.
             <br />
             <br />
             If the problem is a typo in the data you entered, a refund is at our discretion — but{" "}
