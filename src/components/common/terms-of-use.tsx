@@ -86,6 +86,15 @@ const TermsOfUse = () => (
       PDF or print it.
     </p>
     <p>
+      <strong>Tax Calculations and Reporting a Mismatch</strong><br />
+      The tax figures on a document are calculated from published federal and state rates for a standard
+      situation. They do not take into account every state's own employer withholding rules, local income taxes,
+      or the choices an employee makes on a withholding form, so they can differ from the figures an employer's
+      payroll system would produce. If a tax figure calculated by the Service does not match the one you expected,
+      please email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> with the state, the pay period, the
+      filing status, and the two figures. We will look into it and, where our calculation is wrong, correct it.
+    </p>
+    <p>
       <strong>Formatting, Not Certification</strong><br />
       The documents produced by the Service follow conventional US pay stub formatting and include the line
       items commonly found on wage records: gross pay, earnings breakdown, taxes withheld, deductions, net
@@ -234,8 +243,14 @@ const TermsOfUse = () => (
       <strong>{REFUND_WINDOW_DAYS}-Day Satisfaction Guarantee</strong><br />
       We offer a {REFUND_WINDOW_DAYS}-day satisfaction guarantee. If, within {REFUND_WINDOW_DAYS} days of your
       purchase, the document is defective — it will not download or print, it is corrupted, or our calculations are
-      wrong — email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we will refund you in full. You do
-      not have to argue with us about it.
+      wrong — email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we will refund you in full.
+      Tell us what went wrong and we will look into it promptly.
+    </p>
+    <p>
+      Our calculations follow the published federal and state rates described in section 3. They can differ from
+      the figures an employer's payroll system, another calculator, or a tax return would show, and a difference
+      of that kind is not by itself a calculation error. If you think a figure is wrong, email us and we will
+      review it; if our calculation was wrong, the guarantee applies.
     </p>
     <p>
       If the problem is an error in the data you entered, a refund is at our discretion — but we will always give

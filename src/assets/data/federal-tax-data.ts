@@ -15,6 +15,16 @@
 // federal-tax.test.ts checks every schedule against the IRS's own "tentative amount" column.
 //
 // Sources: Publication 15-T for use in 2024, 2025 and 2026; Publication 15 for the wage bases.
+//
+// 2027 IS PROVISIONAL. On 2026-11-26 the IRS had only a draft Publication 15-T (2027), dated
+// November 9, 2026, whose tables are "what the 2027 tables would look like by using the 2026 tax
+// parameters". The 2027 schedules below are worked out from Rev. Proc. 2026-35 (the 2027 income
+// tax brackets and standard deduction) the way the IRS builds its own table: the 0% band is the
+// standard deduction minus line 1g, and every bracket threshold sits that far above the Rev.
+// Proc. figure. The same sum reproduces the published 2026 table from Rev. Proc. 2025-32 to the
+// dollar. Line 1g is as printed in the draft. When the final Publication 15-T for 2027 is out,
+// compare it with the 2027 rows here and in federal-tax.test.ts, then delete this note. The
+// wage base is final (SSA notice of October 2026, Federal Register document 2026-21796).
 
 export type FederalSchedule = 'marriedFilingJointly' | 'single' | 'headOfHousehold';
 
@@ -65,6 +75,17 @@ export const FEDERAL_TAX_YEARS: FederalTaxYear[] = [
       headOfHousehold: schedule(15550, 33250, 83000, 121250, 217300, 271750, 656150),
     },
     socialSecurityWageBase: 184500,
+  },
+  {
+    // Provisional until the final Publication 15-T for 2027 — see the note at the top.
+    year: 2027,
+    step2UncheckedAllowance: { marriedFilingJointly: 12900, other: 8600 },
+    schedules: {
+      marriedFilingJointly: schedule(20300, 45900, 124350, 238550, 436950, 549400, 813950),
+      single: schedule(8000, 20800, 60025, 117125, 216325, 272550, 669375),
+      headOfHousehold: schedule(16325, 34575, 85975, 125425, 224625, 280875, 677675),
+    },
+    socialSecurityWageBase: 192300,
   },
 ];
 

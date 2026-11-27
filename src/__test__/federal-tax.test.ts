@@ -27,6 +27,14 @@ const IRS_COLUMN_C: Record<number, Record<'marriedFilingJointly' | 'single' | 'h
     single: [[57900, 5800], [648100, 192979.25]],
     headOfHousehold: [[83000, 7740], [656150, 191171]],
   },
+  // 2027 is provisional (see federal-tax-data.ts): these are the tax amounts printed in the rate
+  // tables of Rev. Proc. 2026-35, at each threshold moved up by the 0% band. Check them against
+  // column C of the final Publication 15-T for 2027.
+  2027: {
+    marriedFilingJointly: [[124350, 11974], [813950, 213290.5]],
+    single: [[60025, 5987], [669375, 199237.75]],
+    headOfHousehold: [[85975, 7993], [677675, 197360]],
+  },
 };
 
 describe('federal income tax withholding (IRS Publication 15-T percentage method)', () => {
@@ -66,6 +74,7 @@ describe('federal income tax withholding (IRS Publication 15-T percentage method
   it('uses the tables of the year asked for, and the nearest year on file outside the range', () => {
     expect(federal(60000, 'single', 2024)).toBeGreaterThan(federal(60000, 'single', 2025));
     expect(federal(60000, 'single', 2025)).toBeGreaterThan(federal(60000, 'single', 2026));
+    expect(federal(60000, 'single', 2026)).toBeGreaterThan(federal(60000, 'single', 2027));
     expect(federalTaxYearFor(2019).year).toBe(2024);
     expect(federalTaxYearFor(2031).year).toBe(FEDERAL_TAX_YEARS[FEDERAL_TAX_YEARS.length - 1].year);
     expect(federalTaxYearFor(undefined).year).toBe(FEDERAL_TAX_YEARS[FEDERAL_TAX_YEARS.length - 1].year);
@@ -78,6 +87,7 @@ describe('federal income tax withholding (IRS Publication 15-T percentage method
     expect(ss(2024)).toBeCloseTo(168600 * 0.062, 2);
     expect(ss(2025)).toBeCloseTo(176100 * 0.062, 2);
     expect(ss(2026)).toBeCloseTo(184500 * 0.062, 2);
+    expect(ss(2027)).toBeCloseTo(192300 * 0.062, 2);
   });
 
   it('charges head of household the additional Medicare tax above $200,000', () => {

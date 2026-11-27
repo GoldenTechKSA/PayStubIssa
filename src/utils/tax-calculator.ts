@@ -1,9 +1,38 @@
-import { STATE_TAX_DATA } from "../assets/data/state-tax-data";
+import { STATE_NAMES, StateBracket, StatePhaseOut, stateStatusKey, stateTaxRulesFor } from "../assets/data/state-tax-data";
 import { TaxCalculationInput, TaxCalculationResult, FilingStatus } from "../types/tax-rate-types";
 import { getPaidLeaveProgram } from "../assets/data/paid-leave-data";
 import { federalTaxYearFor, FederalSchedule } from "../assets/data/federal-tax-data";
 
 const SOCIAL_SECURITY_RATE = 0.062; // employee share, fixed by statute
+
+// Medicare's rate and thresholds are fixed by statute (not indexed), the same in every state.
+const MEDICARE_TAX = {
+  rate: 0.0145, // 1.45%
+  additionalRate: 0.009, // 0.9% additional
+  additionalThreshold: {
+    single: 200000,
+    marriedFilingJointly: 250000,
+    marriedFilingSeparately: 125000,
+    headOfHousehold: 200000,
+  } as Record<FilingStatus, number>,
+};
+
+// Tax on `income` from a schedule in which each `rate` applies to the income above `over`.
+// Income below the first `over` is not taxed.
+const taxFromSchedule = (income: number, brackets: StateBracket[]): number => {
+  let tax = 0;
+  brackets.forEach((bracket, i) => {
+    const top = i + 1 < brackets.length ? brackets[i + 1].over : Infinity;
+    if (income > bracket.over) {
+      tax += (Math.min(income, top) - bracket.over) * bracket.rate;
+    }
+  });
+  return tax;
+};
+
+// A deduction, exemption or credit that shrinks as wages rise past a threshold, never below zero.
+const afterPhaseOut = (amount: number, wages: number, phaseOut?: StatePhaseOut): number =>
+  phaseOut ? Math.max(0, amount - Math.max(0, wages - phaseOut.over) * phaseOut.rate) : amount;
 
 export class TaxCalculator {
   // Federal income tax withholding for a year of wages, by the IRS percentage method for
@@ -41,71 +70,47 @@ export class TaxCalculator {
 
   // Calculate Medicare tax (including additional Medicare tax for high earners)
   private calculateMedicareTax(grossIncome: number, filingStatus: FilingStatus): number {
-    const medicareData = STATE_TAX_DATA['AL'].taxRates.medicareTax; // Same for all states
-    
     // Regular Medicare tax (no wage base limit)
-    let tax = grossIncome * medicareData.rate;
-    
+    let tax = grossIncome * MEDICARE_TAX.rate;
+
     // Additional Medicare tax for high earners
-    const threshold = medicareData.additionalThreshold[filingStatus];
+    const threshold = MEDICARE_TAX.additionalThreshold[filingStatus];
     if (grossIncome > threshold) {
-      const additionalTaxableIncome = grossIncome - threshold;
-      tax += additionalTaxableIncome * medicareData.additionalRate;
+      tax += (grossIncome - threshold) * MEDICARE_TAX.additionalRate;
     }
-    
+
     return Math.round(tax * 100) / 100;
   }
 
-  // Calculate state income tax based on state-specific rules
-  private calculateStateIncomeTax(taxableIncome: number, stateCode: string, filingStatus: FilingStatus): number {
+  // State income tax on a year of wages, from the state's rate schedule for the year the wages
+  // are paid in (see state-tax-data.ts for what that covers and what it leaves out).
+  // `annualWages` is already net of pre-tax deductions. A married couple filing jointly has
+  // its own schedule and amounts; every other filing status uses the single ones, except that
+  // a head of household gets its own standard deduction where the data has one (states that
+  // use the federal standard deduction, and South Carolina from 2026).
+  private calculateStateIncomeTax(annualWages: number, stateCode: string, filingStatus: FilingStatus, taxYear?: number): number {
+    const rules = stateTaxRulesFor(stateCode, taxYear);
+    if (!rules || annualWages <= 0) return 0;
+    const status = stateStatusKey(filingStatus);
+
+    const headOfHousehold = filingStatus === 'headOfHousehold';
+    const standardDeduction = afterPhaseOut(
+      (headOfHousehold && rules.standardDeduction?.headOfHousehold) || (rules.standardDeduction?.[status] ?? 0),
+      annualWages,
+      (headOfHousehold && rules.standardDeductionPhaseOut?.headOfHousehold) || rules.standardDeductionPhaseOut?.[status]);
+    const personalExemption = afterPhaseOut(
+      rules.personalExemption?.[status] ?? 0, annualWages, rules.personalExemptionPhaseOut?.[status]);
+
+    const taxableIncome = annualWages - standardDeduction - personalExemption;
     if (taxableIncome <= 0) return 0;
 
-    const stateData = STATE_TAX_DATA[stateCode.toUpperCase()];
-    if (!stateData || !stateData.taxRates.stateIncomeTax.hasIncomeTax) {
-      return 0;
-    }
+    const low = rules.lowIncomeSchedule;
+    const brackets = low && taxableIncome <= low.upTo ? low.brackets : rules[status];
+    const personalCredit = afterPhaseOut(
+      rules.personalCredit?.[status] ?? 0, annualWages, rules.personalCreditPhaseOut?.[status]);
+    const tax = taxFromSchedule(taxableIncome, brackets) - personalCredit;
 
-    const stateIncomeTax = stateData.taxRates.stateIncomeTax;
-
-    // Flat rate states
-    if (stateIncomeTax.flatRate) {
-      return Math.round(taxableIncome * stateIncomeTax.flatRate * 100) / 100;
-    }
-
-    // Progressive bracket states
-    if (stateIncomeTax.brackets) {
-      let tax = 0;
-      let remainingIncome = taxableIncome;
-
-      for (const bracket of stateIncomeTax.brackets) {
-        if (remainingIncome <= 0) break;
-
-        const bracketMin = bracket.min;
-        const bracketMax = bracket.max || Infinity;
-        const bracketWidth = bracketMax - bracketMin;
-        const taxableAtThisBracket = Math.min(remainingIncome, bracketWidth);
-
-        if (taxableIncome > bracketMin) {
-          tax += taxableAtThisBracket * bracket.rate;
-          remainingIncome -= taxableAtThisBracket;
-        }
-      }
-
-      return Math.round(tax * 100) / 100;
-    }
-
-    return 0;
-  }
-
-  //Get standard deduction for state taxes
-  private getStateStandardDeduction(stateCode: string, filingStatus: FilingStatus): number {
-    const stateData = STATE_TAX_DATA[stateCode.toUpperCase()];
-    if (!stateData || !stateData.taxRates.stateIncomeTax.hasIncomeTax) {
-      return 0;
-    }
-
-    const standardDeduction = stateData.taxRates.stateIncomeTax.standardDeduction;
-    return standardDeduction ? standardDeduction[filingStatus] : 0;
+    return Math.max(0, Math.round(tax * 100) / 100);
   }
 
   // Employee contribution to a state paid family/medical leave fund, on ANNUAL wages.
@@ -130,21 +135,15 @@ export class TaxCalculator {
       taxYear
     } = input;
 
-    // Calculate deductions
-    const stateStandardDeduction = this.getStateStandardDeduction(stateCode, filingStatus);
-    
-    const totalStateDeductions = stateStandardDeduction + additionalDeductions;
-
-    // Calculate taxable income
-    // Federal: wages net of pre-tax deductions; the standard deduction is inside the IRS tables.
-    const federalWages = Math.max(0, grossIncome - additionalDeductions);
-    const stateTaxableIncome = Math.max(0, grossIncome - totalStateDeductions);
+    // Income tax, federal and state, is figured on wages net of pre-tax deductions. The
+    // standard deduction is inside the IRS tables and inside each state's rules.
+    const incomeTaxWages = Math.max(0, grossIncome - additionalDeductions);
 
     // Calculate each tax component
-    const federalIncomeTax = this.calculateFederalIncomeTax(federalWages, filingStatus, taxYear);
+    const federalIncomeTax = this.calculateFederalIncomeTax(incomeTaxWages, filingStatus, taxYear);
     const socialSecurityTax = this.calculateSocialSecurityTax(grossIncome, taxYear);
     const medicareTax = this.calculateMedicareTax(grossIncome, filingStatus);
-    const stateIncomeTax = this.calculateStateIncomeTax(stateTaxableIncome, stateCode, filingStatus);
+    const stateIncomeTax = this.calculateStateIncomeTax(incomeTaxWages, stateCode, filingStatus, taxYear);
     const paidLeave = this.calculatePaidLeave(grossIncome, stateCode);
 
     // Calculate totals
@@ -168,21 +167,12 @@ export class TaxCalculator {
 
   // Get all available states
   public getAvailableStates(): Array<{ code: string; name: string }> {
-    return Object.values(STATE_TAX_DATA).map(state => ({
-      code: state.stateCode,
-      name: state.stateName
-    }));
+    return Object.entries(STATE_NAMES).map(([code, name]) => ({ code, name }));
   }
 
-  // Get state tax information
-  public getStateInfo(stateCode: string) {
-    return STATE_TAX_DATA[stateCode.toUpperCase()];
-  }
-
-  // Check if state has income tax
-  public stateHasIncomeTax(stateCode: string): boolean {
-    const stateData = STATE_TAX_DATA[stateCode.toUpperCase()];
-    return stateData ? stateData.taxRates.stateIncomeTax.hasIncomeTax : false;
+  // Check if state has an income tax on wages in the given year (the latest on file by default)
+  public stateHasIncomeTax(stateCode: string, taxYear?: number): boolean {
+    return stateTaxRulesFor(stateCode, taxYear) !== undefined;
   }
 }
 

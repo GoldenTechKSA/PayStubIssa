@@ -1,33 +1,5 @@
 // Tax processing types and interfaces
 
-export interface TaxRates {
-  medicareTax: {
-    rate: number;
-    additionalRate: number; // Additional Medicare tax for high earners
-    additionalThreshold: {
-      single: number;
-      marriedFilingJointly: number;
-      marriedFilingSeparately: number;
-      headOfHousehold: number;
-    };
-  };
-  stateIncomeTax: {
-    hasIncomeTax: boolean;
-    brackets?: Array<{
-      min: number;
-      max: number | null;
-      rate: number;
-    }>;
-    flatRate?: number;
-    standardDeduction?: {
-      single: number;
-      marriedFilingJointly: number;
-      marriedFilingSeparately: number;
-      headOfHousehold: number;
-    };
-  };
-}
-
 /**
  * A state paid family / medical leave program that withholds from the employee.
  * See assets/data/paid-leave-data.ts for the rate table and its yearly-review note.
@@ -38,12 +10,6 @@ export interface PaidLeaveProgram {
   employeeRate: number;      // employee share as a fraction of contributory wages
   wageBase: number | null;   // annual cap on contributory wages; null when uncapped
   annualMax: number | null;  // cap on the employee's yearly contribution; null when none
-}
-
-export interface StateTaxInfo {
-  stateName: string;
-  stateCode: string;
-  taxRates: TaxRates;
 }
 
 export type FilingStatus = 'single' | 'marriedFilingJointly' | 'marriedFilingSeparately' | 'headOfHousehold';
