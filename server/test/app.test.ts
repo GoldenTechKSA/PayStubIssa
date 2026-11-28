@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app';
 import { issueCorrectionCode } from '../src/services/correction-codes';
-import { makeService, makeTelemetry, testConfig } from './helpers';
+import { makeService, makeTelemetry, testConfig, makeWebhooks } from './helpers';
 
 function boot() {
   const { service, paypal, db } = makeService();
-  const app = createApp({ config: testConfig, orders: service, telemetry: makeTelemetry(db).telemetry });
+  const app = createApp({ config: testConfig, orders: service, telemetry: makeTelemetry(db).telemetry, webhooks: makeWebhooks(db, paypal) });
   return { app, paypal, service };
 }
 
@@ -105,7 +105,7 @@ describe('HTTP API', () => {
   describe('a free corrected order', () => {
     async function bootWithCode() {
       const { service, paypal, db } = makeService();
-      const app = createApp({ config: testConfig, orders: service, telemetry: makeTelemetry(db).telemetry });
+      const app = createApp({ config: testConfig, orders: service, telemetry: makeTelemetry(db).telemetry, webhooks: makeWebhooks(db, paypal) });
       const { orderId } = await service.createOrder({ items: [{ type: 'paystub', qty: 2 }] });
       await service.captureOrder(orderId);
       const { code } = issueCorrectionCode(db, orderId, { now: new Date(), ttlDays: 14 });

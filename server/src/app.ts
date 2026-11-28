@@ -5,15 +5,18 @@ import { HttpError } from './lib/errors';
 import type { OrderService } from './services/orders';
 import { paymentsRouter } from './routes/payments';
 import { telemetryRouter } from './routes/telemetry';
+import { webhookRouter } from './routes/webhook';
 import type { TelemetryService } from './services/telemetry';
+import type { WebhookService } from './services/webhooks';
 
 export interface AppDeps {
   config: Config;
   orders: OrderService;
   telemetry: TelemetryService;
+  webhooks: WebhookService;
 }
 
-export function createApp({ config, orders, telemetry }: AppDeps): express.Express {
+export function createApp({ config, orders, telemetry, webhooks }: AppDeps): express.Express {
   const app = express();
   const startedAt = Date.now();
 
@@ -25,6 +28,10 @@ export function createApp({ config, orders, telemetry }: AppDeps): express.Expre
   // ahead of the app-wide JSON parser.
   app.use('/api/telemetry', telemetryRouter(telemetry));
 
+  // PayPal's notifications are verified against the body exactly as sent, so this router
+  // reads it as text; it also has to sit ahead of the payments router and its rate limit.
+  app.use('/api/payments/webhook', webhookRouter(webhooks, telemetry));
+
   app.use(express.json({ limit: '16kb' }));
 
   app.get('/api/health', (_req, res) => {
@@ -32,6 +39,7 @@ export function createApp({ config, orders, telemetry }: AppDeps): express.Expre
       ok: true,
       env: config.NODE_ENV,
       paypalEnv: config.PAYPAL_ENV,
+      webhook: webhooks.configured,
       uptimeSeconds: Math.round((Date.now() - startedAt) / 1000),
       time: new Date().toISOString(),
     });

@@ -35,11 +35,30 @@ export interface CaptureResult {
   raw: unknown;
 }
 
+/** The five headers PayPal sends with a webhook delivery. */
+export interface WebhookSignature {
+  transmissionId: string;
+  transmissionTime: string;
+  transmissionSig: string;
+  certUrl: string;
+  authAlgo: string;
+}
+
+export interface VerifyWebhookInput {
+  signature: WebhookSignature;
+  /** The id of the webhook as registered in the PayPal dashboard. */
+  webhookId: string;
+  /** The request body exactly as received. */
+  rawBody: string;
+}
+
 export interface PayPalClient {
   readonly env: PayPalEnv;
   createOrder(input: CreateOrderInput): Promise<CreatedOrder>;
   captureOrder(orderId: string): Promise<CaptureResult>;
   getOrder(orderId: string): Promise<CaptureResult>;
+  /** Ask PayPal whether a webhook delivery is genuinely theirs. */
+  verifyWebhookSignature(input: VerifyWebhookInput): Promise<boolean>;
 }
 
 export class PayPalError extends Error {
@@ -102,7 +121,9 @@ export function createPayPalClient(opts: ClientOptions): PayPalClient {
       Accept: 'application/json',
     };
     if (requestId) headers['PayPal-Request-Id'] = requestId;
-    const res = await fetchImpl(`${baseUrl}${pathname}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    // A string body is sent as it is (the webhook verify call embeds the event's own bytes).
+    const payload = body === undefined ? undefined : typeof body === 'string' ? body : JSON.stringify(body);
+    const res = await fetchImpl(`${baseUrl}${pathname}`, { method, headers, body: payload });
     if (res.status === 401 && retry) {
       await accessToken(true);
       return call<T>(method, pathname, body, requestId, false);
@@ -190,6 +211,23 @@ export function createPayPalClient(opts: ClientOptions): PayPalClient {
       const { status, data } = await call<any>('GET', `/v2/checkout/orders/${encodeURIComponent(orderId)}`);
       if (status !== 200) raise(status, data, 'PayPal could not find the order');
       return summarize(data);
+    },
+
+    async verifyWebhookSignature({ signature, webhookId, rawBody }) {
+      // The event goes in as the bytes PayPal sent, not re-serialised: parsing and
+      // re-stringifying can change number or escape formatting and fail the check.
+      const head = JSON.stringify({
+        auth_algo: signature.authAlgo,
+        cert_url: signature.certUrl,
+        transmission_id: signature.transmissionId,
+        transmission_sig: signature.transmissionSig,
+        transmission_time: signature.transmissionTime,
+        webhook_id: webhookId,
+      });
+      const body = `${head.slice(0, -1)},"webhook_event":${rawBody}}`;
+      const { status, data } = await call<any>('POST', '/v1/notifications/verify-webhook-signature', body);
+      if (status !== 200) raise(status, data, 'PayPal could not verify the webhook');
+      return data?.verification_status === 'SUCCESS';
     },
   };
 }

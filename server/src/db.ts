@@ -22,6 +22,11 @@ export interface OrderRow {
   updated_at: string;
   content_fp: string | null;
   corrects_order_id: string | null;
+  /** Set from PayPal webhooks; the browser flow never writes these. */
+  refunded_cents: number | null;
+  refunded_at: string | null;
+  reversed_at: string | null;
+  disputed_at: string | null;
 }
 
 const MIGRATIONS: string[] = [
@@ -92,6 +97,24 @@ const MIGRATIONS: string[] = [
      used_at          TEXT,
      used_by_order_id TEXT
    );`,
+
+  // 4 — PayPal webhooks: what PayPal reported after the sale, and each event processed once.
+  // The event body is not stored (a dispute carries the buyer's name and messages).
+  `ALTER TABLE orders ADD COLUMN refunded_cents INTEGER;
+   ALTER TABLE orders ADD COLUMN refunded_at TEXT;
+   ALTER TABLE orders ADD COLUMN reversed_at TEXT;
+   ALTER TABLE orders ADD COLUMN disputed_at TEXT;
+   CREATE INDEX IF NOT EXISTS orders_capture_id ON orders (capture_id);
+   CREATE TABLE paypal_webhook_events (
+     id           TEXT PRIMARY KEY,
+     event_type   TEXT NOT NULL,
+     received_at  TEXT NOT NULL,
+     outcome      TEXT NOT NULL,
+     order_id     TEXT,
+     capture_id   TEXT,
+     amount_cents INTEGER
+   );
+   CREATE INDEX paypal_webhook_events_time ON paypal_webhook_events (received_at);`,
 ];
 
 /** Open (creating if needed) the SQLite file and bring the schema up to date. */

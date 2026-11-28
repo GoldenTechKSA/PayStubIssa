@@ -256,6 +256,7 @@ export class OrderService {
     if (!days) return 0;
     const cutoff = new Date(this.now().getTime() - days * DAY_MS).toISOString();
     this.deps.db.prepare('DELETE FROM correction_codes WHERE expires_at < ?').run(cutoff);
+    this.deps.db.prepare('DELETE FROM paypal_webhook_events WHERE received_at < ?').run(cutoff);
     return this.deps.db.prepare('DELETE FROM orders WHERE created_at < ?').run(cutoff).changes;
   }
 

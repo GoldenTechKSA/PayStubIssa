@@ -106,6 +106,40 @@ field: it quotes to zero, and the server completes the order itself with no PayP
 The daily prune deletes a code, used or not, once its expiry is more than
 `ORDER_RETENTION_DAYS` in the past.
 
+## PayPal webhook
+
+`POST /api/payments/webhook` is PayPal calling the server on its own, without the customer's
+browser (`src/services/webhooks.ts`, `src/routes/webhook.ts`). It is refused with 503 until
+`PAYPAL_WEBHOOK_ID` is set; `GET /api/health` reports `"webhook": true` once it is.
+
+Every delivery is checked with PayPal's `verify-webhook-signature` API (the body is passed back
+byte for byte, never re-serialised), recorded once in `paypal_webhook_events` by its event id,
+and then applied:
+
+| Event | What the server does |
+| --- | --- |
+| `PAYMENT.CAPTURE.COMPLETED` | A `CREATED` order with the quoted amount becomes `COMPLETED` (the browser never reported it: closed tab, or a pending payment that settled later). Already completed: nothing. |
+| `PAYMENT.CAPTURE.DENIED` / `DECLINED` | A `CREATED` order becomes `FAILED`. |
+| `PAYMENT.CAPTURE.REFUNDED` | `orders.refunded_cents` (running total) and `refunded_at`. |
+| `PAYMENT.CAPTURE.REVERSED` | `orders.reversed_at` (chargeback or bank reversal). |
+| `CUSTOMER.DISPUTE.CREATED` | `orders.disputed_at`. |
+| anything else | Recorded as `ignored`. |
+
+A refund, reversal or dispute is **recorded only**: the order stays `COMPLETED` and its unlock
+keeps working. Taking access away after a refund is a business decision that has not been made.
+
+Stored per event: id, type, time, outcome, our order id, PayPal's capture id and an amount. The
+body is not stored (a dispute carries the buyer's name and messages), and the rows are deleted
+with the orders after `ORDER_RETENTION_DAYS`. Log lines: `[2106]` processed, `[2107]` rejected,
+`[2108]` needs a look (reversal, dispute, denied, amount mismatch, or paid-but-`FAILED`).
+Read them with `node scripts/query.js webhooks` and `node scripts/query.js refunds`.
+
+Only `PAYMENT.CAPTURE.COMPLETED` is confirmed against PayPal's published sample. The refund,
+reversal, denial and dispute shapes follow PayPal's REST resource schemas and have not been seen
+in a real delivery; an unmatched one is recorded as `no_order`, never an error.
+
+Setup in the PayPal dashboard is in [docs/deploy/BACKEND-DEPLOY.md](../docs/deploy/BACKEND-DEPLOY.md).
+
 ## Data
 
 `DATABASE_PATH` (default `server/data/orders.sqlite`, gitignored). The `orders` table

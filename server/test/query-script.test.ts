@@ -8,8 +8,8 @@ const { loadNamedQueries, run } = require('../scripts/query.js');
 describe('scripts/query.js', () => {
   const queries = loadNamedQueries(path.join(__dirname, '..', 'sql', 'telemetry-queries.sql'));
 
-  it('ships the five starter queries', () => {
-    expect(Object.keys(queries).sort()).toEqual(['errors', 'funnel', 'paid', 'sessions', 'timeline']);
+  it('ships the starter queries', () => {
+    expect(Object.keys(queries).sort()).toEqual(['errors', 'funnel', 'paid', 'refunds', 'sessions', 'timeline', 'webhooks']);
   });
 
   it('every starter query runs against an empty database', () => {
