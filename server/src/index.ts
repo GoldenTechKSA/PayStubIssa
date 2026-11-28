@@ -3,6 +3,7 @@ import { openDatabase } from './db';
 import { createPayPalClient } from './services/paypal';
 import { OrderService } from './services/orders';
 import { TelemetryService } from './services/telemetry';
+import { WebhookService } from './services/webhooks';
 import { createApp } from './app';
 
 function main(): void {
@@ -45,13 +46,18 @@ function main(): void {
     maxRows: config.TELEMETRY_MAX_ROWS,
   });
 
-  const app = createApp({ config, orders, telemetry });
+  const webhooks = new WebhookService({ db, paypal, webhookId: config.PAYPAL_WEBHOOK_ID });
+  if (!webhooks.configured) {
+    console.warn('[config] PAYPAL_WEBHOOK_ID is not set — PayPal webhooks are refused (refunds and disputes will not reach the ledger).');
+  }
+
+  const app = createApp({ config, orders, telemetry, webhooks });
   const server = app.listen(config.PORT, config.HOST, () => {
     telemetry.startPruneTimer();
     orders.startPruneTimer();
     console.log(
       `[api] listening on http://${config.HOST}:${config.PORT} ` +
-        `(env=${config.NODE_ENV}, paypal=${config.PAYPAL_ENV}, db=${config.databasePath})`,
+        `(env=${config.NODE_ENV}, paypal=${config.PAYPAL_ENV}, webhook=${webhooks.configured ? 'on' : 'off'}, db=${config.databasePath})`,
     );
   });
 

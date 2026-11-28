@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app';
 import { PayPalError } from '../src/services/paypal';
-import { makeService, makeTelemetry, testConfig } from './helpers';
+import { makeService, makeTelemetry, testConfig, makeWebhooks } from './helpers';
 
 const H = { 'X-Telemetry-Session': 's_abcdefghij', 'X-Telemetry-Visitor': 'v_abcdefghij' };
 
 function boot() {
   const { service, db, paypal } = makeService();
   const { telemetry, lines } = makeTelemetry(db);
-  return { app: createApp({ config: testConfig, orders: service, telemetry }), db, paypal, lines };
+  return { app: createApp({ config: testConfig, orders: service, telemetry, webhooks: makeWebhooks(db, paypal) }), db, paypal, lines };
 }
 const serverRows = (db: any) =>
   db.prepare(`SELECT code, session_id, visitor_id, props_json FROM telemetry_events WHERE source='server' ORDER BY id`).all();

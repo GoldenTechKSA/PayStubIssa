@@ -149,6 +149,43 @@ cd ~/apps/staging/server
 node -e "const D=require('better-sqlite3');console.table(new D('data/orders.sqlite',{readonly:true}).prepare('select id,status,total_cents,captured_cents,captured_at from orders order by created_at desc limit 5').all())"
 ```
 
+## PayPal webhook (once per environment)
+
+The webhook lets PayPal tell the server about a payment directly: one the browser never
+reported, a refund, a chargeback, a dispute. Until it is set up the endpoint answers 503 and
+nothing else changes. Do staging (the **sandbox** app) first, then production (the **live** app).
+
+1. In the [PayPal developer dashboard](https://developer.paypal.com/dashboard/applications),
+   pick **Sandbox** (staging) or **Live** (production) at the top, open the app whose client id
+   is in that environment's `.env`, and under **Webhooks** choose **Add Webhook**.
+2. Webhook URL: `https://staging.paystubissa.com/api/payments/webhook` for the sandbox app,
+   `https://paystubissa.com/api/payments/webhook` for the live app.
+3. Tick these events and save:
+   - Payment capture completed
+   - Payment capture denied (and "declined" if listed)
+   - Payment capture refunded
+   - Payment capture reversed
+   - Customer dispute created
+4. Copy the **Webhook ID** PayPal shows for the new webhook into that environment's `.env`
+   and restart the API:
+
+   ```bash
+   sudo -iu paystubissa
+   nano ~/apps/staging/server/.env          # or ~/apps/production/server/.env
+   #   PAYPAL_WEBHOOK_ID=<the Webhook ID>
+   cd ~/apps/staging/server && pm2 reload ecosystem.config.cjs --only paystub-api-staging --update-env
+   #   production: cd ~/apps/production/server && pm2 reload ecosystem.config.cjs --only paystub-api --update-env
+   ```
+
+5. Check: `curl -s https://staging.paystubissa.com/api/health` shows `"webhook":true`. Make a
+   sandbox purchase, then `node scripts/query.js webhooks` in the server folder lists a
+   `PAYMENT.CAPTURE.COMPLETED` row with outcome `already_completed`. Refund that payment from the
+   sandbox business account and a `PAYMENT.CAPTURE.REFUNDED` row with outcome `refunded` follows.
+
+The dashboard's "Webhooks simulator" sends mock events that PayPal's verify API does not vouch
+for, so the server answers them with 400 `WEBHOOK_SIGNATURE`. That is correct; test with a real
+sandbox payment. PayPal re-sends an event it did not get a 2xx for, up to 25 times over 3 days.
+
 ## Troubleshooting
 
 - **`/api/health` is 503** — Node is not listening on the port. `pm2 status`,

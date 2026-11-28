@@ -32,6 +32,11 @@ export const S = {
   PAYMENTS_CAPTURE_FAILED: { code: 2103, name: 'payments.capture.failed', level: 'error' },
   PAYMENTS_ORDER_CREATE_FAILED: { code: 2104, name: 'payments.order.create_failed', level: 'error' },
   PAYMENTS_CORRECTION_REDEEMED: { code: 2105, name: 'payments.correction.redeemed', level: 'info' },
+  // PayPal webhooks carry no browser session, so these rows have no session id.
+  PAYMENTS_WEBHOOK_PROCESSED: { code: 2106, name: 'payments.webhook.processed', level: 'info' },
+  PAYMENTS_WEBHOOK_REJECTED: { code: 2107, name: 'payments.webhook.rejected', level: 'warn' },
+  // A reversal, dispute, denied or mismatched payment: someone should look.
+  PAYMENTS_WEBHOOK_ATTENTION: { code: 2108, name: 'payments.webhook.attention', level: 'warn' },
 } as const satisfies Record<string, SiteCode>;
 
 /** `[2102] payments.order.captured {"orderId":"X"}` — the one line format used everywhere. */

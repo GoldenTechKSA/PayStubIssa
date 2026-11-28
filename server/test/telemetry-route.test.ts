@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app';
-import { makeService, makeTelemetry, testConfig } from './helpers';
+import { makeService, makeTelemetry, testConfig, makeWebhooks } from './helpers';
 
 const ids = { visitorId: 'v_abcdefghij', sessionId: 's_abcdefghij' };
 const good = () => ({
@@ -11,9 +11,9 @@ const good = () => ({
 });
 
 function boot(enabled = true) {
-  const { service, db } = makeService();
+  const { service, db, paypal } = makeService();
   const { telemetry, lines } = makeTelemetry(db, { enabled });
-  return { app: createApp({ config: testConfig, orders: service, telemetry }), db, lines };
+  return { app: createApp({ config: testConfig, orders: service, telemetry, webhooks: makeWebhooks(db, paypal) }), db, lines };
 }
 const count = (db: any) => (db.prepare('SELECT COUNT(*) AS n FROM telemetry_events').get() as any).n;
 

@@ -70,3 +70,29 @@ FROM telemetry_sessions s
 LEFT JOIN orders o ON o.id = s.order_id
 WHERE s.paid = 1
 ORDER BY s.started_at DESC;
+
+-- name: webhooks
+-- What PayPal reported on its own in the last 30 days, newest first (see "PayPal webhook" in README.md).
+SELECT received_at,
+       event_type,
+       outcome,
+       order_id,
+       capture_id,
+       amount_cents
+FROM paypal_webhook_events
+WHERE received_at > datetime('now', '-30 days')
+ORDER BY received_at DESC;
+
+-- name: refunds
+-- Orders PayPal reported as refunded, reversed (chargeback) or disputed.
+SELECT id                AS order_id,
+       status,
+       captured_cents,
+       captured_at,
+       refunded_cents,
+       refunded_at,
+       reversed_at,
+       disputed_at
+FROM orders
+WHERE refunded_at IS NOT NULL OR reversed_at IS NOT NULL OR disputed_at IS NOT NULL
+ORDER BY COALESCE(disputed_at, reversed_at, refunded_at) DESC;

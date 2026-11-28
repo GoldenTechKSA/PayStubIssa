@@ -98,8 +98,9 @@ const PrivacyPolicy = () => (
             time you ticked the checkout confirmation and the version of the Terms you agreed to, your IP
             address and browser type, a one-way fingerprint of your document (it lets us confirm that what you
             download is what you paid for, and it cannot be turned back into its contents), for a free correction,
-            which earlier order it corrects, and PayPal's confirmation of the payment, which carries the PayPal
-            order id and the name and email address on your PayPal account
+            which earlier order it corrects, PayPal's confirmation of the payment, which carries the PayPal
+            order id and the name and email address on your PayPal account, and, if PayPal later tells us the
+            payment was refunded, reversed or disputed, the date, the amount and PayPal's reference numbers
           </td>
           <td>
             <strong>Yes</strong> — on our server, for three years (see Data Retention).
@@ -155,6 +156,11 @@ const PrivacyPolicy = () => (
       buttons in your browser, to keep a record of what was sold, to handle refunds and billing disputes, and as
       evidence that the checkout confirmation was made. We do not use the email address for marketing or
       notices.
+    </p>
+    <p>
+      PayPal also notifies our server directly if a payment is later refunded, reversed or disputed. From such
+      a notice we keep only what happened, when, the amount and PayPal's reference numbers, alongside your
+      order. We do not keep the notice itself, which can contain your name or the messages of a dispute.
     </p>
 
     <h4>5. Contacting Support</h4>

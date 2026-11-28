@@ -6,7 +6,7 @@ import { loadConfig } from '../src/config';
 import { openDatabase } from '../src/db';
 import { TelemetryService } from '../src/services/telemetry';
 import { scrubProps } from '../src/telemetry/scrub';
-import { makeService, makeTelemetry, testConfig } from './helpers';
+import { makeService, makeTelemetry, testConfig, makeWebhooks } from './helpers';
 
 const ids = { visitorId: 'v_abcdefghij', sessionId: 's_abcdefghij' };
 const H = { 'X-Telemetry-Session': ids.sessionId, 'X-Telemetry-Visitor': ids.visitorId };
@@ -15,7 +15,7 @@ describe('telemetry never blocks a payment', () => {
   it('capture still returns 200 when the telemetry insert fails', async () => {
     const { service, db, paypal } = makeService();
     const { telemetry, lines } = makeTelemetry(db);
-    const app = createApp({ config: testConfig, orders: service, telemetry });
+    const app = createApp({ config: testConfig, orders: service, telemetry, webhooks: makeWebhooks(db, paypal) });
     const created = await request(app).post('/api/payments/orders').set(H).send({ items: [{ type: 'paystub', qty: 1 }] });
     expect(created.status).toBe(201);
 

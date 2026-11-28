@@ -1,11 +1,12 @@
 import { openDatabase } from '../src/db';
 import { OrderService } from '../src/services/orders';
-import type { CaptureResult, CreatedOrder, CreateOrderInput, PayPalClient } from '../src/services/paypal';
+import type { CaptureResult, CreatedOrder, CreateOrderInput, PayPalClient, VerifyWebhookInput } from '../src/services/paypal';
 import { PayPalError } from '../src/services/paypal';
 import type { PricingRules } from '../src/services/pricing';
 import type { Config } from '../src/config';
 import type Database from 'better-sqlite3';
 import { TelemetryService } from '../src/services/telemetry';
+import { WebhookService } from '../src/services/webhooks';
 
 export const JWT_SECRET = 'test-secret-that-is-definitely-longer-than-32-chars';
 
@@ -92,6 +93,25 @@ export class FakePayPal implements PayPalClient {
   async getOrder(orderId: string): Promise<CaptureResult> {
     return this.captureOrder(orderId);
   }
+
+  /** What the next webhook verifications answer: true/false, or an Error to throw. */
+  verifyResult: boolean | Error = true;
+  readonly verifyCalls: VerifyWebhookInput[] = [];
+
+  async verifyWebhookSignature(input: VerifyWebhookInput): Promise<boolean> {
+    this.verifyCalls.push(input);
+    if (this.verifyResult instanceof Error) throw this.verifyResult;
+    return this.verifyResult;
+  }
+}
+
+/** A WebhookService on the same DB and fake PayPal as the order service; `webhookId: undefined` means "not configured". */
+export function makeWebhooks(
+  db: Database.Database,
+  paypal: PayPalClient,
+  overrides: { webhookId?: string; now?: () => Date } = { webhookId: 'WH-TEST' },
+) {
+  return new WebhookService({ db, paypal, webhookId: overrides.webhookId, now: overrides.now });
 }
 
 export function makeService(overrides: Partial<{ paypal: PayPalClient; now: () => Date; retentionDays: number }> = {}) {
